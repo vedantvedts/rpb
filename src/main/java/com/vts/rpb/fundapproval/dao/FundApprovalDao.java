@@ -52,4 +52,11 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public long insertLinkedCommitteeMembers(LinkedCommitteeMembers linkedMembers) throws Exception;
 	
+	public List<Object[]> getProjectBudgetHeadList(String projectId) throws Exception;
+	
+	public List<Object[]> getGeneralBudgetHeadList() throws Exception;
+	
+	public List<Object[]> getPrjBudgetHeadItem(long projectId, long budgetHeadId) throws Exception;
+	
+	public List<Object[]> getGenBudgetHeadItem(long budgetHeadId) throws Exception;
 }

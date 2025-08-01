@@ -3,6 +3,7 @@ package com.vts.rpb.fundapproval.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 
@@ -43,4 +44,7 @@ public interface FundApprovalService
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost, String status)  throws Exception;
 	
+	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception;
+	
+	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
 }

@@ -30,7 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
@@ -801,6 +803,18 @@ public class FundApprovalController
 				System.out.println("status---"+status);
 				
 				System.err.println("****************************************************");
+
+				System.out.println("divisionId---"+divisionId);
+				System.out.println("estimateType---"+estimateType);
+				System.out.println("loginType---"+loginType);
+				System.out.println("empId---"+empId);
+				System.out.println("budgetHeadId---"+budgetHeadId);
+				System.out.println("budgetItemId---"+budgetItemId);
+				System.out.println("fromCost---"+fromCost);
+				System.out.println("toCost---"+toCost);
+				System.out.println("status---"+status);
+				
+				System.err.println("****************************************************");
 				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
@@ -1102,4 +1116,110 @@ public class FundApprovalController
 			}
 			return json.toJson(fundDetails.get(0));
 		}
+		
+		@RequestMapping(value ="GetBudgetHeadList.htm")
+		public @ResponseBody String GetBudgetHeadList(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception{
+			String userName =(String)ses.getAttribute("Username");
+			logger.info(new Date() +"Inside GetBudgetHeadList.htm "+userName);	
+			Gson json = new Gson();
+			try 
+			{   
+				List<BudgetDetails> budgetHeadList=null;
+				String projectDetails=req.getParameter("ProjectDetails");
+				if(projectDetails!=null)
+				{
+					String[] project=projectDetails.split("#");
+					if(project!=null && project.length>0) 
+					{
+						if(project[0]!=null) 
+						{
+							budgetHeadList=fundApprovalService.getBudgetHeadList(project[0]);
+						}
+					}
+				}
+				return json.toJson(budgetHeadList);
+			}
+			catch (Exception e){
+				logger.error(new Date() +"Inside GetBudgetHeadList.htm "+userName ,e);
+				e.printStackTrace();
+				return null;
+			}
+		}
+		
+		@RequestMapping(value ="SelectbudgetItem.htm")
+		public @ResponseBody String SelectbudgetItem(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception{
+			String UserName =(String)ses.getAttribute("Username");
+			logger.info(new Date() +"Inside SelectbudgetItem.htm "+UserName);	
+			Gson json = new Gson();
+			List<BudgetDetails> list = new ArrayList<>();
+			try {
+				String projectData = req.getParameter("projectid");
+				String budgetHeadData = req.getParameter("budgetHeadId");
+				
+				long projectId=0;
+				long budgetHeadId=0;
+				if(projectData!=null)
+				{        
+					String arr[]=projectData.split("#");    // Splitting Project Code And Project Id
+					projectId=Long.parseLong(arr[0]);
+					budgetHeadId=Long.parseLong(budgetHeadData);
+				}   
+				
+				List<Object[]> BudgetItemlist=fundApprovalService.getBudgetHeadItem(projectId,budgetHeadId);  // Fetching getBudgetHeadItem From DatasBase
+				
+				if (BudgetItemlist.size() > 0) {
+
+					for (Object[] resultList:BudgetItemlist) 
+					{
+						BudgetDetails budgetItemDetails = new BudgetDetails();
+						if(resultList!=null)
+						{
+							if(resultList[0]!=null)
+							{
+								budgetItemDetails.setBudgetItemId(Long.parseLong(resultList[0].toString()));
+							}
+							
+							if(resultList[1]!=null)
+							{
+								budgetItemDetails.setHeadOfAccounts(resultList[1].toString());
+							}
+							
+							if(resultList[2]!=null)
+							{
+								budgetItemDetails.setRefe(resultList[2].toString());
+							}
+							if(resultList[3]!=null)
+							{
+								budgetItemDetails.setMajorHead(resultList[3].toString()); 
+							}
+							if(resultList[4]!=null)
+							{
+								budgetItemDetails.setMinorHead(resultList[4].toString()); 
+							}
+							if(resultList[5]!=null)
+							{
+								budgetItemDetails.setSubHead(resultList[5].toString()); 
+							}
+							if(resultList[6]!=null)
+							{
+								budgetItemDetails.setSubMinorHead(resultList[6].toString()); 
+							}
+							list.add(budgetItemDetails);
+						}
+					}
+				} else 
+				{
+					BudgetDetails budgetItemDetails = new BudgetDetails();
+					budgetItemDetails.setBudgetItemId(-3);
+					budgetItemDetails.setHeadOfAccounts("No Sanction");
+					list.add(budgetItemDetails);
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(new Date() +" Inside SelectbudgetItem.htm "+UserName, e);
+				return "static/error";
+			}         
+			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
+		}
+		
 }
