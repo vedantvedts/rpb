@@ -373,8 +373,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId) throws Exception {
-		return fbedao.getParticularFundApprovalDetails(fundApprovalId);
+	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception {
+		return fbedao.getParticularFundApprovalDetails(fundApprovalId,empId);
 	}
 	
 	@Override

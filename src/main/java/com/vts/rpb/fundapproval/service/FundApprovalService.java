@@ -33,7 +33,7 @@ public interface FundApprovalService
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 
-	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId) throws Exception;
+	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception;
 	
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception;
 

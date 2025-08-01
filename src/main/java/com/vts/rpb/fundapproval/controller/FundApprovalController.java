@@ -202,6 +202,7 @@ public class FundApprovalController
 	public String fundApprovalPreview(HttpServletRequest req, HttpServletResponse resp, HttpSession ses, RedirectAttributes redir)
 	{
 		String UserName = (String) ses.getAttribute("Username");
+		long empId = (Long) ses.getAttribute("EmployeeId");
 		logger.info(new Date() + "Inside FundApprovalPreview.htm " + UserName);
 		try {
 			
@@ -209,7 +210,7 @@ public class FundApprovalController
 			
 			if(fundApprovalId!=null)
 			{ 
-				List<Object[]> fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId);
+				List<Object[]> fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
 						
 				if(fundDetails!=null && fundDetails.size()>0)
 				{
@@ -1094,6 +1095,7 @@ public class FundApprovalController
 		{
 			String UserName = (String) ses.getAttribute("Username");
 			logger.info(new Date() +"Inside getRPBApprovalStatusAjax.htm"+UserName);
+			long empId = (long) ses.getAttribute("EmployeeId");
 			Gson json = new Gson();
 			List<Object[]>	fundDetails=null;
 			try {
@@ -1102,7 +1104,7 @@ public class FundApprovalController
 				
 				if(fundApprovalId!=null)
 				{ 
-					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId);
+					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
 							
 				
 					fundDetails.forEach(row->System.out.println("FundApprovalDetails->"+Arrays.toString(row)));

@@ -242,10 +242,12 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId) throws Exception {
+	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("CALL Ibas_ParticularFundRequestDetails(:fundApprovalId)");
+			System.out.println("CALL Ibas_ParticularFundRequestDetails('"+fundApprovalId+"','"+empId+"');");
+			Query query= manager.createNativeQuery("CALL Ibas_ParticularFundRequestDetails(:fundApprovalId,:empId)");
 			query.setParameter("fundApprovalId",fundApprovalId);
+			query.setParameter("empId",empId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			

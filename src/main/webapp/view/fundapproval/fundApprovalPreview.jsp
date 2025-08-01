@@ -346,6 +346,7 @@ String rc5Role=null;
 String approvingOfficerDetails=null;
 String approvingOfficerRole=null;
 String rcStatusCodeNext=null,budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
+String rc1Status=null,rc2Status=null,rc3Status=null,rc4Status=null,rc5Status=null,apprOffStatus=null,currentEmpStatus=null;
 long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0;
 if(fundDetails!=null && fundDetails.length > 0)
 {
@@ -388,6 +389,14 @@ if(fundDetails!=null && fundDetails.length > 0)
 	estimatedCost=fundDetails[17]!=null  ? fundDetails[17].toString() : null;
 	itemNomenclature=fundDetails[14]!=null  ? fundDetails[14].toString() : null;
 	justification=fundDetails[15]!=null  ? fundDetails[15].toString() : null;
+	
+	rc1Status=fundDetails[41]!=null  ? fundDetails[41].toString() : null;
+	rc2Status=fundDetails[42]!=null  ? fundDetails[42].toString() : null;
+	rc3Status=fundDetails[43]!=null  ? fundDetails[43].toString() : null;
+	rc4Status=fundDetails[44]!=null  ? fundDetails[44].toString() : null;
+	rc5Status=fundDetails[45]!=null  ? fundDetails[45].toString() : null;
+	apprOffStatus=fundDetails[46]!=null  ? fundDetails[46].toString() : null;
+	currentEmpStatus=fundDetails[47]!=null  ? fundDetails[47].toString() : null;
 }
 System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
  %>
@@ -395,10 +404,13 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>
 	      <div class="col-md-7">
-	    	 <ol class="breadcrumb ">
-	    	 <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class="fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	    	 <ol class="breadcrumb" style="justify-content: right !important;">
+	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	    	 <li class="breadcrumb-item">
-	         	<a	href="FundApprovalList.htm">Approval List</a>
+	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%} %> List</a>
 	         </li>
 	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>FBE<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>RE<%} %> Item</li>
              </ol>
@@ -480,7 +492,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                              <%if(empId == rc1EmpId){ %>
                                             <span class="badge badge-info">For Recommend</span>
                                             <%} %>
-                                            <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                            <%if(rc1Status!=null && rc1Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                    <%} %>
@@ -494,6 +508,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <%if(empId == rc2EmpId){ %>
                                             <span class="badge badge-info">For Recommend</span>
                                             <%} %>
+                                            <%if(rc2Status!=null && rc2Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                   <%} %>
@@ -507,6 +524,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <%if(empId == rc3EmpId){ %>
                                             <span class="badge badge-info">For Recommend</span>
                                             <%} %>
+                                            <%if(rc3Status!=null && rc3Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                    <%} %>
@@ -520,6 +540,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <%if(empId == rc4EmpId){ %>
                                             <span class="badge badge-info">For Recommend</span>
                                             <%} %>
+                                            <%if(rc4Status!=null && rc4Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                    <%} %>
@@ -533,6 +556,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <%if(empId == rc5EmpId){ %>
                                             <span class="badge badge-info">For Noting</span>
                                             <%} %>
+                                            <%if(rc5Status!=null && rc5Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                    <%} %>
@@ -546,6 +572,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                              <%if(empId == appOffEmpId){ %>
                                             <span class="badge badge-info">For Approval</span>
                                             <%} %>
+                                            <%if(apprOffStatus!=null && apprOffStatus.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
                                         </span>
                                     </div>
                                    <%} %>
@@ -567,15 +596,14 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 								    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
 								    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 								
-								    <% if (rcStatusCodeNext != null && (rcStatusCodeNext).equalsIgnoreCase("CHAIRMAN APPROVED")) { %>
-								        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmAction('Approve','A')">
-								            Approve
+								    
+								        <button type="button" class="btn btn-primary btn-sm submit" <% if (currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")) { %> onclick="confirmAction('Approve','A')" <%}else{ %> onclick="confirmAction('Recommend','RE')" <%} %>>
+									         <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%} %>
 								        </button>
-								    <% } else { %>
-								        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmAction('Recommend','RE')">
-								            Recommend
-								        </button> 								                                              
-								    <% } %>
+								        
 								    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
 									        Return
 									</button>
@@ -597,24 +625,6 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 </body>
 
 <script>
-/* function confirmAction(action, value) {
-    const remarksarea = $('#remarksarea').val().trim();
-    
-    if (remarksarea === '') {
-        alert('Please enter the remarks.');
-        $('#remarksarea').focus();
-        return false;
-    } else if (confirm("Are you sure to "+action+"...?")) {
-        const form = $('#fbeForm');
-        const actionInput = $('<input>', {
-            type: 'hidden',
-            name: 'Action',
-            value: value
-        });
-        form.append(actionInput);
-        form.submit();
-    }
-} */
 
 function confirmAction(action,value) {
     const remarksarea = $('#remarksarea').val().trim();
@@ -636,601 +646,4 @@ function confirmAction(action,value) {
 }
 </script>
 
-<script>
-function preventInvalidInput(event) {
-    const invalidChars = ['e', 'E', '+', '-', '.'];
-    if (invalidChars.includes(event.key)) {
-        event.preventDefault();
-    }
-}
-</script>
-
-<script type="text/javascript">
-
-function calculateFBEAmountEdit(count,MonthId,originalMonthFbeAmount)
-{
-	var ErrorStatus=0;
-	 var FBEamount = new Array();
-   
-		$('input.FBEamountEdit-'+count).each(function() {
-			FBEamount.push($(this).val());
-		});
-		
-		var TotalFBEAmount=0;
-		if(FBEamount!=null && FBEamount.length !== 0)
-		{
-			for(var i=0;i<FBEamount.length;i++)
-		    {
-				if(FBEamount[i]!='')
-				{
-					TotalFBEAmount=parseFloat(TotalFBEAmount)+parseFloat(FBEamount[i]);
-				}
-			}
-		}
-		
-		var hiddenProjectId=$("#HiddenProjectId").val();
-		var SanctionBalance=$(".SanctionbalanceEdit-"+count).text();
-		if(SanctionBalance)
-		{
-			SanctionBalance=parseFloat(SanctionBalance);
-		}
-		
-		var Sanction=$(".sanctionEdit-"+count).text();
-		if(Sanction)
-		{
-			Sanction=parseFloat(Sanction);
-		}
-		
-		if(Sanction < (parseFloat(TotalFBEAmount)) && hiddenProjectId!='0')
-		{
-			alert("Total FBE Amount Should Not Be More Than Sanction Cost..!");
-			$("#"+MonthId+"-"+count).val(originalMonthFbeAmount);
-			ErrorStatus=1;
-		}
-		else
-			{
-				$("#FBEamountEdit-"+count).val(TotalFBEAmount);
-			}
-		
-		if(ErrorStatus==1)
-		  {
-		    $("#"+MonthId+"-"+count).focus();
-			$('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 4px red !important;border-color: #bf1002 !important; }</style>').attr('class', 'TextBoxBorderRed'));
-	 	  }
-		  else
-			{
-				 $(".TextBoxBorderRed,.TextBoxBorderBlue").remove();
-				 $('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);border-color: #80bdff; }</style>').attr('class', 'TextBoxBorderBlue'));
-			}
-	}
-
-
-$(document).ready(function(){
-	var FbeMainId=$("#HiddenFbeMainId").val();
-	GetBudgetItemEditList(FbeMainId);
-});
-
-function GetBudgetItemEditList(FbeMainId)
-{
-	var count=0;
-	$(".EditRow").remove();
-	$.get('GetFBEItemEditList.htm', {
-		FbeMainId : FbeMainId
-	}, function(responseJson) {
-		var result = JSON.parse(responseJson);
-		var table = document.getElementById("EditFBEBudgetItem");
-		
-		if(result.length>0)
-			{
-				$(".EditPage").fadeIn();
-				$.each(result, function(key, value) {
-					count++;
-					var tbody = table.querySelector('tbody');
-					var rows = tbody.rows.length;
-					var row = tbody.insertRow(rows);
-					row.style.backgroundColor = "white";
-					var cell1 = row.insertCell(0);
-					var cell2 = row.insertCell(1);
-					var cell3 = row.insertCell(2);
-					var cell4 = row.insertCell(3);
-					var cell5 = row.insertCell(4);
-					var cell6 = row.insertCell(5);
-					var cell7 = row.insertCell(6);
-					var cell8 = row.insertCell(7);
-					row.className = "EditRow-"+count;
-					cell7.className="cellEdit-"+count;
-					cell2.width="20%";
-					
-					cell1.innerHTML ='<div class="ViewDetails-'+count+'"><i onclick="ViewDetails(\'plus\','+count+')" id="Plus-'+value[0]+'" class="fa fa-plus ViewDetailsplus-'+count+'" aria-hidden="true" style="color:blue;cursor: pointer;"></i></div><input type="hidden" id="ItemForcasted-'+count+'" value="'+value[20]+'">';
-					cell2.innerHTML = '<div class="form-inline" style="width:100%;"><input type="checkbox" class="tooltip-container" data-tooltip="Check the box to get all employee(s)" data-position="right" id="employeeCheckBoxEdit-'+count+'" onchange="setAllEmployeeList(\'#Employee\','+count+',\'Edit\','+value[19]+')" style="margin-right: 6px; height: 16px;width: 16px;"><select name="EmployeeEdit" id="EmployeeEdit-' + count + '" class="form-control" required data-container="body" data-live-search="true" style="width:90%;"><option value="" disabled="disabled">Select Employee</option></select></div>';
-					cell3.innerHTML ='<select name="BudgetItemEdit" onchange="changeBudgetItemDetails(\'#BudgetItemEdit-'+count+'\','+count+','+"'Edit'"+')" id="BudgetItemEdit-'+count+'" class="form-control" required data-container="body" data-live-search="true" style="width:100%;"><option value="" disabled="disabled">Select BudgetItem</option></select>';
-					cell4.innerHTML ='<input class="form-control input-sm ItemNomenclatureEdit"  name="ItemNomenclatureEdit" id="ItemNomenclatureEdit-'+count+'" style="width:100%;font-weight: bold;" type="text" placeholder="&#128073;Enter Item Nomenclature" value="'+value[5]+'">';
-					cell5.innerHTML ='<input class="form-control input-sm" style="width:100% !important;font-weight: bold;text-align:right;" id="FBEBalanceEdit-'+count+'" name="FBEBalanceEdit" type="number" value="'+value[21]+'" readonly="readonly" onkeydown="preventInvalidInput(event)"/>';
-					cell6.innerHTML ='<input class="form-control input-sm FBEamountEdit" style="width:100%;font-weight: bold;text-align:right;" id="FBEamountEdit-'+count+'" name="FBEamountEdit" type="number" value="'+value[6]+'" oninput="limitDigits(this, 15)" readonly="readonly" onkeydown="preventInvalidInput(event)"/>';
-					cell7.innerHTML ='<button type="button" onclick="SubmitEditFBEItemDetails('+count+','+value[0]+','+value[6]+')" class="btn btn-sm edit-icon editButton-'+count+'"><i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i></button>';
-					cell8.innerHTML = '<button type="button" onclick="confirmDelete('+count+','+value[0]+')" class="btn btn-sm delete-icon"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>';
-					cell7.style.verticalAlign = "middle";
-					cell7.style.textAlign = "center";
-					cell8.style.textAlign = "center";
-					cell1.style.textAlign = "center";
-					cell1.style.padding = "10px";
-					cell1.style.fontWeight = "bold"; 
-					cell1.style.color = "#090957"; 
-					cell1.style.padding = "10px";
-					cell1.style.padding = "10px";
-					cell2.style.padding = "10px";
-					cell3.style.padding = "10px";
-					cell4.style.padding = "10px";
-					cell5.style.padding = "10px";
-					cell6.style.padding = "10px";
-					cell7.style.padding = "10px";
-					cell8.style.padding = "10px";
-					
-					rows = table.rows.length;
-					row = table.insertRow(rows);
-					cell1 = row.insertCell(0);
-					cell2 = row.insertCell(1);
-					row.className = "EditRowDetails EditRowDetails-"+count;
-					
-					var divisionId=$("#divisionIdHidden").val();
-					GetEmployeeList(false,'#Employee',divisionId,count,'Edit',value[19]);   //GetEmployeeList(isChecked,empIdAttrb,DivisionId,serialNo,Action,selectedEmpId)
-					
-					var aprMonth='',mayMonth='',juneMonth='',julyMonth='',augustMonth='',
-					sepMonth='',octMonth='',novMonth='';decMonth='',janMonth='',febMonth='',
-					marMonth='';
-					if(value[7]!=null)
-						{
-							aprMonth=value[7];
-						}
-					if(value[8]!=null)
-						{
-							mayMonth=value[8];
-						}
-					if(value[9]!=null)
-						{
-							juneMonth=value[9];
-						}
-					if(value[10]!=null)
-						{
-							julyMonth=value[10];
-						}
-					if(value[11]!=null)
-						{
-							augustMonth=value[11];
-						}
-					if(value[12]!=null)
-						{
-							sepMonth=value[12];
-						}
-					if(value[13]!=null)
-						{
-							octMonth=value[13];
-						}
-					if(value[14]!=null)
-						{
-							novMonth=value[14];
-						}
-					if(value[15]!=null)
-						{
-							decMonth=value[15];
-						}
-					if(value[16]!=null)
-						{
-							janMonth=value[16];
-						}
-					if(value[17]!=null)
-						{
-							febMonth=value[17];
-						}
-					if(value[18]!=null)
-						{
-							marMonth=value[18];
-						}
-					
-					var finalDiv='';
-					var hiddenProjectId=$("#HiddenProjectId").val();
-					var sanctionDivContent='';
-					
-					if(hiddenProjectId!=null && hiddenProjectId!='' && hiddenProjectId!='0')
-						{
-						    sanctionDivContent='<div class="flex-container SanctionBalance-'+count+'"  style="width: 90%;margin:auto;background-color: #ffefe3 !important;height:auto;">'+
-					        '<div class="form-inline" style="justify-content:center;">'+
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">Sanction Cost&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="sanctionEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-						    '&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">Expenditure&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="expenditureEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-    						'&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">Balance&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="SanctionbalanceEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-						    
-						    '&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">O/S Cost&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="OutCommitmentEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-						    '&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">DIPL&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="DiplEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-						    '&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">New Proposal&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="SanctionNewProposalEdit-'+count+'"></h2>'+
-						    '</div>'+
-						    
-						    '&nbsp;&nbsp;&nbsp;&nbsp;'+
-						    
-						    '<div class="form-inline">'+
-						    '<b style="color:#090957;">Notional Balance&nbsp; :&nbsp; </b>'+
-						    '<h2 style="color:red;margin-bottom: 0.7rem;" class="NotionalBalanceEdit-'+count+'"></h2>'+
-						    '</div>'+
-						   '</div>'+
-							'</div>';
-						}
-								
-					    finalDiv +='<div class="form-inline" style="margin:auto;justify-content:center;width: 85%;background-color: #ffefe3;border-radius: 5px;">'+
-					                    sanctionDivContent+
-					                     '<div class="inputBox"><input type="number" required value="'+aprMonth+'" id="AprilMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'AprilMonthEdit\','+aprMonth+')"><span>April</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+mayMonth+'" id="MayMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'MayMonthEdit\','+mayMonth+')"><span>May</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+juneMonth+'" id="JuneMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'JuneMonthEdit\','+juneMonth+')"><span>June</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+julyMonth+'" id="JulyMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'JulyMonthEdit\','+julyMonth+')"><span>July</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+augustMonth+'" id="AugustMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'AugustMonthEdit\','+augustMonth+')"><span>August</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+sepMonth+'" id="SeptemberMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'SeptemberMonthEdit\','+sepMonth+')"><span>September</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+octMonth+'" id="OctoberMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'OctoberMonthEdit\','+octMonth+')"><span>October</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+novMonth+'" id="NovemberMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'NovemberMonthEdit\','+novMonth+')"><span>November</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+decMonth+'" id="DecemberMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'DecemberMonthEdit\','+decMonth+')"><span>December</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+janMonth+'" id="JanuaryMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onkeydown="preventInvalidInput(event)" onblur="calculateFBEAmountEdit(' + count + ',\'JanuaryMonthEdit\','+janMonth+')"><span>January</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+febMonth+'" id="FebruaryMonthEdit-'+count+'" name="AprilMonth" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onblur="preventInvalidInput(event)" onkeyup="calculateFBEAmountEdit(' + count + ',\'FebruaryMonthEdit\','+febMonth+')"><span>February</span></div>'+
-							             '<div class="inputBox"><input type="number" required value="'+marMonth+'" id="MarchMonthEdit-'+count+'" class="form-control custom-placeholder FBEamountEdit-'+count+'" oninput="limitDigits(this, 15)" onblur="preventInvalidInput(event)" onkeyup="calculateFBEAmountEdit(' + count + ',\'MarchMonthEdit\','+marMonth+')"><span>March</span></div>'+
-							         '</div>';
-							         
-							         
-							         cell1.innerHTML=finalDiv;
-							         cell1.colSpan=6;
-							         cell2.colSpan=2;
-							 		 cell1.style.padding = "4px";
-							 		 cell1.style.background = "#dadada";
-							 		 cell2.style.background = "white";
-							 		 cell2.style.verticalAlign = "middle";
-							 		 cell2.style.textAlign = "center";
-						 			 cell2.innerHTML ='<button type="button" onclick="SubmitEditFBEItemDetails('+count+','+value[0]+','+value[6]+')" class="btn btn-sm submit-btn">Update</button>';
-							 		 $(".EditRowDetails-"+count).hide();
-					
-					GetBudgetItemList("#BudgetItemEdit-"+count,value[2],count,'Edit');
-					var serialNo=$("#HiddenRowSerialNo").val();
-					if(serialNo)
-					{
-						if(serialNo==count)
-						{
-							ViewDetails('plus',count);
-						}
-					}
-				});
-			}
-		else
-			{
-				$(".EditPage"). fadeOut(100);
-			}
-	});
-}
-
-
-var PreviousViewDetailsCount=0;
-
-function ViewDetails(Type,count) 
-{
-	// to close previous FBE details
-	if(PreviousViewDetailsCount!=0)
-		{
-			$(".ViewDetailsminus-"+PreviousViewDetailsCount+",.ViewDetailsplus-"+PreviousViewDetailsCount).remove();
-			$(".ViewDetails-"+PreviousViewDetailsCount).append('<span class="fa fa-plus ViewDetailsplus-'+PreviousViewDetailsCount+'" onclick="ViewDetails(\'plus\','+PreviousViewDetailsCount+')" style="color:blue;cursor: pointer;"></span>');
-			$(".removeEdit").remove();
-	    	$(".editButton-"+PreviousViewDetailsCount).fadeIn();
-		}
-	
-	PreviousViewDetailsCount=count;
-	$(".ViewDetailsminus-"+count+",.ViewDetailsplus-"+count).remove();
-	$(".EditRowDetails"). fadeOut(100);
-	if(Type=='plus')
-		{
-			$("#RowSerialNo").val(count);
-		    $(".EditRowDetails-"+count).fadeIn();
-			$(".ViewDetails-"+count).append('<i onclick="ViewDetails(\'minus\','+count+')" class="fa fa-minus ViewDetailsminus-'+count+'" aria-hidden="true" style="color:red;cursor: pointer;"></i>');
-			$(".editButton-"+count).hide();
-			$(".cellEdit-"+count).append("<span class='removeEdit' style='font-weight:800;'>***</span>");
-		}
-	else if(Type=='minus')
-		{
-			$("#RowSerialNo").val('0');
-	        $(".EditRowDetails-"+count). fadeOut(100);
-	    	$(".ViewDetails-"+count).append('<span class="fa fa-plus ViewDetailsplus-'+count+'" onclick="ViewDetails(\'plus\','+count+')" style="color:blue;cursor: pointer;"></span>');
-	    	$(".removeEdit").remove();
-	    	$(".editButton-"+count).fadeIn();
-		}
-	
-}
-
-
-function GetBudgetItemList(DropDownId,BudgetItemId,count,type)
-{
-	var project= $("#HiddenProjectDetails").val(); 
-	var budgetHeadId = $("#HiddenBudgetHeadDetails").val();
-	
-	$.get('SelectbudgetItem.htm', {
-		projectid : project,
-		budgetHeadId : budgetHeadId
-	}, function(responseJson) {
-		var result = JSON.parse(responseJson);
-		$.each(result, function(key, value) {
-			if(BudgetItemId!=null && BudgetItemId!='' && BudgetItemId==value.budgetItemId)
-				{
-					$(DropDownId).append("<option value="+value.budgetItemId+" Selected='Selected'>"+ value.headOfAccounts+"  ["+value.subHead+"]</option>");
-				}
-			else
-				{
-					$(DropDownId).append("<option value="+value.budgetItemId+" >"+ value.headOfAccounts+"  ["+value.subHead+"]</option>");
-				}
-		});
-		$(DropDownId).select2();
-		if(project!=null && project!='' && typeof(project)!='undefined' && project!='0')
-			{
-				SetSanctionDetails(project.split("#")[0],$(DropDownId).val(),count,type,budgetHeadId);
-			}
-		
-	});
-	}
-	
-function setAllEmployeeList(empIdAttrb,serialNo,Action,selectedEmpId)
-{
-	 var divisionId=$("#divisionIdHidden").val();
-	 var employeeCheck=Action=='Add'? "#employeeCheckBoxAdd-" : "#employeeCheckBoxEdit-"
-	 var isChecked = $(employeeCheck + serialNo).is(":checked");
-	 GetEmployeeList(isChecked,empIdAttrb,divisionId,serialNo,Action,selectedEmpId);
-}
-
-
-function GetEmployeeList(isChecked,empIdAttrb,DivisionId,serialNo,Action,selectedEmpId) {
-    const targetUrl = isChecked ? 'GetUserNameList.htm' : 'GetUserNameListByDivisionId.htm';
-    const requestData = isChecked ? {} : { DivisionId: DivisionId };
-    const initiatingSelect = $(empIdAttrb+Action+'-'+serialNo);
-
-    $.ajax({
-        url: targetUrl,
-        method: 'GET',
-        data: requestData,
-        dataType: 'json',
-        success: function(newList) {
-        	
-            initiatingSelect.empty(); // Clear existing options
-            initiatingSelect.append('<option value="" disabled>Select Employee</option>'); // Add default option
-
-            // Add new options based on the response
-            $.each(newList, function(index, obj) {
-                const option = $('<option></option>').val(obj[0]).text(obj[6]).addClass('option-class');
-
-                if (Action === "Edit") {   
-                    if (selectedEmpId == obj[0]) {
-                        option.prop('selected', true); // Set as selected for "Edit"
-                    }
-                }
-
-                initiatingSelect.append(option);
-            });
-
-            initiatingSelect.select2();
-        },
-        error: function(xhr, status, error) {
-            console.error('There was a problem with the AJAX request for initiating officers:', error);
-        }
-    });
-}
-	
-function changeBudgetItemDetails(AttributeId,count,type)
-{
-		 var ProjectId= $("#HiddenProjectDetails").val(); 
-		 var BudgetHeadId= $("#HiddenBudgetHeadDetails").val(); 
-		 var BudgetItemId=$(AttributeId).val();
-		 if(ProjectId!=null && ProjectId!='0')
-		 {
-			 SetSanctionDetails(ProjectId.split("#")[0],BudgetItemId,count,type,BudgetHeadId);
-		 }
-		 
-}
-	
-function SetSanctionDetails(ProjectId,BudgetItemId,count,type,BudgetHeadId)
-{
-	var finYear=$("#HiddenFinYear").val();
-	$.get('FetchSanctionDetailsForFBE.htm', {
-		projectid : ProjectId,
-		budgetitemId : BudgetItemId,
-		FinancialYear : finYear,
-		BudgetHeadId:BudgetHeadId
-		
-	}, function(responseJson) {
-		
-		$('.SanctionBalance-'+count).fadeIn();
-		
-		var result = JSON.parse(responseJson);
-		
-		if(result!=null)
-			{
-				$(".sanction"+type+"-"+count).html("<b>"+result.Sanction+"</b>");
-				$(".expenditure"+type+"-"+count).html("<b>"+result.Expenditure+"</b>");
-				$(".OutCommitment"+type+"-"+count).html("<b>"+result.OutCommitment+"</b>");
-				$(".Dipl"+type+"-"+count).html("<b>"+result.Dipl+"</b>");
-				$(".SanctionNewProposal"+type+"-"+count).html("<b>"+(result.NewProposal)+"</b>");
-				$(".NotionalBalance"+type+"-"+count).html("<b>"+result.NotionalBalance+"</b>");
-				$(".Sanctionbalance"+type+"-"+count).html("<b>"+result.Balance+"</b>");
-			}
-		else{
-				$(".sanction"+type+"-"+count).html("<b>0</b>");
-				$(".expenditure"+type+"-"+count).html("<b>0</b>");
-				$(".OutCommitment"+type+"-"+count).html("<b>0</b>");
-				$(".Dipl"+type+"-"+count).html("<b>0</b>");
-				$(".SanctionNewProposal"+type+"-"+count).html("<b>0</b>");
-				$(".NotionalBalance"+type+"-"+count).html("<b>0</b>");
-				$(".Sanctionbalance"+type+"-"+count).html("<b>0</b>");
-		}
-	});
-	
-	}
-	
-function SubmitEditFBEItemDetails(count,FbeSubId,originalFBEAmount)
-{
-	var status=1;
-	var BudgetItem=$("#BudgetItemEdit-"+count).val();
-	var Item=$("#ItemNomenclatureEdit-"+count).val();
-	var FBEAmount=$("#FBEamountEdit-"+count).val();
-	
-	$("#BudgetItemEditAction").val(BudgetItem);
-	$("#ItemNomenclatureEditAction").val(Item);
-	$("#FBEamountEditAction").val(FBEAmount);
-	$("#FbeSubId").val(FbeSubId);
-	$("#Action").val("E");
-	
-	var Apr=$("#AprilMonthEdit-"+count).val();
-	if(Apr!=null && Apr!='' && typeof(Apr)!='undefined')
-		{
-			$("#AprilMonthEdit").val(Apr);
-		}
-	
-	var May=$("#MayMonthEdit-"+count).val();
-	if(May!=null && May!='' && typeof(May)!='undefined')
-	{
-		$("#MayMonthEdit").val(May);
-	}
-	
-	var Jun=$("#JuneMonthEdit-"+count).val();
-	if(Jun!=null && Jun!='' && typeof(Jun)!='undefined')
-	{
-		$("#JuneMonthEdit").val(Jun);
-	}
-	
-	var Jul=$("#JulyMonthEdit-"+count).val();
-	if(Jul!=null && Jul!='' && typeof(Jul)!='undefined')
-	{
-		$("#JulyMonthEdit").val(Jul);
-	}
-	
-	var Aug=$("#AugustMonthEdit-"+count).val();
-	if(Aug!=null && Aug!='' && typeof(Aug)!='undefined')
-	{
-		$("#AugustMonthEdit").val(Aug);
-	}
-	
-	var Sep=$("#SeptemberMonthEdit-"+count).val();
-	if(Sep!=null && Sep!='' && typeof(Sep)!='undefined')
-	{
-		$("#SeptemberMonthEdit").val(Sep);
-	}
-	
-	var Oct=$("#OctoberMonthEdit-"+count).val();
-	if(Oct!=null && Oct!='' && typeof(Oct)!='undefined')
-	{
-		$("#OctoberMonthEdit").val(Oct);
-	}
-	
-	var Nov=$("#NovemberMonthEdit-"+count).val();
-	if(Nov!=null && Nov!='' && typeof(Nov)!='undefined')
-	{
-		$("#NovemberMonthEdit").val(Nov);
-	}
-	
-	var Dec=$("#DecemberMonthEdit-"+count).val();
-	if(Dec!=null && Dec!='' && typeof(Dec)!='undefined')
-	{
-		$("#DecemberMonthEdit").val(Dec);
-	}
-	
-	var Jan=$("#JanuaryMonthEdit-"+count).val();
-	if(Jan!=null && Jan!='' && typeof(Jan)!='undefined')
-	{
-		$("#JanuaryMonthEdit").val(Jan);
-	}
-	
-	var Feb=$("#FebruaryMonthEdit-"+count).val();
-	if(Feb!=null && Feb!='' && typeof(Feb)!='undefined')
-	{
-		$("#FebruaryMonthEdit").val(Feb);
-	}
-	
-	var Mar=$("#MarchMonthEdit-"+count).val();
-	if(Mar!=null && Mar!='' && typeof(Mar)!='undefined')
-	{
-		$("#MarchMonthEdit").val(Mar);
-	}
-	
-	var Sanction=$(".sanctionEdit-"+count).text();
-	var SanctionBalance=$(".SanctionbalanceEdit-"+count).text();
-	
-	if(Item==null || Item=='' || typeof(Item)=='undefined')
-		{
-			alert("Enter Item Nomenclature For Selected BudgetCode..!");
-			status=0;
-		}
-	else if(FBEAmount==null || FBEAmount=='' || typeof(FBEAmount)=='undefined')
-		{
-			alert("FBE Amount Should Not Be 0 or Empty..!");
-			status=0;
-		}
-	else if(parseFloat(Sanction) < parseFloat(FBEAmount))
-		{
-			alert("Total FBE Amount Should Not Be More Than Sanction Cost..!");
-			status=0;
-		}
-		
-		if(status==1)
-			{
-				var form=$("#FbeItemFormEdit");
-				if(form)
-					{
-					var ConfirmMessage=confirm("Are You Sure To Edit Items For Selected Budget Code: " + $("#ItemBudgetHeadCode").val());
-					if(ConfirmMessage)
-						{
-							form.submit();
-						}
-					}
-			}
-}
-
-/* else if(parseFloat(originalFBEAmount)==parseFloat(FBEAmount))
-{
-	alert("FBE Amount Remain The Same..!");
-	status=0;
-} */
-
-</script>
-<script type="text/javascript">
-function confirmDelete(count, FbeSubId) {
-	 console.log("Delete button clicked for count:", count, "FbeSubId:", FbeSubId);
-    $("#FbeSubId").val(FbeSubId);
-    $("#Action").val("D");
-    var form = $("#FbeItemFormEdit");
-    if (form) {
-        var ConfirmMessage = confirm("Are You Sure To Delete Items?");
-        if (ConfirmMessage) {
-            form.submit();
-        }
-    }
-}
-
-</script>
 </html>
