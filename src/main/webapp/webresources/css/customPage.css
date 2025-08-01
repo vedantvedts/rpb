@@ -1,0 +1,55 @@
+
+
+/*===========Usefull CSS===========*/
+.Printbody
+{
+	background-color: grey;
+	line-height: 1.5;
+}
+
+.PrintCard
+{
+	height: 1123px;
+	width: 794px;
+	border-radius:4px;
+	margin-top: 5px !important;
+	border: 1px solid grey;
+	background-color:white;
+	margin: auto;
+}
+
+.PrintCardBody
+{
+	height: 1050px;
+	margin:25px;
+	padding: 10px;
+	border:1px solid black;
+}
+
+.btn{
+	padding: 5px 13px;
+	font-weight:600;
+	transition: all 0.5s;
+	display: inline-block;
+}
+
+.btn-sm
+{
+	text-transform: capitalize;
+	font-family:'Montserrat', sans-serif;
+	border-radius:2px;
+	 border: 1px solid orange;
+	background: #1597BB;
+	color:white;
+}
+
+.btn-sm:hover
+{
+	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+    transform: scale(1.01);
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}

@@ -1,0 +1,36 @@
+#myTable6 {
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 100%;
+}
+#myTable6 td, #myTable6 th {
+    padding: 6px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}   
+#myTable1 {
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 100%;
+}
+#myTable1 td, #myTable1 th {
+    padding: 6px;
+     border-collapse: collapse;
+    border: 1px solid black;
+}   
+#myTable3 {
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 100%;
+}
+#myTable3 td, #myTable3 th {
+    padding: 6px;
+     border-collapse: collapse;
+    border: 1px solid black;
+}  
+.form-control:focus{
+border: 2px solid #056ef5 !important;
+} 
+.Annexure{
+width: 70%;
+}

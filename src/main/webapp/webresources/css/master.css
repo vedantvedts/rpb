@@ -1,0 +1,218 @@
+@import "MyFonts.css";
+  
+*{
+	/* font-family: 'Lato', sans-serif; */   
+	
+	font-family:'Helvetica Neue','Helvetica','Arial','sans-serif';
+	font-size: 15px;
+}
+
+body,html {
+    height: 100%;
+}
+
+
+  body{
+ background-image: url("images/tempbg3.jpg") ;  
+ /* background-color: #e9fcff !important; */
+ /*background-color: #ffffff !important;*/
+ background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+ opacity: 1.0;
+}
+ 
+ .form-group,.table-responsive {
+  background-color:transparent !important;
+}
+
+.table{
+	background-color:white !important;
+	border-radius: 5px !important;
+}
+ .page-header{
+	
+	width: 100%;
+	border: 1px solid grey;
+}
+.card .card-body{
+	
+	width: 100% !important ;
+}
+.card{
+	    width: 99%;
+       margin: auto;
+	 background-color:transparent !important;
+}
+
+.card-body {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 0.5rem;
+}
+
+.card-header h5{
+	font-weight: 600;
+	font-size: 1.2rem;	
+    color: black;
+    margin-top:0.5rem;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif' !important;
+}
+
+.breadcrumb
+{
+	padding: 0rem 0rem;
+	width: 100%;
+	background-color: transparent;
+	float: right;
+	
+}
+
+#myTable thead tr
+{
+	text-align: center;
+}
+
+.c-body{
+	padding: 0px;
+}
+.mandatory {
+    color: red;
+    font-weight: 600 !important;
+}
+
+.fa-house-chimney{
+	color:#0050ad;
+	margin: 0px 3px;
+}
+
+.breadcrumb .breadcrumb-item, .breadcrumb .breadcrumb-item a
+{
+	
+	font-size: 14px !important;
+	font-weight: 800;
+}
+
+.alert {
+	
+	padding: 4px; 
+	margin:-10px 10px 5px 10px ;
+	width: 80% !important;	
+}
+
+.table thead tr td , .table tbody tr td {
+
+padding-top: 7px !important;
+padding-bottom: 7px !important;
+
+}
+
+hr{
+
+	border-top: 1px solid rgba(0,0,0,.2);
+	width: 100%;
+}
+
+
+.dashboard-margin{
+	margin: 0px 2px !important;
+}
+
+#myTable , #myTable1
+{
+	max-width: 100% !important;	
+}
+
+
+
+.table thead tr{
+	background-color:#054691; 
+	/*background-color:#0050ad;*/ 
+	color: white;
+}
+
+.table td, .table th {
+    padding: 0.5rem !important;
+    border-radius: 2px !important;
+}
+
+.main-card
+{
+	padding-top: 0px;
+	margin-top: 5px;
+	background-color:transparent !important;
+	
+}
+
+.dashboard-container{
+	margin-top: 1rem;
+}
+
+.modalButton{
+   background-color: Transparent;
+   font-weight: 400;
+   font-size:15px;
+   font-weight:bold;
+   line-height: 1.5;
+   color: #055C9D;
+   text-decoration: underline;
+   border: none; 
+   cursor:pointer;    
+   outline: none !important;
+}	
+
+.page-top {
+   margin: 4px 4px 5px -3px !important;
+    border-radius: 5px;
+    height: 35px;
+	border-bottom: none;
+    background-color: transparent;
+    height:auto !important;
+}
+
+.dashboard-card{
+	   /*  margin: 2px 3px 4px 0px !important;
+	    border: none;
+    box-shadow: 4px 7px 5px rgb(0 0 0 / 10%);*/
+    overflow-y: auto; 
+   height: 100vh !important;
+    background-color:transparent !important;
+}
+
+thead tr th 
+{
+	
+	text-align: center;
+}
+
+ .alert-success
+{
+	background-color:#16bf69 !important;
+	color:white !important;
+	width: 46% !important;
+	font-weight: 700;
+	text-shadow: 2px 2px 5px black;
+}
+
+.alert-danger{
+	width: 46% !important;	
+	font-weight: 700;
+}
+
+input::placeholder {
+  font-weight: bold;
+}
+
+option
+{
+	color:#000089 !important;
+	font-weight: 600 !important;
+}
+
+input,.select2-results__option,.select2-selection__rendered{
+	font-weight: 600;
+}
+
+

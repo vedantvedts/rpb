@@ -1,0 +1,67 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          custom:
+            client-id: rpb_vts14
+            client-secret: d4clfXnBW6jY2o2c1j6G1CP1jSoZEv4T
+            scope: openid
+            authorization-grant-type: authorization_code
+            redirect-uri: http://192.168.1.61:8085/rpb/login/oauth2/code/custom
+        provider:
+          custom:
+            authorization-uri: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/auth
+            token-uri: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/token
+            user-info-uri: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/userinfo
+            jwk-set-uri: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+            
+
+
+   
+  thymeleaf:
+    enabled: false
+    cache: false
+  cache:
+    type: NONE
+  mvc:
+    view:
+      prefix: /view/
+      suffix: .jsp
+    
+server: 
+  port: 8085
+  servlet: 
+    context-path: /ibas
+    
+  session:
+      timeout: 30m 
+   
+    
+logging: 
+  level: 
+    org.springframework: INFO
+
+rpbLogOut: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/logout?client_id=rpb_vts14&post_logout_redirect_uri=http://192.168.1.61:8085/rpb
+
+LabCode: LRDE
+ApplicationFilesDrive: D:\\IBAS\\    # windows D:\\IBAS\\      Ubuntu /opt/IBAS/ 
+Attach_File_Size: 50
+
+#headerLogo
+headerLogo: "drdo.png"
+
+#image
+image: "vedts.png"
+
+MdmDb : ibas_saran_test
+
+app:
+  datasource:
+    mysql:
+      username: root
+      password: admin      
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3307/ibas_saran_test   #192.168.1.70:3306/ibas_3
+      

@@ -1,0 +1,10 @@
+/***************************************************Hindi*********************************************************************/
+
+@font-face {
+  font-family: 'Noto Sans Devanagari';
+  src: url('/font/TiroDevanagariHindi-Regular.ttf') format('truetype');
+}
+
+body {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}

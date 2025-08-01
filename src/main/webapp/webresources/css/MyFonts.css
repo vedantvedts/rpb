@@ -1,0 +1,152 @@
+
+
+/***************************************************MULI*********************************************************************
+
+/* muli-800 - latin */
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../font/muli/muli-v20-latin-800.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/muli/muli-v20-latin-800.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/muli/muli-v20-latin-800.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/muli/muli-v20-latin-800.woff') format('woff'), /* Modern Browsers */
+       url('../font/muli/muli-v20-latin-800.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/muli/muli-v20-latin-800.svg#Muli') format('svg'); /* Legacy iOS */
+}
+
+/*  *************************************************Montserrat***************************************************/
+
+/* montserrat-regular - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/mont/montserrat-v14-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Montserrat Regular'), local('Montserrat-Regular'),
+       url('../font/mont/montserrat-v14-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/mont/montserrat-v14-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/mont/montserrat-v14-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/mont/montserrat-v14-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/mont/montserrat-v14-latin-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+/* montserrat-600 - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../font/mont/montserrat-v14-latin-600.eot'); /* IE9 Compat Modes */
+  src: local('Montserrat SemiBold'), local('Montserrat-SemiBold'),
+       url('../font/mont/montserrat-v14-latin-600.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/mont/montserrat-v14-latin-600.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/mont/montserrat-v14-latin-600.woff') format('woff'), /* Modern Browsers */
+       url('../font/mont/montserrat-v14-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/mont/montserrat-v14-latin-600.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+
+/*  *************************************************Quicksand***************************************************/
+
+/* quicksand-regular - latin */
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/quick/quicksand-v20-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/quick/quicksand-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/quick/quicksand-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/quick/quicksand-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/quick/quicksand-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/quick/quicksand-v20-latin-regular.svg#Quicksand') format('svg'); /* Legacy iOS */
+}
+/* quicksand-700 - latin */
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../font/quick/quicksand-v20-latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/quick/quicksand-v20-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/quick/quicksand-v20-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/quick/quicksand-v20-latin-700.woff') format('woff'), /* Modern Browsers */
+       url('../font/quick/quicksand-v20-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/quick/quicksand-v20-latin-700.svg#Quicksand') format('svg'); /* Legacy iOS */
+}
+
+/*  *************************************************Manrope***************************************************/
+
+/* manrope-regular - latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/manrope/manrope-v1-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/manrope/manrope-v1-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/manrope/manrope-v1-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/manrope/manrope-v1-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/manrope/manrope-v1-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/manrope/manrope-v1-latin-regular.svg#Manrope') format('svg'); /* Legacy iOS */
+}
+/* manrope-700 - latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../font/manrope/manrope-v1-latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/manrope/manrope-v1-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/manrope/manrope-v1-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/manrope/manrope-v1-latin-700.woff') format('woff'), /* Modern Browsers */
+       url('../font/manrope/manrope-v1-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/manrope/manrope-v1-latin-700.svg#Manrope') format('svg'); /* Legacy iOS */
+}
+
+
+/* ********************************Lato ********************************************** */
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/lato/lato-v16-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/lato/lato-v16-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/lato/lato-v16-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/lato/lato-v16-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/lato/lato-v16-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/lato/lato-v16-latin-regular.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* ********************************Poppins ********************************************** */
+/* poppins-regular - latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/poppins/poppins-v20-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/poppins/poppins-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/poppins/poppins-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/poppins/poppins-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/poppins/poppins-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/poppins/poppins-v20-latin-regular.svg#Poppins') format('svg'); /* Legacy iOS */
+}
+
+/* ********************************Radio Canada ********************************************** */
+
+@font-face {
+  font-family: 'Radio Canada';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/radio/radio-canada-v11-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../font/radio/radio-canada-v11-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../font/radio/radio-canada-v11-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../font/radio/radio-canada-v11-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../font/radio/radio-canada-v11-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../font/radio/sradio-canada-v11-latin-regular.svg#RadioCanada') format('svg'); /* Legacy iOS */
+}
+
