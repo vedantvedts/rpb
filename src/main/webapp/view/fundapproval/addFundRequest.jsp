@@ -17,7 +17,6 @@
 <head>
 <meta charset="ISO-8859-1">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<%-- <jsp:include page="../static/sidebar.jsp"></jsp:include> --%>
 <title>Requisition Add</title>
 <style>
 
@@ -351,45 +350,11 @@ tr:last-of-type th:last-of-type {
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
 
       	String FinYear=(String)(dto.getFromYearBackBtn()+"-"+dto.getToYearBackBtn());
-      	System.err.println("action->"+action);
-      	System.err.println("FInyear->"+FinYear);
-      	System.err.println("getFromYearBackBtn->"+dto.getFromYearBackBtn());
-      	System.err.println("getToYearBackBtn->"+dto.getToYearBackBtn());
-      	System.err.println("JSP EDIT->"+Arrays.toString(FundRequestObj));
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionCode());
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionName());
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionId());
-      	System.err.println("##############################");
- 		System.err.println("backDto.getREYear()-"+dto.getREYear());
- 		System.err.println("backDto.getFBEYear()-"+dto.getFBEYear());
  %>
   	    <%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
-<div class="card-header page-top">
-	 	<div class="row">
-	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
-	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
-	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
-	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	 <li class="breadcrumb-item ml-auto" style="padding-left: 78%;"><a	href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Requisition List </a></li>
-	          <!-- <li class="breadcrumb-item" aria-current="page"><a href="FundRequest.htm">Requisition List</a></li> -->
-	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active ml-auto" aria-current="page">Requisition Edit</li>
-	         <%}else{ %><li class="breadcrumb-item active ml-auto" aria-current="page">Requisition Add</li><%} %>
-             </ol>
-           </div>
-         </div>
-       </div> 
-     
-     
-    
-  	    
-		
-      <div class="page card dashboard-card">
-            <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
-			           		<div class="form-inline" style="padding: 10px;">
-			           		
-			           		<%String BudgetYear=null;
+              
+              <%String BudgetYear=null;
 			           		  String BudgetYearType=null;
 			           		if(dto!=null)
 			           		{
@@ -421,6 +386,28 @@ tr:last-of-type th:last-of-type {
 		           					FinYear="-";
 		           				}
 			           		}%>
+<div class="card-header page-top">
+	 	<div class="row">
+	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
+	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
+	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
+	      <div class="col-md-9">
+	    	 <ol class="breadcrumb">
+	    	 <li class="breadcrumb-item" style="padding-left: 78%;"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
+	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
+	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
+             </ol>
+           </div>
+         </div>
+       </div> 
+     
+     
+    
+  	    
+		
+      <div class="page card dashboard-card">
+            <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
+			           		<div class="form-inline" style="padding: 10px;">
 			           		
 			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
 			           			<label style="font-size: 19px;"><b><%=BudgetYearType %> :&nbsp;</b></label><span class="spanClass"><%=BudgetYear %></span>

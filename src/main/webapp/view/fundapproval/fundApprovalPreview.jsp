@@ -325,7 +325,7 @@ tr:last-of-type th:last-of-type {
 </head>
 <body>
 <%Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
-
+long empId = (Long) session.getAttribute("EmployeeId");
 System.out.println("****fundDetails****"+Arrays.toString(fundDetails));
 
 String fundApprovalId=null;
@@ -346,26 +346,42 @@ String rc5Role=null;
 String approvingOfficerDetails=null;
 String approvingOfficerRole=null;
 String rcStatusCodeNext=null,budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
+long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0;
 if(fundDetails!=null && fundDetails.length > 0)
 {
 	fundApprovalId=fundDetails[0]!=null  ? fundDetails[0].toString() : "0";
 	estimateType=fundDetails[1]!=null  ? fundDetails[1].toString() : null;
 	finYear=fundDetails[2]!=null  ? fundDetails[2].toString() : null;
+	
 	initiatingOfficerId=fundDetails[18]!=null  ? fundDetails[18].toString() : "0";
 	initiatingOfficer=fundDetails[19]!=null  ? fundDetails[19].toString() : null;
+	
+	rc1EmpId=fundDetails[20]!=null  ? Long.parseLong(fundDetails[20].toString()) : 0;
 	rc1Details=fundDetails[21]!=null  ? fundDetails[21].toString() : null;
 	rc1Role=fundDetails[22]!=null  ? fundDetails[22].toString() : null;
+	
+	rc2EmpId=fundDetails[23]!=null  ? Long.parseLong(fundDetails[23].toString()) : 0;
 	rc2Details=fundDetails[24]!=null  ? fundDetails[24].toString() : null;
 	rc2Role=fundDetails[25]!=null  ? fundDetails[25].toString() : null;
+	
+	rc3EmpId=fundDetails[26]!=null  ? Long.parseLong(fundDetails[26].toString()) : 0;
 	rc3Details=fundDetails[27]!=null  ? fundDetails[27].toString() : null;
 	rc3Role=fundDetails[28]!=null  ? fundDetails[28].toString() : null;
+	
+	rc4EmpId=fundDetails[29]!=null  ? Long.parseLong(fundDetails[29].toString()) : 0;
 	rc4Details=fundDetails[30]!=null  ? fundDetails[30].toString() : null;
 	rc4Role=fundDetails[31]!=null  ? fundDetails[31].toString() : null;
+	
+	rc5EmpId=fundDetails[32]!=null  ? Long.parseLong(fundDetails[32].toString()) : 0;
 	rc5Details=fundDetails[33]!=null  ? fundDetails[33].toString() : null;
 	rc5Role=fundDetails[34]!=null  ? fundDetails[34].toString() : null;
+	
+	appOffEmpId=fundDetails[35]!=null  ? Long.parseLong(fundDetails[35].toString()) : 0;
 	approvingOfficerDetails=fundDetails[36]!=null  ? fundDetails[36].toString() : null;
 	approvingOfficerRole=fundDetails[37]!=null  ? fundDetails[37].toString() : null;
+	
 	rcStatusCodeNext=fundDetails[40]!=null  ? fundDetails[40].toString() : null;
+	
 	budgetHead=fundDetails[8]!=null  ? fundDetails[8].toString() : null;
 	budgetItem=fundDetails[9]!=null  ? fundDetails[9].toString() : null;
 	codeHead=fundDetails[10]!=null  ? fundDetails[10].toString() : null;
@@ -455,83 +471,85 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                     </div>
                                 <% } %>
 
-                                <% if (rc1Details != null) { %>
-									<div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO1 RECOMMENDED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+								<% if(rc1EmpId > 0){ %>
+									<div <%if(empId == rc1EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <%= rc1Role != null ? rc1Role + " &nbsp;&nbsp; " : "" %>
-                                            <%= rc1Details %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO1 RECOMMENDED")){ %>
-                                            <span class="badge badge-info">To Recommend</span>
+                                            <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc1Role != null ? rc1Role + " &nbsp;&nbsp; " : "-" %></span>
+                                            <%= rc1Details != null ? rc1Details : "-" %>
+                                             <%if(empId == rc1EmpId){ %>
+                                            <span class="badge badge-info">For Recommend</span>
+                                            <%} %>
+                                            <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                        </span>
+                                    </div>
+                                   <%} %>
+                                
+                                <% if(rc2EmpId > 0){ %>
+                                    <div <%if(empId == rc2EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                        <span><b>RPB Member &nbsp;: &nbsp;</b></span>
+                                        <span class="recommendation-value">
+                                            <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc2Role != null ? rc2Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <%= rc2Details != null ? rc2Details : "-" %>
+                                            <%if(empId == rc2EmpId){ %>
+                                            <span class="badge badge-info">For Recommend</span>
                                             <%} %>
                                         </span>
                                     </div>
-                                <% } %>
+                                  <%} %>
                                 
-                                <% if (rc2Details != null) { %>
-                                    <div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO2 RECOMMENDED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                <% if(rc3EmpId > 0){ %>
+                                    <div <%if(empId == rc3EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <%= rc2Role != null ? rc2Role + " &nbsp;&nbsp; " : "" %>
-                                            <%= rc2Details %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO2 RECOMMENDED")){ %>
-                                            <span class="badge badge-info">To Recommend</span>
+                                            <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc3Role != null ? rc3Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <%= rc3Details != null ? rc3Details : "-" %>
+                                            <%if(empId == rc3EmpId){ %>
+                                            <span class="badge badge-info">For Recommend</span>
                                             <%} %>
                                         </span>
                                     </div>
-                                <% } %>
+                                   <%} %>
                                 
-                                <% if (rc3Details != null) { %>
-                                    <div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO3 RECOMMENDED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Member &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <%= rc3Role != null ? rc3Role + " &nbsp;&nbsp; " : "" %>
-                                            <%= rc3Details %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RO3 RECOMMENDED")){ %>
-                                            <span class="badge badge-info">To Recommend</span>
-                                            <%} %>
-                                        </span>
-                                    </div>
-                                <% } %>
-                                
-                                <% if (rc4Details != null) { %>
-                                    <div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("SE RECOMMENDED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                <% if(rc4EmpId > 0){ %>
+                                    <div <%if(empId == rc4EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>Subject Expert &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <%= rc4Role != null ? rc4Role + " &nbsp;&nbsp; " : "" %>
-                                            <%= rc4Details %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("SE RECOMMENDED")){ %>
-                                            <span class="badge badge-info">To Recommend</span>
+                                            <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc4Role != null ? rc4Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <%= rc4Details != null ? rc4Details : "-" %>
+                                            <%if(empId == rc4EmpId){ %>
+                                            <span class="badge badge-info">For Recommend</span>
                                             <%} %>
                                         </span>
                                     </div>
-                                <% } %>
+                                   <%} %>
                                 
-                                <% if (rc5Details != null) { %>
-                                    <div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                <% if(rc5EmpId > 0){ %>
+                                    <div <%if(empId == rc5EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member Secretary &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <%= rc5Role != null ? rc5Role + " &nbsp;&nbsp; " : "" %>
-                                            <%= rc5Details %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED")){ %>
+                                            <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc5Role != null ? rc5Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <%= rc5Details != null ? rc5Details : "-" %>
+                                            <%if(empId == rc5EmpId){ %>
                                             <span class="badge badge-info">For Noting</span>
                                             <%} %>
                                         </span>
                                     </div>
-                                <% } %>
+                                   <%} %>
                                 
-                                <% if (approvingOfficerDetails != null) { %>
-                                    <div <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("CHAIRMAN APPROVED")){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                <% if(appOffEmpId > 0){ %>
+                                    <div <%if(empId == appOffEmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Chairman &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <%= approvingOfficerRole != null ? approvingOfficerRole + " &nbsp;&nbsp; " : "" %>
-                                            <%= approvingOfficerDetails %>
-                                             <%if(rcStatusCodeNext!=null && rcStatusCodeNext.equalsIgnoreCase("CHAIRMAN APPROVED")){ %>
-                                            <span class="badge badge-info">To Approval</span>
+                                            <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= approvingOfficerRole != null ? approvingOfficerRole + " &nbsp;&nbsp; " : "" %></span>
+                                            <%= approvingOfficerDetails != null ? approvingOfficerDetails : "-" %>
+                                             <%if(empId == appOffEmpId){ %>
+                                            <span class="badge badge-info">For Approval</span>
                                             <%} %>
                                         </span>
                                     </div>
-                                <% } %>
+                                   <%} %>
+                                    
                         </div>
                     </div>
                     

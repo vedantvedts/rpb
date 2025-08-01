@@ -258,10 +258,10 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <%}else{ %>
 			                     <td align="center" style="width: 12%;">FBE</td>
 			                     <% }%>
-			                     <td align="center"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
+			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
 			                     <td align="center"><span class="badge badge-pending">Pending</span></td>
 			                     <td align="center">
 			                     
@@ -319,10 +319,10 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <%}else{ %>
 			                     <td align="center" style="width: 12%;">FBE</td>
 			                     <% }%>
-			                     <td align="center"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
+			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
 			                     <td align="center"><span class="badge badge-approved">Approved</span></td>
 			                    
 			                 </tr>

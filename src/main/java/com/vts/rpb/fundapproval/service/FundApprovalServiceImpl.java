@@ -363,8 +363,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType) throws Exception {
-		return fbedao.getFundPendingList(empId,finYear,loginType);
+	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
+		return fbedao.getFundPendingList(empId,finYear,loginType,formRole);
 	}
 
 	@Override

@@ -296,8 +296,7 @@ input[name="ItemNomenclature"]::placeholder {
 	 	  <div class="col-md-3"><h5>Requisition List</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb ">
-	    	 <!-- <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li> -->
-	          <li class="breadcrumb-item active ml-auto	" aria-current="page">Requisition List</li>
+	          <li class="breadcrumb-item active ml-auto" aria-current="page"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List</li>
              </ol>
            </div>
          </div>
@@ -454,7 +453,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            <%}else{ %>
 					            
 					             <tr style="height: 9rem;">
-					                        <td colspan="9" style="vertical-align: middle;">
+					                        <td colspan="10" style="vertical-align: middle;">
 					                            <div class="text-danger" style="text-align:center">
 					                                <h6 style="font-weight: 600;">No Requisition Found</h6>
 					                            </div>

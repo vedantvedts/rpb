@@ -203,7 +203,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType) throws Exception {
+	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
 		try {
 			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType,:loginType)");
 			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','F','"+loginType+"');");
@@ -211,6 +211,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("finYear",finYear);
 			query.setParameter("ListType","F");
 			query.setParameter("loginType",loginType);
+			//query.setParameter("formRole",formRole);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			

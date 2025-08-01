@@ -163,6 +163,7 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside FundApprovalList.htm " + UserName);
 		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
 		String loginType= (String)ses.getAttribute("LoginType");
+		long formRole= (long)ses.getAttribute("FormRole");
 		try
 		{
 			String fromYear=req.getParameter("FromYear");
@@ -179,7 +180,7 @@ public class FundApprovalController
 				{
 					finYear=fromYear+"-"+toYear;
 				}
-			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType);
+			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
 			approvalPendingList.stream().forEach(a->System.err.println("approvalPendingList->"+Arrays.toString(a)));
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
 			

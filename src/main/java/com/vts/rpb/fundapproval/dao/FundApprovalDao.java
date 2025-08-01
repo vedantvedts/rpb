@@ -34,7 +34,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public long updateFundRequest(FundApproval fundApprovalData) throws Exception;
 
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType) throws Exception;
+	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception;
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 
