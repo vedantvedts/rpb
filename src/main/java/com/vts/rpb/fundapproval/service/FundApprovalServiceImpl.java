@@ -10,9 +10,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -24,6 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
@@ -402,6 +406,64 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			String fromCost, String toCost, String status)  throws Exception{
 		
 		return fbedao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
+	}
+	
+	@Override
+	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception {
+		
+		List<Object[]> budgetHeadList=null;
+		if(projectId!=null) 
+		{
+			if(!projectId.equalsIgnoreCase("0"))
+			{
+				budgetHeadList=fbedao.getProjectBudgetHeadList(projectId);
+			}
+			
+			if(projectId.equalsIgnoreCase("0"))
+			{
+				budgetHeadList=fbedao.getGeneralBudgetHeadList();
+			}
+			
+			if(budgetHeadList==null || budgetHeadList.isEmpty())
+			{
+				budgetHeadList=new ArrayList<Object[]>();
+				budgetHeadList.add(new Object[] {"0","No Record Found","NRF"});
+			}
+		}
+		
+		List<BudgetDetails> finalList = budgetHeadList == null ? new ArrayList<>() :
+		   
+			budgetHeadList.stream().filter(Objects::nonNull).map(resultList -> {
+		            BudgetDetails budgetHeadDetails = new BudgetDetails();
+		            if (resultList[0] != null) {
+		                budgetHeadDetails.setBudgetHeadId(Integer.parseInt(resultList[0].toString()));
+		            }
+		            if (resultList[1] != null) {
+		                budgetHeadDetails.setBudgetHeaddescription(resultList[1].toString());
+		            }
+		            if (resultList[2] != null) {
+		                budgetHeadDetails.setBudgetHeadCode(resultList[2].toString());
+		            }
+		            return budgetHeadDetails;
+		        })
+		        .collect(Collectors.toList());
+		
+		return finalList;
+	}
+	
+	@Override
+	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception 
+	{
+		List<Object[]> BudgetHeadItem=null;
+		if(ProjectId>0) 
+		{
+			BudgetHeadItem=fbedao.getPrjBudgetHeadItem(ProjectId,budgetHeadId);
+		}
+		else
+		{
+			BudgetHeadItem=fbedao.getGenBudgetHeadItem(budgetHeadId);
+		}
+		return BudgetHeadItem;
 	}
 	
 }

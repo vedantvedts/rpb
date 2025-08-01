@@ -1,5 +1,5 @@
-<%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
+<%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="org.json.simple.JSONArray"%>
@@ -370,12 +370,12 @@ input[name="ItemNomenclature"]::placeholder {
 			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
 			
 			    <input type="radio" id="approvalStatus"
-			        <% if(Existingstatus == null || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="F" onchange="this.form.submit();" />
+			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+			        name="approvalStatus" value="A" onchange="this.form.submit();" />
 			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			
 			    <input type="radio" id="approvalStatus"
-			        <% if("N".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="N" onchange="this.form.submit();" />
 			    &nbsp;<span style="font-weight: 600">No</span>
 			</div>
@@ -493,7 +493,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
-				                   			<%if(data[24]!=null && "F".equalsIgnoreCase(data[23].toString())) {%>
+				                   			<%if(data[24]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
 				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            <span style="color: #2b8c03;">Approved</span> 

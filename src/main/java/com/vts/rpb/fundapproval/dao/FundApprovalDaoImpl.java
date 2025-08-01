@@ -411,5 +411,76 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return 0;
 		}
 	}
+	
+	private static final String PROJECTBUDGETHEADLIST="SELECT DISTINCT h.BudgetHeadId,h.BudgetHeadDescription,h.BudgetHeadCode FROM tblbudgethead h INNER JOIN tblbudgetitem i ON i.BudgetHeadId=h.BudgetHeadId INNER JOIN tblprojectsanction s ON s.BudgetItemId=i.BudgetItemId AND s.ProjectId=:projectId ORDER BY h.BudgetHeadId;";
+	@Override
+	public List<Object[]> getProjectBudgetHeadList(String projectId) throws Exception {
+		logger.info(new Date() +"Inside DaoImpl getProjectBudgetHeadList");
+		try
+		{
+			Query query=manager.createNativeQuery(PROJECTBUDGETHEADLIST);
+			query.setParameter("projectId", projectId);
+			List<Object[]> List=(List<Object[]>)query.getResultList();
+			return List;
+		}
+		catch(Exception e)
+		{
+			logger.error(new Date() +"Inside DAO getProjectBudgetHeadList() "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static final String GENERALBUDGETHEADLIST="SELECT DISTINCT b.BudgetHeadId,b.BudgetHeadDescription,b.BudgetHeadCode FROM tblbudgethead b WHERE b.BudgetType IN('G','B')";
+	@Override
+	public List<Object[]> getGeneralBudgetHeadList() throws Exception {
+		logger.info(new Date() +"Inside DaoImpl getGeneralBudgetHeadList");
+		try
+		{
+			Query query=manager.createNativeQuery(GENERALBUDGETHEADLIST);
+			List<Object[]> List=(List<Object[]>)query.getResultList();
+			return List;
+		}
+		catch(Exception e)
+		{
+			logger.error(new Date() +"Inside DAO getGeneralBudgetHeadList() "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static final String SELECTPRJBUDGETHEADITEM="SELECT DISTINCT c.BudgetItemId,c.HeadOfAccounts,c.ReFe,c.MajorHead,c.MinorHead,c.SubHead,c.SubMinorHead FROM tblbudgethead b,tblbudgetitem c WHERE b.BudgetHeadId=c.BudgetHeadId AND b.BudgetHeadId=:budgetHeadId AND c.BudgetItemId IN (SELECT a.BudgetItemId FROM tblprojectsanction a WHERE a.ProjectId=:ProjectId) AND c.IsActive='1' ORDER BY c.BudgetItemId";
+	@Override
+	public List<Object[]> getPrjBudgetHeadItem(long projectId, long budgetHeadId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery(SELECTPRJBUDGETHEADITEM);
+			query.setParameter("ProjectId", projectId);
+			query.setParameter("budgetHeadId", budgetHeadId);
+			List<Object[]> ProjectDetailslist =  (List<Object[]>)query.getResultList();
+			return ProjectDetailslist;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getBudgetHeadItem "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static final String SELECTGENBUDGETHEADITEM="SELECT DISTINCT c.BudgetItemId,c.HeadOfAccounts,c.ReFe,c.MajorHead,c.MinorHead,c.SubHead,c.SubMinorHead FROM tblbudgethead b,tblbudgetitem c  WHERE b.BudgetHeadId=c.BudgetHeadId AND b.BudgetHeadId=:budgetHeadId AND c.IsActive='1' ORDER BY c.BudgetItemId";
+	@Override
+	public List<Object[]> getGenBudgetHeadItem(long budgetHeadId) throws Exception {
+		
+       try {
+			Query query= manager.createNativeQuery(SELECTGENBUDGETHEADITEM);
+			query.setParameter("budgetHeadId", budgetHeadId);
+			List<Object[]> GeneralDetailslist =  (List<Object[]>)query.getResultList();
+			return GeneralDetailslist;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getBudgetHeadItem "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
