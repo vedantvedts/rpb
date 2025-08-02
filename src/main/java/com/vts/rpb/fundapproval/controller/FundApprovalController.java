@@ -821,6 +821,8 @@ public class FundApprovalController
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
 				
+				RequisitionList.stream().forEach(a->System.err.println("List"+Arrays.toString(a)));
+				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
 				req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
@@ -1076,8 +1078,9 @@ public class FundApprovalController
 				{ 
 					 fundDetails = fundApprovalService.getParticularFundApprovalTransDetails(fundApprovalId);
 							
-				
+					 	if(fundDetails!=null) {
 					fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
+					 		}
 				}
 				
 			} catch (Exception e) {
@@ -1087,7 +1090,8 @@ public class FundApprovalController
 				return "static/error";
 				
 			}
-			return json.toJson(fundDetails.get(0));
+		    return json.toJson(fundDetails); 
+
 		}
 		
 		@RequestMapping(value = "getRPBApprovalStatusAjax.htm",method= {RequestMethod.GET,RequestMethod.POST})
@@ -1102,12 +1106,14 @@ public class FundApprovalController
 				
 				String fundApprovalId=req.getParameter("fundApprovalId");
 				
+				
 				if(fundApprovalId!=null)
 				{ 
 					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
 							
-				
+				if(fundDetails!=null) {
 					fundDetails.forEach(row->System.out.println("FundApprovalDetails->"+Arrays.toString(row)));
+						}
 				}
 				
 			} catch (Exception e) {
@@ -1117,7 +1123,7 @@ public class FundApprovalController
 				return "static/error";
 				
 			}
-			return json.toJson(fundDetails.get(0));
+			return json.toJson(fundDetails);
 		}
 		
 		@RequestMapping(value ="GetBudgetHeadList.htm")

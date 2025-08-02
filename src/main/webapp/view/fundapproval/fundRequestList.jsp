@@ -702,6 +702,7 @@ input[name="ItemNomenclature"]::placeholder {
       <div class="modal-body">
         <!-- Employee Modal Table -->
         <div id="EmployeeModalTable"></div>
+         <div id="ApprovalStatusDiv" class="mt-4"></div>
         
       </div>
       
@@ -709,7 +710,7 @@ input[name="ItemNomenclature"]::placeholder {
   </div>
 </div>
 
-	<script type="text/javascript">
+<script type="text/javascript">
 	function openApprovalStatusAjax(fundApprovalId) {
 		  $.ajax({
 		    url: 'getRPBApprovalHistoryAjax.htm',
@@ -722,8 +723,9 @@ input[name="ItemNomenclature"]::placeholder {
 		      }
 
 		      var tableHTML = generateTableHTML(data);
-		      $('#EmployeeModalTable').html(tableHTML);
 		      $('#ApprovalStatusModal').modal('show');
+		      $('#EmployeeModalTable').html(tableHTML);
+		      
 		      previewInformation(fundApprovalId);
 		    },
 		    error: function(xhr, status, error) {
@@ -733,6 +735,7 @@ input[name="ItemNomenclature"]::placeholder {
 		}
 
   function generateTableHTML(data) {
+	  
     if (!data || data.length === 0) {
       return '<p>No Status available.</p>';
     }
@@ -746,7 +749,7 @@ input[name="ItemNomenclature"]::placeholder {
       table += '<td>' + (row[1] || '--') + ', ' + (row[2] || '--') + '</td>';
       table += '<td align="center">' + (row[5] || '--') + '</td>';
       table += '<td>' + (row[4] || '--') + '</td>';
-      table += '<td>' + (row[3] || '--') + '</td>';
+      table += '<td style="color: #00008B;">' + (row[3] || '--') + '</td>';
       table += '</tr>';
     });
 
@@ -756,21 +759,98 @@ input[name="ItemNomenclature"]::placeholder {
   
   function previewInformation(fundApprovalId){
 	  $.ajax({
-		    url: 'getRPBApprovalStatusAjax.htm',
-		    type: 'GET',
-		    data: { fundApprovalId: fundApprovalId },
-		    success: function(response) {
-		      var data = JSON.parse(response);
-		      if (!Array.isArray(data[0])) {
-		        data = [data]; // handle single-row case
-		      }
+	    url: 'getRPBApprovalStatusAjax.htm',
+	    type: 'GET',
+	    data: { fundApprovalId: fundApprovalId },
+	    success: function(response) {
+	      var data = JSON.parse(response);
 
-		    },
-		    error: function(xhr, status, error) {
-		      console.error('AJAX Error: ' + status + error);
-		    }
-		  });
-  }
+	    console.log('before into checking data');
+	      if (!Array.isArray(data) || data.length === 0) {
+	        $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+	        return;
+	      }
+	    console.log('!!!!!!data coming');
+	      var row = data[0]; 
+
+	      var html = '';
+	      html += '<div class="container">';
+	      html += '<div class="row" style="margin-left:0px !important;margin-right:0px !important;">';
+	      html += '<div class="col-md-12">';
+	      html += '<div class="big-box">';
+	      html += '<div class="row">';
+	      html += '<div class="col-md-7" style="background-color: #efe4d6;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);width: 100%;">';
+	      html += '<div class="inner-box">';
+
+	      var rcStatusCodeNext = row[40];
+
+	      var labels = [
+	        { title: 'Initiated By', field: row[19], role: '' },
+	        { title: 'RPB Member', field: row[22], role: row[21], status: 'RO1 RECOMMENDED' },
+	        { title: 'RPB Member', field: row[25], role: row[24], status: 'RO2 RECOMMENDED' },
+	        { title: 'RPB Member', field: row[28], role: row[27], status: 'RO3 RECOMMENDED' },
+	        { title: 'Subject Expert', field: row[31], role: row[30], status: 'SE RECOMMENDED' },
+	        { title: 'RPB Member Secretary', field: row[34], role: row[33], status: 'RPB MEMBER SECRETARY APPROVED' },
+	        { title: 'RPB Chairman', field: row[37], role: row[36], status: 'CHAIRMAN APPROVED' }
+	      ];
+
+	      for (var i = 0; i < labels.length; i++) {
+	    	  var item = labels[i];
+	    	  if (item.field != null && String(item.field).trim() !== '') {
+	    	    var highlight = (item.status && rcStatusCodeNext === item.status) ? 'highlight-box' : '';
+	    	    html += '<div class="recommendation-item ' + highlight + '">';
+	    	    html += '<span><b>' + item.title + ' &nbsp;: &nbsp;</b></span>';
+	    	    html += '<span class="recommendation-value">';
+	    	    if (item.role) {
+	    	      html += '<span style="color:#b94603">'+item.field +'</span>'+ ' &nbsp;&nbsp; ';
+	    	    }
+	    	    html += '<span style="color:#034cb9">'+item.role +'</span>';
+	    	    
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='CHAIRMAN APPROVED') {
+	    	      html += '&nbsp;<span class="badge badge-info">CHAIRMAN APPROVED</span>';
+	    	    }
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RPB MEMBER SECRETARY APPROVED') {
+		    	      html += '&nbsp;<span class="badge badge-info">RPB MEMBER SECRETARY APPROVED</span>';
+		    	    }
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='SE RECOMMENDED') {
+		    	      html += '&nbsp;<span class="badge badge-info">SE RECOMMENDED</span>';
+		    	    }
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO2 RECOMMENDED') {
+		    	      html += '&nbsp;<span class="badge badge-info">RO2 RECOMMENDED</span>';
+		    	    }
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO1 RECOMMENDED') {
+		    	      html += '&nbsp;<span class="badge badge-info">RO1 RECOMMENDED</span>';
+		    	    }
+	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO3 RECOMMENDED') {
+		    	      html += '&nbsp;<span class="badge badge-info">RO3 RECOMMENDED</span>';
+		    	    }
+	    	    console.log("-------item role------------");
+	    	    console.log(item.role);
+	    	    console.log("-------item role END------------");
+	    	    console.log("-------item status------------");
+	    	    console.log(item.status); 
+	    	    console.log(rcStatusCodeNext); 
+	    	    console.log("------item field----------");
+	    	    console.log(item.field);
+	    	    console.log("------item field- END---------");
+	    	    html += '</span>';
+	    	    html += '</div>';
+	    	  }
+	    	}
+			console.log('loop done!!!_!_!_!');
+	      html += '</div></div></div></div></div></div></div>';
+		
+	      $('#ApprovalStatusDiv').html(html);
+	    },
+	    error: function(xhr, status, error) {
+	      console.error('AJAX Error: ' + status + " " + error);
+	    }
+	  });
+	}
+
+
+
+
 </script>
 			
 </body>
