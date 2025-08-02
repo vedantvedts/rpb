@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -252,88 +253,172 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId) throws Exception {
 		
-		List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0");
+		//String statusCodeNext=fundApprovalData.getRcStatusCodeNext();
+		//fundApprovalData.setRcStatusCode(statusCodeNext);
+		//fundApprovalData.setRcStatusCodeNext(statusCodeNext!=null ? getRcStatusCodeNext(masterFlowList,statusCodeNext) : null);
 		
-		String statusCodeNext=fundApprovalData.getRcStatusCodeNext();
-		fundApprovalData.setRcStatusCode(statusCodeNext);
-		fundApprovalData.setRcStatusCodeNext(statusCodeNext!=null ? getRcStatusCodeNext(masterFlowList,statusCodeNext) : null);
-		fundApprovalData.setStatus("F");
-		fundApprovalData.setModifiedBy(fundApprovalData.getModifiedBy());
-		fundApprovalData.setModifiedDate(fundApprovalData.getModifiedDate());
-		long approvalStatus=fbedao.updateFundRequest(fundApprovalData);
+		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
+		transaction.setRcStausCode(getCurrentEmployeeStatusCode(empId, fundApprovalData.getFundApprovalId()));
+		transaction.setActionBy(empId);
+		transaction.setActionDate(LocalDateTime.now());
+		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		if(approvalStatus>0)
+		if(transStatus > 0) 
 		{
-			FundApprovalTrans transaction=new FundApprovalTrans(); 
-			transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
-			transaction.setRcStausCode(fundApprovalData.getRcStatusCode());
-			transaction.setActionBy(empId);
-			transaction.setActionDate(LocalDateTime.now());
-			long transStatus=fbedao.insertFundApprovalTransaction(transaction);
-			
-			if(transStatus>0)
+			List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0");
+			if(masterFlowList!=null && masterFlowList.size()>0)
 			{
-				if(masterFlowList!=null && masterFlowList.size()>0)
-				{
-					masterFlowList.forEach(row -> {
-					    LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
-					    linkedMembers.setFundApprovalId(fundApprovalData.getFundApprovalId()); 
+				masterFlowList.forEach(row -> {
+				    LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
+				    linkedMembers.setFundApprovalId(fundApprovalData.getFundApprovalId()); 
+				    
+				    if(row[2]!=null)
+				    {
+				    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc1());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc2());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc3());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc4());
+				    		linkedMembers.setMemberType("SE");    // CM-Subject Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc5());
+				    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
+				    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
+				    	}
+				    	
+				    	linkedMembers.setIsApproved("N");
+					    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
+					    linkedMembers.setCreatedDate(LocalDateTime.now());
+					    linkedMembers.setIsActive(1);
 					    
-					    if(row[2]!=null)
-					    {
-					    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+					    try {
+					    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
 					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc1());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+								fbedao.insertLinkedCommitteeMembers(linkedMembers);
 					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc2());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc3());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc4());
-					    		linkedMembers.setMemberType("SE");    // CM-Subject Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc5());
-					    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
-					    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
-					    	}
-					    	
-					    	linkedMembers.setIsApproved("N");
-						    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
-						    linkedMembers.setCreatedDate(LocalDateTime.now());
-						    linkedMembers.setIsActive(1);
-						    
-						    try {
-						    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
-						    	{
-									fbedao.insertLinkedCommitteeMembers(linkedMembers);
-						    	}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-					    }
-					    
-					});
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+				    }
+				    
+				});
 
+			}
+		}
+		
+		long approvalStatus=0;
+		if(transStatus > 0)
+		{
+			fundApprovalData.setStatus("F");
+			fundApprovalData.setModifiedBy(fundApprovalData.getModifiedBy());
+			fundApprovalData.setModifiedDate(fundApprovalData.getModifiedDate());
+			approvalStatus=fbedao.updateFundRequest(fundApprovalData);
+		}
+		
+		return approvalStatus;
+	}
+	
+	private String getCurrentEmployeeStatusCode(long empId, long fundApprovalId) throws Exception
+	{
+		String currentStatusCode=null;
+		FundApproval fundDetails=fbedao.getFundRequestDetails(fundApprovalId);
+		
+		if(fundDetails.getStatus()!=null)
+		{
+			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO1 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO1 RETURNED";
 				}
 			}
-			;
+			
+			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO2 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO2 RETURNED";
+				}
+			}
+			
+			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO3 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RO3 RETURNED";
+				}
+			}
+			
+			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="SE RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="SE RETURNED";
+				}
+			}
+			
+			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RPB MEMBER SECRETARY APPROVED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="RPB MEMBER SECRETARY RETURNED";
+				}
+			}
+			
+			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="CHAIRMAN APPROVED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentStatusCode="CHAIRMAN RETURNED";
+				}
+			}
 		}
-		return approvalStatus;
+		
+		return currentStatusCode;
 	}
 	
 	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
@@ -359,7 +444,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
-		return fbedao.getFundRequestDetails(fundRequestId);
+		return fbedao.getFundRequestDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 
 	@Override
@@ -383,16 +468,33 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public long updateRecommendAndApprovalDetails(String fundApprovalId, String empId,String action) throws Exception {
+	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception {
 		
-		FundApproval fundApproval=fbedao.getFundRequestDetails(fundApprovalId);
+		FundApproval fundApproval=fbedao.getFundRequestDetails(fundDto.getFundApprovalId());
+		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
+		transaction.setRcStausCode(getCurrentEmployeeStatusCode(empId,fundApproval.getFundApprovalId()));
+		transaction.setActionBy(empId);
+		transaction.setActionDate(LocalDateTime.now());
+		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
+		int limkedCommitteeMemberStatus=0;
+		if(transStatus > 0) 
+		{
+			limkedCommitteeMemberStatus=fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId());
+		}
 		
-		fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());
-		fundApproval.setRcStatusCodeNext(action!=null && !action.equalsIgnoreCase("A") ? (fundApproval.getRcStatusCodeNext()!=null ? getRcStatusCodeNext(masterFlowList,fundApproval.getRcStatusCodeNext()) : null) : fundApproval.getRcStatusCodeNext());
-		fundApproval.setStatus(action!=null && action.equalsIgnoreCase("A") ? "A" : fundApproval.getStatus());
-		long status=fbedao.updateFundRequest(fundApproval);
+		long status=0;
+		if(limkedCommitteeMemberStatus > 0)
+		{
+			fundApproval.setStatus(fundDto.getAction()!=null && fundDto.getAction().equalsIgnoreCase("A") ? "A" : fundApproval.getStatus());
+			status=fbedao.updateFundRequest(fundApproval);
+		}
+		
+		//List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
+		//fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());
+		//fundApproval.setRcStatusCodeNext(fundDto.getAction()!=null && !fundDto.getAction().equalsIgnoreCase("A") ? (fundApproval.getRcStatusCodeNext()!=null ? getRcStatusCodeNext(masterFlowList,fundApproval.getRcStatusCodeNext()) : null) : fundApproval.getRcStatusCodeNext());
+		
 		return status;
 	}
 
@@ -464,6 +566,17 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			BudgetHeadItem=fbedao.getGenBudgetHeadItem(budgetHeadId);
 		}
 		return BudgetHeadItem;
+	}
+
+	@Override
+	public String getCommitteeMemberCurrentStatus(String empId) throws Exception {
+		List<Object[]> list=fbedao.getCommitteeMemberCurrentStatus(empId);
+		String memberType=null;
+		if(list!=null && list.size()>0)
+		{
+			memberType=list.get(0)!=null && list.get(0).length>0 && list.get(0)[1]!=null ? list.get(0)[1].toString() : null;
+		}
+		return memberType;
 	}
 	
 }

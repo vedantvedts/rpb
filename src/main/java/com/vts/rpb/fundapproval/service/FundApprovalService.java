@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 
 public interface FundApprovalService 
@@ -37,7 +38,7 @@ public interface FundApprovalService
 	
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception;
 
-	public long updateRecommendAndApprovalDetails(String fundApprovalId, String empId,String action) throws Exception;
+	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception;
 
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 
@@ -47,4 +48,6 @@ public interface FundApprovalService
 	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception;
 	
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
+	
+	public String getCommitteeMemberCurrentStatus(String empId) throws Exception;
 }
