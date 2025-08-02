@@ -30,7 +30,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception;
 
-	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
+	public FundApproval getFundRequestDetails(long fundRequestId) throws Exception;
 
 	public long updateFundRequest(FundApproval fundApprovalData) throws Exception;
 
@@ -59,4 +59,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getPrjBudgetHeadItem(long projectId, long budgetHeadId) throws Exception;
 	
 	public List<Object[]> getGenBudgetHeadItem(long budgetHeadId) throws Exception;
+
+	public List<Object[]> getCommitteeMemberCurrentStatus(String empId) throws Exception;
+
+	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId) throws Exception;
 }

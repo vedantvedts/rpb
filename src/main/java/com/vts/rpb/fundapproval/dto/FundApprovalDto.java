@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public class FundApprovalDto {
 	
-	
 	private long FundApprovalId;
 	private String EstimateType;
 	private BigDecimal DivisionId;
@@ -52,6 +51,7 @@ public class FundApprovalDto {
 	private String RCStatusCodeNext;
 	private String Status;
 	private String Remarks;
+	private String action;
 	private LocalDate ApprovalDate;
 	private String CreatedBy;
 	private LocalDateTime CreatedDate;

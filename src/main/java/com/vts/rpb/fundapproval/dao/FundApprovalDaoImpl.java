@@ -177,9 +177,9 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 
 	
 	@Override
-	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
+	public FundApproval getFundRequestDetails(long fundRequestId) throws Exception {
 		try {
-			return manager.find(FundApproval.class,Long.parseLong(fundRequestId));
+			return manager.find(FundApproval.class,fundRequestId);
 
 		} catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getFundRequestDetails() "+ e);
@@ -483,6 +483,37 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			logger.error(new Date() +"Inside DAO getBudgetHeadItem "+ e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getCommitteeMemberCurrentStatus(String empId) throws Exception {
+		 try {
+				Query query= manager.createNativeQuery("SELECT cm.CommitteeMemberId,cm.MemberType,cm.EmpId,cm.FromDate,cm.ToDate FROM ibas_committee_members cm WHERE cm.EmpId=:empId AND cm.IsActive='1'");
+				query.setParameter("empId", empId);
+				List<Object[]> list =  (List<Object[]>)query.getResultList();
+				return list;
+				
+			}catch (Exception e) {
+				logger.error(new Date() +"Inside DAO getCommitteeMemberCurrentStatus "+ e);
+				e.printStackTrace();
+				return null;
+			}
+	}
+
+
+	@Override
+	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("UPDATE ibas_committee_member_linked SET IsApproved='Y' WHERE FundApprovalId=:fundApprovalId AND EmpId=:empId AND IsActive='1'");
+			query.setParameter("empId", empId);
+			query.setParameter("fundApprovalId", fundApprovalId);
+			return query.executeUpdate();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getParticularLinkedCommitteeDetails "+ e);
+			e.printStackTrace();
+			return 0;
 		}
 	}
 

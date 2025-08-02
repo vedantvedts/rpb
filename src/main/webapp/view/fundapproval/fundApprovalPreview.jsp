@@ -440,36 +440,37 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 			
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
- 			<div class="table-responsive">
-	          <table class="table table-bordered" style="font-weight: 600;width: 91.5% !important;margin:auto !important;" id="ApprovalDetails">
-	            <tr>
-	              <td style="color:#034189;">Budget</td>
-	              <td class="BudgetDetails">GEN (General)</td>
-	              <td style="color:#034189;">Budget Head</td>
-	              <td class="BudgetHeadDetails"><%if(budgetHead!=null){ %> <%=budgetHead %> <%}else{ %> - <%} %></td>
-	            </tr>
-	            <tr>
-	              <td style="color:#034189;">Budget Item</td>
-	              <td class="budgetItemDetails"><%if(budgetItem!=null){ %> <%=budgetItem %> <%}else{ %> - <%} %></td>
-	               <td style="color:#034189;">Estimated Cost</td>
-	              <td class="EstimatedCostDetails"><%if(estimatedCost!=null){ %> <%=AmountConversion.amountConvertion(estimatedCost, "R") %> <%}else{ %> - <%} %></td>
-	            </tr>
-	            <tr>
-	              <td style="color:#034189;">Item Nomenclature</td>
-	              <td colspan="3" class="ItemNomenclatureDetails"><%if(itemNomenclature!=null){ %> <%=itemNomenclature %> <%}else{ %> - <%} %></td>
-	            </tr>
-	            <tr>
-	              <td style="color:#034189;">Justification</td>
-	              <td colspan="3" class="JustificationDetails"><%if(justification!=null){ %> <%=justification %> <%}else{ %> - <%} %></td>
-	            </tr>
-	          </table>
-	          </div>
-
 <div class="container">
     <div class="row" style="margin-left:0px !important;margin-right:0px !important;">
         <div class="col-md-12">
             <!-- Big Division -->
             <div class="big-box">
+            	<div class="row">
+            		<div class="table-responsive">
+		          <table class="table table-bordered" style="font-weight: 600;width: 91.5% !important;margin:auto !important;" id="ApprovalDetails">
+		            <tr>
+		              <td style="color:#034189;">Budget</td>
+		              <td class="BudgetDetails">GEN (General)</td>
+		              <td style="color:#034189;">Budget Head</td>
+		              <td class="BudgetHeadDetails"><%if(budgetHead!=null){ %> <%=budgetHead %> <%}else{ %> - <%} %></td>
+		            </tr>
+		            <tr>
+		              <td style="color:#034189;">Budget Item</td>
+		              <td class="budgetItemDetails"><%if(budgetItem!=null){ %> <%=budgetItem %> <%}else{ %> - <%} %></td>
+		               <td style="color:#034189;">Estimated Cost</td>
+		              <td class="EstimatedCostDetails"><%if(estimatedCost!=null){ %> <%=AmountConversion.amountConvertion(estimatedCost, "R") %> <%}else{ %> - <%} %></td>
+		            </tr>
+		            <tr>
+		              <td style="color:#034189;">Item Nomenclature</td>
+		              <td colspan="3" class="ItemNomenclatureDetails"><%if(itemNomenclature!=null){ %> <%=itemNomenclature %> <%}else{ %> - <%} %></td>
+		            </tr>
+		            <tr>
+		              <td style="color:#034189;">Justification</td>
+		              <td colspan="3" class="JustificationDetails"><%if(justification!=null){ %> <%=justification %> <%}else{ %> - <%} %></td>
+		            </tr>
+		          </table>
+	          </div>
+            	</div>
                 <div class="row">
                     <!-- Left Division -->
                     <div class="col-md-6">

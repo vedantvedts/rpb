@@ -71,7 +71,7 @@
         }
     </style>
     
-    
+    <!-- Tab Styles -->
     <style>
     
     .tabs-container {
@@ -111,7 +111,7 @@
     }
     /* checked tab styling */
     .tabs-container > input:checked + label {
-      background: white;
+      background: #fff2ad;
       border-bottom: 1px solid white;
     }
     .tabs-container > input:checked + label::after {
@@ -156,19 +156,27 @@ String fromYear=(String)request.getAttribute("FromYear");
 String toYear=(String)request.getAttribute("ToYear");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
+String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 %>
 
 <%String success=(String)request.getParameter("resultSuccess"); 
 String failure=(String)request.getParameter("resultFailure");%>
 
 
-<div class="card-header page-top"> <!-- Breadecrumb Start -->
+<div class="card-header page-top"> 
 	<div class="row">
-	 	<div class="col-md-3"><h5>Approval List</h5></div>
+	 	<div class="col-md-3"><h5><% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%} %> List</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb ">
-	    	     <!--  <li class="breadcrumb-item ml-auto"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li> -->
-	              <li class="breadcrumb-item ml-auto active " aria-current="page">Approval List</li>
+	    	     <li class="breadcrumb-item ml-auto"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Requisition List </a></li>
+	              <li class="breadcrumb-item active" aria-current="page">
+	              <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%} %> List</li>
              </ol>
           </div>
     </div>
@@ -224,9 +232,16 @@ String failure=(String)request.getParameter("resultFailure");%>
 		
 		<div class="tabs-container" style="margin-top:7px;">
 		    <input type="radio" name="tabs" id="tab-pending" checked>
-		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund Approval Pending</label>
+		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
+									         <%} %> Pending</label>
 		    <input type="radio" name="tabs" id="tab-approved">
-		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund Approved</label>
+		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommended
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
+									         <%} %></label>
+		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
 		
 		    <div class="tab-content card">
 		      <section id="panel-pending" class="tab-panel">
@@ -266,8 +281,14 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <td align="center">
 			                     
 			                            <form action="#" method="POST" name="myfrm" style="display: inline">  <!-- preview Start -->
-			                               <button type="submit" data-tooltip="Preview & Approve" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding: 6px;" formaction="FundApprovalPreview.htm">
-			                                                Approval &#10097;&#10097;
+			                               <button type="submit" data-tooltip="Preview & <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Note
+													         <%} %>" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding: 6px;border: 1px solid #05814d;background: #d3ffe5;" formaction="FundApprovalPreview.htm">
+			                                                <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+													         <%} %> &nbsp;&#10097;&#10097;
 			                               </button>
 			                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 			                             <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">

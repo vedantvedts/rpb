@@ -35,6 +35,7 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.master.service.MasterService;
 import com.vts.rpb.utils.CharArrayWriterResponse;
@@ -180,12 +181,14 @@ public class FundApprovalController
 				{
 					finYear=fromYear+"-"+toYear;
 				}
+				
 			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
 			approvalPendingList.stream().forEach(a->System.err.println("approvalPendingList->"+Arrays.toString(a)));
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
+			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
 			
@@ -232,7 +235,7 @@ public class FundApprovalController
 	public String fundApprovalSubmit(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
-		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		long empId = (Long) ses.getAttribute("EmployeeId");
 		logger.info(new Date() + "Inside FundApprovalSubmit.htm " + UserName);
 		String url=null;
 		try
@@ -241,26 +244,21 @@ public class FundApprovalController
 			String action=req.getParameter("Action");
 			String remarks=req.getParameter("remarks");
 			System.out.println("fundApprovalId****"+fundApprovalId);
-			if(fundApprovalId==null)
+			if(fundApprovalId==null || action==null)
 			{
 				redir.addAttribute("resultFailure", "Something Went Wrong..!");
 				return "redirect:/FundApprovalPreview.htm";
 			}
 			
-			String actionMssg="";
-			if(action!=null) {
-				actionMssg=action!=null && action.equalsIgnoreCase("A") ? "Approved" : "";
-				if(action.equalsIgnoreCase("A"))
-				{
-					actionMssg="Approved";
-				}
-				else
-				{
-					actionMssg="Recommended";
-				}
-			}
+			String actionMssg=action!=null && action.equalsIgnoreCase("A") ? "Approved" : "Recommended";
 			
-			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundApprovalId,empId,action);
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setRemarks(remarks);
+			fundDto.setAction(action);
+			fundDto.setCreatedBy(UserName);
+			
+			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId);
 			
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully Submitted..!");
