@@ -459,9 +459,10 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside GetMasterFlowDetails.htm " + UserName);
 		try {
 				String estimatedCost = req.getParameter("estimatedCost");
-				if(estimatedCost!=null) 
+				String fundRequestId = req.getParameter("fundRequestId");
+				if(estimatedCost!=null && fundRequestId!=null) 
 				{
-					return json.toJson(fundApprovalService.getMasterFlowDetails(estimatedCost)); 
+					return json.toJson(fundApprovalService.getMasterFlowDetails(estimatedCost,fundRequestId)); 
 				}
 				return null;
 				

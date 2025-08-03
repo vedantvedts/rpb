@@ -20,7 +20,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception;
 
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	

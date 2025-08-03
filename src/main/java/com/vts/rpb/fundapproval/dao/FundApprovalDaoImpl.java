@@ -99,10 +99,11 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception {
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
+			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType,IFNULL((CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1 WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2 WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3 WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4 WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5 WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficer WHEN f.StatusName='INITIATION' THEN fa.InitiatingOfficer END),0) AS EmpId FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' LEFT JOIN fund_approval fa ON fa.FundApprovalId=:fundRequestId WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
 			query.setParameter("estimatedCost",estimatedCost);
+			query.setParameter("fundRequestId",fundRequestId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			

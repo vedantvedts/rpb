@@ -842,7 +842,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$.ajax({
         url: 'GetMasterFlowDetails.htm',  
         method: 'GET', 
-        data: {estimatedCost: estimatedCost},  
+        data: { estimatedCost : estimatedCost , fundRequestId : fundRequestId },  
         success: function(response) {
            var data = JSON.parse(response);
            masterFlowDetails=data;
@@ -934,7 +934,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	       	}
 	       	else
 	       		{
-	       			$("#fundApprovalForardTable").append("<span>Something Went Wrong ..!</span>");
+	       			$("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
 	       		}
         }
     });

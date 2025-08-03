@@ -111,9 +111,10 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 					}
 				}
+				
 				FundApprovalTrans transModal=new FundApprovalTrans();
 				transModal.setFundApprovalId(fundApproval.getFundApprovalId());
-				transModal.setRcStausCode(fundApproval.getRcStatusCode());
+				transModal.setRcStausCode("INITIATION");
 				transModal.setRemarks(fundApproval.getRemarks());
 				transModal.setActionBy(fundApproval.getInitiatingOfficer());
 				transModal.setActionDate(LocalDateTime.now());
@@ -196,8 +197,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception {
-		return fbedao.getMasterFlowDetails(estimatedCost);
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
+		return fbedao.getMasterFlowDetails(estimatedCost,fundRequestId);
 	}
 	
 	@Override
@@ -253,13 +254,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId) throws Exception {
 		
-		//String statusCodeNext=fundApprovalData.getRcStatusCodeNext();
-		//fundApprovalData.setRcStatusCode(statusCodeNext);
-		//fundApprovalData.setRcStatusCodeNext(statusCodeNext!=null ? getRcStatusCodeNext(masterFlowList,statusCodeNext) : null);
-		
 		FundApprovalTrans transaction=new FundApprovalTrans(); 
 		transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
-		transaction.setRcStausCode(getCurrentEmployeeStatusCode(empId, fundApprovalData.getFundApprovalId()));
+		transaction.setRcStausCode("FORWARDED");
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
 		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
@@ -338,9 +335,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return approvalStatus;
 	}
 	
-	private String getCurrentEmployeeStatusCode(long empId, long fundApprovalId) throws Exception
+	private String[] getCurrentEmployeeFundDetails(long empId, long fundApprovalId) throws Exception
 	{
-		String currentStatusCode=null;
+		String[] currentDetails=new String[2];
 		FundApproval fundDetails=fbedao.getFundRequestDetails(fundApprovalId);
 		
 		if(fundDetails.getStatus()!=null)
@@ -349,76 +346,82 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO1 RECOMMENDED";
+					currentDetails[0]="RO1 RECOMMENDED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO1 RETURNED";
+					currentDetails[0]="RO1 RETURNED";
 				}
+				currentDetails[1]=fundDetails.getRc1Role();
 			}
 			
 			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO2 RECOMMENDED";
+					currentDetails[0]="RO2 RECOMMENDED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO2 RETURNED";
+					currentDetails[0]="RO2 RETURNED";
 				}
+				currentDetails[1]=fundDetails.getRc2Role();
 			}
 			
 			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO3 RECOMMENDED";
+					currentDetails[0]="RO3 RECOMMENDED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RO3 RETURNED";
+					currentDetails[0]="RO3 RETURNED";
 				}
+				currentDetails[1]=fundDetails.getRc3Role();
 			}
 			
 			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="SE RECOMMENDED";
+					currentDetails[0]="SE RECOMMENDED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="SE RETURNED";
+					currentDetails[0]="SE RETURNED";
 				}
+				currentDetails[1]=fundDetails.getRc4Role();
 			}
 			
 			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RPB MEMBER SECRETARY APPROVED";
+					currentDetails[0]="RPB MEMBER SECRETARY APPROVED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="RPB MEMBER SECRETARY RETURNED";
+					currentDetails[0]="RPB MEMBER SECRETARY RETURNED";
 				}
+				currentDetails[1]=fundDetails.getRc5Role();
 			}
 			
 			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
 			{
 				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="CHAIRMAN APPROVED";
+					currentDetails[0]="CHAIRMAN APPROVED";
 				}
 				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
 				{
-					currentStatusCode="CHAIRMAN RETURNED";
+					currentDetails[0]="CHAIRMAN RETURNED";
 				}
+				currentDetails[1]=fundDetails.getApprovingOfficerRole();
 			}
 		}
 		
-		return currentStatusCode;
+		return currentDetails;
 	}
 	
 	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
@@ -471,23 +474,39 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception {
 		
 		FundApproval fundApproval=fbedao.getFundRequestDetails(fundDto.getFundApprovalId());
+		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId());
 		FundApprovalTrans transaction=new FundApprovalTrans(); 
 		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
-		transaction.setRcStausCode(getCurrentEmployeeStatusCode(empId,fundApproval.getFundApprovalId()));
+		transaction.setRcStausCode(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[0] : null);
+		transaction.setRemarks(fundDto.getRemarks());
+		transaction.setRole(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[1] : null);
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
 		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		int limkedCommitteeMemberStatus=0;
+		int linkedCommitteeMemberStatus=0;
 		if(transStatus > 0) 
 		{
-			limkedCommitteeMemberStatus=fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId());
+			if(fundDto.getAction()!=null)
+			{
+				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
+				{
+					linkedCommitteeMemberStatus=fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId());
+				}
+			}
 		}
 		
 		long status=0;
-		if(limkedCommitteeMemberStatus > 0)
+		if(linkedCommitteeMemberStatus > 0)
 		{
-			fundApproval.setStatus(fundDto.getAction()!=null && fundDto.getAction().equalsIgnoreCase("A") ? "A" : fundApproval.getStatus());
+			if(fundDto.getAction()!=null)
+			{
+				if(!fundDto.getAction().equalsIgnoreCase("RE")) //  RE - Recommend
+				{
+					fundApproval.setStatus(fundDto.getAction());
+				}
+			}
+			fundApproval.setStatus(fundApproval.getStatus());
 			status=fbedao.updateFundRequest(fundApproval);
 		}
 		

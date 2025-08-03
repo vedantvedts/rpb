@@ -16,7 +16,7 @@ public interface FundApprovalService
 	
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception;
 	
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	

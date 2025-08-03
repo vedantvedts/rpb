@@ -408,9 +408,9 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	    	 <li class="breadcrumb-item">
 	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommending
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
 									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
-									         <%} %> List</a>
+									         <%}else{ %> Recommend<%} %> List</a>
 	         </li>
 	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>FBE<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>RE<%} %> Item</li>
              </ol>
@@ -602,7 +602,7 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
 									         <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve 
 									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
 									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
-									         <%} %>
+									         <%}else{ %> Recommend<%} %>
 								        </button>
 								        
 								    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
