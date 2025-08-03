@@ -266,6 +266,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("fundApprovalId",fundApprovalId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
+			 
+			
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getParticularFundApprovalTransDetails() "+ e);
@@ -276,6 +278,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	
 	
 	
+	  
 	public long EditFundRequestSubmit(FundApproval modal) throws Exception{
 		try {
 			FundApproval fundApproval=manager.find(FundApproval.class, modal.getFundApprovalId());
