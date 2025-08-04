@@ -298,8 +298,9 @@ input[name="ItemNomenclature"]::placeholder {
 	 	<div class="row">
 	 	  <div class="col-md-3"><h5>Requisition List</h5></div>
 	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	          <li class="breadcrumb-item active ml-auto" aria-current="page"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List</li>
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	          <li class="breadcrumb-item active" aria-current="page">Requisition List</li>
              </ol>
            </div>
          </div>
@@ -427,40 +428,44 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0]%>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
-				                   			<%if(data[24]!=null && "F".equalsIgnoreCase(data[24].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+				                   			
+				                   			 <%if("A".equalsIgnoreCase(fundStatus)) {%>
+				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             Approved
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;" ></i>											
+												            <span style="color: green;">Approved</span> 
+												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: green;" ></i>											
 											       </button>
-											       <%} else if(data[24]!=null && "N".equalsIgnoreCase(data[24].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+											       <%} else if("N".equalsIgnoreCase(fundStatus)){ %>	
+											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												             <span style="color: #8c2303;">Pending</span>
 												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
 											
 											       </button>
-											       <%} else if(data[24]!=null && "R".equalsIgnoreCase(data[24].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+											        <%} else if("F".equalsIgnoreCase(fundStatus)){ %>	
+											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             <span style="color: #8c2303;">Returned</span>
-												             &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
+												             <span style="color: blue;">Forwarded</span>
+												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: blue;"></i>
 											
 											       </button>
 											       <%} %>
+				                   			
 									       </td>
 				                   			<td align="center">-</td>
 				                   			<td align="center">
-				                   			
-				                   			
-					                   			<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+													      
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
+												<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
 										        </button>
-													      
-											    <%if(data[24]!=null && ("N".equalsIgnoreCase(data[24].toString()) || "R".equalsIgnoreCase(data[24].toString()))){ %>
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;"></td>
+												
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+					                       		<%}else{ %>
+					                       		<span style="font-weight: 800;">***</span>
 					                       		<%} %>
+					                       	</td>
 				                        </tr>	
 					            
 					            <%} %>

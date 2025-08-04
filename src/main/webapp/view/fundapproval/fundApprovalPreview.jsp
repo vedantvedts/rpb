@@ -491,7 +491,7 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc1Role != null ? rc1Role + " &nbsp;&nbsp; " : "-" %></span>
                                             <%= rc1Details != null ? rc1Details : "-" %>
                                              <%if(empId == rc1EmpId){ %>
-                                            <span class="badge badge-info">For Recommend</span>
+                                            <span class="badge badge-info">For Recommendation</span>
                                             <%} %>
                                             <%if(rc1Status!=null && rc1Status.equalsIgnoreCase("Y")){ %>
                                            	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
@@ -507,7 +507,7 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc2Role != null ? rc2Role + " &nbsp;&nbsp; " : "" %></span>
                                             <%= rc2Details != null ? rc2Details : "-" %>
                                             <%if(empId == rc2EmpId){ %>
-                                            <span class="badge badge-info">For Recommend</span>
+                                            <span class="badge badge-info">For Recommendation</span>
                                             <%} %>
                                             <%if(rc2Status!=null && rc2Status.equalsIgnoreCase("Y")){ %>
                                            	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
@@ -523,7 +523,7 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc3Role != null ? rc3Role + " &nbsp;&nbsp; " : "" %></span>
                                             <%= rc3Details != null ? rc3Details : "-" %>
                                             <%if(empId == rc3EmpId){ %>
-                                            <span class="badge badge-info">For Recommend</span>
+                                            <span class="badge badge-info">For Recommendation</span>
                                             <%} %>
                                             <%if(rc3Status!=null && rc3Status.equalsIgnoreCase("Y")){ %>
                                            	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
@@ -539,7 +539,7 @@ System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
                                             <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc4Role != null ? rc4Role + " &nbsp;&nbsp; " : "" %></span>
                                             <%= rc4Details != null ? rc4Details : "-" %>
                                             <%if(empId == rc4EmpId){ %>
-                                            <span class="badge badge-info">For Recommend</span>
+                                            <span class="badge badge-info">For Recommendation</span>
                                             <%} %>
                                             <%if(rc4Status!=null && rc4Status.equalsIgnoreCase("Y")){ %>
                                            	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">

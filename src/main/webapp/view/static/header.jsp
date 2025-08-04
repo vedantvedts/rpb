@@ -10,7 +10,7 @@
 <head>
 <meta charset="ISO-8859-1">
 
-<title>IBAS</title>
+<title>RPB</title>
 <link rel="shortcut icon" type="image/png" href="view/images/drdologo.png">
 
 <jsp:include page="dependancy.jsp"></jsp:include>
@@ -894,11 +894,10 @@ function showFailureFlyMessage(message) {
 		
 		  
 		  <!-- RPB Home -->
-		<div class="btn-group Home NavHeaderBackgroundColorChange" style="padding: 3px;">	
-		 <a class=" btn bg-transparent" type="button" aria-haspopup="true" aria-expanded="false" style="background-color: transparent;padding: 0px;margin-left: 5px;margin-right: 0.1px;"><i class="fa fa-home" aria-hidden="true" style="color:orange;"></i></a> 	
-		 <a class="navbar-brand" id="brandname" style="font-family: Montserrat, sans-serif; color: white;text-align: initial;margin-top: 0.4rem;font-weight: 900;padding: 0px;margin-right: 10px;">RPB </a>
+		  <div class="btn-group Home NavHeaderBackgroundColorChange" style="padding: 3px;">	
+		 <a class=" btn bg-transparent" href="MainDashBoard.htm" type="button" aria-haspopup="true" aria-expanded="false" style="background-color: transparent;padding: 0px;margin-left: 5px;margin-right: 0.1px;"><i class="fa fa-home" aria-hidden="true" style="color:orange;"></i></a> 	
+		 <a class="navbar-brand" href="MainDashBoard.htm" id="brandname" style="font-family: Montserrat, sans-serif; color: white;text-align: initial;margin-top: 0.4rem;font-weight: 900;padding: 0px;margin-right: 10px;">RPB </a>
 		 </div>
-	
 		
 		<!-- Date -->					
 		<div style="margin-left: 12px;">

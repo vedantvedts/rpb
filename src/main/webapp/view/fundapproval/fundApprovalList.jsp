@@ -174,8 +174,8 @@ String failure=(String)request.getParameter("resultFailure");%>
 									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %> List</h5></div>
 	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	     <li class="breadcrumb-item ml-auto"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Requisition List </a></li>
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
 	              <li class="breadcrumb-item active" aria-current="page">
 	              <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
 									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
@@ -299,8 +299,8 @@ String failure=(String)request.getParameter("resultFailure");%>
 											        <%} else if(obj[31]!=null && "F".equalsIgnoreCase(obj[31].toString())){ %>	
 											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												             <span style="color: #8c2303;">Forwarded</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
+												             <span style="color: blue;">Forwarded</span>
+												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: blue;"></i>
 											
 											       </button>
 											       <%} %>
