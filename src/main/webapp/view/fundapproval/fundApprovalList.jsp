@@ -308,6 +308,13 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     </td>
 			                     <td align="center">
 			                     
+			                           
+			                           <% if(obj[31]!=null && ((obj[31].toString()).equalsIgnoreCase("N") || (obj[31].toString()).equalsIgnoreCase("NA")) && obj[32]!=null && ((obj[32].toString()).equalsIgnoreCase("N") || (obj[32].toString()).equalsIgnoreCase("NA")) && obj[33]!=null && ((obj[33].toString()).equalsIgnoreCase("N") || (obj[33].toString()).equalsIgnoreCase("NA")) && obj[34]!=null && ((obj[34].toString()).equalsIgnoreCase("N") || (obj[34].toString()).equalsIgnoreCase("NA"))){ %>
+			                           
+			                           <span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Recommendation Pending</span>
+			                           
+			                           <%}else{%>
+			                           
 			                            <form action="#" method="POST" name="myfrm" style="display: inline">  <!-- preview Start -->
 			                               <button type="submit" data-tooltip="Preview & <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve
 													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
@@ -322,6 +329,8 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                             <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
 			                           
 			                           </form>
+			                           
+			                           <%} %>
 			                     </td>  
 			                 </tr>
 						    <% 

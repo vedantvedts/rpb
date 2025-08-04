@@ -825,7 +825,7 @@ input[name="ItemNomenclature"]::placeholder {
 	    	    if (item.batch === 'Y') {
 	    	      html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
 	    	    } else {
-	    	      html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Recommendation Pending</span>';
+	    	      html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Recommendation Pending</span>';
 	    	    }
 
 	    	    html += '</span>';
@@ -845,7 +845,7 @@ input[name="ItemNomenclature"]::placeholder {
 	    	  if (row[45] === 'Y') {
 	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
 	    	  } else {
-	    	    html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Review Pending</span>';
+	    	    html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Review Pending</span>';
 	    	  }
 	    	  html += '</span>';
 	    	  html += '</div>';
@@ -863,7 +863,7 @@ input[name="ItemNomenclature"]::placeholder {
 	    	  if (row[46] === 'Y') {
 	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
 	    	  } else {
-	    	    html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Approval Pending</span>';
+	    	    html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Approval Pending</span>';
 	    	  }
 	    	  html += '</span>';
 	    	  html += '</div>';
