@@ -243,7 +243,7 @@ input[name="ItemNomenclature"]::placeholder {
 			 }
 			 
 	 		 .custom-width-modal {
-			  width: 60% !important;
+			  width: 50% !important;
 			  max-width: 100%;
 			}
 			
@@ -506,13 +506,13 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
-				                   			<%if(data[24]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
+				                   			<%if(data[23]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
 				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            <span style="color: #2b8c03;">Approved</span> 
 												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
 											       </button>
-											       <%} else if(data[24]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
+											       <%} else if(data[23]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
 											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												             <span style="color: #8c2303;">Pending</span>
@@ -638,7 +638,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 <%}%>
 </script>
-	<script type="text/javascript">
+ <script type="text/javascript">
 	function openApprovalStatusAjax(fundApprovalId) {
 		  $.ajax({
 		    url: 'getRPBApprovalHistoryAjax.htm',
@@ -702,14 +702,18 @@ input[name="ItemNomenclature"]::placeholder {
 	      var row = data[0]; 
 
 	      var html = '';
-	      html += '<div class="container">';
+	      html += '<div class="" style="padding-left: 10%;">';
 	      html += '<div class="row" style="margin-left:0px !important;margin-right:0px !important;">';
 	      html += '<div class="col-md-12">';
 	      html += '<div class="big-box">';
 	      html += '<div class="row">';
-	      html += '<div class="col-md-8" style="background-color: #efe4d6;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);width: 100%;">';
-	      html += '<div class="inner-box">';
-
+	      html += '<div class="col-md-11" style="background-color: #f7f4e9;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);width: 100%;">';
+	      html += '<div class="inner-box" style="padding-top: 2%;">';
+			
+	      
+	      html += '<div class="recommendation-item " >';
+  	      html += '<span><b>Initiated By &nbsp;: &nbsp;</b></span> <span style="color: #370088"><b>'+row[19]+'</b></span></div>';
+  	    
 	      var rcStatusCodeNext = row[40];
 	      var rc1Status= row[41];
 	      var rc2Status= row[42];
@@ -719,58 +723,72 @@ input[name="ItemNomenclature"]::placeholder {
 	      var apprOffStatus= row[46];
 
 	      var labels = [
-	        { title: 'Initiated By', field: row[19], role: ' ' },
-	        { title: 'RPB Member', field: row[21], role: row[22], status: 'RO1 RECOMMENDED',batch: row[41] },
-	        { title: 'RPB Member', field: row[24], role: row[25], status: 'RO2 RECOMMENDED',batch: row[42] },
-	        { title: 'RPB Member', field: row[27], role: row[28], status: 'RO3 RECOMMENDED',batch: row[43] },
-	        { title: 'Subject Expert', field: row[30], role: row[31], status: 'SE RECOMMENDED',batch: row[44] },
-	        { title: 'RPB Member Secretary', field: row[33], role: row[34], status: 'RPB MEMBER SECRETARY APPROVED',batch: row[45] },
-	        { title: 'RPB Chairman', field: row[36], role: row[37], status: 'CHAIRMAN APPROVED',batch: row[46] }
-	      ];
+	    	  { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
+	    	  { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
+	    	  { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
+	    	  { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
+	    	];
 
-	      for (var i = 0; i < labels.length; i++) {
+	    	// Loop for common entries
+	    	for (var i = 0; i < labels.length; i++) {
 	    	  var item = labels[i];
 	    	  if (item.field != null && String(item.field).trim() !== '') {
-	    		  
-	    	    html += '<div class="recommendation-item ">';
+	    	    html += '<div class="recommendation-item " >';
 	    	    html += '<span><b>' + item.title + ' &nbsp;: &nbsp;</b></span>';
 	    	    html += '<span class="recommendation-value">';
-	    	    
+
 	    	    if (item.role) {
-	    	      html += '<span style="color:#034cb9">'+item.role +'</span>'+ ' &nbsp;&nbsp; ';
+	    	      html += '<span style="color:#034cb9">' + item.role + '</span>' + ' &nbsp;&nbsp; ';
 	    	    }
-	    	    html += '<span style="color: #b94603">'+item.field +'</span>'+ '&nbsp;';
-	    	    
-	    	    if (item.batch ==='Y') {
-		    	      html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
-		    	    }
-	    	    
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='CHAIRMAN APPROVED') {
-	    	      html += '&nbsp;<span class="badge badge-info">CHAIRMAN APPROVED</span>';
+	    	    html += '<span style="color: #370088">' + item.field + '</span>' + '&nbsp;';
+
+	    	    if (item.batch === 'Y') {
+	    	      html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
+	    	    } else {
+	    	      html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Recommendation Pending</span>';
 	    	    }
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RPB MEMBER SECRETARY APPROVED') {
-		    	      html += '&nbsp;<span class="badge badge-info">RPB MEMBER SECRETARY APPROVED</span>';
-		    	    }
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='SE RECOMMENDED') {
-		    	      html += '&nbsp;<span class="badge badge-info">SE RECOMMENDED</span>';
-		    	    }
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO2 RECOMMENDED') {
-		    	      html += '&nbsp;<span class="badge badge-info">RO2 RECOMMENDED</span>';
-		    	    }
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO1 RECOMMENDED') {
-		    	      html += '&nbsp;<span class="badge badge-info">RO1 RECOMMENDED</span>';
-		    	    }
-	    	    if (item.status && rcStatusCodeNext === item.status && rcStatusCodeNext==='RO3 RECOMMENDED') {
-		    	      html += '&nbsp;<span class="badge badge-info">RO3 RECOMMENDED</span>';
-		    	    }
-	    	   
-	    	    console.log("------item field----------");
-	    	    console.log(item.field);
-	    	    console.log("------item field- END---------");
+
 	    	    html += '</span>';
 	    	    html += '</div>';
 	    	  }
 	    	}
+
+	    	//  RPB Member Secretary
+	    	if (row[33] != null && String(row[33]).trim() !== '') {
+	    	  html += '<div class="recommendation-item " >';
+	    	  html += '<span><b>RPB Member Secretary &nbsp;: &nbsp;</b></span>';
+	    	  html += '<span class="recommendation-value">';
+	    	  if (row[34]) {
+	    	    html += '<span style="color:#034cb9">' + row[34] + '</span>' + ' &nbsp;&nbsp; ';
+	    	  }
+	    	  html += '<span style="color: #370088">' + row[33] + '</span>' + '&nbsp;';
+	    	  if (row[45] === 'Y') {
+	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
+	    	  } else {
+	    	    html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Review Pending</span>';
+	    	  }
+	    	  html += '</span>';
+	    	  html += '</div>';
+	    	}
+
+	    	//  RPB Chairman
+	    	if (row[36] != null && String(row[36]).trim() !== '') {
+	    	  html += '<div class="recommendation-item " >';
+	    	  html += '<span><b>RPB Chairman &nbsp;: &nbsp;</b></span>';
+	    	  html += '<span class="recommendation-value">';
+	    	  if (row[37]) {
+	    	    html += '<span style="color:#034cb9">' + row[37] + '</span>' + ' &nbsp;&nbsp; ';
+	    	  }
+	    	  html += '<span style="color: #370088">' + row[36] + '</span>' + '&nbsp;';
+	    	  if (row[46] === 'Y') {
+	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
+	    	  } else {
+	    	    html += '<span style="color: #bd0707;border-radius: 10px;padding:2px 9px;background: #ecc5c5;font-size: 10px;">Approval Pending</span>';
+	    	  }
+	    	  html += '</span>';
+	    	  html += '</div>';
+	    	}
+
 			console.log('loop done!!!_!_!_!');
 	      html += '</div></div></div></div></div></div></div>';
 		
@@ -1197,9 +1215,9 @@ function refreshModal(modalId) {
 	          var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
 
 	          var row = "<tr>" +
-	            "<td style='text-align: center;font-weight:700'>" + attach.originalFileName + "</td>" +
+	            "<td style='text-align: center;font-weight:700'>" + attach.fileName + "</td>" +
 	            "<td style='text-align: center;'>" +
-	            "<button class='btn fa fa-eye text-primary' title='preview' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
+	            "<button class='btn fa fa-eye text-primary' title='preview - "+attach.fileName+" Attachment' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
 	            "</td>" +
 	            "</tr>";
 	          body.append(row);
