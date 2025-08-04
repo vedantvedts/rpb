@@ -436,6 +436,13 @@ input[name="ItemNomenclature"]::placeholder {
 												             &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
 											
 											       </button>
+											       <%} else if(data[24]!=null && "R".equalsIgnoreCase(data[24].toString())){ %>	
+											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
+												             <span style="color: #8c2303;">Returned</span>
+												             &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
+											
+											       </button>
 											       <%} %>
 									       </td>
 				                   			<td align="center">-</td>
@@ -965,6 +972,36 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			       		}
 			   		}
 			    	
+			    	var flowEmpId=value[4];
+			    	var flowEmpRole=value[5];
+			    	
+			    	//Employee Role
+			    	if(value[2] == 'RO1 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole1").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RO2 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole2").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RO3 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole3").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'SE RECOMMENDED')
+			    	 {
+			    		$("#SubjectExpertRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
+			    	 {
+			    		$("#RPBMemberSecretaryRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'CHAIRMAN APPROVED')
+			    	 {
+			    		$("#chairmanRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	
+			    	// employee details
 			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
 			    	 
 			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
@@ -973,7 +1010,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && value[1] == 'CM')   // CM-Committee Member
 			   				 {
-			    				 $(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+		    					 	$(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }
@@ -982,7 +1026,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	 {
 			    		 $.each(allEmployeeList, function(key, value) 
 						 {
-			        		 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+			    			 if(flowEmpId!=null && flowEmpId == value[0])
+	    					 {
+			    				 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
+		    				 else
+	    					 {
+		    					 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
 						 });
 			    	 }
 			    	 
@@ -992,7 +1043,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && value[1] == 'CS')   // CM-Committee Secretary
 			   				 {
-			    				 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }
@@ -1003,7 +1061,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && (value[1] == 'CC' || value[1] == 'SC'))   // CM-Committee Chairman  SC-Committee Standby Chairman
 			   				 {
-			    				 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }

@@ -198,7 +198,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
-		return fbedao.getMasterFlowDetails(estimatedCost,fundRequestId);
+		return fbedao.getMasterFlowDetails(estimatedCost,fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 	
 	@Override
@@ -261,9 +261,10 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		transaction.setActionDate(LocalDateTime.now());
 		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		if(transStatus > 0) 
+		int fundApprovalIdCount=fbedao.getFundApprovalIdCountFromCommitteeLinked(fundApprovalData.getFundApprovalId());
+		if(fundApprovalIdCount == 0) 
 		{
-			List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0");
+			List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0",fundApprovalData.getFundApprovalId());
 			if(masterFlowList!=null && masterFlowList.size()>0)
 			{
 				masterFlowList.forEach(row -> {
@@ -484,21 +485,35 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		transaction.setActionDate(LocalDateTime.now());
 		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		int linkedCommitteeMemberStatus=0;
-		if(transStatus > 0) 
-		{
 			if(fundDto.getAction()!=null)
 			{
 				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
 				{
-					linkedCommitteeMemberStatus=fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId());
+					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				}
+				
+				if(fundDto.getAction().equalsIgnoreCase("R")) 
+				{
+					List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString(),fundApproval.getFundApprovalId());
+					if(masterFlowList!=null && masterFlowList.size()>0)
+					{
+						masterFlowList.forEach(row -> 
+						{
+							try {
+									if(row[4]!=null)
+									{
+										fbedao.updateParticularLinkedCommitteeDetails(Long.parseLong(row[4].toString()),fundApproval.getFundApprovalId(),"N");	
+									}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
+
+					}
 				}
 			}
-		}
 		
 		long status=0;
-		if(linkedCommitteeMemberStatus > 0)
-		{
 			if(fundDto.getAction()!=null)
 			{
 				if(!fundDto.getAction().equalsIgnoreCase("RE")) //  RE - Recommend
@@ -508,7 +523,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			}
 			fundApproval.setStatus(fundApproval.getStatus());
 			status=fbedao.updateFundRequest(fundApproval);
-		}
 		
 		//List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
 		//fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());

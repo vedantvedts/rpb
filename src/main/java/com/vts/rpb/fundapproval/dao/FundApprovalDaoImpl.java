@@ -35,7 +35,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) AND f.Status='N' GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) AND (f.Status='N' OR f.Status='R') GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
 			query.setParameter("estimateType",estimateType);
@@ -99,9 +99,9 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType,IFNULL((CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1 WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2 WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3 WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4 WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5 WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficer WHEN f.StatusName='INITIATION' THEN fa.InitiatingOfficer END),0) AS EmpId FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' LEFT JOIN fund_approval fa ON fa.FundApprovalId=:fundRequestId WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
+			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType,IFNULL((CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1 WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2 WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3 WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4 WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5 WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficer WHEN f.StatusName='INITIATION' THEN fa.InitiatingOfficer END),0) AS EmpId,(CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1Role WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2Role WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3Role WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4Role WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5Role WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficerRole END) AS EmpRole FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' LEFT JOIN fund_approval fa ON fa.FundApprovalId=:fundRequestId WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
 			query.setParameter("estimatedCost",estimatedCost);
 			query.setParameter("fundRequestId",fundRequestId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
@@ -507,15 +507,30 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 
 
 	@Override
-	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId) throws Exception {
+	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId,String isApproved) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("UPDATE ibas_committee_member_linked SET IsApproved='Y' WHERE FundApprovalId=:fundApprovalId AND EmpId=:empId AND IsActive='1'");
+			Query query= manager.createNativeQuery("UPDATE ibas_committee_member_linked SET IsApproved=:isApproved WHERE FundApprovalId=:fundApprovalId AND EmpId=:empId AND IsActive='1'");
 			query.setParameter("empId", empId);
+			query.setParameter("isApproved", isApproved);
 			query.setParameter("fundApprovalId", fundApprovalId);
 			return query.executeUpdate();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getParticularLinkedCommitteeDetails "+ e);
+			logger.error(new Date() +"Inside DAO updateParticularLinkedCommitteeDetails "+ e);
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public int getFundApprovalIdCountFromCommitteeLinked(long fundApprovalId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("select count(FundApprovalId) from ibas_committee_member_linked where FundApprovalId=:fundApprovalId and IsActive='1'");
+			query.setParameter("fundApprovalId", fundApprovalId);
+			return ((Number) query.getSingleResult()).intValue();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getFundApprovalIdCountFromCommitteeLinked "+ e);
 			e.printStackTrace();
 			return 0;
 		}

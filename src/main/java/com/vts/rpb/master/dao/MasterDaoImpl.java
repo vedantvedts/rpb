@@ -111,7 +111,7 @@ public class MasterDaoImpl implements MasterDao {
 		logger.info(new Date() +"Inside DaoImpl getDivisionList");
 		try
 		{
-			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d LEFT JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
+			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
 			query.setParameter("labCode", labCode);
 			query.setParameter("empId", empId);
 			query.setParameter("logintype", logintype);
@@ -151,6 +151,22 @@ public class MasterDaoImpl implements MasterDao {
 		
 		} catch (Exception e) {
 			logger.error(new Date() +"Inside MaterDaoImpl getAllOfficersList");
+			e.printStackTrace();
+			return null; 
+		}
+	}
+
+	@Override
+	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
+		logger.info(new Date() +"Inside MaterDaoImpl getAllEmployeeDetailsByDivisionId");
+		try {
+		Query query= manager.createNativeQuery("SELECT e.EmpId, e.LabCode, e.EmpNo, e.EmpName, e.DesigId, d.Designation, CONCAT(e.EmpName, ', ', d.Designation) AS MergedName, e.DivisionId FROM "+mdmdb+".employee e LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId WHERE e.DivisionId = :DivisionId AND e.IsActive = '1'");
+		query.setParameter("DivisionId",divisionId);
+		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
+		return OfficerList;
+		
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside MaterDaoImpl getAllEmployeeDetailsByDivisionId");
 			e.printStackTrace();
 			return null; 
 		}

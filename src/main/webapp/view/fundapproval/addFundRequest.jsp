@@ -392,8 +392,8 @@ tr:last-of-type th:last-of-type {
 	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
 	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
 	      <div class="col-md-9">
-	    	 <ol class="breadcrumb">
-	    	 <li class="breadcrumb-item" style="padding-left: 78%;"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
 	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
              </ol>
