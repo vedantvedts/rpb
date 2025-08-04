@@ -670,13 +670,7 @@ tr:last-of-type th:last-of-type {
 
 <!-- Always show the fourth row for dynamic attachments -->
 <tr class="file-row4">
-    <td>
-        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
-    </td>
-    <%
+  <%
         // Check for any non-standard attachments
         List<String> staticNames = java.util.Arrays.asList("BQs", "Cost Of Estimate", "Justification");
         Object[] dynamicAttach = null;
@@ -694,6 +688,13 @@ tr:last-of-type th:last-of-type {
         if (dynamicAttach != null) {
     %>
     <td>
+        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
+    </td>
+    <td>
+        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+    </td>
+  
+    <td>
         <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
         </button>
@@ -704,7 +705,16 @@ tr:last-of-type th:last-of-type {
     <% } %>
 </tr>
 
-<%
+
+    <tr class="file-row-dynamic">
+        <td>
+            <input type="text" class="form-control" name="filename"  value="">
+        </td>
+        <td>
+            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+        </td>
+        <td>
+        <%
     // Additional rows for any extra dynamic attachments beyond the first one
     if (AttachList != null) {
         int dynamicCount = 0;
@@ -714,14 +724,6 @@ tr:last-of-type th:last-of-type {
                 dynamicCount++;
                 if (dynamicCount > 1) { // We already handled the first one in the static row4
 %>
-    <tr class="file-row-dynamic">
-        <td>
-            <input type="text" class="form-control" name="filename" value="<%= attachName %>">
-        </td>
-        <td>
-            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-        </td>
-        <td>
             <button type="button" class="btn" onclick="downloadFile('<%= attach[0] %>')" title="<%= attach[2] %>">
                 <i class="fa fa-download" style="color: green;"></i>
             </button>
