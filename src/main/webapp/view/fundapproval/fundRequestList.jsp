@@ -407,11 +407,12 @@ input[name="ItemNomenclature"]::placeholder {
 					            <% int sn=1;
 					            BigDecimal grandTotal = new BigDecimal(0);
 					            BigDecimal subTotal = new BigDecimal(0);
+					            
 					            if(requisitionList!=null && requisitionList.size()>0){ %>
 					            
 					            <%for(Object[] data:requisitionList){ 
-					            	System.err.println("status->"+data[24]);
 					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
+					            	String fundStatus=data[24]==null ? "NaN" : data[24].toString();
 					            %>
 					            
 					            	 <tr>
@@ -446,12 +447,17 @@ input[name="ItemNomenclature"]::placeholder {
 											       <%} %>
 									       </td>
 				                   			<td align="center">-</td>
-				                   			<td align="center"><button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
-												               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
-												        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
-												      </button>
-												      
-											<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;"></td>
+				                   			<td align="center">
+				                   			
+				                   			
+					                   			<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
+										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
+										        </button>
+													      
+											    <%if(data[24]!=null && ("N".equalsIgnoreCase(data[24].toString()) || "R".equalsIgnoreCase(data[24].toString()))){ %>
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;"></td>
+					                       		<%} %>
 				                        </tr>	
 					            
 					            <%} %>

@@ -258,7 +258,7 @@ public class FundApprovalController
 			fundDto.setAction(action);
 			fundDto.setCreatedBy(UserName);
 			
-			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId);
+			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
 			
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully Submitted..!");
