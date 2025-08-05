@@ -97,6 +97,40 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return 0L;
 		}
 	}
+	
+	@Override
+	public int updateFundRequestAttach(FundApprovalAttach attach) throws Exception {
+	    try {
+	        Query query = manager.createNativeQuery(
+	            "UPDATE fund_approval_attach SET FileName=:fileName, OriginalFileName=:originalFileName " +
+	            "WHERE FundApprovalAttachId=:attachId");
+	        query.setParameter("fileName", attach.getFileName());
+	        query.setParameter("originalFileName", attach.getOriginalFileName());
+	        query.setParameter("attachId", attach.getFundApprovalAttachId());
+	        return query.executeUpdate();
+	    } catch (Exception e) {
+	        logger.error(new Date() + "Inside DAO updateFundRequestAttach() " + e);
+	        e.printStackTrace();
+	        return 0;
+	    }
+	}
+
+	@Override
+	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception {
+	    try {
+	        Query query = manager.createNativeQuery(
+	            "SELECT FundApprovalAttachId, FundApprovalId, FileName, OriginalFileName " +
+	            "FROM fund_approval_attach WHERE FundApprovalId=:fundApprovalId AND FileName=:fileName");
+	        query.setParameter("fundApprovalId", fundApprovalId);
+	        query.setParameter("fileName", fileName);
+	        return (Object[]) query.getSingleResult();
+	  
+	    } catch (Exception e) {
+	        logger.error(new Date() + "Inside DAO findAttachmentByFundAndName() " + e);
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
 
 	@Override
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception {

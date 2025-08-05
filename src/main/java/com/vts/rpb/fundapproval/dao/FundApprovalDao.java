@@ -65,4 +65,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId,String isApproved) throws Exception;
 
 	public int getFundApprovalIdCountFromCommitteeLinked(long fundApprovalId) throws Exception;
+	
+	public int updateFundRequestAttach(FundApprovalAttach attach) throws Exception;
+	
+	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception;
 }

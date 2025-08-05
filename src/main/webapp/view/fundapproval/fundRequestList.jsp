@@ -709,8 +709,10 @@ input[name="ItemNomenclature"]::placeholder {
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div id="EmployeeModalTable"></div>
-         <div id="ApprovalStatusDiv" class="mt-4"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
+         <div id="ApprovalStatusDiv" ></div>
         
       </div>
       
@@ -765,119 +767,142 @@ input[name="ItemNomenclature"]::placeholder {
     return table;
   }
   
-  function previewInformation(fundApprovalId){
-	  $.ajax({
-	    url: 'getRPBApprovalStatusAjax.htm',
-	    type: 'GET',
-	    data: { fundApprovalId: fundApprovalId },
-	    success: function(response) {
-	      var data = JSON.parse(response);
-
-	    console.log('before into checking data');
-	      if (!Array.isArray(data) || data.length === 0) {
-	        $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
-	        return;
-	      }
-	    console.log('!!!!!!data coming');
-	      var row = data[0]; 
-
-	      var html = '';
-	      html += '<div class="" style="padding-left: 10%;">';
-	      html += '<div class="row" style="margin-left:0px !important;margin-right:0px !important;">';
-	      html += '<div class="col-md-12">';
-	      html += '<div class="big-box">';
-	      html += '<div class="row">';
-	      html += '<div class="col-md-11" style="background-color: #f7f4e9;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);width: 100%;">';
-	      html += '<div class="inner-box" style="padding-top: 2%;">';
-			
-	      
-	      html += '<div class="recommendation-item " >';
-  	      html += '<span><b>Initiated By &nbsp;: &nbsp;</b></span> <span style="color: #370088"><b>'+row[19]+'</b></span></div>';
-  	    
-	      var rcStatusCodeNext = row[40];
-	      var rc1Status= row[41];
-	      var rc2Status= row[42];
-	      var rc3Status= row[43];
-	      var rc4Status= row[44];
-	      var rc5Status= row[45];
-	      var apprOffStatus= row[46];
-
-	      var labels = [
-	    	  { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
-	    	  { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
-	    	  { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
-	    	  { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
-	    	];
-
-	    	// Loop for common entries
-	    	for (var i = 0; i < labels.length; i++) {
-	    	  var item = labels[i];
-	    	  if (item.field != null && String(item.field).trim() !== '') {
-	    	    html += '<div class="recommendation-item " >';
-	    	    html += '<span><b>' + item.title + ' &nbsp;: &nbsp;</b></span>';
-	    	    html += '<span class="recommendation-value">';
-
-	    	    if (item.role) {
-	    	      html += '<span style="color:#034cb9">' + item.role + '</span>' + ' &nbsp;&nbsp; ';
-	    	    }
-	    	    html += '<span style="color: #370088">' + item.field + '</span>' + '&nbsp;';
-
-	    	    if (item.batch === 'Y') {
-	    	      html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
-	    	    } else {
-	    	      html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Recommendation Pending</span>';
-	    	    }
-
-	    	    html += '</span>';
-	    	    html += '</div>';
-	    	  }
-	    	}
-
-	    	//  RPB Member Secretary
-	    	if (row[33] != null && String(row[33]).trim() !== '') {
-	    	  html += '<div class="recommendation-item " >';
-	    	  html += '<span><b>RPB Member Secretary &nbsp;: &nbsp;</b></span>';
-	    	  html += '<span class="recommendation-value">';
-	    	  if (row[34]) {
-	    	    html += '<span style="color:#034cb9">' + row[34] + '</span>' + ' &nbsp;&nbsp; ';
-	    	  }
-	    	  html += '<span style="color: #370088">' + row[33] + '</span>' + '&nbsp;';
-	    	  if (row[45] === 'Y') {
-	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
-	    	  } else {
-	    	    html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Review Pending</span>';
-	    	  }
-	    	  html += '</span>';
-	    	  html += '</div>';
-	    	}
-
-	    	//  RPB Chairman
-	    	if (row[36] != null && String(row[36]).trim() !== '') {
-	    	  html += '<div class="recommendation-item " >';
-	    	  html += '<span><b>RPB Chairman &nbsp;: &nbsp;</b></span>';
-	    	  html += '<span class="recommendation-value">';
-	    	  if (row[37]) {
-	    	    html += '<span style="color:#034cb9">' + row[37] + '</span>' + ' &nbsp;&nbsp; ';
-	    	  }
-	    	  html += '<span style="color: #370088">' + row[36] + '</span>' + '&nbsp;';
-	    	  if (row[46] === 'Y') {
-	    	    html += '<img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">';
-	    	  } else {
-	    	    html += '<span style="color: #b65c00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 10px;">Approval Pending</span>';
-	    	  }
-	    	  html += '</span>';
-	    	  html += '</div>';
-	    	}
-
-			console.log('loop done!!!_!_!_!');
-	      html += '</div></div></div></div></div></div></div>';
-		
-	      $('#ApprovalStatusDiv').html(html);
-	    },
-	    error: function(xhr, status, error) {
-	      console.error('AJAX Error: ' + status + " " + error);
-	    }
-	  });
+  function previewInformation(fundApprovalId) {
+	    $.ajax({
+	        url: 'getRPBApprovalStatusAjax.htm',
+	        type: 'GET',
+	        data: { fundApprovalId: fundApprovalId },
+	        success: function(response) {
+	            var data = JSON.parse(response);
+	            
+	            if (!Array.isArray(data) || data.length === 0) {
+	                $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+	                return;
+	            }
+	            
+	            var row = data[0]; 
+	            var html = '';
+	            
+	            // Create table structure
+	            html += '<div class="table-responsive" style="">';
+	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
+	            html += '<thead style="background-color: #f7f4e9;">';
+	            html += '<tr>';
+	            html += '<th style="width: 30%;">Role</th>';
+	            html += '<th style="width: 40%;">Officer</th>';
+	            html += '<th style="width: 30%;">Status</th>';
+	            html += '</tr>';
+	            html += '</thead>';
+	            html += '<tbody>';
+	            
+	            
+	            html += '<tr>';
+	            html += '<td><b>Initiated By</b></td>';
+	            html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
+	            html += '<td style="font-weight:600;">Initiated</td>';
+	            html += '</tr>';
+	            
+	            var rcStatusCodeNext = row[40];
+	            var rc1Status = row[41];
+	            var rc2Status = row[42];
+	            var rc3Status = row[43];
+	            var rc4Status = row[44];
+	            var rc5Status = row[45];
+	            var apprOffStatus = row[46];
+	            
+	            var labels = [
+	                { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
+	                { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
+	                { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
+	                { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
+	            ];
+	            
+	          
+	            for (var i = 0; i < labels.length; i++) {
+	                var item = labels[i];
+	                if (item.field != null && String(item.field).trim() !== '') {
+	                    html += '<tr>';
+	                    html += '<td><b>' + item.title + '</b></td>';
+	                    html += '<td>';
+	                    
+	                    if (item.role) {
+	                        html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
+	                    }
+	                    html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
+	                    html += '</td>';
+	                    html += '<td>';
+	                    
+	                    if (item.batch === 'Y') {
+	                        html += '<span style="color: green;font-weight:600;">Recommended</span>';
+	                        html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                    } else {
+	                        html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
+	                    }
+	                    
+	                    html += '</td>';
+	                    html += '</tr>';
+	                }
+	            }
+	            
+	            // RPB Member Secretary
+	            if (row[33] != null && String(row[33]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Member Secretary</b></td>';
+	                html += '<td>';
+	                
+	                if (row[34]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[45] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Reviewed</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            // RPB Chairman
+	            if (row[36] != null && String(row[36]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Chairman</b></td>';
+	                html += '<td>';
+	                
+	                if (row[37]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[46] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Approved</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            html += '</tbody>';
+	            html += '</table>';
+	            html += '</div>';
+	            
+	            $('#ApprovalStatusDiv').html(html);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX Error: ' + status + " " + error);
+	            $('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
+	        }
+	    });
 	}
 
 

@@ -124,60 +124,79 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		 return 1L;
 	}
 	
-	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception{
-		long FundApprovalId=fbedao.EditFundRequestSubmit(approval);
-	 	System.err.println("SERVICE FundApprovalId->"+FundApprovalId);
-	 	if(FundApprovalId >0) {
-	 		
-	 		String filePath = Paths.get(uploadpath, "FundApproval",String.valueOf(FundApprovalId)).toString();
-	 		String pathDB=Paths.get("FundApproval",String.valueOf(FundApprovalId)).toString();
-	 		
-	 		File filepath = new File(filePath);
-			long ret = 0;
-			if (!filepath.exists()) {
-				filepath.mkdirs();
-			}
-			
-			for (int i = 0; i < attachDto.getFiles().length; i++) {
-				if (!attachDto.getFiles()[i].isEmpty()) {
-					FundApprovalAttach modal = new FundApprovalAttach();
-					modal.setFundApprovalId(FundApprovalId);
-					modal.setFileName(attachDto.getFileName()[i]);
-					modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
-		
-					modal.setCreatedBy(attachDto.getCreatedBy());
-					modal.setCreatedDate(LocalDateTime.now());
-		
-					String fullFilePath = filePath +  modal.getOriginalFileName();
-		
-					File file = new File(fullFilePath);
-					int count = 0;
-					while (true) {
-						file = new File(fullFilePath);
-		
-						if (file.exists()) {
-							count++;
-							fullFilePath = filePath;
-						} else {
-							if (count > 0) {
-								modal.setOriginalFileName(FilenameUtils.getBaseName(modal.getOriginalFileName()) + "-"
-										+ count + "." + FilenameUtils.getExtension(modal.getOriginalFileName()));
-							}
-							break;
-						}
-					}
-		
-					modal.setPath(pathDB);
-		
-					  SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
-					  ret = fbedao.AddFundRequestAttachSubmit(modal);
-					 
-		
-				}
-			}
-			
-	 	}
-	 return 1L;
+	@Override
+	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
+	    long fundApprovalId = fbedao.EditFundRequestSubmit(approval);
+	    System.err.println("SERVICE FundApprovalId->" + fundApprovalId);
+	    
+	    if (fundApprovalId > 0) {
+	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
+	        String pathDB = Paths.get("FundApproval", String.valueOf(fundApprovalId)).toString();
+	        
+	        File filepath = new File(filePath);
+	        if (!filepath.exists()) {
+	            filepath.mkdirs();
+	        }
+	        
+	        for (int i = 0; i < attachDto.getFiles().length; i++) {
+	            if (!attachDto.getFiles()[i].isEmpty()) {
+	                // Check if attachment with this name already exists
+	                Object[] existingAttach = fbedao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
+	                System.err.println("Service->existingAttach--"+Arrays.toString(existingAttach));
+	                
+	                if (existingAttach != null) {
+	                    // Update existing attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalAttachId((Long) existingAttach[0]);
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setModifiedBy(attachDto.getCreatedBy());
+	                    modal.setModifiedDate(LocalDateTime.now());
+	                    modal.setPath(pathDB);
+	                    
+	                    // Delete old file
+	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
+	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
+	                    Files.deleteIfExists(oldFile.toPath());
+	                    System.err.println("EXISTING if SECTION-");
+	                    
+	                    // Save new file
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fbedao.updateFundRequestAttach(modal);
+	                } else {
+	                    // Add new attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setCreatedBy(attachDto.getCreatedBy());
+	                    modal.setCreatedDate(LocalDateTime.now());
+	                    
+	                    String fullFilePath = filePath + File.separator + modal.getOriginalFileName();
+	                    File file = new File(fullFilePath);
+	                    int count = 0;
+	                    while (file.exists()) {
+	                        count++;
+	                        String newName = FilenameUtils.getBaseName(modal.getOriginalFileName()) + "-" + count + 
+	                            "." + FilenameUtils.getExtension(modal.getOriginalFileName());
+	                        fullFilePath = filePath + File.separator + newName;
+	                        file = new File(fullFilePath);
+	                        if (count > 0) {
+	                            modal.setOriginalFileName(newName);
+	                        }
+	                    }
+	                    
+	                    modal.setPath(pathDB);
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fbedao.AddFundRequestAttachSubmit(modal);
+	                    
+	                    System.err.println("NEW else SECTION-");
+	                }
+	            }
+	        }
+	    }
+	    return 1L;
 	}
 	
 	public static void SaveFile(String uploadpath, String fileName, MultipartFile multipartFile) throws IOException {
