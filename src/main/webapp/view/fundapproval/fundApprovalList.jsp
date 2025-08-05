@@ -372,10 +372,30 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
 			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
 			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center"><span class="badge badge-approved"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommended
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Reviewed
-									         <%}else{ %> Recommended<%} %></span></td>
+			                     <td align="center"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> 
+
+									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Approved</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;padding-left: 1%" ></i>											
+								       </button>
+											        
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> 
+
+									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Recommended</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+								       </button>
+								       
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %>
+									         
+									         <button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Reviewed</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+								       </button>
+									         <%}else{ %> Recommended<%} %></td>
 			                    
 			                 </tr>
 						    <% 
@@ -412,8 +432,10 @@ String failure=(String)request.getParameter("resultFailure");%>
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div id="EmployeeModalTable"></div>
-         <div id="ApprovalStatusDiv" class="mt-4"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
+         <div id="ApprovalStatusDiv" ></div>
         
       </div>
       
@@ -541,8 +563,8 @@ showFailureFlyMessage('<%=failure %>');
 	            var html = '';
 	            
 	            // Create table structure
-	            html += '<div class="table-responsive" style="margin-top: 20px;">';
-	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">';
+	            html += '<div class="table-responsive" style="">';
+	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
 	            html += '<thead style="background-color: #f7f4e9;">';
 	            html += '<tr>';
 	            html += '<th style="width: 30%;">Role</th>';
@@ -552,11 +574,11 @@ showFailureFlyMessage('<%=failure %>');
 	            html += '</thead>';
 	            html += '<tbody>';
 	            
-	            // Initiated By row
+	            
 	            html += '<tr>';
 	            html += '<td><b>Initiated By</b></td>';
 	            html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
-	            html += '<td>Initiated</td>';
+	            html += '<td style="font-weight:600;">Initiated</td>';
 	            html += '</tr>';
 	            
 	            var rcStatusCodeNext = row[40];
@@ -574,7 +596,7 @@ showFailureFlyMessage('<%=failure %>');
 	                { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
 	            ];
 	            
-	            // Loop for common entries
+	          
 	            for (var i = 0; i < labels.length; i++) {
 	                var item = labels[i];
 	                if (item.field != null && String(item.field).trim() !== '') {
@@ -583,17 +605,17 @@ showFailureFlyMessage('<%=failure %>');
 	                    html += '<td>';
 	                    
 	                    if (item.role) {
-	                        html += '<span style="color:#034cb9">' + item.role + '</span><br>';
+	                        html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
 	                    }
-	                    html += '<span style="color: #370088">' + item.field + '</span>';
+	                    html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
 	                    html += '</td>';
 	                    html += '<td>';
 	                    
 	                    if (item.batch === 'Y') {
-	                        html += '<span style="color: green;">Approved</span>';
+	                        html += '<span style="color: green;font-weight:600;">Recommended</span>';
 	                        html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
 	                    } else {
-	                        html += '<span style="color: #bd0707;">Pending</span>';
+	                        html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
 	                    }
 	                    
 	                    html += '</td>';
@@ -608,17 +630,17 @@ showFailureFlyMessage('<%=failure %>');
 	                html += '<td>';
 	                
 	                if (row[34]) {
-	                    html += '<span style="color:#034cb9">' + row[34] + '</span><br>';
+	                    html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
 	                }
-	                html += '<span style="color: #370088">' + row[33] + '</span>';
+	                html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
 	                html += '</td>';
 	                html += '<td>';
 	                
 	                if (row[45] === 'Y') {
-	                    html += '<span style="color: green;">Approved</span>';
+	                    html += '<span style="color: green;font-weight:600;">Reviewed</span>';
 	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
 	                } else {
-	                    html += '<span style="color: #bd0707;">Pending</span>';
+	                    html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
 	                }
 	                
 	                html += '</td>';
@@ -632,17 +654,17 @@ showFailureFlyMessage('<%=failure %>');
 	                html += '<td>';
 	                
 	                if (row[37]) {
-	                    html += '<span style="color:#034cb9">' + row[37] + '</span><br>';
+	                    html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
 	                }
-	                html += '<span style="color: #370088">' + row[36] + '</span>';
+	                html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
 	                html += '</td>';
 	                html += '<td>';
 	                
 	                if (row[46] === 'Y') {
-	                    html += '<span style="color: green;">Approved</span>';
+	                    html += '<span style="color: green;font-weight:600;">Approved</span>';
 	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
 	                } else {
-	                    html += '<span style="color: #bd0707;">Pending</span>';
+	                    html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
 	                }
 	                
 	                html += '</td>';
