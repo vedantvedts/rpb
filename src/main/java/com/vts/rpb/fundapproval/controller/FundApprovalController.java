@@ -261,7 +261,7 @@ public class FundApprovalController
 			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
 			
 			if(status > 0) {
-				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully Submitted..!");
+				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully..!");
 			}else {
 				redir.addAttribute("resultFailure", "Fund Request Recommended Unsuccessful or Something Went Wrong..!");
 			}
@@ -287,9 +287,7 @@ public class FundApprovalController
 		String UserName = (String) ses.getAttribute("Username");
 		logger.info(new Date() + "Inside AddFundRequest.htm " + UserName);
 		try
-		{	String fbeYear=req.getParameter("fbeYear");
-			String reYear=req.getParameter("reYear");
-			
+		{	
 			req.setAttribute("ActionType", "add");	
 			req.setAttribute("filesize", attach_file_size);
 			req.setAttribute("officerList", masterService.getOfficersList());
@@ -326,7 +324,7 @@ public class FundApprovalController
 			
 			String itemNomenclature=req.getParameter("ItemFor");
 			String justification=req.getParameter("fileno");
-			String FBEamount=req.getParameter("FBEamount");
+			String fundRequestAmount=req.getParameter("TotalFundReguestAmount");
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
 			String jun=req.getParameter("JuneMonth");
@@ -362,6 +360,7 @@ public class FundApprovalController
 			fundApproval.setItemNomenclature(itemNomenclature);
 			fundApproval.setJustification(justification);
 			fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate));
+			fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 			fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 			fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
 			fundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);
@@ -409,6 +408,7 @@ public class FundApprovalController
 				fundApproval.setItemNomenclature(itemNomenclature);
 				fundApproval.setJustification(justification);
 				fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate));
+				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 				fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 				fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
 				fundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);

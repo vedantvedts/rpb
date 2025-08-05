@@ -569,5 +569,23 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return 0;
 		}
 	}
+	
+	private static final String GETFBESUBCOUNTONSINO="SELECT MaxCount, finYear FROM (SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(IFNULL(s.ItemSerialNo, 'NA/0'), '/', -1) AS UNSIGNED)), 0) AS MaxCount,:fbeReYear AS finYear FROM fbe_sub s INNER JOIN fbe_main a ON a.FbeMainId = s.FbeMainId AND a.Status = 'A' AND (CASE WHEN :estimateType = 'R' THEN a.REYear WHEN :estimateType = 'F' THEN a.FBEYear END) = :fbeReYear WHERE s.Status = 'A' UNION ALL SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(IFNULL(fa.SerialNo, 'NA/0'), '/', -1) AS UNSIGNED)), 0) AS MaxCount,:fbeReYear AS finYear FROM fund_approval fa WHERE fa.REFBEYear = :fbeReYear AND fa.EstimateType = :estimateType) AS CombinedTable ORDER BY MaxCount DESC LIMIT 1";
+	@Override
+	public List<Object[]> getMaxSerialNoCount(String fbeReYear,String estimateType) throws Exception {
+		
+       try {
+			Query query= manager.createNativeQuery(GETFBESUBCOUNTONSINO);
+			query.setParameter("fbeReYear", fbeReYear);
+			query.setParameter("estimateType", estimateType);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

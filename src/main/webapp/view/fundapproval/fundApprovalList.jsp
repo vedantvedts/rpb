@@ -147,7 +147,7 @@
       color: #065f46;
     }
     .custom-width-modal {
-			  width: 50% !important;
+			  width: 70% !important;
 			  max-width: 100%;
 			}
   </style>
@@ -439,7 +439,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			
 </div> <!-- Page End -->
 <div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document">
+ <div class="modal-dialog modal-lg custom-width-modal" role="document" style="">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>

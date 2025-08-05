@@ -69,4 +69,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public int updateFundRequestAttach(FundApprovalAttach attach) throws Exception;
 	
 	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception;
+
+	public List<Object[]> getMaxSerialNoCount(String fbeReYear, String estimateType) throws Exception;
 }

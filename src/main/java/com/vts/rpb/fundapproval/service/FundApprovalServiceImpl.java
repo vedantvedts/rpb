@@ -510,6 +510,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
+				
+				if(fundDto.getAction().equalsIgnoreCase("R")) 
+				{
+					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				}
+				
 			}
 		
 		long status=0;
@@ -518,6 +524,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				if(!fundDto.getAction().equalsIgnoreCase("RE")) //  RE - Recommend
 				{
 					fundApproval.setStatus(fundDto.getAction());
+				}
+				
+				if(fundDto.getAction().equalsIgnoreCase("A"))
+				{
+					fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
 				}
 			}
 			fundApproval.setStatus(fundApproval.getStatus());
@@ -605,6 +616,55 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			memberType=list.get(0)!=null && list.get(0).length>0 && list.get(0)[1]!=null ? list.get(0)[1].toString() : null;
 		}
 		return memberType;
+	}
+	
+	public String createSerialNo(String fbeReYear,String estimateType)
+	{
+		try 
+		{
+			int maxCount =0;
+			if(estimateType!=null && estimateType.equalsIgnoreCase("F"))
+			{
+				List<Object[]> result = fbedao.getMaxSerialNoCount(fbeReYear,estimateType);
+				if(result!=null && result.size()>0)
+				{
+					maxCount= result.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
+				}
+			}
+			
+			if(estimateType!=null && estimateType.equalsIgnoreCase("R"))
+			{
+				int previousYearFBESerialNoCount=0,SelectedYearREserialNoCount=0;
+				if(fbeReYear!=null) 
+				{    // getting selected or RE Year Revised Estimate Serial No(Max)
+					List<Object[]> resultRE = fbedao.getMaxSerialNoCount(fbeReYear,estimateType);
+					if(resultRE!=null && resultRE.size()>0)
+					{
+						SelectedYearREserialNoCount= resultRE.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
+						
+						if(SelectedYearREserialNoCount==0) // if Revised Estimate Serial No is Zero then we will check in Last Year FBE
+					    {
+							List<Object[]> resultFBE = fbedao.getMaxSerialNoCount(fbeReYear,"F");
+							if(resultFBE!=null && resultFBE.size()>0)
+							{
+								previousYearFBESerialNoCount= resultFBE.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
+							}
+							maxCount=previousYearFBESerialNoCount;
+					    }
+					    else
+					    {
+					    	maxCount=SelectedYearREserialNoCount;
+					    }
+					}
+				}
+			}
+			String[] years = fbeReYear.split("-");
+	        String shortYearRange = years[0].substring(2) + "-" + years[1].substring(2);
+	        return shortYearRange+"/"+maxCount+1;
+			
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 }
