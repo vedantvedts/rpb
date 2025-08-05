@@ -336,20 +336,20 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return approvalStatus;
 	}
 	
-	private String[] getCurrentEmployeeFundDetails(long empId, long fundApprovalId) throws Exception
+	private String[] getCurrentEmployeeFundDetails(long empId, long fundApprovalId,String status) throws Exception
 	{
 		String[] currentDetails=new String[2];
 		FundApproval fundDetails=fbedao.getFundRequestDetails(fundApprovalId);
 		
-		if(fundDetails.getStatus()!=null)
+		if(status!=null)
 		{
 			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO1 RECOMMENDED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO1 RETURNED";
 				}
@@ -358,11 +358,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO2 RECOMMENDED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO2 RETURNED";
 				}
@@ -371,11 +371,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO3 RECOMMENDED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RO3 RETURNED";
 				}
@@ -384,11 +384,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="SE RECOMMENDED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="SE RETURNED";
 				}
@@ -397,11 +397,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RPB MEMBER SECRETARY APPROVED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="RPB MEMBER SECRETARY RETURNED";
 				}
@@ -410,11 +410,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
 			{
-				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				if(!status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="CHAIRMAN APPROVED";
 				}
-				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				else if(status.equalsIgnoreCase("R"))
 				{
 					currentDetails[0]="CHAIRMAN RETURNED";
 				}
@@ -425,26 +425,26 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return currentDetails;
 	}
 	
-	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
-	{
-		masterFlowList.forEach(row->System.out.println(Arrays.toString(row)));
-		 return IntStream.range(0, masterFlowList.size() - 1).filter(i -> statusCodeNext.equals(masterFlowList.get(i)[2].toString()))
-		            .mapToObj(i -> masterFlowList.get(i + 1)[2].toString())
-		            .findFirst()
-		            .orElse(null); // return null if not found or last in the list
-	}
-	
-	private BigDecimal getTotalOfCashoutgoCost(FundApproval fundApproval) throws Exception
-	{
-		BigDecimal totalCost=BigDecimal.ZERO;
-		if(fundApproval!=null)
-		{
-			totalCost=fundApproval.getApril().add(fundApproval.getMay()).add(fundApproval.getJune()).add(fundApproval.getJuly())
-					.add(fundApproval.getAugust()).add(fundApproval.getSeptember()).add(fundApproval.getOctober()).add(fundApproval.getNovember())
-					.add(fundApproval.getDecember()).add(fundApproval.getJanuary()).add(fundApproval.getFebruary()).add(fundApproval.getMarch());
-		}
-		return totalCost;
-	}
+//	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
+//	{
+//		masterFlowList.forEach(row->System.out.println(Arrays.toString(row)));
+//		 return IntStream.range(0, masterFlowList.size() - 1).filter(i -> statusCodeNext.equals(masterFlowList.get(i)[2].toString()))
+//		            .mapToObj(i -> masterFlowList.get(i + 1)[2].toString())
+//		            .findFirst()
+//		            .orElse(null); // return null if not found or last in the list
+//	}
+//	
+//	private BigDecimal getTotalOfCashoutgoCost(FundApproval fundApproval) throws Exception
+//	{
+//		BigDecimal totalCost=BigDecimal.ZERO;
+//		if(fundApproval!=null)
+//		{
+//			totalCost=fundApproval.getApril().add(fundApproval.getMay()).add(fundApproval.getJune()).add(fundApproval.getJuly())
+//					.add(fundApproval.getAugust()).add(fundApproval.getSeptember()).add(fundApproval.getOctober()).add(fundApproval.getNovember())
+//					.add(fundApproval.getDecember()).add(fundApproval.getJanuary()).add(fundApproval.getFebruary()).add(fundApproval.getMarch());
+//		}
+//		return totalCost;
+//	}
 	
 	@Override
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
@@ -475,7 +475,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception {
 		
 		FundApproval fundApproval=fbedao.getFundRequestDetails(fundDto.getFundApprovalId());
-		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId());
+		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId(), fundDto.getAction());
 		FundApprovalTrans transaction=new FundApprovalTrans(); 
 		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
 		transaction.setRcStausCode(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[0] : null);
@@ -483,33 +483,13 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		transaction.setRole(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[1] : null);
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
-		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
+		fbedao.insertFundApprovalTransaction(transaction);
 		
 			if(fundDto.getAction()!=null)
 			{
 				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
 				{
 					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
-				}
-				
-				if(fundDto.getAction().equalsIgnoreCase("R")) 
-				{
-					List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString(),fundApproval.getFundApprovalId());
-					if(masterFlowList!=null && masterFlowList.size()>0)
-					{
-						masterFlowList.forEach(row -> 
-						{
-							try {
-									if(row[4]!=null)
-									{
-										fbedao.updateParticularLinkedCommitteeDetails(Long.parseLong(row[4].toString()),fundApproval.getFundApprovalId(),"N");	
-									}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						});
-
-					}
 				}
 			}
 		
@@ -523,10 +503,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			}
 			fundApproval.setStatus(fundApproval.getStatus());
 			status=fbedao.updateFundRequest(fundApproval);
-		
-		//List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
-		//fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());
-		//fundApproval.setRcStatusCodeNext(fundDto.getAction()!=null && !fundDto.getAction().equalsIgnoreCase("A") ? (fundApproval.getRcStatusCodeNext()!=null ? getRcStatusCodeNext(masterFlowList,fundApproval.getRcStatusCodeNext()) : null) : fundApproval.getRcStatusCodeNext());
 		
 		return status;
 	}
