@@ -393,8 +393,7 @@ tr:last-of-type th:last-of-type {
 	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
-	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
-	    	 <li class="breadcrumb-item"><a href="FundRequest.htm">Requisition List </a></li>
+	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
 	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
              </ol>
@@ -602,18 +601,22 @@ tr:last-of-type th:last-of-type {
         }
         return null;
     }%>
-        <!-- First blank input row -->
-        <tr class="file-row1">
+        <!-- BQs Row -->
+<tr class="file-row1">
     <td>
         <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="BQs">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment1" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs") : null;
+            if (bqsAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= bqsAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="BQs">
+        <% } %>
     </td>
-    <%
-        Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs") : null;
-        if (bqsAttach != null) {
-    %>
+    <% if (bqsAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= bqsAttach[0] %>')" title="<%= bqsAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -622,20 +625,27 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
+<!-- Cost Of Estimate Row -->
 <tr class="file-row2">
     <td>
         <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Of Estimate">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment2" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimate") : null;
+            if (costAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= costAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="Cost Of Estimate">
+        <% } %>
     </td>
-    <%
-        Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimate") : null;
-        if (costAttach != null) {
-    %>
+    <% if (costAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= costAttach[0] %>')" title="<%= costAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -644,20 +654,27 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
+<!-- Justification Row -->
 <tr class="file-row3">
     <td>
         <input type="text" class="form-control" id="file3" name="filename" readonly="readonly" maxlength="255" value="Justification">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment3" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
+            if (justAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= justAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="Justification">
+        <% } %>
     </td>
-    <%
-        Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
-        if (justAttach != null) {
-    %>
+    <% if (justAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= justAttach[0] %>')" title="<%= justAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -666,14 +683,15 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
-<!-- Always show the fourth row for dynamic attachments -->
+<!-- Dynamic Attachment Row -->
 <tr class="file-row4">
-  <%
-        // Check for any non-standard attachments
-        List<String> staticNames = java.util.Arrays.asList("BQs", "Cost Of Estimate", "Justification");
+    <% 
+        List<String> staticNames = Arrays.asList("BQs", "Cost Of Estimate", "Justification");
         Object[] dynamicAttach = null;
         
         if (AttachList != null) {
@@ -686,15 +704,16 @@ tr:last-of-type th:last-of-type {
             }
         }
         
-        if (dynamicAttach != null) {
+        if (dynamicAttach != null) { 
     %>
     <td>
         <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
+        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
     </td>
-  
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -703,43 +722,16 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td>
+        <input type="text" class="form-control" name="filename" value="">
+    </td>
+    <td>
+        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+    </td>
+    <td></td>
     <% } %>
 </tr>
-
-
-    <tr class="file-row-dynamic">
-        <td>
-            <input type="text" class="form-control" name="filename"  value="">
-        </td>
-        <td>
-            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-        </td>
-        <td>
-        <%
-    // Additional rows for any extra dynamic attachments beyond the first one
-    if (AttachList != null) {
-        int dynamicCount = 0;
-        for (Object[] attach : AttachList) {
-            String attachName = (attach[1] != null) ? attach[1].toString() : "";
-            if (!staticNames.contains(attachName)) {
-                dynamicCount++;
-                if (dynamicCount > 1) { // We already handled the first one in the static row4
-%>
-            <button type="button" class="btn" onclick="downloadFile('<%= attach[0] %>')" title="<%= attach[2] %>">
-                <i class="fa fa-download" style="color: green;"></i>
-            </button>
-            <button type="button" class="btn" onclick="deleteFile('<%= attach[0] %>')" title="Delete File">
-                <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-            </button>
-        </td>
-    </tr>
-<%
-                }
-            }
-        }
-    }
-%>
-
 
     </tbody>
 </table>

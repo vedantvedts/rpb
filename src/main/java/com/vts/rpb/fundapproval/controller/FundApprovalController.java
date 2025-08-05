@@ -340,7 +340,9 @@ public class FundApprovalController
 			String feb=req.getParameter("FebruaryMonth");
 			String mar=req.getParameter("MarchMonth");
 			String filenames[] = req.getParameterValues("filename");
+		    String[] existingAttachmentIds = req.getParameterValues("existingAttachmentId");
 			
+			System.err.println("Exisattach ID->"+Arrays.toString(existingAttachmentIds));
 			if(action.equalsIgnoreCase("Add")) {
 			FundApproval fundApproval=new FundApproval();
 			
@@ -430,6 +432,8 @@ public class FundApprovalController
 				attachDto.setFiles(FileAttach);
 				attachDto.setCreatedBy(UserName);
 				attachDto.setCreatedDate(LocalDateTime.now());
+			  
+			    attachDto.setExistingAttachmentIds(existingAttachmentIds);
 				
 				 long status = fundApprovalService.EditFundRequestSubmit(fundApproval, attachDto); 
 				
