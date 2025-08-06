@@ -279,6 +279,27 @@ public class FundApprovalController
 		
 	}
 	
+	@RequestMapping(value="FundRequestCarryForward.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String fundRequestCarryForward(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside fundRequestCarryForward.htm " + UserName);
+		try
+		{	
+			req.setAttribute("ActionType", "add");	
+			req.setAttribute("filesize", attach_file_size);
+			req.setAttribute("officerList", masterService.getOfficersList());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside fundRequestCarryForward.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/addFundRequest";
+		
+	}
+	
 	
 	
 	@RequestMapping(value="AddFundRequest.htm",method = {RequestMethod.GET,RequestMethod.POST})
@@ -378,7 +399,7 @@ public class FundApprovalController
 			fundApproval.setRcStatusCode("INITIATION");
 			fundApproval.setRcStatusCodeNext("FORWARDED");
 			fundApproval.setStatus("N");
-			
+			fundApproval.setSerialNo("0");			
 			FundApprovalAttachDto attachDto=new FundApprovalAttachDto();
 			attachDto.setFileName(filenames);
 			attachDto.setFiles(FileAttach);
@@ -387,14 +408,13 @@ public class FundApprovalController
 			
 			 long status = fundApprovalService.AddFundRequestSubmit(fundApproval,attachDto); 
 			
-			
+			 
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request Submitted Successfully");
 			}else {
 				redir.addAttribute("resultFailure", "Fund Request submit Unsuccessful");
 			}
-		}
-			else if(action.equalsIgnoreCase("Update")) {
+		}else if(action.equalsIgnoreCase("Update")) {
 				FundApproval fundApproval=new FundApproval();
 				
 				fundApproval.setFundApprovalId(Long.valueOf(fundApprovalId));
@@ -444,8 +464,17 @@ public class FundApprovalController
 						redir.addAttribute("resultFailure", "Fund Request Update Unsuccessful");
 					}
 			}
+			
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			if(fundApprovalDto!=null)
+			{
+				redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+				redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+				redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+				redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
+			}
+			
 		}
-		
 		catch(Exception e)
 		{
 			e.printStackTrace();
