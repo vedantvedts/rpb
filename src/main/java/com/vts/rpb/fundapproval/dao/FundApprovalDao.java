@@ -3,6 +3,7 @@ package com.vts.rpb.fundapproval.dao;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -71,4 +72,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception;
 
 	public List<Object[]> getMaxSerialNoCount(String fbeReYear, String estimateType) throws Exception;
+
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception;
 }

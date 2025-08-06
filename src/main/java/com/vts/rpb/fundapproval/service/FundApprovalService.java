@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 
@@ -50,4 +51,6 @@ public interface FundApprovalService
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
 	
 	public String getCommitteeMemberCurrentStatus(String empId) throws Exception;
+
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception;
 }

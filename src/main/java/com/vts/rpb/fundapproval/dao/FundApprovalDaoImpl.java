@@ -10,10 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
+import com.vts.rpb.utils.DateTimeFormatUtil;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -586,6 +588,27 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:estimatedType,:finYear,:asOnDate,:labCode);";
+	@Override
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
+		 try {
+			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn()+ "-" +fundApprovalDto.getToYearBackBtn()+"','"+LocalDate.now()+"','"+labCode+"');");
+				Query query= manager.createNativeQuery(GETFUNDREQUESTCARRYFORWARD);
+				query.setParameter("divisionId", fundApprovalDto.getDivisionId());
+				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
+				query.setParameter("asOnDate", LocalDate.now());
+				query.setParameter("labCode",labCode);
+				query.setParameter("finYear", fundApprovalDto.getFromYearBackBtn()+ "-" +fundApprovalDto.getToYearBackBtn());
+				List<Object[]> result = (List<Object[]>)query.getResultList();
+				return result; 
+				
+			}catch (Exception e) {
+				logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+				e.printStackTrace();
+				return null;
+			}
 	}
 
 }

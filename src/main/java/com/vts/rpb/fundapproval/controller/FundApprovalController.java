@@ -283,12 +283,25 @@ public class FundApprovalController
 	public String fundRequestCarryForward(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
+		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() + "Inside fundRequestCarryForward.htm " + UserName);
 		try
 		{	
-			req.setAttribute("ActionType", "add");	
-			req.setAttribute("filesize", attach_file_size);
-			req.setAttribute("officerList", masterService.getOfficersList());
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			if(fundApprovalDto==null)
+			{
+				return "redirect:/FundRequest.htm";
+			}
+			
+			if(fundApprovalDto!=null)
+			{
+				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
+				if(carryForwardList!=null && carryForwardList.size()>0)
+				{
+					req.setAttribute("carryForwardList", carryForwardList);
+				}
+			}
+			
 		}
 		catch(Exception e)
 		{
@@ -296,7 +309,7 @@ public class FundApprovalController
 			logger.error(new Date() + " Inside fundRequestCarryForward.htm " + UserName, e);
 			return "static/error";
 		}
-		return "fundapproval/addFundRequest";
+		return "fundapproval/fundCarryForward";
 		
 	}
 	

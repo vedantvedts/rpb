@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
@@ -40,7 +41,7 @@ import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
 public class FundApprovalServiceImpl implements FundApprovalService 
 {
 	@Autowired
-	FundApprovalDao fbedao;
+	FundApprovalDao fundApprovalDao;
 
 	@Value("${ApplicationFilesDrive}")
 	String uploadpath;
@@ -55,13 +56,13 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
-		return fbedao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId);
+		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId);
 	}
 	
 	@Override
 	public long AddFundRequestSubmit(FundApproval fundApproval, FundApprovalAttachDto attachDto) throws Exception
 	{	
-		 long FundApprovalId=fbedao.AddFundRequestSubmit(fundApproval);
+		 long FundApprovalId=fundApprovalDao.AddFundRequestSubmit(fundApproval);
 		 	System.err.println("SERVICE FundApprovalId->"+FundApprovalId);
 		 	if(FundApprovalId >0) {
 		 		
@@ -106,7 +107,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 						modal.setPath(pathDB);
 			
 						  SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
-						  ret = fbedao.AddFundRequestAttachSubmit(modal);
+						  ret = fundApprovalDao.AddFundRequestAttachSubmit(modal);
 						 
 			
 					}
@@ -118,7 +119,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				transModal.setRemarks(fundApproval.getRemarks());
 				transModal.setActionBy(fundApproval.getInitiatingOfficer());
 				transModal.setActionDate(LocalDateTime.now());
-				fbedao.AddFundApprovalTrans(transModal);
+				fundApprovalDao.AddFundApprovalTrans(transModal);
 		 	}
 		 	
 		 return 1L;
@@ -126,7 +127,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
-	    long fundApprovalId = fbedao.EditFundRequestSubmit(approval);
+	    long fundApprovalId = fundApprovalDao.EditFundRequestSubmit(approval);
 	    System.err.println("SERVICE FundApprovalId->" + fundApprovalId);
 	    
 	    if (fundApprovalId > 0) {
@@ -141,7 +142,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	        for (int i = 0; i < attachDto.getFiles().length; i++) {
 	            if (!attachDto.getFiles()[i].isEmpty()) {
 	                // Check if attachment with this name already exists
-	                Object[] existingAttach = fbedao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
+	                Object[] existingAttach = fundApprovalDao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
 	                System.err.println("Service->existingAttach--"+Arrays.toString(existingAttach));
 	                
 	                if (existingAttach != null) {
@@ -163,7 +164,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    
 	                    // Save new file
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
-	                    fbedao.updateFundRequestAttach(modal);
+	                    fundApprovalDao.updateFundRequestAttach(modal);
 	                } else {
 	                    // Add new attachment
 	                    FundApprovalAttach modal = new FundApprovalAttach();
@@ -189,7 +190,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    
 	                    modal.setPath(pathDB);
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
-	                    fbedao.AddFundRequestAttachSubmit(modal);
+	                    fundApprovalDao.AddFundRequestAttachSubmit(modal);
 	                    
 	                    System.err.println("NEW else SECTION-");
 	                }
@@ -217,12 +218,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
-		return fbedao.getMasterFlowDetails(estimatedCost,fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
+		return fundApprovalDao.getMasterFlowDetails(estimatedCost,fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 	
 	@Override
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception{
-		return fbedao.getFundRequestObj(fundApprovalId);
+		return fundApprovalDao.getFundRequestObj(fundApprovalId);
 	}
 	
 	@Override
@@ -231,7 +232,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		List<Object[]> getFundRequestAttachList = null;
 		try {
 			System.err.println("SERVICE getFundRequestAttachList-"+fundApprovalId);
-			getFundRequestAttachList = fbedao.getFundRequestAttachList(fundApprovalId);
+			getFundRequestAttachList = fundApprovalDao.getFundRequestAttachList(fundApprovalId);
 					
 			}catch (Exception e) {
 			logger.error(new Date() +"Inside MasterServiceImpl getFundRequestAttachList");
@@ -244,7 +245,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		Object[] FundRequestAttachData = null;
 		try {
 			System.err.println("SERVICE FundRequestAttachData-"+fundApprovalAttachId);
-			FundRequestAttachData = fbedao.FundRequestAttachData(fundApprovalAttachId);
+			FundRequestAttachData = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
 			System.out.println(Arrays.toString(FundRequestAttachData));
 			}catch (Exception e) {
 			logger.error(new Date() +"Inside MasterServiceImpl FundRequestAttachData");
@@ -256,14 +257,14 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception {
 		logger.info(new Date() + "Inside SERVICE FundRequestAttachDelete ");
-		Object[] attachdata = fbedao.FundRequestAttachData(fundApprovalAttachId);
+		Object[] attachdata = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
 		System.out.println(Arrays.toString(attachdata));
 		File my_file=null;
 		System.out.println("ApplicationFilesDrive: " + env.getProperty("ApplicationFilesDrive")+"FundApproval"+File.separator + attachdata[1] +File.separator + attachdata[3]);
 		my_file = new File(env.getProperty("ApplicationFilesDrive")+"FundApproval"+File.separator + attachdata[1] +File.separator + attachdata[3]);
 		boolean result = Files.deleteIfExists(my_file.toPath());
 	 if(result) {
-			return fbedao.FundRequestAttachDelete(fundApprovalAttachId);
+			return fundApprovalDao.FundRequestAttachDelete(fundApprovalAttachId);
 	 }else {
 		   return 0;
 	 }
@@ -278,12 +279,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		transaction.setRcStausCode("FORWARDED");
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
-		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
+		long transStatus=fundApprovalDao.insertFundApprovalTransaction(transaction);
 		
-		int fundApprovalIdCount=fbedao.getFundApprovalIdCountFromCommitteeLinked(fundApprovalData.getFundApprovalId());
+		int fundApprovalIdCount=fundApprovalDao.getFundApprovalIdCountFromCommitteeLinked(fundApprovalData.getFundApprovalId());
 		if(fundApprovalIdCount == 0) 
 		{
-			List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0",fundApprovalData.getFundApprovalId());
+			List<Object[]> masterFlowList=fundApprovalDao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0",fundApprovalData.getFundApprovalId());
 			if(masterFlowList!=null && masterFlowList.size()>0)
 			{
 				masterFlowList.forEach(row -> {
@@ -331,7 +332,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					    try {
 					    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
 					    	{
-								fbedao.insertLinkedCommitteeMembers(linkedMembers);
+								fundApprovalDao.insertLinkedCommitteeMembers(linkedMembers);
 					    	}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -349,7 +350,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			fundApprovalData.setStatus("F");
 			fundApprovalData.setModifiedBy(fundApprovalData.getModifiedBy());
 			fundApprovalData.setModifiedDate(fundApprovalData.getModifiedDate());
-			approvalStatus=fbedao.updateFundRequest(fundApprovalData);
+			approvalStatus=fundApprovalDao.updateFundRequest(fundApprovalData);
 		}
 		
 		return approvalStatus;
@@ -358,7 +359,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	private String[] getCurrentEmployeeFundDetails(long empId, long fundApprovalId,String status) throws Exception
 	{
 		String[] currentDetails=new String[2];
-		FundApproval fundDetails=fbedao.getFundRequestDetails(fundApprovalId);
+		FundApproval fundDetails=fundApprovalDao.getFundRequestDetails(fundApprovalId);
 		
 		if(status!=null)
 		{
@@ -467,33 +468,33 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
-		return fbedao.getFundRequestDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
+		return fundApprovalDao.getFundRequestDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 
 	@Override
 	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
-		return fbedao.getFundPendingList(empId,finYear,loginType,formRole);
+		return fundApprovalDao.getFundPendingList(empId,finYear,loginType,formRole);
 	}
 
 	@Override
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception {
-		return fbedao.getFundApprovedList(empId,finYear,loginType);
+		return fundApprovalDao.getFundApprovedList(empId,finYear,loginType);
 	}
 
 	@Override
 	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception {
-		return fbedao.getParticularFundApprovalDetails(fundApprovalId,empId);
+		return fundApprovalDao.getParticularFundApprovalDetails(fundApprovalId,empId);
 	}
 	
 	@Override
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception{
-		return fbedao.getParticularFundApprovalTransDetails(fundApprovalId);
+		return fundApprovalDao.getParticularFundApprovalTransDetails(fundApprovalId);
 	}
 
 	@Override
 	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception {
 		
-		FundApproval fundApproval=fbedao.getFundRequestDetails(fundDto.getFundApprovalId());
+		FundApproval fundApproval=fundApprovalDao.getFundRequestDetails(fundDto.getFundApprovalId());
 		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId(), fundDto.getAction());
 		FundApprovalTrans transaction=new FundApprovalTrans(); 
 		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
@@ -502,18 +503,18 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		transaction.setRole(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[1] : null);
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
-		fbedao.insertFundApprovalTransaction(transaction);
+		fundApprovalDao.insertFundApprovalTransaction(transaction);
 		
 			if(fundDto.getAction()!=null)
 			{
 				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
 				{
-					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
 				
 				if(fundDto.getAction().equalsIgnoreCase("R")) 
 				{
-					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
 				
 			}
@@ -532,21 +533,21 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				}
 			}
 			fundApproval.setStatus(fundApproval.getStatus());
-			status=fbedao.updateFundRequest(fundApproval);
+			status=fundApprovalDao.updateFundRequest(fundApproval);
 		
 		return status;
 	}
 
 	@Override
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception {
-		return fbedao.getAllCommitteeMemberDetails(currentDate);
+		return fundApprovalDao.getAllCommitteeMemberDetails(currentDate);
 	}
 	
 	@Override
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost, String status)  throws Exception{
 		
-		return fbedao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
+		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 	}
 	
 	@Override
@@ -557,12 +558,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		{
 			if(!projectId.equalsIgnoreCase("0"))
 			{
-				budgetHeadList=fbedao.getProjectBudgetHeadList(projectId);
+				budgetHeadList=fundApprovalDao.getProjectBudgetHeadList(projectId);
 			}
 			
 			if(projectId.equalsIgnoreCase("0"))
 			{
-				budgetHeadList=fbedao.getGeneralBudgetHeadList();
+				budgetHeadList=fundApprovalDao.getGeneralBudgetHeadList();
 			}
 			
 			if(budgetHeadList==null || budgetHeadList.isEmpty())
@@ -598,18 +599,18 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		List<Object[]> BudgetHeadItem=null;
 		if(ProjectId>0) 
 		{
-			BudgetHeadItem=fbedao.getPrjBudgetHeadItem(ProjectId,budgetHeadId);
+			BudgetHeadItem=fundApprovalDao.getPrjBudgetHeadItem(ProjectId,budgetHeadId);
 		}
 		else
 		{
-			BudgetHeadItem=fbedao.getGenBudgetHeadItem(budgetHeadId);
+			BudgetHeadItem=fundApprovalDao.getGenBudgetHeadItem(budgetHeadId);
 		}
 		return BudgetHeadItem;
 	}
 
 	@Override
 	public String getCommitteeMemberCurrentStatus(String empId) throws Exception {
-		List<Object[]> list=fbedao.getCommitteeMemberCurrentStatus(empId);
+		List<Object[]> list=fundApprovalDao.getCommitteeMemberCurrentStatus(empId);
 		String memberType=null;
 		if(list!=null && list.size()>0)
 		{
@@ -625,7 +626,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			int maxCount =0;
 			if(estimateType!=null && estimateType.equalsIgnoreCase("F"))
 			{
-				List<Object[]> result = fbedao.getMaxSerialNoCount(fbeReYear,estimateType);
+				List<Object[]> result = fundApprovalDao.getMaxSerialNoCount(fbeReYear,estimateType);
 				if(result!=null && result.size()>0)
 				{
 					maxCount= result.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
@@ -637,14 +638,14 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				int previousYearFBESerialNoCount=0,SelectedYearREserialNoCount=0;
 				if(fbeReYear!=null) 
 				{    // getting selected or RE Year Revised Estimate Serial No(Max)
-					List<Object[]> resultRE = fbedao.getMaxSerialNoCount(fbeReYear,estimateType);
+					List<Object[]> resultRE = fundApprovalDao.getMaxSerialNoCount(fbeReYear,estimateType);
 					if(resultRE!=null && resultRE.size()>0)
 					{
 						SelectedYearREserialNoCount= resultRE.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
 						
 						if(SelectedYearREserialNoCount==0) // if Revised Estimate Serial No is Zero then we will check in Last Year FBE
 					    {
-							List<Object[]> resultFBE = fbedao.getMaxSerialNoCount(fbeReYear,"F");
+							List<Object[]> resultFBE = fundApprovalDao.getMaxSerialNoCount(fbeReYear,"F");
 							if(resultFBE!=null && resultFBE.size()>0)
 							{
 								previousYearFBESerialNoCount= resultFBE.stream().findFirst().map(row -> row[0]).map(Object::toString).map(Integer::parseInt).orElse(0);
@@ -665,6 +666,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode)
+			throws Exception {
+		return fundApprovalDao.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
 	}
 	
 }
