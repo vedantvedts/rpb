@@ -756,7 +756,6 @@ public class FundApprovalController
 				String DivisionDetails=req.getParameter("DivisionDetails");
 				String estimateType=req.getParameter("EstimateType");
 				String status=req.getParameter("approvalStatus");
-				String budgetId=req.getParameter("selProject");
 				String budgetHeadId=req.getParameter("budgetHeadId");
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
@@ -1275,6 +1274,104 @@ public class FundApprovalController
 				return "static/error";
 			}         
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
+		}
+		
+		@RequestMapping(value="estimateTypeParticularDivList.htm",method = {RequestMethod.GET,RequestMethod.POST})
+		public String estimateTypeParticularDivList(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+		{
+			String UserName = (String) ses.getAttribute("Username");
+			String loginType= (String)ses.getAttribute("LoginType");
+			String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+			logger.info(new Date() + "Inside EditFundRequest.htm " + UserName);
+			try
+			{
+				Long divisionId=Long.valueOf(req.getParameter("divisionId"));
+				String estimateType=req.getParameter("estimateType");
+				String FromYear=req.getParameter("FromYear");
+				String ToYear=req.getParameter("ToYear");
+				String status=req.getParameter("approvalStatus");
+				String budgetHeadId=req.getParameter("budgetHeadId");
+				String budgetItemId=req.getParameter("budgetItemId");
+				String fromCost=req.getParameter("FromCost");
+				String toCost=req.getParameter("ToCost");
+				
+				
+				String FinYear=null;
+				if(FromYear==null || ToYear==null) 
+				{
+					FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+					FromYear=FinYear.split("-")[0];
+					ToYear=FinYear.split("-")[1];
+				}
+				else
+				{
+					FinYear=FromYear+"-"+ToYear;
+				}
+					
+				
+				
+				
+				
+				if(budgetHeadId==null) {
+					budgetHeadId="0";
+				}
+				
+				if(budgetItemId==null) {
+					budgetItemId="0";
+				}
+				
+				if(fromCost==null) {
+					fromCost="0";
+				}
+				
+				if(toCost==null) {
+					toCost="100000000";
+				}
+				
+				if(status==null) {
+					status="N";
+				}
+				
+				if(Long.valueOf(budgetHeadId)==0) {
+					budgetItemId="0";
+				}
+				
+				System.err.println("divisionId->"+divisionId);
+				System.err.println("estimateType->"+estimateType);
+				System.err.println("FromYear->"+FromYear);
+				System.err.println("ToYear->"+ToYear);
+				System.err.println("budgetheadID->"+budgetHeadId);
+				System.err.println("budgetItemId->"+budgetItemId);
+				System.err.println("fromCost->"+fromCost);
+				System.err.println("toCost->"+toCost);
+				System.err.println("status->"+status);
+				System.err.println("loginType->"+loginType);
+				System.err.println("empId->"+empId);
+				System.err.println("FinYear->"+FinYear);
+				
+				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
+				
+				req.setAttribute("attachList",estimateTypeParticularDivList);
+				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+				req.setAttribute("ExistingbudgetItemId", budgetItemId);
+				req.setAttribute("ExistingfromCost", fromCost);
+				req.setAttribute("ExistingtoCost", toCost);
+				req.setAttribute("Existingstatus", status);
+				req.setAttribute("divisionId", divisionId);
+				req.setAttribute("estimateType", estimateType);
+				req.setAttribute("FinYear", FinYear);
+				req.setAttribute("FromYear", FromYear);
+				req.setAttribute("ToYear", ToYear);
+				
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.error(new Date() + " Inside estimateTypeParticularDivList.htm " + UserName, e);
+				return "static/error";
+			}
+			return "fundapproval/ParticularDivTypeReportList";
+			
 		}
 		
 }

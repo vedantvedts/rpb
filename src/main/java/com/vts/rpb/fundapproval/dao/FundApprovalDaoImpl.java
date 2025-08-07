@@ -610,5 +610,47 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 				return null;
 			}
 	}
-
+	
+	@Override
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
+			String fromCost, String toCost,String status) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
+					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
+					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
+					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate FROM fund_approval f \n"
+					+ "LEFT JOIN employee e ON e.EmpId=f.InitiatingOfficer \n"
+					+ "LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId \n"
+					+ "LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId\n"
+					+ "LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId \n"
+					+ "LEFT JOIN  division_master dm ON dm.DivisionId = :divisionId\n"
+					+ "WHERE f.FinYear=:finYear AND f.ProjectId=0  AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END)  AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) \n"
+					+ "AND f.EstimateType=:estimateType\n"
+					+ "AND (CASE WHEN '-1' = :divisionId\n"
+					+ "THEN 1 = 1 ELSE f.DivisionId = :divisionId END) \n"
+					+ "AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) \n"
+					+ "AND (CASE WHEN :statuss = 'A' THEN CASE WHEN f.Status = 'A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status != 'A' THEN 1 ELSE 0 END END) = 1\n"
+					+ "GROUP BY f.FundApprovalId \n"
+					+ "HAVING \n"
+					+ "SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
+			query.setParameter("divisionId", divisionId);
+			query.setParameter("estimateType", estimateType);
+			query.setParameter("finYear",finYear);
+			query.setParameter("loginType",loginType);
+			query.setParameter("empId",empId);
+			query.setParameter("budgetHeadId",budgetHeadId);
+			query.setParameter("budgetItemId",budgetItemId);
+			query.setParameter("fromCost",fromCost);
+			query.setParameter("toCost",toCost);
+			query.setParameter("statuss",status);
+			return query.getResultList();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO estimateTypeParticularDivList "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
 }

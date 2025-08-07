@@ -74,4 +74,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getMaxSerialNoCount(String fbeReYear, String estimateType) throws Exception;
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception;
+	
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
+			String fromCost, String toCost,String status) throws Exception;
+
 }
