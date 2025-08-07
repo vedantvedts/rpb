@@ -250,7 +250,7 @@ input[name="ItemNomenclature"]::placeholder {
 			 }
 			 
 			 .custom-width-modal {
-					  width: 50% !important;
+					  width: 70% !important;
 					  max-width: 100%;
 					}
 			 
@@ -788,7 +788,7 @@ input[name="ItemNomenclature"]::placeholder {
 	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
 	            html += '<thead style="background-color: #f7f4e9;">';
 	            html += '<tr>';
-	            html += '<th style="width: 30%;">Role</th>';
+	            html += '<th style="width: 30%;">Flow</th>';
 	            html += '<th style="width: 40%;">Officer</th>';
 	            html += '<th style="width: 30%;">Status</th>';
 	            html += '</tr>';

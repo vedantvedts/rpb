@@ -50,4 +50,7 @@ public interface FundApprovalService
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
 	
 	public String getCommitteeMemberCurrentStatus(String empId) throws Exception;
+	
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
+			String fromCost, String toCost,String status) throws Exception;
 }
