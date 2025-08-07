@@ -20,7 +20,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception;
 
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	
@@ -30,15 +30,15 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception;
 
-	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
+	public FundApproval getFundRequestDetails(long fundRequestId) throws Exception;
 
 	public long updateFundRequest(FundApproval fundApprovalData) throws Exception;
 
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType) throws Exception;
+	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception;
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 
-	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId) throws Exception;
+	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception;
 
 	
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception;
@@ -59,4 +59,18 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getPrjBudgetHeadItem(long projectId, long budgetHeadId) throws Exception;
 	
 	public List<Object[]> getGenBudgetHeadItem(long budgetHeadId) throws Exception;
+
+	public List<Object[]> getCommitteeMemberCurrentStatus(String empId) throws Exception;
+
+	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId,String isApproved) throws Exception;
+
+	public int getFundApprovalIdCountFromCommitteeLinked(long fundApprovalId) throws Exception;
+	
+	public int updateFundRequestAttach(FundApprovalAttach attach) throws Exception;
+	
+	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception;
+	
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
+			String fromCost, String toCost,String status) throws Exception;
+	
 }

@@ -241,6 +241,19 @@ input[name="ItemNomenclature"]::placeholder {
         .modal-lg {
 			   		 max-width: 90% !important;
 			 }
+			 
+	 		 .custom-width-modal {
+			  width: 70% !important;
+			  max-width: 100%;
+			}
+			
+			  .highlight-box {
+					    background-color: #fff7d1; 
+					    border: 2px solid #1890ff; /* Blue border */
+					    padding: 10px;
+					    border-radius: 5px;
+					    margin-top: 8px;
+					}
     </style>
     
     
@@ -419,11 +432,11 @@ input[name="ItemNomenclature"]::placeholder {
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
                 <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %> <%=ExistingfromCost %> <%} else {%>0<%} %>"  required
-                    class="form-control" style="width: 100px; background-color: white;"
+                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 <span style="margin: 0 10px; font-weight: bold;">--</span>
                 <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %> <%=ExistingtoCost %> <%} else {%>1000000<%} %>" required
-                    class="form-control" style="width: 100px; background-color: white;"
+                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
         </div>
@@ -493,13 +506,13 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
-				                   			<%if(data[24]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
+				                   			<%if(data[23]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
 				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            <span style="color: #2b8c03;">Approved</span> 
 												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
 											       </button>
-											       <%} else if(data[24]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
+											       <%} else if(data[23]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
 											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												             <span style="color: #8c2303;">Pending</span>
@@ -605,14 +618,16 @@ input[name="ItemNomenclature"]::placeholder {
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div id="EmployeeModalTable"></div>
-        
+       <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
+         <div id="ApprovalStatusDiv" ></div>
+         
       </div>
       
     </div>
   </div>
 </div>	
-			
 </body>
 <script type="text/javascript">
 
@@ -626,7 +641,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 <%}%>
 </script>
-	<script type="text/javascript">
+ <script type="text/javascript">
 	function openApprovalStatusAjax(fundApprovalId) {
 		  $.ajax({
 		    url: 'getRPBApprovalHistoryAjax.htm',
@@ -639,8 +654,9 @@ input[name="ItemNomenclature"]::placeholder {
 		      }
 
 		      var tableHTML = generateTableHTML(data);
-		      $('#EmployeeModalTable').html(tableHTML);
 		      $('#ApprovalStatusModal').modal('show');
+		      $('#EmployeeModalTable').html(tableHTML);
+		      
 		      previewInformation(fundApprovalId);
 		    },
 		    error: function(xhr, status, error) {
@@ -650,6 +666,7 @@ input[name="ItemNomenclature"]::placeholder {
 		}
 
   function generateTableHTML(data) {
+	  
     if (!data || data.length === 0) {
       return '<p>No Status available.</p>';
     }
@@ -663,7 +680,7 @@ input[name="ItemNomenclature"]::placeholder {
       table += '<td>' + (row[1] || '--') + ', ' + (row[2] || '--') + '</td>';
       table += '<td align="center">' + (row[5] || '--') + '</td>';
       table += '<td>' + (row[4] || '--') + '</td>';
-      table += '<td>' + (row[3] || '--') + '</td>';
+      table += '<td style="color: #00008B;">' + (row[3] || '--') + '</td>';
       table += '</tr>';
     });
 
@@ -671,23 +688,147 @@ input[name="ItemNomenclature"]::placeholder {
     return table;
   }
   
-  function previewInformation(fundApprovalId){
-	  $.ajax({
-		    url: 'getRPBApprovalStatusAjax.htm',
-		    type: 'GET',
-		    data: { fundApprovalId: fundApprovalId },
-		    success: function(response) {
-		      var data = JSON.parse(response);
-		      if (!Array.isArray(data[0])) {
-		        data = [data]; // handle single-row case
-		      }
+  function previewInformation(fundApprovalId) {
+	    $.ajax({
+	        url: 'getRPBApprovalStatusAjax.htm',
+	        type: 'GET',
+	        data: { fundApprovalId: fundApprovalId },
+	        success: function(response) {
+	            var data = JSON.parse(response);
+	            
+	            if (!Array.isArray(data) || data.length === 0) {
+	                $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+	                return;
+	            }
+	            
+	            var row = data[0]; 
+	            var html = '';
+	            
+	            // Create table structure
+	            html += '<div class="table-responsive" style="">';
+	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
+	            html += '<thead style="background-color: #f7f4e9;">';
+	            html += '<tr>';
+	            html += '<th style="width: 30%;">Flow</th>';
+	            html += '<th style="width: 40%;">Officer</th>';
+	            html += '<th style="width: 30%;">Status</th>';
+	            html += '</tr>';
+	            html += '</thead>';
+	            html += '<tbody>';
+	            
+	            
+	            html += '<tr>';
+	            html += '<td><b>Initiated By</b></td>';
+	            html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
+	            html += '<td style="font-weight:600;">Initiated</td>';
+	            html += '</tr>';
+	            
+	            var rcStatusCodeNext = row[40];
+	            var rc1Status = row[41];
+	            var rc2Status = row[42];
+	            var rc3Status = row[43];
+	            var rc4Status = row[44];
+	            var rc5Status = row[45];
+	            var apprOffStatus = row[46];
+	            
+	            var labels = [
+	                { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
+	                { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
+	                { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
+	                { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
+	            ];
+	            
+	          
+	            for (var i = 0; i < labels.length; i++) {
+	                var item = labels[i];
+	                if (item.field != null && String(item.field).trim() !== '') {
+	                    html += '<tr>';
+	                    html += '<td><b>' + item.title + '</b></td>';
+	                    html += '<td>';
+	                    
+	                    if (item.role) {
+	                        html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
+	                    }
+	                    html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
+	                    html += '</td>';
+	                    html += '<td>';
+	                    
+	                    if (item.batch === 'Y') {
+	                        html += '<span style="color: green;font-weight:600;">Recommended</span>';
+	                        html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                    } else {
+	                        html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
+	                    }
+	                    
+	                    html += '</td>';
+	                    html += '</tr>';
+	                }
+	            }
+	            
+	            // RPB Member Secretary
+	            if (row[33] != null && String(row[33]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Member Secretary</b></td>';
+	                html += '<td>';
+	                
+	                if (row[34]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[45] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Reviewed</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            // RPB Chairman
+	            if (row[36] != null && String(row[36]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Chairman</b></td>';
+	                html += '<td>';
+	                
+	                if (row[37]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[46] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Approved</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            html += '</tbody>';
+	            html += '</table>';
+	            html += '</div>';
+	            
+	            $('#ApprovalStatusDiv').html(html);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX Error: ' + status + " " + error);
+	            $('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
+	        }
+	    });
+	}
 
-		    },
-		    error: function(xhr, status, error) {
-		      console.error('AJAX Error: ' + status + error);
-		    }
-		  });
-  }
+
+
+
 </script>
 <script>
 
@@ -1100,9 +1241,9 @@ function refreshModal(modalId) {
 	          var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
 
 	          var row = "<tr>" +
-	            "<td style='text-align: center;font-weight:700'>" + attach.originalFileName + "</td>" +
+	            "<td style='text-align: center;font-weight:700'>" + attach.fileName + "</td>" +
 	            "<td style='text-align: center;'>" +
-	            "<button class='btn fa fa-eye text-primary' title='preview' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
+	            "<button class='btn fa fa-eye text-primary' title='preview - "+attach.fileName+" Attachment' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
 	            "</td>" +
 	            "</tr>";
 	          body.append(row);

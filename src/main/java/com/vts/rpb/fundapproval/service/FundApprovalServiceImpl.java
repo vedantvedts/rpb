@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -110,9 +111,10 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 					}
 				}
+				
 				FundApprovalTrans transModal=new FundApprovalTrans();
 				transModal.setFundApprovalId(fundApproval.getFundApprovalId());
-				transModal.setRcStausCode(fundApproval.getRcStatusCode());
+				transModal.setRcStausCode("INITIATION");
 				transModal.setRemarks(fundApproval.getRemarks());
 				transModal.setActionBy(fundApproval.getInitiatingOfficer());
 				transModal.setActionDate(LocalDateTime.now());
@@ -122,60 +124,79 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		 return 1L;
 	}
 	
-	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception{
-		long FundApprovalId=fbedao.EditFundRequestSubmit(approval);
-	 	System.err.println("SERVICE FundApprovalId->"+FundApprovalId);
-	 	if(FundApprovalId >0) {
-	 		
-	 		String filePath = Paths.get(uploadpath, "FundApproval",String.valueOf(FundApprovalId)).toString();
-	 		String pathDB=Paths.get("FundApproval",String.valueOf(FundApprovalId)).toString();
-	 		
-	 		File filepath = new File(filePath);
-			long ret = 0;
-			if (!filepath.exists()) {
-				filepath.mkdirs();
-			}
-			
-			for (int i = 0; i < attachDto.getFiles().length; i++) {
-				if (!attachDto.getFiles()[i].isEmpty()) {
-					FundApprovalAttach modal = new FundApprovalAttach();
-					modal.setFundApprovalId(FundApprovalId);
-					modal.setFileName(attachDto.getFileName()[i]);
-					modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
-		
-					modal.setCreatedBy(attachDto.getCreatedBy());
-					modal.setCreatedDate(LocalDateTime.now());
-		
-					String fullFilePath = filePath +  modal.getOriginalFileName();
-		
-					File file = new File(fullFilePath);
-					int count = 0;
-					while (true) {
-						file = new File(fullFilePath);
-		
-						if (file.exists()) {
-							count++;
-							fullFilePath = filePath;
-						} else {
-							if (count > 0) {
-								modal.setOriginalFileName(FilenameUtils.getBaseName(modal.getOriginalFileName()) + "-"
-										+ count + "." + FilenameUtils.getExtension(modal.getOriginalFileName()));
-							}
-							break;
-						}
-					}
-		
-					modal.setPath(pathDB);
-		
-					  SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
-					  ret = fbedao.AddFundRequestAttachSubmit(modal);
-					 
-		
-				}
-			}
-			
-	 	}
-	 return 1L;
+	@Override
+	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
+	    long fundApprovalId = fbedao.EditFundRequestSubmit(approval);
+	    System.err.println("SERVICE FundApprovalId->" + fundApprovalId);
+	    
+	    if (fundApprovalId > 0) {
+	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
+	        String pathDB = Paths.get("FundApproval", String.valueOf(fundApprovalId)).toString();
+	        
+	        File filepath = new File(filePath);
+	        if (!filepath.exists()) {
+	            filepath.mkdirs();
+	        }
+	        
+	        for (int i = 0; i < attachDto.getFiles().length; i++) {
+	            if (!attachDto.getFiles()[i].isEmpty()) {
+	                // Check if attachment with this name already exists
+	                Object[] existingAttach = fbedao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
+	                System.err.println("Service->existingAttach--"+Arrays.toString(existingAttach));
+	                
+	                if (existingAttach != null) {
+	                    // Update existing attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalAttachId((Long) existingAttach[0]);
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setModifiedBy(attachDto.getCreatedBy());
+	                    modal.setModifiedDate(LocalDateTime.now());
+	                    modal.setPath(pathDB);
+	                    
+	                    // Delete old file
+	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
+	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
+	                    Files.deleteIfExists(oldFile.toPath());
+	                    System.err.println("EXISTING if SECTION-");
+	                    
+	                    // Save new file
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fbedao.updateFundRequestAttach(modal);
+	                } else {
+	                    // Add new attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setCreatedBy(attachDto.getCreatedBy());
+	                    modal.setCreatedDate(LocalDateTime.now());
+	                    
+	                    String fullFilePath = filePath + File.separator + modal.getOriginalFileName();
+	                    File file = new File(fullFilePath);
+	                    int count = 0;
+	                    while (file.exists()) {
+	                        count++;
+	                        String newName = FilenameUtils.getBaseName(modal.getOriginalFileName()) + "-" + count + 
+	                            "." + FilenameUtils.getExtension(modal.getOriginalFileName());
+	                        fullFilePath = filePath + File.separator + newName;
+	                        file = new File(fullFilePath);
+	                        if (count > 0) {
+	                            modal.setOriginalFileName(newName);
+	                        }
+	                    }
+	                    
+	                    modal.setPath(pathDB);
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fbedao.AddFundRequestAttachSubmit(modal);
+	                    
+	                    System.err.println("NEW else SECTION-");
+	                }
+	            }
+	        }
+	    }
+	    return 1L;
 	}
 	
 	public static void SaveFile(String uploadpath, String fileName, MultipartFile multipartFile) throws IOException {
@@ -195,8 +216,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> getMasterFlowDetails(String estimatedCost) throws Exception {
-		return fbedao.getMasterFlowDetails(estimatedCost);
+	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception {
+		return fbedao.getMasterFlowDetails(estimatedCost,fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 	
 	@Override
@@ -252,88 +273,175 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId) throws Exception {
 		
-		List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0");
+		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
+		transaction.setRcStausCode("FORWARDED");
+		transaction.setActionBy(empId);
+		transaction.setActionDate(LocalDateTime.now());
+		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		String statusCodeNext=fundApprovalData.getRcStatusCodeNext();
-		fundApprovalData.setRcStatusCode(statusCodeNext);
-		fundApprovalData.setRcStatusCodeNext(statusCodeNext!=null ? getRcStatusCodeNext(masterFlowList,statusCodeNext) : null);
-		fundApprovalData.setStatus("F");
-		fundApprovalData.setModifiedBy(fundApprovalData.getModifiedBy());
-		fundApprovalData.setModifiedDate(fundApprovalData.getModifiedDate());
-		long approvalStatus=fbedao.updateFundRequest(fundApprovalData);
-		
-		if(approvalStatus>0)
+		int fundApprovalIdCount=fbedao.getFundApprovalIdCountFromCommitteeLinked(fundApprovalData.getFundApprovalId());
+		if(fundApprovalIdCount == 0) 
 		{
-			FundApprovalTrans transaction=new FundApprovalTrans(); 
-			transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
-			transaction.setRcStausCode(fundApprovalData.getRcStatusCode());
-			transaction.setActionBy(empId);
-			transaction.setActionDate(LocalDateTime.now());
-			long transStatus=fbedao.insertFundApprovalTransaction(transaction);
-			
-			if(transStatus>0)
+			List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0",fundApprovalData.getFundApprovalId());
+			if(masterFlowList!=null && masterFlowList.size()>0)
 			{
-				if(masterFlowList!=null && masterFlowList.size()>0)
-				{
-					masterFlowList.forEach(row -> {
-					    LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
-					    linkedMembers.setFundApprovalId(fundApprovalData.getFundApprovalId()); 
+				masterFlowList.forEach(row -> {
+				    LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
+				    linkedMembers.setFundApprovalId(fundApprovalData.getFundApprovalId()); 
+				    
+				    if(row[2]!=null)
+				    {
+				    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc1());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc2());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc3());
+				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc4());
+				    		linkedMembers.setMemberType("SE");    // CM-Subject Member
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc5());
+				    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
+				    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
+				    	}
+				    	
+				    	linkedMembers.setIsApproved("N");
+					    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
+					    linkedMembers.setCreatedDate(LocalDateTime.now());
+					    linkedMembers.setIsActive(1);
 					    
-					    if(row[2]!=null)
-					    {
-					    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+					    try {
+					    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
 					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc1());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+								fbedao.insertLinkedCommitteeMembers(linkedMembers);
 					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc2());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc3());
-					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc4());
-					    		linkedMembers.setMemberType("SE");    // CM-Subject Member
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getRc5());
-					    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
-					    	}
-					    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
-					    	{
-					    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
-					    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
-					    	}
-					    	
-					    	linkedMembers.setIsApproved("N");
-						    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
-						    linkedMembers.setCreatedDate(LocalDateTime.now());
-						    linkedMembers.setIsActive(1);
-						    
-						    try {
-						    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
-						    	{
-									fbedao.insertLinkedCommitteeMembers(linkedMembers);
-						    	}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-					    }
-					    
-					});
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+				    }
+				    
+				});
 
-				}
 			}
-			;
 		}
+		
+		long approvalStatus=0;
+		if(transStatus > 0)
+		{
+			fundApprovalData.setStatus("F");
+			fundApprovalData.setModifiedBy(fundApprovalData.getModifiedBy());
+			fundApprovalData.setModifiedDate(fundApprovalData.getModifiedDate());
+			approvalStatus=fbedao.updateFundRequest(fundApprovalData);
+		}
+		
 		return approvalStatus;
+	}
+	
+	private String[] getCurrentEmployeeFundDetails(long empId, long fundApprovalId) throws Exception
+	{
+		String[] currentDetails=new String[2];
+		FundApproval fundDetails=fbedao.getFundRequestDetails(fundApprovalId);
+		
+		if(fundDetails.getStatus()!=null)
+		{
+			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO1 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO1 RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc1Role();
+			}
+			
+			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO2 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO2 RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc2Role();
+			}
+			
+			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO3 RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RO3 RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc3Role();
+			}
+			
+			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="SE RECOMMENDED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="SE RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc4Role();
+			}
+			
+			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RPB MEMBER SECRETARY APPROVED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="RPB MEMBER SECRETARY RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc5Role();
+			}
+			
+			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
+			{
+				if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="CHAIRMAN APPROVED";
+				}
+				else if(!fundDetails.getStatus().equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="CHAIRMAN RETURNED";
+				}
+				currentDetails[1]=fundDetails.getApprovingOfficerRole();
+			}
+		}
+		
+		return currentDetails;
 	}
 	
 	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
@@ -359,12 +467,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
-		return fbedao.getFundRequestDetails(fundRequestId);
+		return fbedao.getFundRequestDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType) throws Exception {
-		return fbedao.getFundPendingList(empId,finYear,loginType);
+	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
+		return fbedao.getFundPendingList(empId,finYear,loginType,formRole);
 	}
 
 	@Override
@@ -373,8 +481,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId) throws Exception {
-		return fbedao.getParticularFundApprovalDetails(fundApprovalId);
+	public List<Object[]> getParticularFundApprovalDetails(String fundApprovalId,long empId) throws Exception {
+		return fbedao.getParticularFundApprovalDetails(fundApprovalId,empId);
 	}
 	
 	@Override
@@ -383,16 +491,62 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public long updateRecommendAndApprovalDetails(String fundApprovalId, String empId,String action) throws Exception {
+	public long updateRecommendAndApprovalDetails(FundApprovalDto fundDto, long empId) throws Exception {
 		
-		FundApproval fundApproval=fbedao.getFundRequestDetails(fundApprovalId);
+		FundApproval fundApproval=fbedao.getFundRequestDetails(fundDto.getFundApprovalId());
+		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId());
+		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
+		transaction.setRcStausCode(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[0] : null);
+		transaction.setRemarks(fundDto.getRemarks());
+		transaction.setRole(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[1] : null);
+		transaction.setActionBy(empId);
+		transaction.setActionDate(LocalDateTime.now());
+		long transStatus=fbedao.insertFundApprovalTransaction(transaction);
 		
-		List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
+			if(fundDto.getAction()!=null)
+			{
+				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
+				{
+					fbedao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				}
+				
+				if(fundDto.getAction().equalsIgnoreCase("R")) 
+				{
+					List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString(),fundApproval.getFundApprovalId());
+					if(masterFlowList!=null && masterFlowList.size()>0)
+					{
+						masterFlowList.forEach(row -> 
+						{
+							try {
+									if(row[4]!=null)
+									{
+										fbedao.updateParticularLinkedCommitteeDetails(Long.parseLong(row[4].toString()),fundApproval.getFundApprovalId(),"N");	
+									}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
+
+					}
+				}
+			}
 		
-		fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());
-		fundApproval.setRcStatusCodeNext(action!=null && !action.equalsIgnoreCase("A") ? (fundApproval.getRcStatusCodeNext()!=null ? getRcStatusCodeNext(masterFlowList,fundApproval.getRcStatusCodeNext()) : null) : fundApproval.getRcStatusCodeNext());
-		fundApproval.setStatus(action!=null && action.equalsIgnoreCase("A") ? "A" : fundApproval.getStatus());
-		long status=fbedao.updateFundRequest(fundApproval);
+		long status=0;
+			if(fundDto.getAction()!=null)
+			{
+				if(!fundDto.getAction().equalsIgnoreCase("RE")) //  RE - Recommend
+				{
+					fundApproval.setStatus(fundDto.getAction());
+				}
+			}
+			fundApproval.setStatus(fundApproval.getStatus());
+			status=fbedao.updateFundRequest(fundApproval);
+		
+		//List<Object[]> masterFlowList=fbedao.getMasterFlowDetails(getTotalOfCashoutgoCost(fundApproval).toString());
+		//fundApproval.setRcStatusCode(fundApproval.getRcStatusCodeNext());
+		//fundApproval.setRcStatusCodeNext(fundDto.getAction()!=null && !fundDto.getAction().equalsIgnoreCase("A") ? (fundApproval.getRcStatusCodeNext()!=null ? getRcStatusCodeNext(masterFlowList,fundApproval.getRcStatusCodeNext()) : null) : fundApproval.getRcStatusCodeNext());
+		
 		return status;
 	}
 
@@ -464,6 +618,23 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			BudgetHeadItem=fbedao.getGenBudgetHeadItem(budgetHeadId);
 		}
 		return BudgetHeadItem;
+	}
+
+	@Override
+	public String getCommitteeMemberCurrentStatus(String empId) throws Exception {
+		List<Object[]> list=fbedao.getCommitteeMemberCurrentStatus(empId);
+		String memberType=null;
+		if(list!=null && list.size()>0)
+		{
+			memberType=list.get(0)!=null && list.get(0).length>0 && list.get(0)[1]!=null ? list.get(0)[1].toString() : null;
+		}
+		return memberType;
+	}
+	
+	@Override
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
+			String fromCost, String toCost,String status) throws Exception{
+		return fbedao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
 	}
 	
 }

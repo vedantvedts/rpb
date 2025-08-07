@@ -10,6 +10,7 @@ import lombok.Data;
 public class FundApprovalAttachDto {
 	private long FundApprovalAttachId;
 	private long FundApprovalId;
+	private String[] existingAttachmentIds;
 	private String[] Path;
 	private String[] FileName;
 	private MultipartFile[] files;

@@ -61,7 +61,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	    	      ses.setAttribute("EmployeeDesign", EmpDetails[4]); 
 	    	      ses.setAttribute("client_name", labcode);
 	    			
-	    		validUrl="/rpb/FundRequest.htm";
+	    		validUrl="/rpb/MainDashBoard.htm";
 			}
 			else
 			{

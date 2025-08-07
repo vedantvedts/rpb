@@ -211,7 +211,10 @@ input[name="ItemNomenclature"]::placeholder {
             cursor: pointer;
         }
         
-
+.custom-width-modal {
+			  width: 50% !important;
+			  max-width: 100%;
+			}
 
 </style>
  <style>
@@ -247,7 +250,7 @@ input[name="ItemNomenclature"]::placeholder {
 			 }
 			 
 			 .custom-width-modal {
-					  width: 60% !important;
+					  width: 70% !important;
 					  max-width: 100%;
 					}
 			 
@@ -295,9 +298,9 @@ input[name="ItemNomenclature"]::placeholder {
 	 	<div class="row">
 	 	  <div class="col-md-3"><h5>Requisition List</h5></div>
 	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	 <!-- <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li> -->
-	          <li class="breadcrumb-item active ml-auto	" aria-current="page">Requisition List</li>
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	          <li class="breadcrumb-item active" aria-current="page">Requisition List</li>
              </ol>
            </div>
          </div>
@@ -408,11 +411,12 @@ input[name="ItemNomenclature"]::placeholder {
 					            <% int sn=1;
 					            BigDecimal grandTotal = new BigDecimal(0);
 					            BigDecimal subTotal = new BigDecimal(0);
+					            
 					            if(requisitionList!=null && requisitionList.size()>0){ %>
 					            
 					            <%for(Object[] data:requisitionList){ 
-					            	System.err.println("status->"+data[24]);
 					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
+					            	String fundStatus=data[24]==null ? "NaN" : data[24].toString();
 					            %>
 					            
 					            	 <tr>
@@ -424,28 +428,31 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0]%>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
-				                   			<%if(data[24]!=null && "F".equalsIgnoreCase(data[24].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+				                   			
+				                   			 
+				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             Approved
-												             &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;" ></i>											
+												            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
+												            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
+												            </span> 
+												            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
 											       </button>
-											       <%} else if(data[24]!=null && "N".equalsIgnoreCase(data[24].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
-												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             <span style="color: #8c2303;">Pending</span>
-												             &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
-											
-											       </button>
-											       <%} %>
+											       
 									       </td>
 				                   			<td align="center">-</td>
-				                   			<td align="center"><button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
-												               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
-												        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
-												      </button>
-												      
-											<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;"></td>
+				                   			<td align="center">
+													      
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
+												<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
+										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
+										        </button>
+												
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+					                       		<%}else{ %>
+					                       		<span style="font-weight: 800;">***</span>
+					                       		<%} %>
+					                       	</td>
 				                        </tr>	
 					            
 					            <%} %>
@@ -454,7 +461,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            <%}else{ %>
 					            
 					             <tr style="height: 9rem;">
-					                        <td colspan="9" style="vertical-align: middle;">
+					                        <td colspan="10" style="vertical-align: middle;">
 					                            <div class="text-danger" style="text-align:center">
 					                                <h6 style="font-weight: 600;">No Requisition Found</h6>
 					                            </div>
@@ -692,7 +699,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 
 <div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document">
+ <div class="modal-dialog  custom-width-modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
@@ -702,7 +709,10 @@ input[name="ItemNomenclature"]::placeholder {
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div id="EmployeeModalTable"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
+         <div id="ApprovalStatusDiv" ></div>
         
       </div>
       
@@ -710,7 +720,7 @@ input[name="ItemNomenclature"]::placeholder {
   </div>
 </div>
 
-	<script type="text/javascript">
+ <script type="text/javascript">
 	function openApprovalStatusAjax(fundApprovalId) {
 		  $.ajax({
 		    url: 'getRPBApprovalHistoryAjax.htm',
@@ -723,8 +733,9 @@ input[name="ItemNomenclature"]::placeholder {
 		      }
 
 		      var tableHTML = generateTableHTML(data);
-		      $('#EmployeeModalTable').html(tableHTML);
 		      $('#ApprovalStatusModal').modal('show');
+		      $('#EmployeeModalTable').html(tableHTML);
+		      
 		      previewInformation(fundApprovalId);
 		    },
 		    error: function(xhr, status, error) {
@@ -734,6 +745,7 @@ input[name="ItemNomenclature"]::placeholder {
 		}
 
   function generateTableHTML(data) {
+	  
     if (!data || data.length === 0) {
       return '<p>No Status available.</p>';
     }
@@ -747,7 +759,7 @@ input[name="ItemNomenclature"]::placeholder {
       table += '<td>' + (row[1] || '--') + ', ' + (row[2] || '--') + '</td>';
       table += '<td align="center">' + (row[5] || '--') + '</td>';
       table += '<td>' + (row[4] || '--') + '</td>';
-      table += '<td>' + (row[3] || '--') + '</td>';
+      table += '<td style="color: #00008B;">' + (row[3] || '--') + '</td>';
       table += '</tr>';
     });
 
@@ -755,23 +767,147 @@ input[name="ItemNomenclature"]::placeholder {
     return table;
   }
   
-  function previewInformation(fundApprovalId){
-	  $.ajax({
-		    url: 'getRPBApprovalStatusAjax.htm',
-		    type: 'GET',
-		    data: { fundApprovalId: fundApprovalId },
-		    success: function(response) {
-		      var data = JSON.parse(response);
-		      if (!Array.isArray(data[0])) {
-		        data = [data]; // handle single-row case
-		      }
+  function previewInformation(fundApprovalId) {
+	    $.ajax({
+	        url: 'getRPBApprovalStatusAjax.htm',
+	        type: 'GET',
+	        data: { fundApprovalId: fundApprovalId },
+	        success: function(response) {
+	            var data = JSON.parse(response);
+	            
+	            if (!Array.isArray(data) || data.length === 0) {
+	                $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+	                return;
+	            }
+	            
+	            var row = data[0]; 
+	            var html = '';
+	            
+	            // Create table structure
+	            html += '<div class="table-responsive" style="">';
+	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
+	            html += '<thead style="background-color: #f7f4e9;">';
+	            html += '<tr>';
+	            html += '<th style="width: 30%;">Flow</th>';
+	            html += '<th style="width: 40%;">Officer</th>';
+	            html += '<th style="width: 30%;">Status</th>';
+	            html += '</tr>';
+	            html += '</thead>';
+	            html += '<tbody>';
+	            
+	            
+	            html += '<tr>';
+	            html += '<td><b>Initiated By</b></td>';
+	            html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
+	            html += '<td style="font-weight:600;">Initiated</td>';
+	            html += '</tr>';
+	            
+	            var rcStatusCodeNext = row[40];
+	            var rc1Status = row[41];
+	            var rc2Status = row[42];
+	            var rc3Status = row[43];
+	            var rc4Status = row[44];
+	            var rc5Status = row[45];
+	            var apprOffStatus = row[46];
+	            
+	            var labels = [
+	                { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
+	                { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
+	                { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
+	                { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
+	            ];
+	            
+	          
+	            for (var i = 0; i < labels.length; i++) {
+	                var item = labels[i];
+	                if (item.field != null && String(item.field).trim() !== '') {
+	                    html += '<tr>';
+	                    html += '<td><b>' + item.title + '</b></td>';
+	                    html += '<td>';
+	                    
+	                    if (item.role) {
+	                        html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
+	                    }
+	                    html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
+	                    html += '</td>';
+	                    html += '<td>';
+	                    
+	                    if (item.batch === 'Y') {
+	                        html += '<span style="color: green;font-weight:600;">Recommended</span>';
+	                        html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                    } else {
+	                        html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
+	                    }
+	                    
+	                    html += '</td>';
+	                    html += '</tr>';
+	                }
+	            }
+	            
+	            // RPB Member Secretary
+	            if (row[33] != null && String(row[33]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Member Secretary</b></td>';
+	                html += '<td>';
+	                
+	                if (row[34]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[45] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Reviewed</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            // RPB Chairman
+	            if (row[36] != null && String(row[36]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Chairman</b></td>';
+	                html += '<td>';
+	                
+	                if (row[37]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[46] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Approved</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            html += '</tbody>';
+	            html += '</table>';
+	            html += '</div>';
+	            
+	            $('#ApprovalStatusDiv').html(html);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX Error: ' + status + " " + error);
+	            $('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
+	        }
+	    });
+	}
 
-		    },
-		    error: function(xhr, status, error) {
-		      console.error('AJAX Error: ' + status + error);
-		    }
-		  });
-  }
+
+
+
 </script>
 			
 </body>
@@ -843,7 +979,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$.ajax({
         url: 'GetMasterFlowDetails.htm',  
         method: 'GET', 
-        data: {estimatedCost: estimatedCost},  
+        data: { estimatedCost : estimatedCost , fundRequestId : fundRequestId },  
         success: function(response) {
            var data = JSON.parse(response);
            masterFlowDetails=data;
@@ -886,6 +1022,36 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			       		}
 			   		}
 			    	
+			    	var flowEmpId=value[4];
+			    	var flowEmpRole=value[5];
+			    	
+			    	//Employee Role
+			    	if(value[2] == 'RO1 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole1").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RO2 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole2").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RO3 RECOMMENDED')
+			    	 {
+			    		$("#RPBMemberRole3").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'SE RECOMMENDED')
+			    	 {
+			    		$("#SubjectExpertRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
+			    	 {
+			    		$("#RPBMemberSecretaryRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	else if(value[2] == 'CHAIRMAN APPROVED')
+			    	 {
+			    		$("#chairmanRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
+			    	
+			    	// employee details
 			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
 			    	 
 			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
@@ -894,7 +1060,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && value[1] == 'CM')   // CM-Committee Member
 			   				 {
-			    				 $(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+		    					 	$(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }
@@ -903,7 +1076,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	 {
 			    		 $.each(allEmployeeList, function(key, value) 
 						 {
-			        		 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+			    			 if(flowEmpId!=null && flowEmpId == value[0])
+	    					 {
+			    				 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
+		    				 else
+	    					 {
+		    					 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
 						 });
 			    	 }
 			    	 
@@ -913,7 +1093,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && value[1] == 'CS')   // CM-Committee Secretary
 			   				 {
-			    				 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }
@@ -924,7 +1111,14 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 {
 			    			 if(value[1]!=null && (value[1] == 'CC' || value[1] == 'SC'))   // CM-Committee Chairman  SC-Committee Standby Chairman
 			   				 {
-			    				 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    				 if(flowEmpId!=null && flowEmpId == value[2])
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 }
 			   				 }
 						 });
 			    	 }
@@ -935,7 +1129,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	       	}
 	       	else
 	       		{
-	       			$("#fundApprovalForardTable").append("<span>Something Went Wrong ..!</span>");
+	       			$("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
 	       		}
         }
     });
@@ -1148,9 +1342,9 @@ function refreshModal(modalId) {
 	          var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
 
 	          var row = "<tr>" +
-	            "<td style='text-align: center;font-weight:700'>" + attach.originalFileName + "</td>" +
+	            "<td style='text-align: center;font-weight:700'>" + attach.fileName + "</td>" +
 	            "<td style='text-align: center;'>" +
-	            "<button class='btn fa fa-eye text-primary' title='preview' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
+	            "<button class='btn fa fa-eye text-primary' title='preview - "+attach.fileName+" Attachment' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
 	            "</td>" +
 	            "</tr>";
 	          body.append(row);

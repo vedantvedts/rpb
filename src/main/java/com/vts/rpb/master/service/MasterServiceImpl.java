@@ -45,4 +45,9 @@ public class MasterServiceImpl implements MasterService
 		return masterDao.getAllOfficersList();
 	}
 
+	@Override
+	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
+		return masterDao.getAllEmployeeDetailsByDivisionId(divisionId);
+	}
+
 }

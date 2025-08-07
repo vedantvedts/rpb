@@ -35,6 +35,7 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
+import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.master.service.MasterService;
 import com.vts.rpb.utils.CharArrayWriterResponse;
@@ -163,6 +164,7 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside FundApprovalList.htm " + UserName);
 		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
 		String loginType= (String)ses.getAttribute("LoginType");
+		long formRole= (long)ses.getAttribute("FormRole");
 		try
 		{
 			String fromYear=req.getParameter("FromYear");
@@ -179,12 +181,14 @@ public class FundApprovalController
 				{
 					finYear=fromYear+"-"+toYear;
 				}
-			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType);
+				
+			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
 			approvalPendingList.stream().forEach(a->System.err.println("approvalPendingList->"+Arrays.toString(a)));
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
+			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
 			
@@ -201,6 +205,7 @@ public class FundApprovalController
 	public String fundApprovalPreview(HttpServletRequest req, HttpServletResponse resp, HttpSession ses, RedirectAttributes redir)
 	{
 		String UserName = (String) ses.getAttribute("Username");
+		long empId = (Long) ses.getAttribute("EmployeeId");
 		logger.info(new Date() + "Inside FundApprovalPreview.htm " + UserName);
 		try {
 			
@@ -208,7 +213,7 @@ public class FundApprovalController
 			
 			if(fundApprovalId!=null)
 			{ 
-				List<Object[]> fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId);
+				List<Object[]> fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
 						
 				if(fundDetails!=null && fundDetails.size()>0)
 				{
@@ -230,7 +235,7 @@ public class FundApprovalController
 	public String fundApprovalSubmit(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
-		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		long empId = (Long) ses.getAttribute("EmployeeId");
 		logger.info(new Date() + "Inside FundApprovalSubmit.htm " + UserName);
 		String url=null;
 		try
@@ -239,26 +244,21 @@ public class FundApprovalController
 			String action=req.getParameter("Action");
 			String remarks=req.getParameter("remarks");
 			System.out.println("fundApprovalId****"+fundApprovalId);
-			if(fundApprovalId==null)
+			if(fundApprovalId==null || action==null)
 			{
 				redir.addAttribute("resultFailure", "Something Went Wrong..!");
 				return "redirect:/FundApprovalPreview.htm";
 			}
 			
-			String actionMssg="";
-			if(action!=null) {
-				actionMssg=action!=null && action.equalsIgnoreCase("A") ? "Approved" : "";
-				if(action.equalsIgnoreCase("A"))
-				{
-					actionMssg="Approved";
-				}
-				else
-				{
-					actionMssg="Recommended";
-				}
-			}
+			String actionMssg=action!=null && action.equalsIgnoreCase("A") ? "Approved" : "Recommended";
 			
-			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundApprovalId,empId,action);
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setRemarks(remarks);
+			fundDto.setAction(action);
+			fundDto.setCreatedBy(UserName);
+			
+			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
 			
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully Submitted..!");
@@ -340,7 +340,9 @@ public class FundApprovalController
 			String feb=req.getParameter("FebruaryMonth");
 			String mar=req.getParameter("MarchMonth");
 			String filenames[] = req.getParameterValues("filename");
+		    String[] existingAttachmentIds = req.getParameterValues("existingAttachmentId");
 			
+			System.err.println("Exisattach ID->"+Arrays.toString(existingAttachmentIds));
 			if(action.equalsIgnoreCase("Add")) {
 			FundApproval fundApproval=new FundApproval();
 			
@@ -430,6 +432,8 @@ public class FundApprovalController
 				attachDto.setFiles(FileAttach);
 				attachDto.setCreatedBy(UserName);
 				attachDto.setCreatedDate(LocalDateTime.now());
+			  
+			    attachDto.setExistingAttachmentIds(existingAttachmentIds);
 				
 				 long status = fundApprovalService.EditFundRequestSubmit(fundApproval, attachDto); 
 				
@@ -459,9 +463,10 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside GetMasterFlowDetails.htm " + UserName);
 		try {
 				String estimatedCost = req.getParameter("estimatedCost");
-				if(estimatedCost!=null) 
+				String fundRequestId = req.getParameter("fundRequestId");
+				if(estimatedCost!=null && fundRequestId!=null) 
 				{
-					return json.toJson(fundApprovalService.getMasterFlowDetails(estimatedCost)); 
+					return json.toJson(fundApprovalService.getMasterFlowDetails(estimatedCost,fundRequestId)); 
 				}
 				return null;
 				
@@ -708,7 +713,6 @@ public class FundApprovalController
 				String DivisionDetails=req.getParameter("DivisionDetails");
 				String estimateType=req.getParameter("EstimateType");
 				String status=req.getParameter("approvalStatus");
-				String budgetId=req.getParameter("selProject");
 				String budgetHeadId=req.getParameter("budgetHeadId");
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
@@ -818,6 +822,8 @@ public class FundApprovalController
 				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
+				
+				RequisitionList.stream().forEach(a->System.err.println("List"+Arrays.toString(a)));
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
@@ -1074,8 +1080,9 @@ public class FundApprovalController
 				{ 
 					 fundDetails = fundApprovalService.getParticularFundApprovalTransDetails(fundApprovalId);
 							
-				
+					 	if(fundDetails!=null) {
 					fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
+					 		}
 				}
 				
 			} catch (Exception e) {
@@ -1085,7 +1092,8 @@ public class FundApprovalController
 				return "static/error";
 				
 			}
-			return json.toJson(fundDetails.get(0));
+		    return json.toJson(fundDetails); 
+
 		}
 		
 		@RequestMapping(value = "getRPBApprovalStatusAjax.htm",method= {RequestMethod.GET,RequestMethod.POST})
@@ -1093,18 +1101,21 @@ public class FundApprovalController
 		{
 			String UserName = (String) ses.getAttribute("Username");
 			logger.info(new Date() +"Inside getRPBApprovalStatusAjax.htm"+UserName);
+			long empId = (long) ses.getAttribute("EmployeeId");
 			Gson json = new Gson();
 			List<Object[]>	fundDetails=null;
 			try {
 				
 				String fundApprovalId=req.getParameter("fundApprovalId");
 				
+				
 				if(fundApprovalId!=null)
 				{ 
-					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId);
+					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
 							
-				
+				if(fundDetails!=null) {
 					fundDetails.forEach(row->System.out.println("FundApprovalDetails->"+Arrays.toString(row)));
+						}
 				}
 				
 			} catch (Exception e) {
@@ -1114,7 +1125,7 @@ public class FundApprovalController
 				return "static/error";
 				
 			}
-			return json.toJson(fundDetails.get(0));
+			return json.toJson(fundDetails);
 		}
 		
 		@RequestMapping(value ="GetBudgetHeadList.htm")
@@ -1220,6 +1231,104 @@ public class FundApprovalController
 				return "static/error";
 			}         
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
+		}
+		
+		@RequestMapping(value="estimateTypeParticularDivList.htm",method = {RequestMethod.GET,RequestMethod.POST})
+		public String estimateTypeParticularDivList(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+		{
+			String UserName = (String) ses.getAttribute("Username");
+			String loginType= (String)ses.getAttribute("LoginType");
+			String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+			logger.info(new Date() + "Inside EditFundRequest.htm " + UserName);
+			try
+			{
+				Long divisionId=Long.valueOf(req.getParameter("divisionId"));
+				String estimateType=req.getParameter("estimateType");
+				String FromYear=req.getParameter("FromYear");
+				String ToYear=req.getParameter("ToYear");
+				String status=req.getParameter("approvalStatus");
+				String budgetHeadId=req.getParameter("budgetHeadId");
+				String budgetItemId=req.getParameter("budgetItemId");
+				String fromCost=req.getParameter("FromCost");
+				String toCost=req.getParameter("ToCost");
+				
+				
+				String FinYear=null;
+				if(FromYear==null || ToYear==null) 
+				{
+					FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+					FromYear=FinYear.split("-")[0];
+					ToYear=FinYear.split("-")[1];
+				}
+				else
+				{
+					FinYear=FromYear+"-"+ToYear;
+				}
+					
+				
+				
+				
+				
+				if(budgetHeadId==null) {
+					budgetHeadId="0";
+				}
+				
+				if(budgetItemId==null) {
+					budgetItemId="0";
+				}
+				
+				if(fromCost==null) {
+					fromCost="0";
+				}
+				
+				if(toCost==null) {
+					toCost="100000000";
+				}
+				
+				if(status==null) {
+					status="N";
+				}
+				
+				if(Long.valueOf(budgetHeadId)==0) {
+					budgetItemId="0";
+				}
+				
+				System.err.println("divisionId->"+divisionId);
+				System.err.println("estimateType->"+estimateType);
+				System.err.println("FromYear->"+FromYear);
+				System.err.println("ToYear->"+ToYear);
+				System.err.println("budgetheadID->"+budgetHeadId);
+				System.err.println("budgetItemId->"+budgetItemId);
+				System.err.println("fromCost->"+fromCost);
+				System.err.println("toCost->"+toCost);
+				System.err.println("status->"+status);
+				System.err.println("loginType->"+loginType);
+				System.err.println("empId->"+empId);
+				System.err.println("FinYear->"+FinYear);
+				
+				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
+				
+				req.setAttribute("attachList",estimateTypeParticularDivList);
+				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+				req.setAttribute("ExistingbudgetItemId", budgetItemId);
+				req.setAttribute("ExistingfromCost", fromCost);
+				req.setAttribute("ExistingtoCost", toCost);
+				req.setAttribute("Existingstatus", status);
+				req.setAttribute("divisionId", divisionId);
+				req.setAttribute("estimateType", estimateType);
+				req.setAttribute("FinYear", FinYear);
+				req.setAttribute("FromYear", FromYear);
+				req.setAttribute("ToYear", ToYear);
+				
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.error(new Date() + " Inside estimateTypeParticularDivList.htm " + UserName, e);
+				return "static/error";
+			}
+			return "fundapproval/ParticularDivTypeReportList";
+			
 		}
 		
 }

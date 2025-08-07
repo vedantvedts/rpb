@@ -71,7 +71,7 @@
         }
     </style>
     
-    
+    <!-- Tab Styles -->
     <style>
     
     .tabs-container {
@@ -111,7 +111,7 @@
     }
     /* checked tab styling */
     .tabs-container > input:checked + label {
-      background: white;
+      background: #fff2ad;
       border-bottom: 1px solid white;
     }
     .tabs-container > input:checked + label::after {
@@ -146,6 +146,10 @@
       background: #d1fae5;
       color: #065f46;
     }
+    .custom-width-modal {
+			  width: 70% !important;
+			  max-width: 100%;
+			}
   </style>
 </head>
 <body>
@@ -156,19 +160,27 @@ String fromYear=(String)request.getAttribute("FromYear");
 String toYear=(String)request.getAttribute("ToYear");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
+String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 %>
 
 <%String success=(String)request.getParameter("resultSuccess"); 
 String failure=(String)request.getParameter("resultFailure");%>
 
 
-<div class="card-header page-top"> <!-- Breadecrumb Start -->
+<div class="card-header page-top"> 
 	<div class="row">
-	 	<div class="col-md-3"><h5>Approval List</h5></div>
+	 	<div class="col-md-3"><h5><% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%}else{ %> Recommend<%} %> List</h5></div>
 	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	     <!--  <li class="breadcrumb-item ml-auto"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li> -->
-	              <li class="breadcrumb-item ml-auto active " aria-current="page">Approval List</li>
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	              <li class="breadcrumb-item active" aria-current="page">
+	              <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%}else{ %> Recommend<%} %> List</li>
              </ol>
           </div>
     </div>
@@ -224,9 +236,16 @@ String failure=(String)request.getParameter("resultFailure");%>
 		
 		<div class="tabs-container" style="margin-top:7px;">
 		    <input type="radio" name="tabs" id="tab-pending" checked>
-		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund Approval Pending</label>
+		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
+									         <%}else{ %> Recommend<%} %> Pending</label>
 		    <input type="radio" name="tabs" id="tab-approved">
-		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund Approved</label>
+		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommended
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
+									         <%}else{ %> Recommended<%} %></label>
+		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
 		
 		    <div class="tab-content card">
 		      <section id="panel-pending" class="tab-panel">
@@ -258,16 +277,46 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <%}else{ %>
 			                     <td align="center" style="width: 12%;">FBE</td>
 			                     <% }%>
-			                     <td align="center"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center"><span class="badge badge-pending">Pending</span></td>
+			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
+			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+			                     <td align="center"><!-- <span class="badge badge-pending">Pending</span> -->
+			                    <%System.err.print("st->"+obj[31]); %>
+			                     <%if(obj[31]!=null && "A".equalsIgnoreCase(obj[31].toString())) {%>
+				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
+												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+												            <span style="color: #2b8c03;">Approved</span> 
+												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
+											       </button>
+											       <%} else if(obj[31]!=null && "N".equalsIgnoreCase(obj[31].toString())){ %>	
+											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
+												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+												             <span style="color: #8c2303;">Pending</span>
+												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
+											
+											       </button>
+											        <%} else if(obj[31]!=null && "F".equalsIgnoreCase(obj[31].toString())){ %>	
+											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
+												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+												             <span style="color: blue;">Forwarded</span>
+												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: blue;"></i>
+											
+											       </button>
+											       <%} %>
+			                     
+			                     </td>
 			                     <td align="center">
 			                     
 			                            <form action="#" method="POST" name="myfrm" style="display: inline">  <!-- preview Start -->
-			                               <button type="submit" data-tooltip="Preview & Approve" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding: 6px;" formaction="FundApprovalPreview.htm">
-			                                                Approval &#10097;&#10097;
+			                               <button type="submit" data-tooltip="Preview & <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Note
+													         <%} %>" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding: 6px;border: 1px solid #05814d;background: #d3ffe5;" formaction="FundApprovalPreview.htm">
+			                                                <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+													         <%}else{ %> Recommend<%} %> &nbsp;&#10097;&#10097;
 			                               </button>
 			                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 			                             <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
@@ -319,11 +368,34 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <%}else{ %>
 			                     <td align="center" style="width: 12%;">FBE</td>
 			                     <% }%>
-			                     <td align="center"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="center"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center"><span class="badge badge-approved">Approved</span></td>
+			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
+			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
+			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+			                     <td align="center"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> 
+
+									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Approved</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;padding-left: 1%" ></i>											
+								       </button>
+											        
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> 
+
+									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Recommended</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+								       </button>
+								       
+									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %>
+									         
+									         <button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+									            <span style="color: #2b8c03;padding: 2%;">Reviewed</span> 
+									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+								       </button>
+									         <%}else{ %> Recommended<%} %></td>
 			                    
 			                 </tr>
 						    <% 
@@ -349,123 +421,27 @@ String failure=(String)request.getParameter("resultFailure");%>
  </div><!-- Body Part End --> 
 			
 </div> <!-- Page End -->
-
-
-<!-- Modal Start -->
-<div class="modal fade" id="AllBudgetItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg custom-width-modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"style="font-family:'Times New Roman';font-weight: 600;">Budget Item Details</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" >
-        
-        <div class="table-responsive">
-          <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="AllBudgetItemDetails">
-                 <thead>
-                     <tr style="background-color:#edab33;color:#034189;">					                       
-                      <th class="text-nowrap">SN</th>
-                      <th class="text-nowrap">FBE Serial No</th>
-                      <th class="text-nowrap">Budget Item</th>
-                      <th class="text-nowrap">Item Nomenclature</th>
-                      <th class="text-nowrap">Item Amount</th>
-                     
-                     </tr>
-                 </thead>
-                 <tbody>
-                 
-                    </tbody>
-                    <tfoot>
-                    </tfoot>
-                </table> 
-             </div>
-       
-      </div>
-    </div>
-  </div>
-</div><!-- Modal End -->
-
-<!-- Modal -->
-<div class="modal fade" id="EmployeeApprovalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="min-width: 65% !important;" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Budget Status</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div id="EmployeeModalTable"></div>
-
-        <!-- Employee Status Center Aligned -->
-        <div class="recommendation-item" id="Employeehide" style="width:77%; margin: auto;justify-content: center;">
-          <b><span style="color: #2c8f78;" id="EmployeeStatus" class="recommendation-value"></span></b>
-        </div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
+         <div id="ApprovalStatusDiv" ></div>
         
-        <!-- Flex Container for Note and Table -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <!-- Note Section (Left) -->
-          <div style="flex: 1; text-align: left;">
-            <span style="color: red; font-weight: bold;">Note:</span>
-            <div style="color: green; margin-left: 10px; font-weight: 600;" class="Rc1hide">
-              &nbsp;&nbsp;RC - Recommending Officer
-            </div>
-            <div style="color: green; margin-left: 10px; font-weight: 600;">
-              &nbsp;&nbsp;AO - Approving Officer
-            </div>
-          </div>
-
-          <!-- Table Section (Right) -->
-         <div style="flex: 1; text-align: right;">
-           <div class="action-section" style="box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 20px; background-color: #fff; border: none;">
-            <table class="table" style="width: 100%; font-weight: 600; border-top: none; border-bottom: none; border: none;">
-              <tbody>
-                <tr class="Initiatinghide">
-                  <td align="right" style="border: none;">Initiated By <i class="fa fa-long-arrow-right" aria-hidden="true"></i></td>
-                  <td align="left" style="border: none;">
-                    <span class="recommendation-value" id="InitiatingOfficer"></span>
-                  </td>
-                </tr>
-                <tr class="Rc1hide">
-                  <td align="right" style="border: none;">RC1  <i class="fa fa-long-arrow-right" aria-hidden="true"></i></td>
-                  <td align="left" style="border: none;">
-                    <span class="recommendation-value" id="RC1"></span>&nbsp;<span class="recommendation-value" id="Rc1Role"></span>
-                  </td>
-                </tr>
-                <tr class="Rc2hide">
-                  <td align="right" style="border: none;">RC2  <i class="fa fa-long-arrow-right" aria-hidden="true"></i></td>
-                  <td align="left" style="border: none;">
-                    <span class="recommendation-value" id="RC2"></span>&nbsp;<span class="recommendation-value" id="RC2Role"></span>
-                  </td>
-                </tr>
-                <tr class="Rc3hide">
-                  <td align="right" style="border: none;">RC3  <i class="fa fa-long-arrow-right" aria-hidden="true"></i></td>
-                  <td align="left" style="border: none;">
-                    <span class="recommendation-value" id="RC3"></span>&nbsp;<span class="recommendation-value" id="RC3Role"></span>
-                  </td>
-                </tr>
-                <tr class="Approvinghide">
-                  <td align="right" style="border: none;">AO  <i class="fa fa-long-arrow-right" aria-hidden="true"></i></td>
-                  <td align="left" style="border: none;">
-                    <span class="recommendation-value" id="ApprovingOfficer"></span>&nbsp;<span class="recommendation-value" id="ApprovingOfficerRole"></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          </div>
-        </div>
       </div>
-
+      
     </div>
   </div>
 </div>
-
 
 </body>
 
@@ -500,311 +476,9 @@ showFailureFlyMessage('<%=failure %>');
 	 "pagingType": "simple",
 	 "pageLength": 5,
 	 "ordering": true
-});
-});
+		});
+	});
  </script>
-
-<script>
-    var csrfParameterName = '${_csrf.parameterName}';
-    var csrfToken = '${_csrf.token}';
-
-    function submitPrintForm(FbeMainId,DivisionCode,DivisionId,FinancialYear,Action,EstimateType) {
-        var url = 'FBEprint.htm?' + csrfParameterName + '=' + csrfToken + '&FbeMainId=' + FbeMainId + '&DivisionCode=' + DivisionCode + '&DivisionId=' + DivisionId + '&FinancialYear=' + FinancialYear + '&Action=' + Action + '&EstimateType=' + EstimateType;
-        window.open(url, '_blank');
-    }
-</script>
-<script type="text/javascript">
-function showAllEmployee(RC1, Rc1Role, RC2, RC2Role, RC3, RC3Role, ApprovingOfficer, ApprovingOfficerRole, InitiatingOfficer, Status, RCStausCodeNext, BudgetCode, FbeMainId) {
-    // Show the modal
-    $('#EmployeeApprovalModal').modal('show');
-    $('#Employeehide,.Rc1hide,.Rc2hide,.Rc3hide,.Approvinghide').show();
-    if(Status=="F") {
-        
-        if(RCStausCodeNext=="RC1") {
-       	 $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Pending With <span style="color:red;font-weight:600;">' + RC1 + '</span>(RC1)');
-		  } else if(RCStausCodeNext=="RC2") { 
-			  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Pending With <span style="color:red;font-weight:600;">' + RC2 + '</span>(RC2)');
-		  } else if(RCStausCodeNext=="RC3") { 
-			  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Pending With <span style="color:red;font-weight:600;">' + RC3 + '</span>(RC3)');
-		  }else if(RCStausCodeNext=="APR") { 
-			  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Pending With <span style="color:red;font-weight:600;">' + ApprovingOfficer + '</span>(AO)');
-		  }
-		}
-		else if(Status=="A")
-		{
-		$('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Approved By <span style="color:red;font-weight:600;">' + ApprovingOfficer + '</span>(AO)');
-		
-		}
-		else if(Status=="R")
-		{
-			      if(RCStausCodeNext=="RC1") {
-		       	      $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Return By <span style="color:red;font-weight:600;">' + RC1 + '</span>(RC1)');
-				  } else if(RCStausCodeNext=="RC2") { 
-					  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Return By <span style="color:red;font-weight:600;">' + RC2 + '</span>(RC2)');
-				  } else if(RCStausCodeNext=="RC3") { 
-					  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Return By <span style="color:red;font-weight:600;">' + RC3 + '</span>(RC3)');
-				  } else if(RCStausCodeNext=="APR") { 
-					  $('#EmployeeStatus').html('<span style="color:#d70c0c;font-weight:600;">'+BudgetCode+' (Budget)</span>Return By <span style="color:red;font-weight:600;">' + ApprovingOfficer + '</span>(AO)');
-				  } 
-
-        }
-		else
-		{
-		 $('#Employeehide').hide();		
-		}
-    
-    
-    
-    if(RC1=='null' || Rc1Role =='null' )
-    {
-    	 $('.Rc1hide').hide();
-    }
-    else
-   	{
-	   	$('#RC1').text(RC1);
-	   	$('#Rc1Role').text(" ("+Rc1Role+")");
-	   	
-   	}
-    
-    if(RC2=='null' || RC2Role =='null' )
-    {
-    	 $('.Rc2hide').hide();
-    }
-    else
-   	{
-        $('#RC2').text(RC2);
-        $('#RC2Role').text(" ("+RC2Role+")");
-   	}
-    
-    if(RC3=='null' || RC3Role =='null' )
-    {
-    	 $('.Rc3hide').hide();
-    }
-    else
-   	{
-    	$('#RC3').text(RC3);
-    	$('#RC3Role').text(" ("+RC3Role+")");
-   	}
-    
-    if(ApprovingOfficer=='null' || ApprovingOfficerRole =='null' )
-    {
-    	 $('.Approvinghide').hide();
-    }
-    else
-   	{
-        $('#ApprovingOfficer').text(ApprovingOfficer);
-        $('#ApprovingOfficerRole').text(" ("+ApprovingOfficerRole+")");
-   	}
-    if(InitiatingOfficer =='null' )
-    {
-    	 $('.Initiatinghide').hide();
-    }
-    else
-   	{
-    	$('#InitiatingOfficer').text(InitiatingOfficer);
-   	}
-
-    // Perform AJAX call to fetch data
-    $.ajax({
-        url: 'FbeStatusTrack.htm',
-        type: 'GET',
-        data: {
-            FbeMainId: FbeMainId
-        },
-        success: function(response) {
-            // Parse the JSON response
-            var data = JSON.parse(response);
-            
-            // Generate HTML table from the data
-            var tableHTML = generateTableHTML(data);
-            
-            // Update the modal body with the generated table
-            $('#EmployeeModalTable').html(tableHTML);
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error: ' + status + error);
-            // Handle errors here
-        }
-    });
-}
-
-// Function to generate HTML table from the data
-function generateTableHTML(data) {
-    if (!data || data.length === 0) {
-        return '<p>No Status available.</p>';
-    }
-
-    var table = '<table class="table table-bordered" style="width: 100%;font-weight: 600;">';
-    table += '<thead><tr style="background-color: #edab33;color:#034189;"><th>Employee Name</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead>';
-    table += '<tbody>';
-
-    data.forEach(function(row) {
-        table += '<tr>';
-        table += '<td >' + (row[8] || '--') + '</td>';
-        table += '<td >' + (row[4] || '--') + '</td>';
-        table += '<td >' + (row[5] || '--') + '</td>';
-        table += '<td >' + (row[6] || '--') + '</td>';
-        table += '</tr>';
-    });
-
-    table += '</tbody></table>';
-    return table;
-}
-
-</script>
-<script type="text/javascript">
-function getAllBudgetItem(fbeMainId) {
-    var totalAmount = 0;
-
-    $("#AllBudgetItem").modal("show");
-    $.get('GetBudgetCodeItemList.htm', 
-        {
-            fbeMainId: fbeMainId
-        },
-        function(responseJson) {
-            var result = JSON.parse(responseJson);
-            var table = document.getElementById("AllBudgetItemDetails");
-            $(".BudgetCodeApproval").remove();
-            var tbody = table.querySelector('tbody');
-            var tfoot = table.querySelector('tfoot');
-            
-            // Remove existing rows in tfoot if any
-            $(tfoot).empty();
-            var sn=1;
-            if (result.length > 0) {
-                $.each(result, function(key, value) {
-                    // Add to total amount
-                    totalAmount += parseFloat(value[4]);
-                    var rows = tbody.rows.length;
-                    var row = tbody.insertRow(rows);
-                    row.style.backgroundColor = "white";
-                    row.className = "BudgetCodeApproval";
-
-                    // Create cells
-                    var cell1 = row.insertCell(0);
-                    var cell2 = row.insertCell(1);
-                    var cell3 = row.insertCell(2);
-                    var cell4 = row.insertCell(3);
-                    var cell5 = row.insertCell(4);
-
-                    // Set cell contents
-                    cell1.innerHTML = (sn++)+'.';
-                    cell2.innerHTML = value[5];
-                    cell3.innerHTML = value[2];
-                    cell4.innerHTML = value[3];
-                    cell5.innerHTML = value[4];
-                    cell1.style.textAlign = "center";
-                    cell2.style.textAlign = "center";
-                    cell5.style.textAlign = "right";
-
-                    // Add hidden input for FbeSubId
-                    var hiddenInput = $('<input>', {
-                        type: 'hidden',
-                        class: 'checkboxApproval',
-                        name: 'FbeSubId',
-                        value: value[0]
-                    });
-                    $(row).append(hiddenInput);
-
-                    // Style the cells
-                    cell1.style.padding = "10px";
-                    cell2.style.padding = "10px";
-                    cell3.style.padding = "10px";
-                    cell4.style.padding = "10px";
-                    cell5.style.padding = "10px";
-                });
-
-                // Add tfoot row for total amount
-                var tfootRow = tfoot.insertRow(0);
-                var footcell1 = tfootRow.insertCell(0);
-                var footcell2 = tfootRow.insertCell(1);
-                
-
-                // Set cell contents for total amount
-                footcell1.colSpan = 4;
-                footcell1.innerHTML = "Total Amount :";
-                footcell2.innerHTML = totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
- 
-
-                // Style the cells
-                footcell1.style.textAlign = "right";
-                footcell1.style.padding = "10px";
-                footcell1.style.fontWeight = "bold";
-                footcell1.style.color = "blue";
-
-                footcell2.style.padding = "10px";
-                footcell2.style.fontWeight = "bold";
-                footcell2.style.color = "blue";
-                footcell2.style.textAlign = "right";
-                
-
-            } else {
-                var row = tbody.insertRow(0);
-                row.style.backgroundColor = "white";
-                row.className = "BudgetCodeApproval";
-                
-                // Create a single cell that spans all columns
-                var cell = row.insertCell(0);
-                cell.colSpan = 5;
-                cell.innerHTML = "No data available";
-                
-                // Style the cell
-                cell.style.textAlign = "center";
-                cell.style.padding = "10px";
-                cell.style.fontWeight = "600"; 
-                cell.style.color = "red";
-            }
-        }
-    );
-}
-
-</script>
-
-<script>
-  // Get references to the elements
-  // Add click event handlers to the tab links
-  $("#fbePendingtab").click(function() {
-	$("#redirectedvalue").val('');
-    $("#redirectedvalue").val('fbePending');
-  });
-
-  $("#fbeApprovedtab").click(function() {
-    $("#redirectedvalue").val('');
-    $("#redirectedvalue").val('fbeApproved');
-  });
- /*  $("#fbeReturnedtab").click(function() {
-    $("#redirectedvalue").val('');
-    $("#redirectedvalue").val('fbeReturned');
-  }); */
-  
-</script>
-
-<script>
-  var countForMsgMarkerRedirect = '<%= redirectedvalue %>';
-  
-  if (countForMsgMarkerRedirect != 'null' && countForMsgMarkerRedirect==='fbePending') {
-         var button = document.querySelector('[id="fbePendingtab"]');
-		     if (button) {
-		      // Programmatically trigger a click event on the button
-		      button.click();      
-               }
-  }else if(countForMsgMarkerRedirect != 'null' && countForMsgMarkerRedirect==='fbeApproved'){
-	    var button = document.querySelector('[id="fbeApprovedtab"]');
-	       if (button) {
-               // Programmatically trigger a click event on the button
-               button.click();    
-               }
-  }else if(countForMsgMarkerRedirect != 'null' && countForMsgMarkerRedirect==='fbeReturned'){
-	    var button = document.querySelector('[id="fbeReturnedtab"]');
-	       if (button) {
-            // Programmatically trigger a click event on the button
-            button.click();    
-            }
-}
-  
-</script> 
-
-
 
 <script>
    $("#FromYear").datepicker({
@@ -825,4 +499,193 @@ function getAllBudgetItem(fbeMainId) {
          $("#ToYear").val(value);
       });
   </script>
+  <script type="text/javascript">
+	function openApprovalStatusAjax(fundApprovalId) {
+		  $.ajax({
+		    url: 'getRPBApprovalHistoryAjax.htm',
+		    type: 'GET',
+		    data: { fundApprovalId: fundApprovalId },
+		    success: function(response) {
+		      var data = JSON.parse(response);
+		      if (!Array.isArray(data[0])) {
+		        data = [data]; // handle single-row case
+		      }
+
+		      var tableHTML = generateTableHTML(data);
+		      $('#ApprovalStatusModal').modal('show');
+		      $('#EmployeeModalTable').html(tableHTML);
+		      
+		      previewInformation(fundApprovalId);
+		    },
+		    error: function(xhr, status, error) {
+		      console.error('AJAX Error: ' + status + error);
+		    }
+		  });
+		}
+
+  function generateTableHTML(data) {
+	  
+    if (!data || data.length === 0) {
+      return '<p>No Status available.</p>';
+    }
+
+    var table = '<table class="table table-bordered" style="width: 100%;font-weight: 600;">';
+    table += '<thead><tr style="background-color: #edab33;color:#034189;"><th>Officer Name</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead>';
+    table += '<tbody>';
+
+    data.forEach(function(row) {
+      table += '<tr>';
+      table += '<td>' + (row[1] || '--') + ', ' + (row[2] || '--') + '</td>';
+      table += '<td align="center">' + (row[5] || '--') + '</td>';
+      table += '<td>' + (row[4] || '--') + '</td>';
+      table += '<td style="color: #00008B;">' + (row[3] || '--') + '</td>';
+      table += '</tr>';
+    });
+
+    table += '</tbody></table>';
+    return table;
+  }
+  
+  function previewInformation(fundApprovalId) {
+	    $.ajax({
+	        url: 'getRPBApprovalStatusAjax.htm',
+	        type: 'GET',
+	        data: { fundApprovalId: fundApprovalId },
+	        success: function(response) {
+	            var data = JSON.parse(response);
+	            
+	            if (!Array.isArray(data) || data.length === 0) {
+	                $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+	                return;
+	            }
+	            
+	            var row = data[0]; 
+	            var html = '';
+	            
+	            // Create table structure
+	            html += '<div class="table-responsive" style="">';
+	            html += '<table class="table table-bordered" style="box-shadow: 0px 0px 15px rgba(0, 0, 5, 5);">';
+	            html += '<thead style="background-color: #f7f4e9;">';
+	            html += '<tr>';
+	            html += '<th style="width: 30%;">Flow</th>';
+	            html += '<th style="width: 40%;">Officer</th>';
+	            html += '<th style="width: 30%;">Status</th>';
+	            html += '</tr>';
+	            html += '</thead>';
+	            html += '<tbody>';
+	            
+	            
+	            html += '<tr>';
+	            html += '<td><b>Initiated By</b></td>';
+	            html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
+	            html += '<td style="font-weight:600;">Initiated</td>';
+	            html += '</tr>';
+	            
+	            var rcStatusCodeNext = row[40];
+	            var rc1Status = row[41];
+	            var rc2Status = row[42];
+	            var rc3Status = row[43];
+	            var rc4Status = row[44];
+	            var rc5Status = row[45];
+	            var apprOffStatus = row[46];
+	            
+	            var labels = [
+	                { title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
+	                { title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
+	                { title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
+	                { title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
+	            ];
+	            
+	          
+	            for (var i = 0; i < labels.length; i++) {
+	                var item = labels[i];
+	                if (item.field != null && String(item.field).trim() !== '') {
+	                    html += '<tr>';
+	                    html += '<td><b>' + item.title + '</b></td>';
+	                    html += '<td>';
+	                    
+	                    if (item.role) {
+	                        html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
+	                    }
+	                    html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
+	                    html += '</td>';
+	                    html += '<td>';
+	                    
+	                    if (item.batch === 'Y') {
+	                        html += '<span style="color: green;font-weight:600;">Recommended</span>';
+	                        html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                    } else {
+	                        html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
+	                    }
+	                    
+	                    html += '</td>';
+	                    html += '</tr>';
+	                }
+	            }
+	            
+	            // RPB Member Secretary
+	            if (row[33] != null && String(row[33]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Member Secretary</b></td>';
+	                html += '<td>';
+	                
+	                if (row[34]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[45] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Reviewed</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            // RPB Chairman
+	            if (row[36] != null && String(row[36]).trim() !== '') {
+	                html += '<tr>';
+	                html += '<td><b>RPB Chairman</b></td>';
+	                html += '<td>';
+	                
+	                if (row[37]) {
+	                    html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
+	                }
+	                html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
+	                html += '</td>';
+	                html += '<td>';
+	                
+	                if (row[46] === 'Y') {
+	                    html += '<span style="color: green;font-weight:600;">Approved</span>';
+	                    html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
+	                } else {
+	                    html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
+	                }
+	                
+	                html += '</td>';
+	                html += '</tr>';
+	            }
+	            
+	            html += '</tbody>';
+	            html += '</table>';
+	            html += '</div>';
+	            
+	            $('#ApprovalStatusDiv').html(html);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX Error: ' + status + " " + error);
+	            $('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
+	        }
+	    });
+	}
+
+
+
+
+</script>
 </html>

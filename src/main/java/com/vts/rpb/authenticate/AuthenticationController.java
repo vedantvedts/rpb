@@ -23,6 +23,12 @@ public class AuthenticationController
 	    	return "redirect:/RpbFundApprovalAuthenticate";
 	    }
 	   
+	   @RequestMapping(value = {"MainDashBoard.htm"}, method = RequestMethod.GET)
+	   public String dashBoardPage(HttpServletRequest req,HttpSession ses) throws Exception 
+	   {
+		   return "dashboard/homePage";
+	   }
+	   
 	   @RequestMapping(value = "getModuleId.htm", method = RequestMethod.GET)
 		public @ResponseBody void getModuleId(HttpServletRequest req, HttpSession ses) throws Exception {
 			

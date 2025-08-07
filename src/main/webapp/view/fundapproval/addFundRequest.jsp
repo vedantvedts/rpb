@@ -17,7 +17,6 @@
 <head>
 <meta charset="ISO-8859-1">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<%-- <jsp:include page="../static/sidebar.jsp"></jsp:include> --%>
 <title>Requisition Add</title>
 <style>
 
@@ -351,45 +350,11 @@ tr:last-of-type th:last-of-type {
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
 
       	String FinYear=(String)(dto.getFromYearBackBtn()+"-"+dto.getToYearBackBtn());
-      	System.err.println("action->"+action);
-      	System.err.println("FInyear->"+FinYear);
-      	System.err.println("getFromYearBackBtn->"+dto.getFromYearBackBtn());
-      	System.err.println("getToYearBackBtn->"+dto.getToYearBackBtn());
-      	System.err.println("JSP EDIT->"+Arrays.toString(FundRequestObj));
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionCode());
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionName());
-      	System.err.println("JSP getDivisionCode->"+dto.getDivisionId());
-      	System.err.println("##############################");
- 		System.err.println("backDto.getREYear()-"+dto.getREYear());
- 		System.err.println("backDto.getFBEYear()-"+dto.getFBEYear());
  %>
   	    <%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
-<div class="card-header page-top">
-	 	<div class="row">
-	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
-	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
-	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
-	      <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	 <li class="breadcrumb-item ml-auto" style="padding-left: 78%;"><a	href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Requisition List </a></li>
-	          <!-- <li class="breadcrumb-item" aria-current="page"><a href="FundRequest.htm">Requisition List</a></li> -->
-	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active ml-auto" aria-current="page">Requisition Edit</li>
-	         <%}else{ %><li class="breadcrumb-item active ml-auto" aria-current="page">Requisition Add</li><%} %>
-             </ol>
-           </div>
-         </div>
-       </div> 
-     
-     
-    
-  	    
-		
-      <div class="page card dashboard-card">
-            <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
-			           		<div class="form-inline" style="padding: 10px;">
-			           		
-			           		<%String BudgetYear=null;
+              
+              <%String BudgetYear=null;
 			           		  String BudgetYearType=null;
 			           		if(dto!=null)
 			           		{
@@ -421,6 +386,28 @@ tr:last-of-type th:last-of-type {
 		           					FinYear="-";
 		           				}
 			           		}%>
+<div class="card-header page-top">
+	 	<div class="row">
+	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
+	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
+	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
+	      <div class="col-md-9">
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
+	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
+	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
+             </ol>
+           </div>
+         </div>
+       </div> 
+     
+     
+    
+  	    
+		
+      <div class="page card dashboard-card">
+            <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
+			           		<div class="form-inline" style="padding: 10px;">
 			           		
 			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
 			           			<label style="font-size: 19px;"><b><%=BudgetYearType %> :&nbsp;</b></label><span class="spanClass"><%=BudgetYear %></span>
@@ -614,18 +601,22 @@ tr:last-of-type th:last-of-type {
         }
         return null;
     }%>
-        <!-- First blank input row -->
-        <tr class="file-row1">
+        <!-- BQs Row -->
+<tr class="file-row1">
     <td>
         <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="BQs">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment1" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs") : null;
+            if (bqsAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= bqsAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="BQs">
+        <% } %>
     </td>
-    <%
-        Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs") : null;
-        if (bqsAttach != null) {
-    %>
+    <% if (bqsAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= bqsAttach[0] %>')" title="<%= bqsAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -634,20 +625,27 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
+<!-- Cost Of Estimate Row -->
 <tr class="file-row2">
     <td>
         <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Of Estimate">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment2" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimate") : null;
+            if (costAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= costAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="Cost Of Estimate">
+        <% } %>
     </td>
-    <%
-        Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimate") : null;
-        if (costAttach != null) {
-    %>
+    <% if (costAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= costAttach[0] %>')" title="<%= costAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -656,20 +654,27 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
+<!-- Justification Row -->
 <tr class="file-row3">
     <td>
         <input type="text" class="form-control" id="file3" name="filename" readonly="readonly" maxlength="255" value="Justification">
     </td>
     <td>
         <input type="file" class="form-control" id="attachment3" name="attachment" onchange="Filevalidation(this);">
+        <% 
+            Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
+            if (justAttach != null) { 
+        %>
+            <input type="hidden" name="existingAttachmentId" value="<%= justAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="Justification">
+        <% } %>
     </td>
-    <%
-        Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
-        if (justAttach != null) {
-    %>
+    <% if (justAttach != null) { %>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= justAttach[0] %>')" title="<%= justAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -678,20 +683,15 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td></td>
     <% } %>
 </tr>
 
-<!-- Always show the fourth row for dynamic attachments -->
+<!-- Dynamic Attachment Row -->
 <tr class="file-row4">
-    <td>
-        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
-    </td>
-    <%
-        // Check for any non-standard attachments
-        List<String> staticNames = java.util.Arrays.asList("BQs", "Cost Of Estimate", "Justification");
+    <% 
+        List<String> staticNames = Arrays.asList("BQs", "Cost Of Estimate", "Justification");
         Object[] dynamicAttach = null;
         
         if (AttachList != null) {
@@ -704,8 +704,16 @@ tr:last-of-type th:last-of-type {
             }
         }
         
-        if (dynamicAttach != null) {
+        if (dynamicAttach != null) { 
     %>
+    <td>
+        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
+    </td>
+    <td>
+        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
+        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
+    </td>
     <td>
         <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
             <i class="fa fa-download" style="color: green;"></i>
@@ -714,42 +722,16 @@ tr:last-of-type th:last-of-type {
             <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
         </button>
     </td>
+    <% } else { %>
+    <td>
+        <input type="text" class="form-control" name="filename" value="">
+    </td>
+    <td>
+        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+    </td>
+    <td></td>
     <% } %>
 </tr>
-
-<%
-    // Additional rows for any extra dynamic attachments beyond the first one
-    if (AttachList != null) {
-        int dynamicCount = 0;
-        for (Object[] attach : AttachList) {
-            String attachName = (attach[1] != null) ? attach[1].toString() : "";
-            if (!staticNames.contains(attachName)) {
-                dynamicCount++;
-                if (dynamicCount > 1) { // We already handled the first one in the static row4
-%>
-    <tr class="file-row-dynamic">
-        <td>
-            <input type="text" class="form-control" name="filename" value="<%= attachName %>">
-        </td>
-        <td>
-            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-        </td>
-        <td>
-            <button type="button" class="btn" onclick="downloadFile('<%= attach[0] %>')" title="<%= attach[2] %>">
-                <i class="fa fa-download" style="color: green;"></i>
-            </button>
-            <button type="button" class="btn" onclick="deleteFile('<%= attach[0] %>')" title="Delete File">
-                <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-            </button>
-        </td>
-    </tr>
-<%
-                }
-            }
-        }
-    }
-%>
-
 
     </tbody>
 </table>
