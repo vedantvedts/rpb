@@ -73,7 +73,7 @@ public class FundApprovalController
 	public String FundApproval(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
-		logger.info(new Date() + "Inside FundApproval.htm " + UserName);
+		logger.info(new Date() + " Inside FundApproval.htm " + UserName);
 		String labCode = (ses.getAttribute("client_name")).toString();
 		String loginType= (String)ses.getAttribute("LoginType");
 		String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
@@ -132,6 +132,7 @@ public class FundApprovalController
 			req.setAttribute("DivisionList", DivisionList);
 			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
 			
+			System.out.println("DivisionDetails*****"+DivisionDetails);
 			//user selected different year Estimate type reset to RE
 			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
 			   backDto.setDivisionBackBtn(DivisionDetails);

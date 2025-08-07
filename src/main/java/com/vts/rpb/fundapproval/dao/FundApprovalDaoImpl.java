@@ -594,13 +594,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
 		 try {
-			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn()+ "-" +fundApprovalDto.getToYearBackBtn()+"','"+LocalDate.now()+"','"+labCode+"');");
+			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn()) : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn()) : 0)+"','"+LocalDate.now()+"','"+labCode+"');");
 				Query query= manager.createNativeQuery(GETFUNDREQUESTCARRYFORWARD);
 				query.setParameter("divisionId", fundApprovalDto.getDivisionId());
 				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
 				query.setParameter("asOnDate", LocalDate.now());
 				query.setParameter("labCode",labCode);
-				query.setParameter("finYear", fundApprovalDto.getFromYearBackBtn()+ "-" +fundApprovalDto.getToYearBackBtn());
+				query.setParameter("finYear", (fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0));  // passing previous financialYear
 				List<Object[]> result = (List<Object[]>)query.getResultList();
 				return result; 
 				
