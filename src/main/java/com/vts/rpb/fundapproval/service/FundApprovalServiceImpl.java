@@ -691,17 +691,29 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			String fbeReYear=null,estimateType=null;
 			if(backDto!=null)
 			{
-				fbeReYear=backDto.getF
+				if(backDto.getEstimatedTypeBackBtn()!=null)
+				{
+					estimateType=backDto.getEstimatedTypeBackBtn();
+				}
+				
+				if(estimateType.equalsIgnoreCase("R"))
+				{
+					fbeReYear=backDto.getREYear();
+				}
+				else if(estimateType.equalsIgnoreCase("F"))
+				{
+					fbeReYear=backDto.getFBEYear();
+				}
 			}
 			for(int i=0;i<cogMonth.getCarryForwardSerialNo().length;i++)
 			{
 				if(cogMonth.getItemNomenclature()[i]!=null && cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && !(cogMonth.getFbeAmount()[i]).equalsIgnoreCase("0"))
 				{
-					FundApproval fbeSub=new FundApproval();
-					fbeSub.setItemSerialNo(createSerialNo(fbeReYear,estimateType));
-					fbeSub.setBudgetItemId(cogMonth.getBudgetItem()!=null && cogMonth.getBudgetItem()[i]!=null?Long.parseLong(cogMonth.getBudgetItem()[i]):0);
-					fbeSub.setInitiatingOfficer(cogMonth.getEmployee()!=null && cogMonth.getEmployee()[i]!=null?Long.parseLong(cogMonth.getEmployee()[i]):0);
-					fbeSub.setItemNomenclature(cogMonth.getItemNomenclature()[i]);
+					FundApproval fundRequest=new FundApproval();
+					fundRequest.setItemSerialNo(createSerialNo(fbeReYear,estimateType));
+					fundRequest.setBudgetItemId(cogMonth.getBudgetItem()!=null && cogMonth.getBudgetItem()[i]!=null?Long.parseLong(cogMonth.getBudgetItem()[i]):0);
+					fundRequest.setInitiatingOfficer(cogMonth.getEmployee()!=null && cogMonth.getEmployee()[i]!=null?Long.parseLong(cogMonth.getEmployee()[i]):0);
+					fundRequest.setItemNomenclature(cogMonth.getItemNomenclature()[i]);
 					
 					if(cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && cogMonth.getFbeAmount()[i]!="")
 					{

@@ -341,8 +341,6 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside CarryForwardDetails.htm " + UserName);
 		try
 		{
-			String estimateType=req.getParameter("budgetYearTransfer");
-			String reFbeYear=req.getParameter("ItemEstimateTypeTransfer");
 			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
 			FundApprovalBackButtonDto backDto=(FundApprovalBackButtonDto) ses.getAttribute("FbeSessionBackButton");
 			int stringLength=1;

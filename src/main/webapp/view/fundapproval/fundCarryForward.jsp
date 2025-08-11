@@ -381,8 +381,6 @@ tr:last-of-type th:last-of-type {
 								
 		<form action="CarryForwardDetails.htm" id="CFForm" autocomplete="off">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	         <input type="hidden" name="budgetYearTransfer" value="<%=BudgetYear %>">
-	         <input type="hidden" name="ItemEstimateTypeTransfer" value="<%=estimateType %>">
 	         <div class="table-responsive">
 			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTable">
 	                   <thead>
