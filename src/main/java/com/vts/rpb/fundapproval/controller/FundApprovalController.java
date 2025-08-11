@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +37,7 @@ import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
+import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.master.service.MasterService;
 import com.vts.rpb.utils.CharArrayWriterResponse;
@@ -294,6 +296,21 @@ public class FundApprovalController
 				return "redirect:/FundRequest.htm";
 			}
 			
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			
+			if(budgetHeadId==null)
+			{
+				budgetHeadId="-1";
+			}
+			
+			if(budgetItemId==null)
+			{
+				budgetItemId="-1";
+			}
+			
+			fundApprovalDto.setBudgetHeadId(budgetHeadId!=null ? Long.parseLong(budgetHeadId) : 0);			
+			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);			
 			if(fundApprovalDto!=null)
 			{
 				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
@@ -303,6 +320,9 @@ public class FundApprovalController
 				}
 			}
 			
+			req.setAttribute("budgetHeadId", budgetHeadId);
+			req.setAttribute("budgetItemId", budgetItemId);
+			
 		}
 		catch(Exception e)
 		{
@@ -311,6 +331,197 @@ public class FundApprovalController
 			return "static/error";
 		}
 		return "fundapproval/fundCarryForward";
+		
+	}
+	
+	@RequestMapping(value="CarryForwardDetails.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String CarryForwardDetails(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside CarryForwardDetails.htm " + UserName);
+		try
+		{
+			String estimateType=req.getParameter("budgetYearTransfer");
+			String reFbeYear=req.getParameter("ItemEstimateTypeTransfer");
+			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
+			FundApprovalBackButtonDto backDto=(FundApprovalBackButtonDto) ses.getAttribute("FbeSessionBackButton");
+			int stringLength=1;
+			if(demandItemOrderDetails!=null) 
+			{
+				stringLength=demandItemOrderDetails.length;
+			}
+			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],fundRequestId=new String[stringLength],itemNomenclature=new String[stringLength],
+					budgetItem=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
+					mayMonth=new String[stringLength],juneMonth=new String[stringLength],julyMonth=new String[stringLength],
+					augustMonth=new String[stringLength],septemberMonth=new String[stringLength],octoberMonth=new String[stringLength],
+					novemberMonth=new String[stringLength],decemberMonth=new String[stringLength],januaryMonth=new String[stringLength],
+					februaryMonth=new String[stringLength],marchMonth=new String[stringLength],empId=new String[stringLength],fundRequestSerialNo=new String[stringLength];
+			
+			FundRequestCOGDetails cogMonth=new FundRequestCOGDetails();
+			if(demandItemOrderDetails.length>0)
+			{
+				for (int i=0;i<demandItemOrderDetails.length;i++)
+				{
+					if(demandItemOrderDetails[i]!=null)
+					{
+						String serialNo=demandItemOrderDetails[i];
+						
+						String[] commitPayIds=req.getParameterValues("CommitmentPayId-"+serialNo);
+						if(commitPayIds!=null && commitPayIds.length>0)
+						{
+							String commitmentPayIdDetails = Arrays.stream(commitPayIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							commitmentPayId[i]=commitmentPayIdDetails;
+						}
+						
+						String[] demandIds=req.getParameterValues("BookingId-"+serialNo);
+						if(demandIds!=null && demandIds.length>0)
+						{
+							String demandDetails = Arrays.stream(demandIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							demandId[i]=demandDetails;
+						}
+						
+						String[] fundApprovalIds=req.getParameterValues("FundRequestId-"+serialNo);
+						if(fundApprovalIds!=null && fundApprovalIds.length>0)
+						{
+							String fundRequestDetails = Arrays.stream(fundApprovalIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							fundRequestId[i]=fundRequestDetails;
+						}
+						
+						
+						fundRequestSerialNo[i]=serialNo;
+						budgetItem[i]=req.getParameter("CFBudgetItem-"+serialNo);
+						empId[i]=req.getParameter("EmpId-"+serialNo);
+						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
+						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
+						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
+						mayMonth[i]=req.getParameter("CFMayMonth-"+serialNo);
+						juneMonth[i]=req.getParameter("CFJuneMonth-"+serialNo);
+						julyMonth[i]=req.getParameter("CFJulyMonth-"+serialNo);
+						augustMonth[i]=req.getParameter("CFAugustMonth-"+serialNo);
+						septemberMonth[i]=req.getParameter("CFSeptemberMonth-"+serialNo);
+						octoberMonth[i]=req.getParameter("CFOctoberMonth-"+serialNo);
+						novemberMonth[i]=req.getParameter("CFNovemberMonth-"+serialNo);
+						decemberMonth[i]=req.getParameter("CFDecemberMonth-"+serialNo);
+						januaryMonth[i]=req.getParameter("CFJanuaryMonth-"+serialNo);
+						februaryMonth[i]=req.getParameter("CFFebruaryMonth-"+serialNo);
+						marchMonth[i]=req.getParameter("CFMarchMonth-"+serialNo);
+					}
+				}
+			}
+			
+			if(fundRequestSerialNo!=null)
+			{
+				cogMonth.setCarryForwardSerialNo(fundRequestSerialNo);
+			}
+			
+			if(fundRequestId!=null) 
+			{
+				cogMonth.setFundRequestId(fundRequestId);
+			}
+			
+			if(demandId!=null) 
+			{
+				cogMonth.setDemandId(demandId);
+			}
+			
+			if(commitmentPayId!=null) 
+			{
+				cogMonth.setCommitmentPayId(commitmentPayId);
+			}
+			
+			if(budgetItem!=null)
+			{
+				cogMonth.setBudgetItem(budgetItem);
+			}
+			if(empId!=null)
+			{
+				cogMonth.setEmployee(empId);
+			}
+			if(itemNomenclature!=null)
+			{
+				cogMonth.setItemNomenclature(itemNomenclature);
+			}
+			if(ItemAmount!=null)
+			{
+				cogMonth.setFbeAmount(ItemAmount);
+			}
+			if(aprilMonth!=null)
+			{
+				cogMonth.setAprAmount(aprilMonth);;
+			}
+			if(mayMonth!=null)
+			{
+				cogMonth.setMayAmount(mayMonth);
+			}
+			if(juneMonth!=null)
+			{
+				cogMonth.setJunAmount(juneMonth);
+			}
+			if(julyMonth!=null)
+			{
+				cogMonth.setJulAmount(julyMonth);
+			}
+			if(augustMonth!=null)
+			{
+				cogMonth.setAugAmount(augustMonth);
+			}
+			if(septemberMonth!=null)
+			{
+				cogMonth.setSepAmount(septemberMonth);
+			}
+			if(octoberMonth!=null)
+			{
+				cogMonth.setOctAmount(octoberMonth);
+			}
+			if(novemberMonth!=null)
+			{
+				cogMonth.setNovAmount(novemberMonth);
+			}
+			if(decemberMonth!=null)
+			{
+				cogMonth.setDecAmount(decemberMonth);
+			}
+			if(januaryMonth!=null)
+			{
+				cogMonth.setJanAmount(januaryMonth);
+			}
+			if(februaryMonth!=null)
+			{
+				cogMonth.setFebAmount(februaryMonth);
+			}
+			if(marchMonth!=null)
+			{
+				cogMonth.setMarAmount(marchMonth);
+			}
+			
+			long status=fundApprovalService.insertFundRequestItemDetails(cogMonth,backDto,UserName);
+			
+			String estimateTypeName="";
+			if(backDto!=null && (backDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("F"))
+			{
+				estimateTypeName="Forecast Budget Estimate Item(s)";
+			}
+			else if(backDto!=null && (backDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("R"))
+			{
+				estimateTypeName="Revised Estimate Item(s)";
+			}
+			
+			if(status>0)
+			{
+				redir.addAttribute("Status", estimateTypeName+" Transfered Successfully ..&#128077;");
+			}
+			else
+			{
+				redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside CarryForwardDetails.htm " + UserName, e);
+			return "static/error";
+		}
+		return "redirect:/FbeItemAddEdit.htm";
 		
 	}
 	

@@ -272,7 +272,10 @@ tr:last-of-type th:last-of-type {
     max-height: 646px !important;
 }
 
-
+#carryForwardTable td,th
+{
+	vertical-align: middle !important;
+}
  	
 </style>
 
@@ -282,6 +285,8 @@ tr:last-of-type th:last-of-type {
  <%
      List<Object[]> carryForwardList = (List<Object[]>)request.getAttribute("carryForwardList");
      FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
+     String budgetHeadId=(String)request.getAttribute("budgetHeadId");
+     String budgetItemId=(String)request.getAttribute("budgetItemId");
      System.out.println("fundApprovalDto*****"+fundApprovalDto);
  %>
 <div class="card-header page-top">
@@ -296,14 +301,19 @@ tr:last-of-type th:last-of-type {
            </div>
          </div>
        </div> 
+       
+       <input type="hidden" id="budgetHeadIdHidden" <%if(budgetHeadId!=null){ %> value="<%=budgetHeadId %>" <%} %>>
+       <input type="hidden" id="budgetItemIdHidden" <%if(budgetItemId!=null){ %> value="<%=budgetItemId %>" <%} %>>
 		
-      
+      <form action="FundRequestCarryForward.htm" id="fundForwardListForm" autocomplete="off">
+	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 			           		<div class="form-inline" style="padding: 10px;">
 			           		
 			           		<%String BudgetYear=null;
 			           		  String BudgetYearType=null;
 			           		  String FinYear=null;
+			           		String estimateType=null;
 			           		if(fundApprovalDto!=null)
 			           		{
 			           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null && fundApprovalDto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
@@ -333,6 +343,11 @@ tr:last-of-type th:last-of-type {
 		           				{
 		           					FinYear="-";
 		           				}
+			           			
+			           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
+			           			{
+			           				estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
+			           			}
 			           		}%>
 			           		
 			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
@@ -358,6 +373,7 @@ tr:last-of-type th:last-of-type {
 						 		   </select>              
 				             </div>
 			           </div>
+			       </form>
 		
   <div class="page card dashboard-card" style="margin-top: 5px;max-height: 442px !important;min-height: 442px;">
  
@@ -365,21 +381,20 @@ tr:last-of-type th:last-of-type {
 								
 		<form action="CarryForwardDetails.htm" id="CFForm" autocomplete="off">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	         <input type="hidden" name="FbeMainIdItemTrasfer" value="">
-	         <input type="hidden" name="ItemEstimateTypeTransfer" value="">
-	         <input type="hidden" name="RedirectValTransfer" value="">
+	         <input type="hidden" name="budgetYearTransfer" value="<%=BudgetYear %>">
+	         <input type="hidden" name="ItemEstimateTypeTransfer" value="<%=estimateType %>">
 	         <div class="table-responsive">
-			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="modalTable">
+			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTable">
 	                   <thead>
 	                       <tr style="background-color:#ffda96;color:#000000;">
 	                   
-		                       <th class="text-nowrap" style="width: 3%;vertical-align: middle;">SN</th>
-		                       <th class="text-nowrap" style="width: 6%;vertical-align: middle;">Serial No</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">Item Nomenclature</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">Fund Requested</th>
+		                       <th class="text-nowrap" style="width: 3%;">SN</th>
+		                       <th class="text-nowrap" style="width: 4%;">Serial No</th>
+		                       <th class="text-nowrap" style="width: 15%;">Item Nomenclature</th>
+		                       <th class="text-nowrap" style="width: 8%;">Fund Requested</th>
 		                       
 		                       <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
-		                       <th align="center" style="padding:0px !important;margin:0px !important;background: #edffeb;width: 3%;">
+		                       <th align="center" style="padding:0px !important;margin:0px !important;background: #edffeb;width: 3%;vertical-align: bottom !important;">
 		                        <div class="checkbox-wrapper-12">
 								  <div class="cbx">
 								    <input class="selectall" type="checkbox" style="height: 16px;width: 16px;"/>
@@ -393,12 +408,12 @@ tr:last-of-type th:last-of-type {
 		                       	</th>
 		                       <%} %>
 		                       
-		                       <th class="text-nowrap" style="vertical-align: middle;">Demand No /<br>So No</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">Demand Cost /<br>So Cost</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">DIPL /<br>O/S</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">Pay Amount</th>
-		                       <th class="text-nowrap" style="vertical-align: middle;">Pay Date</th>
-		                       <th class="text-nowrap" style="width: 10%;vertical-align: middle;">Item Amount</th>
+		                       <th class="text-nowrap" >Demand No /<br>So No</th>
+		                       <th class="text-nowrap" >Demand Cost /<br>So Cost</th>
+		                       <th class="text-nowrap" >DIPL /<br>Out Cost / Item Balance</th>
+		                       <th class="text-nowrap" >Pay Amount</th>
+		                       <th class="text-nowrap" >Pay Date</th>
+		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
 	                       </tr>
 	                   </thead>
 	                   <tbody>
@@ -406,7 +421,8 @@ tr:last-of-type th:last-of-type {
 	                   long currentFundRequestId=0,previousFundRequestId=-1;  // restricting duplicate Fund request Details 
 	                   long currentBookingId=0,previousBookingId=-1;  // restricting duplicate Demand Details 
 	                   long currentCommitmentId=0,previousCommitmentId=-1;  // restricting duplicate Supply Order Details 
-	                   long fundRequestIdCount=0;
+	                   long fundRequestIdCount=0,bookingIdCount=0,commitmentIdCount=0;
+	                   long totalSerialNo=0,commitmentSerialNo=0;
 	                   
 	                   if(carryForwardList!=null && carryForwardList.size()>0)
 	                   carryForwardList.forEach(row->System.out.println(Arrays.toString(row)));
@@ -422,70 +438,213 @@ tr:last-of-type th:last-of-type {
 	                     
 	                     <% currentFundRequestId = carryForward[0]!=null ? Long.parseLong(carryForward[0].toString()) : 0;%>
 	                     <% currentBookingId = carryForward[16]!=null ? Long.parseLong(carryForward[16].toString()) : 0;%>
+	                     <% currentCommitmentId = carryForward[21]!=null ? Long.parseLong(carryForward[21].toString()) : 0;%>
 	                     
 	                     <tr>
 	                     
 	                     <!-- Fund Request Details -->
 	                      <% if(currentFundRequestId!=previousFundRequestId){ %>
 	                      
-	                      	<% fundRequestIdCount = carryForwardList.stream().filter(item -> item[0]!=null && (carryForward[0]).equals(item[0])).count(); %>
+	                     <%
+								Set<Object> commitmentSet = new HashSet<>();
+								
+								fundRequestIdCount = carryForwardList.stream()
+								    .mapToLong(obj -> {
+								        long count = 0;
+								        System.out.println("count**Normal***"+count);
+								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString())) {
+								        	count++;
+								        }
+								        System.out.println("count**I***"+count);
+								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "I".equalsIgnoreCase(obj[32].toString())) {
+								        	System.out.println("count**Inside***"+count);
+								        	count++;
+								        }
+								        System.out.println("count**D***"+count);
+								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "D".equalsIgnoreCase(obj[32].toString())) {
+								        	count++;
+								        }
+								        System.out.println("obj[21]*****"+obj[21]);
+								        System.out.println("count**C***"+count);
+								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "C".equalsIgnoreCase(obj[32].toString()) && obj[21] != null) {
+								            if (commitmentSet.add(obj[21])) {
+								            	count++;
+								            }
+								        }
+								        System.out.println("count**Final**"+count);
+								        return count;
+								    })
+								    .sum();
+								
+								System.out.println("fundRequestIdCount*****"+fundRequestIdCount);
+								%>
+
 	                      
-		                     	<td rowspan="<%=fundRequestIdCount %>" style="vertical-align: middle;" align="center"><%=sn++ %>.</td>
-		                     	<td rowspan="<%=fundRequestIdCount %>" style="vertical-align: middle;" align="center"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
-		                     	<td rowspan="<%=fundRequestIdCount %>" style="vertical-align: middle;"><%if(carryForward[8]!=null){ %> <%=carryForward[8] %> <%}else{ %> - <%} %></td>
-		                     	<td rowspan="<%=fundRequestIdCount %>" style="vertical-align: middle;" align="right"><%if(carryForward[11]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[11], "R") %> <%}else{ %> 0.00 <%} %></td>
+	                      	<% //fundRequestIdCount = carryForwardList.stream().filter(item -> item[0]!=null && (carryForward[0]).equals(item[0])).count(); %>
+	                      
+		                     	<td rowspan="<%=fundRequestIdCount %>"  align="center"><%=sn++ %>.</td>
+		                     	<td rowspan="<%=fundRequestIdCount %>"  align="center"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
+		                     	<td rowspan="<%=fundRequestIdCount %>" ><%if(carryForward[8]!=null){ %> <%=carryForward[8] %> <%}else{ %> - <%} %></td>
+		                     	<td rowspan="<%=fundRequestIdCount %>"  align="right"><%if(carryForward[11]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[11], "R") %> <%}else{ %> 0.00 <%} %></td>
 	                      
 	                       <%} %>
 	                       
+	                       <%long count=0;
+	                       Set<Object> commitmentSet = new HashSet<>();
+
+	                       for(Object[] obj:carryForwardList)
+	                    	   {
+	                    	   			if(carryForward[0].equals(obj[0]))
+                    	   				{
+	                    	   				count++;
+                    	   				}
+	                    	   			
+	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("I"))
+	                    	   			{
+	                    	   				count++;
+	                    	   			}
+	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("D"))
+	                    	   			{
+	                    	   				count++;
+	                    	   			}
+	                    	   			
+	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("C") && obj[21]!=null)  // && commitmentId should not repeat only 1 time data has to count
+	                    	   			{
+	                    	   				if (commitmentSet.add(obj[21])) {
+	                    	   					count++;
+	                    	   	            }
+	                    	   			}
+	                    	   }%>
+	                       
 	                      <% if(carryForward[32]!=null){ %>
-	                       <%if(((carryForward[32].toString()).equalsIgnoreCase("D") && currentBookingId!=previousBookingId) || ((carryForward[32].toString()).equalsIgnoreCase("C") && currentCommitmentId!=previousCommitmentId) || (carryForward[32].toString()).equalsIgnoreCase("I")){ %>
-	                     	
-	                     	<td align="center">
-	                    	   <input type="checkbox" class="checkbox" name="" value=""> 
-	                     	</td>
-	                     	
-	                     	<td align="center">
-                     	      <% if(carryForward[32]!=null){
-              								     if((carryForward[32].toString()).equalsIgnoreCase("D")){ %>
-              										<% if(carryForward[17]!=null){ %><%=carryForward[17] %> <%}else{ %> - <%} %>
-              									 <%}else if((carryForward[32].toString()).equalsIgnoreCase("C")){ %>
-              									    <% if(carryForward[23]!=null){ %><%=carryForward[23] %> <%}else{ %> - <%} %>
-              									 <%}else{ %> - <%} %>
-              								 <%}else{ %> - <%} %>
-	                     	</td>
-	                     	<td align="right">
-                     	      <% if(carryForward[32]!=null){
-              								     if((carryForward[32].toString()).equalsIgnoreCase("D")){ %>
-              										<% if(carryForward[17]!=null){ %><%=carryForward[19] %> <%}else{ %> - <%} %>
-              									 <%}else if((carryForward[32].toString()).equalsIgnoreCase("C")){ %>
-              									    <% if(carryForward[26]!=null){ %><%=carryForward[26] %> <%}else{ %> - <%} %>
-              									 <%}else{ %> - <%} %>
-              								 <%}else{ %> - <%} %>
-	                     	</td>
-	                     	<td align="right">
-                     	      <% if(carryForward[32]!=null){
-              								     if((carryForward[32].toString()).equalsIgnoreCase("D")){ %>
-              										<% if(carryForward[20]!=null){ %><%=carryForward[20] %> <%}else{ %> 0.00 <%} %>
-              									 <%}else if((carryForward[32].toString()).equalsIgnoreCase("C")){ %>
-              									    <% if(carryForward[27]!=null){ %><%=carryForward[27] %> <%}else{ %> - <%} %>
-              									 <%}else if((carryForward[32].toString()).equalsIgnoreCase("I")){ %>
-              									    <% if(carryForward[12]!=null){ %><%=carryForward[12] %> <%}else{ %> - <%} %>
-              									 <%}else{ %> - <%} %>
-              								 <%}else{ %> - <%} %>
-	                     	</td>
-	                     	<td align="right"><%if(carryForward[29]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[29], "R") %> <%}else{ %> - <%} %></td>
-	                     	<td align="center"><%if(carryForward[30]!=null){ %> <%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[30].toString()) %> <%}else{ %> - <%} %></td>
-	                     	<td align="center"><span >0</span></td>
-	                     </tr>
+	                      
+	                       <%if((carryForward[32].toString()).equalsIgnoreCase("I")){  totalSerialNo++;%>
+	                      
+	                      		<td align="center">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
+		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                     	</td>
+		                     	
+		                     	<td align="center">-</td>
+		                     	<td align="center">-</td>
+		                     	<td align="right">
+						        <input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="FundRequestId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[0] %>#<%=carryForward[12]!=null ? carryForward[12] : 0 %>" style="display: none;">    <% // Value - FundApprovalId and Item Balance %>
+		                     	<% if(carryForward[12]!=null){ // Item Balance%><%=carryForward[12] %> <%}else{ %> - <%} %></td>
+		                     	<td align="center">-</td>
+		                     	<td align="center">-</td>
+		                     	<td align="center"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
+		                     	
+	                      <%} %>
+	                      
+	                      <%if((carryForward[32].toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
+	                      
+	                      		<td align="center">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
+		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                     	</td>
+		                     	
+		                     	<td align="center"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right"><% if(carryForward[17]!=null){ // Demand Cost%><%=carryForward[19] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right">
+		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="BookingId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[16] %>#<%=carryForward[20]!=null ? carryForward[20] : 0 %>" style="display: none;">     <% // Value - BookingId(Demand) and DIPL %>
+		                     	<% if(carryForward[20]!=null){ // DIPL%><%=carryForward[20] %> <%}else{ %> 0.00 <%} %></td>
+		                     	<td align="center">-</td>
+		                     	<td align="center">-</td>
+		                     	<td align="center"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
+		                     	
+	                      <%} %>
+	                      
+	                      <%if((carryForward[32].toString()).equalsIgnoreCase("C")){ %>
+	                      
+	                      	<% if(currentCommitmentId!=previousCommitmentId){ totalSerialNo++;commitmentSerialNo=0;%>
+	                      	
+	                      	<% commitmentIdCount = carryForwardList.stream().filter(item -> item[21]!=null && (carryForward[21]).equals(item[21])).count(); %>
+	                      	
+	                      		<td align="center" rowspan="<%=commitmentIdCount %>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
+		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                     	</td>
+		                     	
+		                     	<td align="center" rowspan="<%=commitmentIdCount %>"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[26]!=null){ // SO Cost%><%=carryForward[26] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[27]!=null){ // OutCost%><%=carryForward[27] %> <%}else{ %> - <%} %></td>
+		                     	
+		                     	<%} %>
+		                     	
+		                     	<% commitmentSerialNo++; %>
+		                     	
+		                     	<td align="right">
+		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="CommitmentPayId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[21] %>#<%=carryForward[29]!=null ? carryForward[29] : 0 %>" style="display: none;">     <% // Value - CommitmentId(Supplu Order) and Oustanding Cost %>
+		                     	<%if(carryForward[29]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[29], "R") %> <%}else{ %> - <%} %></td>
+	                     	    <td align="center"><%if(carryForward[30]!=null){ %> <%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[30].toString()) %> <%}else{ %> - <%} %></td>
+		                     	<% if(currentCommitmentId!=previousCommitmentId){ %>
+		                     	<td align="center" rowspan="<%=commitmentIdCount %>"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
+		                     	<%} %>
+	                      <%} %>
+	                      
+	                     <%}else{ %>
 	                     
-	                     <%} // Demand Details End  %>  
+	                     <td align="center">-</td>
+	                     <td align="center">-</td>
+	                     <td align="center">-</td>
+	                     <td align="center">-</td>
+	                     <td align="center">-</td>
+	                     <td align="center">-</td>
+	                     
 	                     <%} %>
 	                     
+	                     </tr>
+	                     
+                       <%} %>
+                       
+                       <%if((carryForward[32].toString()).equalsIgnoreCase("I") || (carryForward[32].toString()).equalsIgnoreCase("D") || ((carryForward[32].toString()).equalsIgnoreCase("C") && commitmentIdCount == commitmentSerialNo)){ %>
+                       
+                       <tr style="display: none;" class="CashOutgoRow-<%=totalSerialNo %>">
+                       		<td colspan="7">
+                       			  	<div class="row" style="width: 98%;margin:auto;">
+					                       	  <div class="flex-container" style="justify-content: left;margin-bottom: 10px !important;;width: 90%;background-color: #ffffff !important;height:auto;">
+									            <div class="form-inline" style="font-weight: 600;color:#055505;">
+									            Total&nbsp;<input type="checkbox" class="displayPurpose" checked="checked">&nbsp;Checked Item Balance / Outstanding Cost / DIPL: &nbsp;<span style="color: red;" id="TotalItemOutstanding-<%=totalSerialNo %>"></span>&nbsp; for Selected Serial No&nbsp;<span style="color:red;" id="DisplaySerialNo-<%=totalSerialNo%>"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></span>
+									            </div>
+									          </div>
+										     
+					                       	  <div class="col-md-12" style="margin: auto;padding: 0px;">
+					                       	     <div class="form-inline" style="justify-content:center;width: 100%;background-color: #ffefe3;border-radius: 5px;">
+					                       		 <div class="inputBox"><input required id="AprilMonthForward-<%=totalSerialNo %>" name="CFAprilMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AprilMonthForward')"><span>April</span></div>
+									             <div class="inputBox"><input required id="MayMonthForward-<%=totalSerialNo %>" name="CFMayMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MayMonthForward')"><span>May</span></div>
+									             <div class="inputBox"><input required id="JuneMonthForward-<%=totalSerialNo %>" name="CFJuneMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JuneMonthForward')"><span>June</span></div>
+									             <div class="inputBox"><input required id="JulyMonthForward-<%=totalSerialNo %>" name="CFJulyMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JulyMonthForward')"><span>July</span></div>
+									             <div class="inputBox"><input required id="AugustMonthForward-<%=totalSerialNo %>" name="CFAugustMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AugustMonthForward')"><span>August</span></div>
+									             <div class="inputBox"><input required id="SeptemberMonthForward-<%=totalSerialNo %>" name="CFSeptemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','SeptemberMonthForward')"><span>September</span></div>
+									             <div class="inputBox"><input required id="OctoberMonthForward-<%=totalSerialNo %>" name="CFOctoberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','OctoberMonthForward')"><span>October</span></div>
+									             <div class="inputBox"><input required id="NovemberMonthForward-<%=totalSerialNo %>" name="CFNovemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','NovemberMonthForward')"><span>November</span></div>
+									             <div class="inputBox"><input required id="DecemberMonthForward-<%=totalSerialNo %>" name="CFDecemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','DecemberMonthForward')"><span>December</span></div>
+									             <div class="inputBox"><input required id="JanuaryMonthForward-<%=totalSerialNo %>" name="CFJanuaryMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JanuaryMonthForward')"><span>January</span></div>
+									             <div class="inputBox"><input required id="FebruaryMonthForward-<%=totalSerialNo %>" name="CFFebruaryMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','FebruaryMonthForward')"><span>February</span></div>
+									             <div class="inputBox"><input required id="MarchMonthForward-<%=totalSerialNo %>" name="CFMarchMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MarchMonthForward')"><span>March</span></div>
+					                       	</div>
+					                       </div>
+					         
+					                       	</div>
+                       		</td>
+                       </tr>
+                       
                        <%} %>
                       
                       <%} %>
                       
                       <% previousFundRequestId=currentFundRequestId; %>
+                      <% previousBookingId=currentBookingId; %>
+                      <% previousCommitmentId=currentCommitmentId; %>
                       
                      <%} // List for Loop End %>  
 	                       
@@ -500,13 +659,287 @@ tr:last-of-type th:last-of-type {
                     </tbody>
                  </table>
                  
+                    <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
+				       <div class="row" style="justify-content: center !important;width: 90% !important;margin:auto;">
+				           <span style="font-size:14px;font-weight:bold;color:#6000ff;">1. Click Submit Button To Transfer Items. <br>
+				            2.Choose Only Confirmed Items/DIPL/Out Cost. <br>
+				            3.Once Transfered Cannot Be Undo.</span></div>
+			         <%} %>
+			          <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
+			          <div style="justify-content: center;width: 90% !important;margin:auto;text-align: center;padding: 12px;">
+				        <button type="button" class="btn btn-sm submit-btn" onclick="SubmitCFDetails()">Submit</button>
+				        </div>
+				        <%} %>
+               
                </div>
 		    </form>
-							   
+			<br><br><br><br>		   
 	     </div>
+	     <br><br><br><br><br>
 	   </div>
 			
 </body>
+
+<script type="text/javascript">
+
+function CashOutgoAction(rowSerialNo) {
+    var checkbox = $("#cashOutgoCheckbox-" + rowSerialNo);
+    if (checkbox.is(':checked')) {
+        $("#CashOutgoRow-"+rowSerialNo).show();
+    } else {
+    	$("#CashOutgoRow-"+rowSerialNo).hide();
+    }
+}
+
+
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+    $('.selectall').on('click',function(){
+		
+        if(this.checked){
+        	
+        	//Remove checked Selection
+        	$('.checkbox').each(function(){
+    			if(this.checked)
+    			{
+    				var serialNo=$(this).val();
+    				$('.DemandOrderItemDetails-'+ serialNo).each(function() {
+    		            this.checked = false;
+    		        });
+    				$("#TotalItemOutstanding-"+serialNo).html(0);
+    				$(".CashOutgoRow-"+ serialNo + ',.DemandOrderItemDetails-'+ serialNo).hide();
+    			}
+            });
+        	
+        	// check All the Checkbox
+            $('.checkbox').each(function(){
+                this.checked = true;
+                var TotalItemCost=parseFloat(0);
+                var serialNo=$(this).val();
+                $(".CashOutgoRow-"+ serialNo +',.DemandOrderItemDetails-'+ serialNo).fadeIn();
+    			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
+    		            this.checked = true;
+    		            var checkedValue = $(this).val();
+    		            if(checkedValue)
+    		            	{
+    		            		checkedValue=checkedValue.split("#")[1];
+    		            		if(checkedValue)
+    		            			{
+    		            				TotalItemCost=TotalItemCost+parseFloat(checkedValue);
+    		            			}
+    		            	}
+    		        });
+    			$("#TotalItemOutstanding-"+ serialNo).html(TotalItemCost);
+            });
+        }else{
+             $('.checkbox').each(function(){
+                this.checked = false;
+                var serialNo=$(this).val();
+				$('.DemandOrderItemDetails-'+ serialNo).each(function() {
+		            this.checked = false;
+		        });
+				$("#TotalItemOutstanding-"+serialNo).html(0);
+				$(".CashOutgoRow-"+ serialNo + ',.DemandOrderItemDetails-'+ serialNo).hide();
+            });
+        }
+    });
+    
+    $('.checkbox').on('click',function(){
+    	let serialNo = $(this).val();
+    	if(this.checked)
+    		{
+    			$(".CashOutgoRow-"+ serialNo+',.DemandOrderItemDetails-'+ serialNo).fadeIn();
+    			var TotalItemCost=parseFloat(0);
+    			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
+    		            this.checked = true;
+    		            var checkedValue = $(this).val();
+    		            if(checkedValue)
+    		            	{
+    		            		checkedValue=checkedValue.split("#")[1];
+    		            		if(checkedValue)
+   		            			{
+   		            				TotalItemCost=TotalItemCost+parseFloat(checkedValue);
+   		            			}
+    		            	}
+    		        });
+    			
+    			$("#TotalItemOutstanding-"+ serialNo).html(TotalItemCost);
+    			
+    		}
+    	else
+    		{
+    			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
+		            this.checked = false;
+		        });
+    			$("#TotalItemOutstanding-"+ serialNo).html(0);
+    			$(".CashOutgoRow-"+ serialNo + ',.DemandOrderItemDetails-'+ serialNo).hide();
+    			
+    		}
+    	
+        if($('.checkbox:checked').length == $('.checkbox').length){
+            $('.selectall').prop('checked',true);
+        }else{
+            $('.selectall').prop('checked',false);
+        }
+    });
+    
+});
+
+
+function calculateForwardItemAmount(count,MonthId)
+{
+	var ErrorStatus=0;
+	var List= ForwardItemArrayList('ForwardAmount',count);
+	var TotalCOGAmount=ForwardItemAddList(List);
+		
+		var TotalItemOS=$("#TotalItemOutstanding-"+count).text();
+		if(TotalItemOS)
+		{
+			TotalItemOS=parseFloat(TotalItemOS);
+		}
+		
+		if(TotalItemOS<parseFloat(TotalCOGAmount))
+		{
+			alert("Entered COG Should Not More Than Checked COG..!");
+			$("#"+MonthId+"-"+count).val('');
+			var List= ForwardItemArrayList('ForwardAmount',count);
+			var TotalCOGAmount=ForwardItemAddList(List);
+			$("#CFItemAmount-"+count).val(TotalCOGAmount);
+			ErrorStatus=1;
+		}
+		else
+			{
+				$("#CFItemAmount-"+count).val(TotalCOGAmount);
+			}
+		
+		if(ErrorStatus==1)
+		  {
+		    $("#"+MonthId+"-"+count).focus();
+			$('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 4px red !important;border-color: #bf1002 !important; }</style>').attr('class', 'TextBoxBorderRed'));
+	 	  }
+		  else
+			{
+				 $(".TextBoxBorderRed,.TextBoxBorderBlue").remove();
+				 $('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);border-color: #80bdff; }</style>').attr('class', 'TextBoxBorderBlue'));
+			}
+		
+	}
+
+
+function IndividualDemandItemsOutStandingCost(count,ClassName)
+{
+	var List= arrayList(ClassName,count);
+	var TotalCOGAmount=AddList(List);
+	$("#TotalItemOutstanding-"+count).html(TotalCOGAmount);
+	
+}
+
+	//get all data related to checked Outstanding Cost className and push to array
+	function arrayList(ClassName, count) {
+	    var List = new Array();
+	    $('input.' + ClassName + '-' + count).each(function() {
+	        if($(this).prop('checked')) {
+	            List.push($(this).val());
+	        }
+	    });
+	    return List;
+	}
+	
+	//suming the checked Outstanding Cost array list data
+	function AddList(List)
+	{
+		var TotalCOGAmount=0;
+		if(List!=null && List.length !== 0)
+		{
+			for(var i=0;i<List.length;i++)
+		    {
+				if(List[i]!='' && List[i].split("#")!=null && List[i].split("#")[1]!=null)
+				{
+					TotalCOGAmount=parseFloat(TotalCOGAmount)+parseFloat(List[i].split("#")[1]);
+				}
+			}
+		}
+		return TotalCOGAmount;
+	}
+	
+	//suming the Forward Item array list data
+	function ForwardItemAddList(List)
+	{
+		var TotalCOGAmount=0;
+		if(List!=null && List.length !== 0)
+		{
+			for(var i=0;i<List.length;i++)
+		    {
+				if(List[i]!='')
+				{
+					TotalCOGAmount=parseFloat(TotalCOGAmount)+parseFloat(List[i]);
+				}
+			}
+		}
+		return TotalCOGAmount;
+	}
+	
+	// get all data related to ForwardItem className and push to array
+	function ForwardItemArrayList(ClassName, count) {
+	    var List = new Array();
+	    $('input.' + ClassName + '-' + count).each(function() {
+	            List.push($(this).val());
+	    });
+	    return List;
+    }
+	
+function calculateForwardItemAmount(count,MonthId)
+{
+	var ErrorStatus=0;
+	var List= ForwardItemArrayList('ForwardAmount',count);
+	var TotalCOGAmount=ForwardItemAddList(List);
+		
+		var TotalItemOS=$("#TotalItemOutstanding-"+count).text();
+		if(TotalItemOS)
+		{
+			TotalItemOS=parseFloat(TotalItemOS);
+		}
+		
+		if(TotalItemOS<parseFloat(TotalCOGAmount))
+		{
+			alert("Entered COG Should Not More Than Checked COG..!");
+			$("#"+MonthId+"-"+count).val('');
+			var List= ForwardItemArrayList('ForwardAmount',count);
+			var TotalCOGAmount=ForwardItemAddList(List);
+			$("#CFItemAmount-"+count).val(TotalCOGAmount);
+			ErrorStatus=1;
+		}
+		else
+			{
+				$("#CFItemAmount-"+count).val(TotalCOGAmount);
+			}
+		
+		if(ErrorStatus==1)
+		  {
+		    $("#"+MonthId+"-"+count).focus();
+			$('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 4px red !important;border-color: #bf1002 !important; }</style>').attr('class', 'TextBoxBorderRed'));
+	 	  }
+		  else
+			{
+				 $(".TextBoxBorderRed,.TextBoxBorderBlue").remove();
+				 $('head').append($('<style> '+"#"+MonthId+"-"+count+':focus { box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);border-color: #80bdff; }</style>').attr('class', 'TextBoxBorderBlue'));
+			}
+		
+	}
+	
+	
+function preventInvalidInput(event) {
+    const invalidChars = ['e', 'E', '+', '-', '.'];
+    if (invalidChars.includes(event.key)) {
+        event.preventDefault();
+    }
+}		
+
+</script>
 
 <script type="text/javascript">
 
@@ -514,7 +947,8 @@ $(document).ready(function(event) {
 	
 	var projectDetails= '0#GEN#GENERAL';
 	var budgetHeadId = $("#budgetHeadIdHidden").val();
-	$(".budgetItemDetails").hide();
+	var budgetItemId = $("#budgetItemIdHidden").val();
+	
 	
 		$.get('GetBudgetHeadList.htm', {
 			ProjectDetails : projectDetails
@@ -542,6 +976,16 @@ $(document).ready(function(event) {
 					   htmlContent="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
 					}
 				 $("#selbudgethead").append(htmlContent);
+				 
+				 if(budgetHeadId=='-1')
+				 {
+					 $(".budgetItemDetails").hide();
+				 }
+				 else
+				 {
+					 SetBudgetItem(budgetItemId,'L'); // onload
+				 }
+				 
 			});
 			
 		});
@@ -550,11 +994,19 @@ $(document).ready(function(event) {
 		<!------------------Select Budget Item using Ajax-------------------->
 		
 		$('#selbudgethead').change( function(event) {
-			var budgetHeadId = $("select#selbudgethead").val();
-			SetBudgetItem(budgetHeadId); 
+			var budgetItemId = $("#budgetItemIdHidden").val();
+			SetBudgetItem(budgetItemId,'S');  // onchange submit
 		});
 		
-		function SetBudgetItem(budgetItemId)
+		$('#selbudgetitem').change( function(event) {
+			var form=$("#fundForwardListForm");
+			if(form)
+			{
+				form.submit();
+			}
+		});
+		
+		function SetBudgetItem(budgetItemId,submitType)
 		{
 			var project= '0#GEN#GENERAL'; 
 			var budgetHeadId = $("select#selbudgethead").val();
@@ -586,6 +1038,19 @@ $(document).ready(function(event) {
 					{
 						$("#selbudgetitem").append("<option value="+value.budgetItemId+" >"+ value.headOfAccounts+"  ["+value.subHead+"]</option>");
 					}
+					
+					if(submitType!=null)
+					{
+						if(submitType == 'S')
+						{
+							var form=$("#fundForwardListForm");
+							if(form)
+							{
+								form.submit();
+							}
+						}
+					}
+					
 				});
 			});
 		}

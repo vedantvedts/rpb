@@ -28,10 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
+import com.vts.ibas.fbe.model.FbeMain;
+import com.vts.ibas.fbe.model.FbeSub;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
+import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -678,6 +681,127 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost,String status) throws Exception{
 		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
+	}
+
+	@Override
+	public long insertFundRequestItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
+		long status=0,count=0;
+		if(cogMonth!=null && cogMonth.getCarryForwardSerialNo().length>0)
+		{
+			String fbeReYear=null,estimateType=null;
+			if(backDto!=null)
+			{
+				fbeReYear=backDto.getF
+			}
+			for(int i=0;i<cogMonth.getCarryForwardSerialNo().length;i++)
+			{
+				if(cogMonth.getItemNomenclature()[i]!=null && cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && !(cogMonth.getFbeAmount()[i]).equalsIgnoreCase("0"))
+				{
+					FundApproval fbeSub=new FundApproval();
+					fbeSub.setItemSerialNo(createSerialNo(fbeReYear,estimateType));
+					fbeSub.setBudgetItemId(cogMonth.getBudgetItem()!=null && cogMonth.getBudgetItem()[i]!=null?Long.parseLong(cogMonth.getBudgetItem()[i]):0);
+					fbeSub.setInitiatingOfficer(cogMonth.getEmployee()!=null && cogMonth.getEmployee()[i]!=null?Long.parseLong(cogMonth.getEmployee()[i]):0);
+					fbeSub.setItemNomenclature(cogMonth.getItemNomenclature()[i]);
+					
+					if(cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && cogMonth.getFbeAmount()[i]!="")
+					{
+						fbeSub.setFundRequestAmount(new BigDecimal(cogMonth.getFbeAmount()[i]));
+					}
+					
+					if(cogMonth.getAprAmount()!=null && cogMonth.getAprAmount()[i]!=null && cogMonth.getAprAmount()[i]!="")
+					{
+						fbeSub.setApril(new BigDecimal(cogMonth.getAprAmount()[i]));
+					}
+					
+					if(cogMonth.getMayAmount()!=null && cogMonth.getMayAmount()[i]!=null && cogMonth.getMayAmount()[i]!="")
+					{
+						fbeSub.setMay(new BigDecimal(cogMonth.getMayAmount()[i]));
+					}
+					if(cogMonth.getJunAmount()!=null && cogMonth.getJunAmount()[i]!=null && cogMonth.getJunAmount()[i]!="")
+					{
+						fbeSub.setJun(new BigDecimal(cogMonth.getJunAmount()[i]));
+					}
+					if(cogMonth.getJulAmount()!=null && cogMonth.getJulAmount()[i]!=null && cogMonth.getJulAmount()[i]!="")
+					{
+						fbeSub.setJul(new BigDecimal(cogMonth.getJulAmount()[i]));
+					}
+					if(cogMonth.getAugAmount()!=null && cogMonth.getAugAmount()[i]!=null && cogMonth.getAugAmount()[i]!="")
+					{
+						fbeSub.setAug(new BigDecimal(cogMonth.getAugAmount()[i]));
+					}
+					if(cogMonth.getSepAmount()!=null && cogMonth.getSepAmount()[i]!=null && cogMonth.getSepAmount()[i]!="")
+					{
+						fbeSub.setSep(new BigDecimal(cogMonth.getSepAmount()[i]));
+					}
+					if(cogMonth.getOctAmount()!=null && cogMonth.getOctAmount()[i]!=null && cogMonth.getOctAmount()[i]!="")
+					{
+						fbeSub.setOct(new BigDecimal(cogMonth.getOctAmount()[i]));
+					}
+					if(cogMonth.getNovAmount()!=null && cogMonth.getNovAmount()[i]!=null && cogMonth.getNovAmount()[i]!="")
+					{
+						fbeSub.setNov(new BigDecimal(cogMonth.getNovAmount()[i]));
+					}
+					if(cogMonth.getDecAmount()!=null && cogMonth.getDecAmount()[i]!=null && cogMonth.getDecAmount()[i]!="")
+					{
+						fbeSub.setDcbr(new BigDecimal(cogMonth.getDecAmount()[i]));
+					}
+					if(cogMonth.getJanAmount()!=null && cogMonth.getJanAmount()[i]!=null && cogMonth.getJanAmount()[i]!="")
+					{
+						fbeSub.setJan(new BigDecimal(cogMonth.getJanAmount()[i]));
+					}
+					if(cogMonth.getFebAmount()!=null && cogMonth.getFebAmount()[i]!=null && cogMonth.getFebAmount()[i]!="")
+					{
+						fbeSub.setFeb(new BigDecimal(cogMonth.getFebAmount()[i]));
+					}
+					if(cogMonth.getMarAmount()!=null && cogMonth.getMarAmount()[i]!=null && cogMonth.getMarAmount()[i]!="")
+					{
+						fbeSub.setMar(new BigDecimal(cogMonth.getMarAmount()[i]));
+					}
+					if(cogMonth.getFutureMonth()!=null && cogMonth.getFutureMonth()[i]!=null && cogMonth.getFutureMonth()[i]!="")
+					{
+						fbeSub.setFuture(new BigDecimal(cogMonth.getFutureMonth()[i]));
+					}
+					if(cogMonth.getCommitmentId()!=null && cogMonth.getCommitmentId()[i]!=null && cogMonth.getCommitmentId()[i]!="")
+					{
+						fbeSub.setCommitmentId(cogMonth.getCommitmentId()[i].toString());
+					}
+					if(cogMonth.getDemandId()!=null && cogMonth.getDemandId()[i]!=null && cogMonth.getDemandId()[i]!="")
+					{
+						fbeSub.setDemandId(cogMonth.getDemandId()[i].toString());
+					}
+					if(cogMonth.getCommitmentPayId()!=null && cogMonth.getCommitmentPayId()[i]!=null && cogMonth.getCommitmentPayId()[i]!="")
+					{
+						fbeSub.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i].toString());
+					}
+					if(cogMonth.getEstimateType()!=null && cogMonth.getEstimateType()!="")
+					{
+						fbeSub.setEstimateType(cogMonth.getEstimateType().toString());
+					}
+					
+					fbeSub.setStatus(fbeMainStatus);
+					fbeSub.setIsActive(1);
+					fbeSub.setCreatedBy(UserName);
+					fbeSub.setCreatedDate(LocalDateTime.now());
+					long fbeStatus=fbedao.insertFbeItemDetails(fbeSub);
+					
+					if(fbeStatus>0)
+					{
+						count++;
+					}
+				}
+			}
+
+			if(count==cogMonth.getBudgetItem().length)
+			{
+				status=1;
+			}
+		}
+		else
+		{
+			status=-1;
+		}
+		
+		return status;
 	}
 	
 }

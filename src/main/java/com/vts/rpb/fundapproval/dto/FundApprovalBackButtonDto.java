@@ -20,4 +20,6 @@ public class FundApprovalBackButtonDto implements Serializable
     private String FbeMainId;
     private String FBEYear;
     private String REYear;
+    private long budgetHeadId;
+    private long budgetItemId;
 }

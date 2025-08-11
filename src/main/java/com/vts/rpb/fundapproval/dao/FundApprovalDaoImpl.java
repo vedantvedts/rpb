@@ -590,7 +590,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
-	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:estimatedType,:finYear,:asOnDate,:labCode);";
+	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:asOnDate,:labCode);";
 	@Override
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
 		 try {
@@ -600,6 +600,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
 				query.setParameter("asOnDate", LocalDate.now());
 				query.setParameter("labCode",labCode);
+				query.setParameter("budgetHeadId",fundApprovalDto.getBudgetHeadId());
+				query.setParameter("budgetItemId",fundApprovalDto.getBudgetItemId());
 				query.setParameter("finYear", (fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0));  // passing previous financialYear
 				List<Object[]> result = (List<Object[]>)query.getResultList();
 				return result; 

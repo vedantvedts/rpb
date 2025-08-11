@@ -7,6 +7,7 @@ import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
+import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 
 public interface FundApprovalService 
@@ -56,4 +57,6 @@ public interface FundApprovalService
 	
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost,String status) throws Exception;
+
+	public long insertFundRequestItemDetails(FundRequestCOGDetails cogMonth, FundApprovalBackButtonDto dto, String userName) throws Exception;
 }

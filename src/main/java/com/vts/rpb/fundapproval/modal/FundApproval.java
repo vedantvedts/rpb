@@ -46,6 +46,9 @@ public class FundApproval {
 	@Column(name = "BudgetItemId")
 	private long budgetItemId;
 	
+	@Column(name = "FundRequestId")
+	private long fundRequestId=0;
+	
 	@Column(name = "BookingId")
 	private long bookingId=0;
 	
