@@ -661,7 +661,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			}
 			String[] years = fbeReYear.split("-");
 	        String shortYearRange = years[0].substring(2) + "-" + years[1].substring(2);
-	        return shortYearRange+"/"+maxCount+1;
+	        return shortYearRange+"/"+(maxCount+1);
 			
 		} catch (Exception e) {
 			return null;
@@ -724,6 +724,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
 							fundRequest.setBookingId(cogMonth.getDemandId()[i]!=null ? Long.parseLong(cogMonth.getDemandId()[i]) : 0);
 							System.out.println("cogMonth.getFundRequestId()******"+cogMonth.getFundRequestId());
+							System.out.println("cogMonth.getFundRequestId()[i]******"+cogMonth.getFundRequestId()[i]);
 							fundRequest.setFundRequestId(cogMonth.getFundRequestId()!=null && cogMonth.getFundRequestId()[i]!=null ? Long.parseLong(cogMonth.getFundRequestId()[i]) : 0);
 							fundRequest.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i]!=null ? cogMonth.getCommitmentPayId()[i].toString() : null);
 							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
@@ -821,7 +822,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				}
 			}
 
-			if(count==cogMonth.getBudgetItem().length)
+			if(count==cogMonth.getCarryForwardSerialNo().length)
 			{
 				status=1;
 			}
