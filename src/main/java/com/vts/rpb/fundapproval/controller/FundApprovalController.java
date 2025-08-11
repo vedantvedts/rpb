@@ -342,18 +342,18 @@ public class FundApprovalController
 		try
 		{
 			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
-			FundApprovalBackButtonDto backDto=(FundApprovalBackButtonDto) ses.getAttribute("FbeSessionBackButton");
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
 			int stringLength=1;
 			if(demandItemOrderDetails!=null) 
 			{
 				stringLength=demandItemOrderDetails.length;
 			}
-			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],fundRequestId=new String[stringLength],itemNomenclature=new String[stringLength],
-					budgetItem=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
+			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
+					,selectedFundRequestId=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
 					mayMonth=new String[stringLength],juneMonth=new String[stringLength],julyMonth=new String[stringLength],
 					augustMonth=new String[stringLength],septemberMonth=new String[stringLength],octoberMonth=new String[stringLength],
 					novemberMonth=new String[stringLength],decemberMonth=new String[stringLength],januaryMonth=new String[stringLength],
-					februaryMonth=new String[stringLength],marchMonth=new String[stringLength],empId=new String[stringLength],fundRequestSerialNo=new String[stringLength];
+					februaryMonth=new String[stringLength],marchMonth=new String[stringLength],fundRequestSerialNo=new String[stringLength];
 			
 			FundRequestCOGDetails cogMonth=new FundRequestCOGDetails();
 			if(demandItemOrderDetails.length>0)
@@ -382,13 +382,13 @@ public class FundApprovalController
 						if(fundApprovalIds!=null && fundApprovalIds.length>0)
 						{
 							String fundRequestDetails = Arrays.stream(fundApprovalIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
-							fundRequestId[i]=fundRequestDetails;
+							cfFundRequestId[i]=fundRequestDetails;
 						}
 						
 						
 						fundRequestSerialNo[i]=serialNo;
-						budgetItem[i]=req.getParameter("CFBudgetItem-"+serialNo);
-						empId[i]=req.getParameter("EmpId-"+serialNo);
+						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
+						System.out.println("req.getParameter(\"CFFundRequestId-\"+serialNo)*****"+req.getParameter("CFFundRequestId-"+serialNo));
 						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
 						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
 						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
@@ -409,12 +409,17 @@ public class FundApprovalController
 			
 			if(fundRequestSerialNo!=null)
 			{
-				cogMonth.setCarryForwardSerialNo(fundRequestSerialNo);
+				cogMonth.setSelectedFundRequestId(selectedFundRequestId);
 			}
 			
-			if(fundRequestId!=null) 
+			if(fundRequestSerialNo!=null)
 			{
-				cogMonth.setFundRequestId(fundRequestId);
+				cogMonth.setCarryForwardSerialNo(selectedFundRequestId);
+			}
+			
+			if(cfFundRequestId!=null) 
+			{
+				cogMonth.setFundRequestId(cfFundRequestId);
 			}
 			
 			if(demandId!=null) 
@@ -427,14 +432,6 @@ public class FundApprovalController
 				cogMonth.setCommitmentPayId(commitmentPayId);
 			}
 			
-			if(budgetItem!=null)
-			{
-				cogMonth.setBudgetItem(budgetItem);
-			}
-			if(empId!=null)
-			{
-				cogMonth.setEmployee(empId);
-			}
 			if(itemNomenclature!=null)
 			{
 				cogMonth.setItemNomenclature(itemNomenclature);
@@ -492,14 +489,14 @@ public class FundApprovalController
 				cogMonth.setMarAmount(marchMonth);
 			}
 			
-			long status=fundApprovalService.insertFundRequestItemDetails(cogMonth,backDto,UserName);
+			long status=fundApprovalService.insertCarryForwardItemDetails(cogMonth,fundApprovalDto,UserName);
 			
 			String estimateTypeName="";
-			if(backDto!=null && (backDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("F"))
+			if(fundApprovalDto!=null && (fundApprovalDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("F"))
 			{
 				estimateTypeName="Forecast Budget Estimate Item(s)";
 			}
-			else if(backDto!=null && (backDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("R"))
+			else if(fundApprovalDto!=null && (fundApprovalDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("R"))
 			{
 				estimateTypeName="Revised Estimate Item(s)";
 			}
@@ -512,6 +509,14 @@ public class FundApprovalController
 			{
 				redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
 			}
+			
+			if(fundApprovalDto!=null)
+			{
+				redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+				redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+				redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+				redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
+			}
 		}
 		catch(Exception e)
 		{
@@ -519,7 +524,7 @@ public class FundApprovalController
 			logger.error(new Date() + " Inside CarryForwardDetails.htm " + UserName, e);
 			return "static/error";
 		}
-		return "redirect:/FbeItemAddEdit.htm";
+		return "redirect:/FundRequest.htm";
 		
 	}
 	

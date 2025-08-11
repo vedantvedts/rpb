@@ -27,5 +27,5 @@ public class FundRequestCOGDetails
 	private String[] DemandId;
 	private String[] fundRequestId;
 	private String[] carryForwardSerialNo;
-	private String EstimateType;
+	private String[] selectedFundRequestId;
 }

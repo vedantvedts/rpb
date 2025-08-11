@@ -15,7 +15,6 @@ import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
-import com.vts.rpb.utils.DateTimeFormatUtil;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -590,11 +589,11 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
-	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:asOnDate,:labCode);";
+	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:previousFinYear,:asOnDate,:labCode);";
 	@Override
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
 		 try {
-			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn()) : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn()) : 0)+"','"+LocalDate.now()+"','"+labCode+"');");
+			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getBudgetHeadId()+"','"+fundApprovalDto.getBudgetItemId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0)+"','"+LocalDate.now()+"','"+labCode+"');");
 				Query query= manager.createNativeQuery(GETFUNDREQUESTCARRYFORWARD);
 				query.setParameter("divisionId", fundApprovalDto.getDivisionId());
 				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
@@ -602,7 +601,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 				query.setParameter("labCode",labCode);
 				query.setParameter("budgetHeadId",fundApprovalDto.getBudgetHeadId());
 				query.setParameter("budgetItemId",fundApprovalDto.getBudgetItemId());
-				query.setParameter("finYear", (fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0));  // passing previous financialYear
+				query.setParameter("finYear",fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn());
+				query.setParameter("previousFinYear", (fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0));  // passing previous financialYear
 				List<Object[]> result = (List<Object[]>)query.getResultList();
 				return result; 
 				
@@ -651,6 +651,22 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			logger.error(new Date() +"Inside DAO estimateTypeParticularDivList "+ e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	
+	@Override
+	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception {
+		try {
+			manager.persist(fundRequest);
+			manager.flush();
+			
+			return fundRequest.getFundApprovalId();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO insertCarryForwardItemDetails() "+ e);
+			e.printStackTrace();
+			return 0L;
 		}
 	}
 	

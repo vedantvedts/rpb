@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -28,8 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
-import com.vts.ibas.fbe.model.FbeMain;
-import com.vts.ibas.fbe.model.FbeSub;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -684,7 +681,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public long insertFundRequestItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
+	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
 		long status=0,count=0;
 		if(cogMonth!=null && cogMonth.getCarryForwardSerialNo().length>0)
 		{
@@ -709,96 +706,117 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			{
 				if(cogMonth.getItemNomenclature()[i]!=null && cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && !(cogMonth.getFbeAmount()[i]).equalsIgnoreCase("0"))
 				{
-					FundApproval fundRequest=new FundApproval();
-					fundRequest.setItemSerialNo(createSerialNo(fbeReYear,estimateType));
-					fundRequest.setBudgetItemId(cogMonth.getBudgetItem()!=null && cogMonth.getBudgetItem()[i]!=null?Long.parseLong(cogMonth.getBudgetItem()[i]):0);
-					fundRequest.setInitiatingOfficer(cogMonth.getEmployee()!=null && cogMonth.getEmployee()[i]!=null?Long.parseLong(cogMonth.getEmployee()[i]):0);
-					fundRequest.setItemNomenclature(cogMonth.getItemNomenclature()[i]);
-					
-					if(cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && cogMonth.getFbeAmount()[i]!="")
+					if(cogMonth.getSelectedFundRequestId()!=null && cogMonth.getSelectedFundRequestId()[i]!=null && cogMonth.getSelectedFundRequestId()[i]!="")
 					{
-						fbeSub.setFundRequestAmount(new BigDecimal(cogMonth.getFbeAmount()[i]));
-					}
-					
-					if(cogMonth.getAprAmount()!=null && cogMonth.getAprAmount()[i]!=null && cogMonth.getAprAmount()[i]!="")
-					{
-						fbeSub.setApril(new BigDecimal(cogMonth.getAprAmount()[i]));
-					}
-					
-					if(cogMonth.getMayAmount()!=null && cogMonth.getMayAmount()[i]!=null && cogMonth.getMayAmount()[i]!="")
-					{
-						fbeSub.setMay(new BigDecimal(cogMonth.getMayAmount()[i]));
-					}
-					if(cogMonth.getJunAmount()!=null && cogMonth.getJunAmount()[i]!=null && cogMonth.getJunAmount()[i]!="")
-					{
-						fbeSub.setJun(new BigDecimal(cogMonth.getJunAmount()[i]));
-					}
-					if(cogMonth.getJulAmount()!=null && cogMonth.getJulAmount()[i]!=null && cogMonth.getJulAmount()[i]!="")
-					{
-						fbeSub.setJul(new BigDecimal(cogMonth.getJulAmount()[i]));
-					}
-					if(cogMonth.getAugAmount()!=null && cogMonth.getAugAmount()[i]!=null && cogMonth.getAugAmount()[i]!="")
-					{
-						fbeSub.setAug(new BigDecimal(cogMonth.getAugAmount()[i]));
-					}
-					if(cogMonth.getSepAmount()!=null && cogMonth.getSepAmount()[i]!=null && cogMonth.getSepAmount()[i]!="")
-					{
-						fbeSub.setSep(new BigDecimal(cogMonth.getSepAmount()[i]));
-					}
-					if(cogMonth.getOctAmount()!=null && cogMonth.getOctAmount()[i]!=null && cogMonth.getOctAmount()[i]!="")
-					{
-						fbeSub.setOct(new BigDecimal(cogMonth.getOctAmount()[i]));
-					}
-					if(cogMonth.getNovAmount()!=null && cogMonth.getNovAmount()[i]!=null && cogMonth.getNovAmount()[i]!="")
-					{
-						fbeSub.setNov(new BigDecimal(cogMonth.getNovAmount()[i]));
-					}
-					if(cogMonth.getDecAmount()!=null && cogMonth.getDecAmount()[i]!=null && cogMonth.getDecAmount()[i]!="")
-					{
-						fbeSub.setDcbr(new BigDecimal(cogMonth.getDecAmount()[i]));
-					}
-					if(cogMonth.getJanAmount()!=null && cogMonth.getJanAmount()[i]!=null && cogMonth.getJanAmount()[i]!="")
-					{
-						fbeSub.setJan(new BigDecimal(cogMonth.getJanAmount()[i]));
-					}
-					if(cogMonth.getFebAmount()!=null && cogMonth.getFebAmount()[i]!=null && cogMonth.getFebAmount()[i]!="")
-					{
-						fbeSub.setFeb(new BigDecimal(cogMonth.getFebAmount()[i]));
-					}
-					if(cogMonth.getMarAmount()!=null && cogMonth.getMarAmount()[i]!=null && cogMonth.getMarAmount()[i]!="")
-					{
-						fbeSub.setMar(new BigDecimal(cogMonth.getMarAmount()[i]));
-					}
-					if(cogMonth.getFutureMonth()!=null && cogMonth.getFutureMonth()[i]!=null && cogMonth.getFutureMonth()[i]!="")
-					{
-						fbeSub.setFuture(new BigDecimal(cogMonth.getFutureMonth()[i]));
-					}
-					if(cogMonth.getCommitmentId()!=null && cogMonth.getCommitmentId()[i]!=null && cogMonth.getCommitmentId()[i]!="")
-					{
-						fbeSub.setCommitmentId(cogMonth.getCommitmentId()[i].toString());
-					}
-					if(cogMonth.getDemandId()!=null && cogMonth.getDemandId()[i]!=null && cogMonth.getDemandId()[i]!="")
-					{
-						fbeSub.setDemandId(cogMonth.getDemandId()[i].toString());
-					}
-					if(cogMonth.getCommitmentPayId()!=null && cogMonth.getCommitmentPayId()[i]!=null && cogMonth.getCommitmentPayId()[i]!="")
-					{
-						fbeSub.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i].toString());
-					}
-					if(cogMonth.getEstimateType()!=null && cogMonth.getEstimateType()!="")
-					{
-						fbeSub.setEstimateType(cogMonth.getEstimateType().toString());
-					}
-					
-					fbeSub.setStatus(fbeMainStatus);
-					fbeSub.setIsActive(1);
-					fbeSub.setCreatedBy(UserName);
-					fbeSub.setCreatedDate(LocalDateTime.now());
-					long fbeStatus=fbedao.insertFbeItemDetails(fbeSub);
-					
-					if(fbeStatus>0)
-					{
-						count++;
+						FundApproval lastYearfundRequest=fundApprovalDao.getFundRequestDetails(Long.parseLong(cogMonth.getSelectedFundRequestId()[i]));
+						
+						if(lastYearfundRequest!=null) 
+						{
+							FundApproval fundRequest=new FundApproval();
+							String serialNo=createSerialNo(fbeReYear,estimateType);
+							fundRequest.setSerialNo(serialNo!=null ? serialNo : "0");
+							fundRequest.setEstimateType(estimateType);
+							fundRequest.setDivisionId(lastYearfundRequest.getDivisionId());
+							fundRequest.setFinYear(backDto.getFromYearBackBtn() +"-"+ backDto.getToYearBackBtn());
+							fundRequest.setReFbeYear(fbeReYear);
+							fundRequest.setProjectId(lastYearfundRequest.getProjectId());
+							fundRequest.setBudgetHeadId(lastYearfundRequest.getBudgetHeadId());
+							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
+							fundRequest.setBookingId(cogMonth.getDemandId()[i]!=null ? Long.parseLong(cogMonth.getDemandId()[i]) : 0);
+							System.out.println("cogMonth.getFundRequestId()******"+cogMonth.getFundRequestId());
+							fundRequest.setFundRequestId(cogMonth.getFundRequestId()!=null && cogMonth.getFundRequestId()[i]!=null ? Long.parseLong(cogMonth.getFundRequestId()[i]) : 0);
+							fundRequest.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i]!=null ? cogMonth.getCommitmentPayId()[i].toString() : null);
+							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
+							fundRequest.setInitiatingOfficer(lastYearfundRequest.getInitiatingOfficer());
+							fundRequest.setItemNomenclature(cogMonth.getItemNomenclature()[i]!=null ? cogMonth.getItemNomenclature()[i] : null);
+							fundRequest.setRequisitionDate(LocalDate.now());
+							
+							if(cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && cogMonth.getFbeAmount()[i]!="")
+							{
+								fundRequest.setFundRequestAmount(new BigDecimal(cogMonth.getFbeAmount()[i]));
+							}
+							
+							if(cogMonth.getAprAmount()!=null && cogMonth.getAprAmount()[i]!=null && cogMonth.getAprAmount()[i]!="")
+							{
+								fundRequest.setApril(new BigDecimal(cogMonth.getAprAmount()[i]));
+							}
+							
+							if(cogMonth.getMayAmount()!=null && cogMonth.getMayAmount()[i]!=null && cogMonth.getMayAmount()[i]!="")
+							{
+								fundRequest.setMay(new BigDecimal(cogMonth.getMayAmount()[i]));
+							}
+							if(cogMonth.getJunAmount()!=null && cogMonth.getJunAmount()[i]!=null && cogMonth.getJunAmount()[i]!="")
+							{
+								fundRequest.setJune(new BigDecimal(cogMonth.getJunAmount()[i]));
+							}
+							if(cogMonth.getJulAmount()!=null && cogMonth.getJulAmount()[i]!=null && cogMonth.getJulAmount()[i]!="")
+							{
+								fundRequest.setJuly(new BigDecimal(cogMonth.getJulAmount()[i]));
+							}
+							if(cogMonth.getAugAmount()!=null && cogMonth.getAugAmount()[i]!=null && cogMonth.getAugAmount()[i]!="")
+							{
+								fundRequest.setAugust(new BigDecimal(cogMonth.getAugAmount()[i]));
+							}
+							if(cogMonth.getSepAmount()!=null && cogMonth.getSepAmount()[i]!=null && cogMonth.getSepAmount()[i]!="")
+							{
+								fundRequest.setSeptember(new BigDecimal(cogMonth.getSepAmount()[i]));
+							}
+							if(cogMonth.getOctAmount()!=null && cogMonth.getOctAmount()[i]!=null && cogMonth.getOctAmount()[i]!="")
+							{
+								fundRequest.setOctober(new BigDecimal(cogMonth.getOctAmount()[i]));
+							}
+							if(cogMonth.getNovAmount()!=null && cogMonth.getNovAmount()[i]!=null && cogMonth.getNovAmount()[i]!="")
+							{
+								fundRequest.setNovember(new BigDecimal(cogMonth.getNovAmount()[i]));
+							}
+							if(cogMonth.getDecAmount()!=null && cogMonth.getDecAmount()[i]!=null && cogMonth.getDecAmount()[i]!="")
+							{
+								fundRequest.setDecember(new BigDecimal(cogMonth.getDecAmount()[i]));
+							}
+							if(cogMonth.getJanAmount()!=null && cogMonth.getJanAmount()[i]!=null && cogMonth.getJanAmount()[i]!="")
+							{
+								fundRequest.setJanuary(new BigDecimal(cogMonth.getJanAmount()[i]));
+							}
+							if(cogMonth.getFebAmount()!=null && cogMonth.getFebAmount()[i]!=null && cogMonth.getFebAmount()[i]!="")
+							{
+								fundRequest.setFebruary(new BigDecimal(cogMonth.getFebAmount()[i]));
+							}
+							if(cogMonth.getMarAmount()!=null && cogMonth.getMarAmount()[i]!=null && cogMonth.getMarAmount()[i]!="")
+							{
+								fundRequest.setMarch(new BigDecimal(cogMonth.getMarAmount()[i]));
+							}
+							
+							fundRequest.setRc1(lastYearfundRequest.getRc1());
+							fundRequest.setRc1Role(lastYearfundRequest.getRc1Role());
+							
+							fundRequest.setRc2(lastYearfundRequest.getRc2());
+							fundRequest.setRc2Role(lastYearfundRequest.getRc2Role());
+							
+							fundRequest.setRc3(lastYearfundRequest.getRc3());
+							fundRequest.setRc3Role(lastYearfundRequest.getRc3Role());
+							
+							fundRequest.setRc4(lastYearfundRequest.getRc4());
+							fundRequest.setRc4Role(lastYearfundRequest.getRc4Role());
+							
+							fundRequest.setRc5(lastYearfundRequest.getRc5());
+							fundRequest.setRc5Role(lastYearfundRequest.getRc5Role());
+							
+							fundRequest.setApprovingOfficer(lastYearfundRequest.getApprovingOfficer());
+							fundRequest.setApprovingOfficerRole(lastYearfundRequest.getApprovingOfficerRole());
+							
+							fundRequest.setApprovalDate(lastYearfundRequest.getApprovalDate());				
+							
+							fundRequest.setStatus("A");
+							fundRequest.setCreatedBy(userName);
+							fundRequest.setCreatedDate(LocalDateTime.now());
+							
+							long fbeStatus=fundApprovalDao.insertCarryForwardItemDetails(fundRequest);
+							
+							if(fbeStatus>0)
+							{
+								count++;
+							}
+						}
 					}
 				}
 			}

@@ -519,11 +519,9 @@ tr:last-of-type th:last-of-type {
 	                       <%if((carryForward[32].toString()).equalsIgnoreCase("I")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
 		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
-		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
 		                     	<td align="center">-</td>
@@ -540,11 +538,9 @@ tr:last-of-type th:last-of-type {
 	                      <%if((carryForward[32].toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
-		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
-		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[33]%>">
+		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
 		                     	<td align="center"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %></td>
@@ -565,11 +561,9 @@ tr:last-of-type th:last-of-type {
 	                      	<% commitmentIdCount = carryForwardList.stream().filter(item -> item[21]!=null && (carryForward[21]).equals(item[21])).count(); %>
 	                      	
 	                      		<td align="center" rowspan="<%=commitmentIdCount %>">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>" onclick="CashOutgoAction('<%=totalSerialNo %>')">
-		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="CFBudgetHead-<%=totalSerialNo %>" value="<%=carryForward[6]%>">
-		                    	   <input type="hidden" name="CFBudgetItem-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
-		                    	   <input type="hidden" name="EmpId-<%=totalSerialNo %>" value="<%=carryForward[13]%>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[34]%>">
+		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
 		                     	<td align="center" rowspan="<%=commitmentIdCount %>"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %></td>
@@ -677,20 +671,6 @@ tr:last-of-type th:last-of-type {
 	   </div>
 			
 </body>
-
-<script type="text/javascript">
-
-function CashOutgoAction(rowSerialNo) {
-    var checkbox = $("#cashOutgoCheckbox-" + rowSerialNo);
-    if (checkbox.is(':checked')) {
-        $("#CashOutgoRow-"+rowSerialNo).show();
-    } else {
-    	$("#CashOutgoRow-"+rowSerialNo).hide();
-    }
-}
-
-
-</script>
 
 <script type="text/javascript">
 
@@ -938,6 +918,82 @@ function preventInvalidInput(event) {
 }		
 
 </script>
+
+<script type="text/javascript">
+
+function SubmitCFDetails()
+{
+	var isSerialNoChecked=0,isItemChecked=0,statusCode=0,statusMessage='';
+	$('.checkbox').each(function(){
+		if(this.checked)
+		{
+			isSerialNoChecked=1;
+			var serialNo=$(this).val();
+			var TotalSelectedItemCost=0;
+			$('.DemandOrderItemDetails-'+serialNo).each(function() {
+				if($(this).prop("checked"))
+				{
+				    isItemChecked=1;
+				    var checkedValue = $(this).val();
+		            if(checkedValue)
+	            	{
+	            		checkedValue=checkedValue.split("#")[1];
+	            		if(checkedValue)
+            			{
+            				TotalSelectedItemCost=TotalSelectedItemCost+parseFloat(checkedValue);
+            			}
+	            	}
+				}
+	        });
+			
+			var List= ForwardItemArrayList("ForwardAmount",serialNo);
+	        var totalMontCOGAmount=ForwardItemAddList(List);
+			
+	        if(totalMontCOGAmount==0)
+	        	{
+		        	statusCode=-1;
+					var serialNo=$("#DisplaySerialNo-"+serialNo).html();
+					statusMessage="Select/Checked Serial No "+serialNo+" outstanding cost/Demand Cost/Item Balance should not be empty..!";
+					return false;
+	        	}
+	        else if(TotalSelectedItemCost < totalMontCOGAmount)
+				{
+					statusCode=-1;
+					var serialNo=$("#DisplaySerialNo-"+serialNo).html();
+					statusMessage="Select/Checked Serial No "+serialNo+" outstanding cost/Demand Cost should not more than Total Month COG..!";
+					return false;
+				}
+		}
+    });
+	
+	if(isSerialNoChecked==0)
+		{
+			alert("Select/Check at least one Demand/Supply Order..!");
+		}
+	else if(isItemChecked==0)
+		{
+			alert("Select/Check at least one outstanding cost/Demand Cost from serial number..!");
+		}
+	else if(statusCode==-1)
+		{
+			alert(statusMessage);
+		}
+	else
+		{
+			var form=$('#CFForm');
+			if(form)
+				{
+					var finYear=$("#HiddenFinYear").val();
+					if(confirm("Are You Sure To Carry Forward The Supply Order/Demand To Financial Year "+finYear+" ..?"))
+					{
+						form.submit();
+					}
+				}
+		}
+	}
+
+</script>
+
 
 <script type="text/javascript">
 
