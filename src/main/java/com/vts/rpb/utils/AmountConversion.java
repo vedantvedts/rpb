@@ -48,13 +48,17 @@ public class AmountConversion {
 				if(amountType!=null)
 				{
 					String finalAmount=amount.toString();
-					if(amountType.equalsIgnoreCase("R") || amountType.equalsIgnoreCase("Rupees"))
+					if(amountType.equalsIgnoreCase("R"))
+					{
+						result=rupeeFormatForTypeRupees(finalAmount);
+					}
+					else if(amountType.equalsIgnoreCase("L") || amountType.equalsIgnoreCase("C"))
 					{
 						result=rupeeFormat(finalAmount);
 					}
 					else
 					{
-						result=finalAmount;
+						result=rupeeFormat(finalAmount);
 					}
 				}
 			}
@@ -147,6 +151,43 @@ public class AmountConversion {
 		}
 		
 		return minus + result + decimal;
+	}
+	
+	private static String rupeeFormatForTypeRupees(String amount) {
+	    String result = "", minus = "";
+
+	    if (amount != null && !amount.equalsIgnoreCase("-")) {
+	        // Take only integer part (ignore decimals completely)
+	        if (amount.contains(".")) {
+	            amount = amount.substring(0, amount.indexOf("."));
+	        }
+
+	        amount = amount.replace(",", ""); // Remove commas
+
+	        // Handle negatives
+	        if ((new BigDecimal(amount)).compareTo(BigDecimal.ZERO) < 0) {
+	            amount = amount.substring(1); // remove minus sign
+	            minus = "-";
+	        }
+
+	        int len = amount.length();
+	        if (len <= 3) {
+	            result = amount;
+	        } else {
+	            int a = 0;
+	            for (int i = len - 1; i >= 0; i--) {
+	                a++;
+	                result += amount.charAt(i);
+	                if ((a == 3 || (a > 3 && a % 2 == 1)) && i != 0) {
+	                    result += ",";
+	                }
+	            }
+	            result = new StringBuilder(result).reverse().toString();
+	        }
+	    } else {
+	        result = "0";
+	    }
+	    return minus + result;
 	}
 	
 	private static boolean isNumber(Object amount) {

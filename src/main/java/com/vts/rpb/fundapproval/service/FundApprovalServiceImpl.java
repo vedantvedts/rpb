@@ -637,4 +637,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return fbedao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
 	}
 	
+	@Override
+	public String getCommitteeMemberType (long empId) throws Exception{
+		return fbedao.getCommitteeMemberType(empId);
+	}
+	
 }

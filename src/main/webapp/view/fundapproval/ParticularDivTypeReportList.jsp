@@ -269,38 +269,43 @@ input[name="ItemNomenclature"]::placeholder {
 </head>
 <body>
 		<%
-		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
+		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList"); 
+		if(requisitionList!=null){
+			requisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
+			System.err.print("size-"+requisitionList.size());
+		}
 		System.err.print("requisitionList JSP-"+requisitionList.size());
-		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
 		
-		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
-		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
-		if(fundApprovalDto!=null)
-		{
-			fromYear=fundApprovalDto.getFromYearBackBtn();
-			toYear=fundApprovalDto.getToYearBackBtn();
-			divisionId=fundApprovalDto.getDivisionId();
-			estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
-			fbeYear=fundApprovalDto.getFBEYear();
-			reYear=fundApprovalDto.getREYear();
-		}
+		String fromYear=(String)request.getAttribute("FromYear");
+		String toYear=(String)request.getAttribute("ToYear");
 		String ExistingbudgetHeadId=(String)request.getAttribute("ExistingbudgetHeadId");
 		String ExistingbudgetItemId=(String)request.getAttribute("ExistingbudgetItemId");
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		Long divisionId=(Long)request.getAttribute("divisionId");
+		String estimateType=(String)request.getAttribute("estimateType");
+
+		Object DivName = "", DivCode = "";
+		String EstimateTypeFromList = "";
+		String financialYear = "";
+
+		if (requisitionList != null && !requisitionList.isEmpty()) {
+		    Object[] firstItem = requisitionList.get(0);
+		    DivName = firstItem[2] != null ? firstItem[2] : "";
+		    DivCode = firstItem[27] != null ? firstItem[27] : "";
+		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
+		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
+		}
 		%>
-			<%String success=(String)request.getParameter("resultSuccess"); 
-              String failure=(String)request.getParameter("resultFailure");%>
-              
-              <input type="hidden" id="estimateType" value="<%=estimateType%>">
+			
 
 <div class="card-header page-top">
 	 	<div class="row">
-	 	  <div class="col-md-3"><h5>Fund Report</h5></div>
+	 	  <div class="col-md-5"><h5> Fund Report</h5></div>
 	      <!-- <div class="col-md-9">
 	    	 <ol class="breadcrumb ">
 	    	 <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
@@ -315,78 +320,34 @@ input[name="ItemNomenclature"]::placeholder {
 		
        <div class="page card dashboard-card">
             
-    <form action="FundReport.htm" method="POST" id="RequistionForm" autocomplete="off">
+    <form action="estimateTypeParticularDivList.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
+ 		<input type="hidden" name="divisionId" value="<%= divisionId %>">
+ 		<input type="hidden" name="estimateType" value="<%= estimateType %>">
+ 		<input type="hidden" name="fromYear" value="<%= fromYear %>">
+ 		<input type="hidden" name="toYear" value="<%= toYear %>">
  <div class="flex-container" style="width: 100%;">
         <!-- Division + From/To Year Row -->
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
             <!-- Division -->
             <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">Division:</label>
-                <select class="form-control select2" id="DivisionDetails" name="DivisionDetails"
-                    data-live-search="true" onchange="this.form.submit();" required
-                    style="font-size: 12px; min-width: 240px;">
-                    <% if (loginType.equalsIgnoreCase("A")) { %>
-                        <option value="-1#All#All" <% if (divisionId != null && divisionId.equalsIgnoreCase("-1")) { %> selected <% } %> hidden>All</option>
-                    <% } %>
-                    <% if (DivisionList != null && DivisionList.size() > 0) {
-                        for (Object[] List : DivisionList) { %>
-                            <option value="<%=List[0]%>#<%=List[1]%>#<%=List[3]%>"
-                                <% if (divisionId != null && divisionId.equalsIgnoreCase(List[0].toString())) { %> selected <% } %>>
-                                <%=List[1]%> (<%=List[3]%>)
-                            </option>
-                    <% }} %>
-                </select>
-            </div>
-
-            <!-- From Year -->
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">From:</label>
-                <input type="text" class="form-control" name="FromYear" id="FromYear"
-                    value="<%= fromYear != null ? fromYear : "" %>" readonly onchange="this.form.submit()"
-                    style="width: 100px; background-color: white;" required />
-            </div>
-
-            <!-- To Year -->
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">To:</label>
-                <input type="text" class="form-control" name="ToYear" id="ToYear"
-                    value="<%= toYear != null ? toYear : "" %>" readonly onchange="this.form.submit()"
-                    style="width: 100px; background-color: white;" required />
-            </div>
-        </div>
-
-        <!-- Estimate Type and Approval -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 10px;">
-            <!-- RE Radio -->
-            <div style="align-items: center;">
-                <input type="radio" id="REstimateType" checked name="EstimateType" value="R" />
-                <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">
-                    RE <span style="color: red; font-weight: 600;">(<%= reYear %>)</span>
-                </label>
-                <input type="hidden" name="reYear" value="<%= reYear %>">
-            </div>
-
-            <!-- FBE Radio -->
-            <div style="align-items: center;">
-                <input type="radio" id="FBEstimateType" name="EstimateType" value="F" />
-                <label for="FBEstimateType" style="font-weight: bold; margin-left: 5px;">
-                    FBE <span style="color: red; font-weight: 600;">(<%= fbeYear %>)</span>
-                </label>
-                 <input type="hidden" name="fbeYear" value="<%= fbeYear %>">
-            </div>
 
             <!-- Approved Dropdown -->
-           <div style="align-items: center;">
-			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			<span style="border: solid 0.1px;padding: 2px 5px;border-radius: 6px;border-color: darkgray;">
+
+        </div>
+
+        <!-- Budget Details -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
+            <!-- Budget -->
+           <div style="align-items: center;align-content: space-evenly;">
+			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
+					<span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;">
 			    <input type="radio" id="approvalStatus"
 			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="A" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;
 			
 			    <input type="radio" id="approvalStatus"
 			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
@@ -394,12 +355,7 @@ input[name="ItemNomenclature"]::placeholder {
 			    &nbsp;<span style="font-weight: 600">No</span>
 			    </span>
 			</div>
-
-        </div>
-
-        <!-- Budget Details -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
-            <!-- Budget -->
+            &nbsp;
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
                 <select class="form-control select2" id="selProject" name="selProject"
@@ -433,23 +389,42 @@ input[name="ItemNomenclature"]::placeholder {
             <!-- Cost Range -->
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
-                <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %> <%=ExistingfromCost %> <%} else {%>0<%} %>"  required
+                <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %> <%=ExistingfromCost.trim() %> <%} else {%>0<%} %>"  required
                     class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 <span style="margin: 0 10px; font-weight: bold;">--</span>
-                <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %> <%=ExistingtoCost %> <%} else {%>1000000<%} %>" required
+                <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %> <%=ExistingtoCost.trim() %> <%} else {%>1000000<%} %>" required
                     class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
         </div>
-
+</div>
         <input type="hidden" id="projectIdHidden" value="0#GEN#General" />
     </form>
 </div> <!-- Flex-container ends -->
 
+
 				 
 
-<div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 10px;">
+<div style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+  
+  <!-- Center-aligned span -->
+  <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;">
+  <span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#160ab7;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span>
+&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp; <span style="font-weight: 600;color:#6a1616;">
+      <% if("R".equalsIgnoreCase(EstimateTypeFromList)) { %>
+         RE Year :
+      <% } else if("F".equalsIgnoreCase(EstimateTypeFromList)) { %>
+         FBE Year :
+      <% } else {%>--
+      <%} %>
+    </span>
+    <span style="font-weight: 600;color:#160ab7;"><%=financialYear%> </span>
+  </div>
+
+  <!-- Right-aligned buttons -->
+  <div style="flex-shrink: 0;">
     <button class="bg-transparent" type="button"
         style="border: none; background-color: #f9f7f7; padding: 0; margin: 0; padding-right: 9px !important;"
         onclick="submitPrintAction('pdf')"
@@ -461,9 +436,12 @@ input[name="ItemNomenclature"]::placeholder {
         style="border: none; background-color: white; margin-left: 10px;"
         onclick="submitPrintAction('Excel')"
         data-toggle="tooltip" data-placement="top" title="Excel Download">
-        <i class="fas fa-file-excel" Style="color: green; font-size: 1.73em;" aria-hidden="true" id="Excel"></i>
+        <i class="fas fa-file-excel" style="color: green; font-size: 1.73em;" aria-hidden="true" id="Excel"></i>
     </button>
+  </div>
+
 </div>
+
 
 				 	
 					<form action="#" id="RequistionFormAction" autocomplete="off"> 
@@ -493,35 +471,32 @@ input[name="ItemNomenclature"]::placeholder {
 					            BigDecimal grandTotal = new BigDecimal(0);
 					            BigDecimal subTotal = new BigDecimal(0);
 					            
-					            if(requisitionList!=null && requisitionList.size()>0){ %>
+					            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
 					            
 					            <%for(Object[] data:requisitionList){ 
-					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
+					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
+					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
 					            %>
 					            
 					            	 <tr>
 				                   			<td align="center"><%=sn++ %></td>
-				                   			<td align="center" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
-				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
-				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
-				                   			<td align="right"><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], "R") %><%}else{ %> - <%} %></td>
-				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
+				                   			<td align="center" id="budgetHead"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
+				                   			<td align="left" id="Officer"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
+				                   			<td id="Item"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
+				                   			<td align="right"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
+				                   			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
-				                   			<td style="width: 120px;">
-				                   			<%if(data[23]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+				                   			<td>
+				                   			
+				                   			 
+				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            <span style="color: #2b8c03;">Approved</span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
+												            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
+												            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
+												            </span> 
+												            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
 											       </button>
-											       <%} else if(data[23]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
-												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             <span style="color: #8c2303;">Pending</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
-											
-											       </button>
-											       <%} %>
+											       
 									       </td>
 				                   			<td align="center">-</td>
 			                      	 
@@ -588,7 +563,6 @@ input[name="ItemNomenclature"]::placeholder {
       <table class="table table-bordered table-striped mt-2" id="AttachmentModalTable">
         <thead class="thead-dark">
           <tr>
-         	 <th>SN</th>
             <th style="width: 60%;">Attachment Name</th>
             <th style="width: 40%; text-align: center;">Actions</th>
           </tr>
@@ -632,18 +606,6 @@ input[name="ItemNomenclature"]::placeholder {
   </div>
 </div>	
 </body>
-<script type="text/javascript">
-
-<%if(success!=null){%>
-
-	showSuccessFlyMessage('<%=success %>');
-
-<%}else if(failure!=null){%>
-
-	showFailureFlyMessage('<%=failure %>');
-
-<%}%>
-</script>
 <script src="webresources/js/RpbFundStatus.js"></script>
 <script>
 
@@ -1047,17 +1009,15 @@ function refreshModal(modalId) {
 	    success: function(data) {
 	      var body = $("#eAttachmentModalBody");
 	      body.empty();
-	      var count=1;
 
 	      if (data.length === 0) {
-	        body.append("<tr><td colspan='3' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
+	        body.append("<tr><td colspan='2' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
 	      } else {
 	        $.each(data, function(index, attach) {
 	          var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
 	          var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
 
 	          var row = "<tr>" +
-	          "<td style='font-weight:700'>" + count++ + ".</td>" +
 	            "<td style='text-align: center;font-weight:700'>" + attach.fileName + "</td>" +
 	            "<td style='text-align: center;'>" +
 	            "<button class='btn fa fa-eye text-primary' title='preview - "+attach.fileName+" Attachment' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
@@ -1083,7 +1043,6 @@ function refreshModal(modalId) {
 	  $("#filePreviewIframe").attr("src", url);
 	  $("#previewSection").show();
 	}
-
 
 
 
@@ -1121,7 +1080,7 @@ function submitPrintAction(printAction) {
     form.appendChild(actionInput);
     
     // Set the form action and target
-    form.action = 'FundReportPrint.htm';
+    form.action = 'estimateTypeParticularDivPrint.htm';
     form.target = '_blank';
     
     // Submit the form
@@ -1130,7 +1089,7 @@ function submitPrintAction(printAction) {
     // Reset form attributes after submission
     setTimeout(() => {
         form.removeChild(actionInput);
-        form.action = 'FundReport.htm';
+        form.action = 'estimateTypeParticularDivPrint.htm';
         form.target = '_self';
     }, 100);
 }
