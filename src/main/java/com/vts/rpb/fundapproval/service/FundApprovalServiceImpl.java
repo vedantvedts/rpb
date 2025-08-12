@@ -246,7 +246,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		try {
 			System.err.println("SERVICE FundRequestAttachData-"+fundApprovalAttachId);
 			FundRequestAttachData = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
-			System.out.println(Arrays.toString(FundRequestAttachData));
 			}catch (Exception e) {
 			logger.error(new Date() +"Inside MasterServiceImpl FundRequestAttachData");
 			e.printStackTrace();
@@ -258,9 +257,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception {
 		logger.info(new Date() + "Inside SERVICE FundRequestAttachDelete ");
 		Object[] attachdata = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
-		System.out.println(Arrays.toString(attachdata));
 		File my_file=null;
-		System.out.println("ApplicationFilesDrive: " + env.getProperty("ApplicationFilesDrive")+"FundApproval"+File.separator + attachdata[1] +File.separator + attachdata[3]);
 		my_file = new File(env.getProperty("ApplicationFilesDrive")+"FundApproval"+File.separator + attachdata[1] +File.separator + attachdata[3]);
 		boolean result = Files.deleteIfExists(my_file.toPath());
 	 if(result) {
@@ -723,8 +720,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 							fundRequest.setBudgetHeadId(lastYearfundRequest.getBudgetHeadId());
 							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
 							fundRequest.setBookingId(cogMonth.getDemandId()[i]!=null ? Long.parseLong(cogMonth.getDemandId()[i]) : 0);
-							System.out.println("cogMonth.getFundRequestId()******"+cogMonth.getFundRequestId());
-							System.out.println("cogMonth.getFundRequestId()[i]******"+cogMonth.getFundRequestId()[i]);
 							fundRequest.setFundRequestId(cogMonth.getFundRequestId()!=null && cogMonth.getFundRequestId()[i]!=null ? Long.parseLong(cogMonth.getFundRequestId()[i]) : 0);
 							fundRequest.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i]!=null ? cogMonth.getCommitmentPayId()[i].toString() : null);
 							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());

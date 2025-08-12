@@ -48,7 +48,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 			if(login!=null && login.getLoginId() > 0)
 			{
 				 Object[] EmpDetails = masterDao.getUserFullDetails(login.getLoginId()); 
-				 System.out.println("***EmpDetails***"+Arrays.toString(EmpDetails));
 		    	   
 	    	      ses.setAttribute("LoginId", login.getLoginId()); 
 	    	      ses.setAttribute("Division",login.getDivisionId()); 	

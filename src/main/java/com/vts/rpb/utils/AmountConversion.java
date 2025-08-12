@@ -1,8 +1,11 @@
 package com.vts.rpb.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class AmountConversion {
+	
+	static DecimalFormat df = new DecimalFormat( "#####################");
 
 	public static String DecimalRupeeFormat(String value) {
 		String[] parts = value.split("\\.");
@@ -70,27 +73,36 @@ public class AmountConversion {
 		return result;
 	}
 	
-	private static String decimalRequiredOrNot(String amount)   //if decimal value is there, it will return whole Amount + decimal or else return whole Amount
+	private static String amountConvertionDetailsWithoutDecimal(Object amount,String amountType)
 	{
-		String[] amountarray=amount.split("\\.");
-		if(amountarray!=null && amountarray.length > 0) 
+		String result="";
+		if(amount!=null) 
 		{
-			String number=amountarray[0];
-			String paisa="0";
-			try {
-				paisa=(amountarray[1]!=null && amountarray[1]!="") ? amountarray[1] : "0" ;
+			if(isNumber(amount))
+			{
+				if(amountType!=null)
+				{
+					String finalAmount=amount.toString();
+					if(amountType.equalsIgnoreCase("R") || amountType.equalsIgnoreCase("Rupees"))
+					{
+						result=rupeeFormat(finalAmount);
+					}
+					else
+					{
+						result=finalAmount;
+					}
+				}
 			}
-			catch (Exception e) {
-				paisa="0";
+			else
+			{
+				result=amount.toString();
 			}
-			String decimal=paisa!=null && (new BigDecimal(paisa).compareTo(BigDecimal.ZERO) > 0) && amountarray[1] !=null ? "."+amountarray[1] : "";
-			return number+decimal;
 		}
 		else
 		{
-			return amount;
+			result="0.00";
 		}
-		
+		return df.format(result);
 	}
 	
 	private static String rupeeFormat(String amount)
@@ -164,9 +176,7 @@ public class AmountConversion {
 		String[] RupeePaisaSplit = null;
 
 		try {
-			System.out.println("%%%%%%-----"+RupeeAndPaisa);
 			RupeePaisaSplit = RupeeAndPaisa.split("\\.");
-            System.out.println("%%length---"+RupeePaisaSplit.length);
 		} catch (Exception e) {
 
 		}

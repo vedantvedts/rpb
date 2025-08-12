@@ -287,15 +287,55 @@ tr:last-of-type th:last-of-type {
      FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
      String budgetHeadId=(String)request.getAttribute("budgetHeadId");
      String budgetItemId=(String)request.getAttribute("budgetItemId");
-     System.out.println("fundApprovalDto*****"+fundApprovalDto);
  %>
+ 
+				<%String BudgetYear="-";
+           		  String BudgetYearType="NA";
+           		  String FinYear="-";
+           		String estimateType=null;
+           		String fromYear=null,toYear=null,divisionDetails=null;
+           		if(fundApprovalDto!=null)
+           		{
+           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
+           			{
+           				if(fundApprovalDto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
+           				{
+           					BudgetYear=fundApprovalDto.getFBEYear();
+           					BudgetYearType="FBE Year";
+           				}
+           				else if(fundApprovalDto.getEstimatedTypeBackBtn().equalsIgnoreCase("R"))
+       					{
+           					BudgetYear=fundApprovalDto.getREYear();
+           					BudgetYearType="RE Year";
+       					}
+	           		}
+           		
+           			fromYear=fundApprovalDto.getFromYearBackBtn()!=null ? fundApprovalDto.getFromYearBackBtn() : null;
+           			toYear=fundApprovalDto.getToYearBackBtn()!=null ? fundApprovalDto.getToYearBackBtn() : null;
+           			
+           			if(fromYear!=null && toYear!=null)
+       				{
+        				FinYear=fundApprovalDto.getFromYearBackBtn()+"-"+fundApprovalDto.getToYearBackBtn();
+       				}
+           			
+           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
+           			{
+           				estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
+           			}
+           			
+           			if(fundApprovalDto!=null)
+           			{
+           				divisionDetails=java.net.URLEncoder.encode(fundApprovalDto.getDivisionBackBtn(), "UTF-8");
+           			}
+           			
+           		}%>
 <div class="card-header page-top">
 	 	<div class="row">
 	 	  <div class="col-md-3"><h5>Fund Carry Forward</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
 	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
-	    	 <li class="breadcrumb-item"><a href="FundRequest.htm">Requisition List </a></li>
+	    	 <li class="breadcrumb-item"><a href="FundRequest.htm?FromYear=<%=fromYear %>&ToYear=<%=toYear %>&DivisionDetails=<%=divisionDetails%>&EstimateType=<%=estimateType %>">Requisition List </a></li>
 	         <li class="breadcrumb-item active" aria-current="page">Fund Carry Forward</li>
              </ol>
            </div>
@@ -309,46 +349,6 @@ tr:last-of-type th:last-of-type {
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 			           		<div class="form-inline" style="padding: 10px;">
-			           		
-			           		<%String BudgetYear=null;
-			           		  String BudgetYearType=null;
-			           		  String FinYear=null;
-			           		String estimateType=null;
-			           		if(fundApprovalDto!=null)
-			           		{
-			           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null && fundApprovalDto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
-			           			{
-				           			BudgetYear=fundApprovalDto.getFBEYear();
-				           			BudgetYearType="FBE Year";
-				           		}
-			           			else
-				           			{
-				           				if(fundApprovalDto.getFromYearBackBtn()!=null && fundApprovalDto.getToYearBackBtn()!=null)
-				           				{
-				           					BudgetYear=fundApprovalDto.getFromYearBackBtn()+"-"+fundApprovalDto.getToYearBackBtn();
-				           					BudgetYearType="RE Year";
-				           				}
-				           				else
-				           				{
-				           					BudgetYear="-";
-				           					BudgetYearType="***";
-				           				}
-				           			}
-			           			
-			           			if(fundApprovalDto.getFromYearBackBtn()!=null && fundApprovalDto.getToYearBackBtn()!=null)
-		           				{
-			           				FinYear=fundApprovalDto.getFromYearBackBtn()+"-"+fundApprovalDto.getToYearBackBtn();
-		           				}
-		           				else
-		           				{
-		           					FinYear="-";
-		           				}
-			           			
-			           			if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
-			           			{
-			           				estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
-			           			}
-			           		}%>
 			           		
 			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
 			           			<label style="font-size: 19px;"><b><%=BudgetYearType %> :&nbsp;</b></label><span class="spanClass"><%=BudgetYear %></span>
@@ -422,9 +422,6 @@ tr:last-of-type th:last-of-type {
 	                   long fundRequestIdCount=0,bookingIdCount=0,commitmentIdCount=0;
 	                   long totalSerialNo=0,commitmentSerialNo=0;
 	                   
-	                   if(carryForwardList!=null && carryForwardList.size()>0)
-	                   carryForwardList.forEach(row->System.out.println(Arrays.toString(row)));
-	                   
 	                   if(carryForwardList!=null && carryForwardList.size()>0){
 	                     for(Object[] carryForward:carryForwardList){ %>
 	                     
@@ -449,33 +446,23 @@ tr:last-of-type th:last-of-type {
 								fundRequestIdCount = carryForwardList.stream()
 								    .mapToLong(obj -> {
 								        long count = 0;
-								        System.out.println("count**Normal***"+count);
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString())) {
 								        	count++;
 								        }
-								        System.out.println("count**I***"+count);
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "I".equalsIgnoreCase(obj[32].toString())) {
-								        	System.out.println("count**Inside***"+count);
 								        	count++;
 								        }
-								        System.out.println("count**D***"+count);
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "D".equalsIgnoreCase(obj[32].toString())) {
 								        	count++;
 								        }
-								        System.out.println("obj[21]*****"+obj[21]);
-								        System.out.println("count**C***"+count);
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "C".equalsIgnoreCase(obj[32].toString()) && obj[21] != null) {
 								            if (commitmentSet.add(obj[21])) {
 								            	count++;
 								            }
 								        }
-								        System.out.println("count**Final**"+count);
 								        return count;
 								    })
-								    .sum();
-								
-								System.out.println("fundRequestIdCount*****"+fundRequestIdCount);
-								%>
+								    .sum();%>
 
 	                      
 	                      	<% //fundRequestIdCount = carryForwardList.stream().filter(item -> item[0]!=null && (carryForward[0]).equals(item[0])).count(); %>

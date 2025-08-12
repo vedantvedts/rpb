@@ -266,7 +266,6 @@ String failure=(String)request.getParameter("resultFailure");%>
 						 <tbody>
 							<%
 							  int sn=1; 
-							approvalPendingList.forEach(row->System.out.println(Arrays.toString(row)));
 							  if (approvalPendingList != null && approvalPendingList.size() != 0) { 
 								      for (Object[] obj : approvalPendingList) { 
 						    %>

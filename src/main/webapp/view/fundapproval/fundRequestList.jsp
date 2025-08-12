@@ -274,7 +274,6 @@ input[name="ItemNomenclature"]::placeholder {
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
-		requisitionList.forEach(row->System.out.println(Arrays.toString(row)));
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");

@@ -308,7 +308,6 @@ public class DateTimeFormatUtil
 	}
 	public static  String getSqlToRegularDate (String sqldate) throws ParseException
 	{
-		System.out.println("sqldate*******"+sqldate);
 		return regularDateFormatLocalDate.format(LocalDate.parse(sqldate));
 	}
 	

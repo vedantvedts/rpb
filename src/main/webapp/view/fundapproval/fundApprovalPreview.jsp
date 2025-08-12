@@ -326,7 +326,6 @@ tr:last-of-type th:last-of-type {
 <body>
 <%Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 long empId = (Long) session.getAttribute("EmployeeId");
-System.out.println("****fundDetails****"+Arrays.toString(fundDetails));
 
 String fundApprovalId=null;
 String estimateType=null;
@@ -397,9 +396,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 	rc5Status=fundDetails[45]!=null  ? fundDetails[45].toString() : null;
 	apprOffStatus=fundDetails[46]!=null  ? fundDetails[46].toString() : null;
 	currentEmpStatus=fundDetails[47]!=null  ? fundDetails[47].toString() : null;
-}
-System.out.println("rcStatusCodeNext****"+rcStatusCodeNext);
- %>
+} %>
 <div class="card-header page-top">
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>

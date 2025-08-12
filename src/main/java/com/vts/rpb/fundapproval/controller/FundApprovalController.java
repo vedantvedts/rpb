@@ -134,7 +134,6 @@ public class FundApprovalController
 			req.setAttribute("DivisionList", DivisionList);
 			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
 			
-			System.out.println("DivisionDetails*****"+DivisionDetails);
 			//user selected different year Estimate type reset to RE
 			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
 			   backDto.setDivisionBackBtn(DivisionDetails);
@@ -222,7 +221,6 @@ public class FundApprovalController
 				{
 					req.setAttribute("fundDetails",fundDetails.get(0));
 				}
-				fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
 			}
 			
 			return "fundapproval/fundApprovalPreview";
@@ -246,7 +244,6 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String action=req.getParameter("Action");
 			String remarks=req.getParameter("remarks");
-			System.out.println("fundApprovalId****"+fundApprovalId);
 			if(fundApprovalId==null || action==null)
 			{
 				redir.addAttribute("resultFailure", "Something Went Wrong..!");
@@ -388,7 +385,6 @@ public class FundApprovalController
 						
 						fundRequestSerialNo[i]=serialNo;
 						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
-						System.out.println("req.getParameter(\"CFFundRequestId-\"+serialNo)*****"+req.getParameter("CFFundRequestId-"+serialNo));
 						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
 						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
 						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
@@ -785,7 +781,6 @@ public class FundApprovalController
 	        List<Object[]> list = fundApprovalService.getFundRequestAttachList(fundApprovalId);
 	        if (list != null) {
 	            for (Object[] obj : list) {
-	            	System.out.println("obj[2]->"+obj[2]);
 	                Map<String, Object> map = new HashMap<>();
 	                map.put("fundApprovalAttachId", obj[0]);
 	                map.put("fileName", obj[1]); // stored file name
@@ -1051,36 +1046,8 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 				
-				System.err.println("****************************************************");
-
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
-				
-				RequisitionList.stream().forEach(a->System.err.println("List"+Arrays.toString(a)));
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
@@ -1246,21 +1213,6 @@ public class FundApprovalController
 			    	ReOrFbe="F";
 				}
 			    
-				System.err.println("****************************************************");
-				System.err.println("ReOrFbeYear---"+ReOrFbeYear);
-				System.out.println("PrintAction---"+PrintAction);
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				
 				System.err.println("RequisitionList"+RequisitionList.size());
@@ -1336,10 +1288,6 @@ public class FundApprovalController
 				if(fundApprovalId!=null)
 				{ 
 					 fundDetails = fundApprovalService.getParticularFundApprovalTransDetails(fundApprovalId);
-							
-					 	if(fundDetails!=null) {
-					fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
-					 		}
 				}
 				
 			} catch (Exception e) {
@@ -1369,10 +1317,6 @@ public class FundApprovalController
 				if(fundApprovalId!=null)
 				{ 
 					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
-							
-				if(fundDetails!=null) {
-					fundDetails.forEach(row->System.out.println("FundApprovalDetails->"+Arrays.toString(row)));
-						}
 				}
 				
 			} catch (Exception e) {
