@@ -73,4 +73,5 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost,String status) throws Exception;
 	
+	public String getCommitteeMemberType (long empId) throws Exception;
 }

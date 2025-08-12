@@ -578,9 +578,9 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
 					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
 					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
-					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate FROM fund_approval f \n"
-					+ "LEFT JOIN employee e ON e.EmpId=f.InitiatingOfficer \n"
-					+ "LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId \n"
+					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate,dm.DivisionCode FROM fund_approval f \n"
+					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer \n"
+					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId \n"
 					+ "LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId\n"
 					+ "LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId \n"
 					+ "LEFT JOIN  division_master dm ON dm.DivisionId = :divisionId\n"
@@ -612,6 +612,18 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 	
-	
+	@Override
+	public String getCommitteeMemberType (long empId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT MemberType FROM ibas_committee_members WHERE EmpId=:empId");
+			query.setParameter("empId", empId);
+			return (String) query.getSingleResult();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO findCommitteeMemberType "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
