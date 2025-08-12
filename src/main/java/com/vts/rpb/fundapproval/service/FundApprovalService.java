@@ -59,4 +59,6 @@ public interface FundApprovalService
 			String fromCost, String toCost,String status) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth, FundApprovalBackButtonDto dto, String userName) throws Exception;
+
+	public String getCommitteeMemberType (long empId) throws Exception;
 }

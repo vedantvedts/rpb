@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.vts.rpb.authenticate.service.AuthenticateService;
+import com.vts.rpb.login.service.LoginService;
 import com.vts.rpb.master.dao.MasterDao;
 import com.vts.rpb.master.modal.Login;
 
@@ -33,7 +33,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	private MasterDao masterDao;
 	
 	@Autowired
-	private AuthenticateService authService;
+	private LoginService authService;
 	
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req,HttpServletResponse response, Authentication authentication) throws IOException  

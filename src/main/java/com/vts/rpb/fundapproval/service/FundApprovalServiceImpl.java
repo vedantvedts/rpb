@@ -830,4 +830,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return status;
 	}
 	
+	@Override
+	public String getCommitteeMemberType (long empId) throws Exception{
+		return fbedao.getCommitteeMemberType(empId);
+	}
+	
 }

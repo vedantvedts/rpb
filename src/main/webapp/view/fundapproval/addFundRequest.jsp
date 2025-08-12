@@ -342,6 +342,9 @@ tr:last-of-type th:last-of-type {
  <%DecimalFormat df = new DecimalFormat( "#####################");
  String action=(String)request.getAttribute("ActionType"); 
       String logintype= (String)session.getAttribute("LoginType");
+      String empId = ((Long) session.getAttribute("EmployeeId")).toString();
+      String rpbMemberType= (String)request.getAttribute("rpbMemberType");
+      System.err.print("empId->"+empId+" rpbMemberType->"+rpbMemberType);
       String InitiationDate= (String)session.getAttribute("InitiationDate");
       FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
       
@@ -492,7 +495,9 @@ tr:last-of-type th:last-of-type {
 						    
 						    <div class="form-inline">
 						    
+						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)) {%>
 					           <input type="checkbox" class="tooltip-container" id="AllOfficers" name="AllOfficers" data-tooltip="check the box to get all employee(s)" data-position="top">&nbsp;
+					           <%} %>
                        <select name="OfficerCode" id="OfficerCode" class="form-control officerCode select2"
                              data-container="body" data-live-search="true"  style="align-items: center; font-size: 5px;width: 95%">
                          <%--   <%if(FundRequestObj!=null){ %>  <option value="0" selected="selected" ><%=FundRequestObj[26] %>, <%=FundRequestObj[27] %><option> <%} %> --%>

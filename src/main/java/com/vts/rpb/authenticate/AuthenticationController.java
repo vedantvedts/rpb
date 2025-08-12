@@ -1,5 +1,7 @@
 package com.vts.rpb.authenticate;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -23,11 +25,8 @@ public class AuthenticationController
 	    	return "redirect:/RpbFundApprovalAuthenticate";
 	    }
 	   
-	   @RequestMapping(value = {"MainDashBoard.htm"}, method = RequestMethod.GET)
-	   public String dashBoardPage(HttpServletRequest req,HttpSession ses) throws Exception 
-	   {
-		   return "dashboard/homePage";
-	   }
+	   
+	
 	   
 	   @RequestMapping(value = "getModuleId.htm", method = RequestMethod.GET)
 		public @ResponseBody void getModuleId(HttpServletRequest req, HttpSession ses) throws Exception {
