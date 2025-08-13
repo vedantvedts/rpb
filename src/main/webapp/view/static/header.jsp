@@ -521,36 +521,35 @@ $(document).ready(function() {
 
 <script>
 $(document).ready(function () {
-    // Function to initialize tooltips
     function initializeTooltips() {
         $('.tooltip-container').on('mouseenter', function (e) {
-            const tooltipText = $(this).data('tooltip'); // Get tooltip text
-            const position = $(this).data('position') || 'top'; // Default to 'top'
+            const tooltipText = $(this).data('tooltip');
+            const position = $(this).data('position') || 'top';
 
-            // Create and append tooltip
-            const tooltipElement = $('<div class="tooltip-content" style="font-family:"Cambria Math";"></div>')
+            //  Remove existing tooltip before creating a new one
+            $('.tooltip-content').remove();
+
+            const tooltipElement = $('<div class="tooltip-content" style="font-family:\'Cambria Math\'; position: absolute; display: none; z-index: 9999; background: #333; color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 12px;"></div>')
                 .html(tooltipText)
                 .appendTo('body');
 
-            // Position the tooltip
             positionTooltip(tooltipElement, e, position);
             tooltipElement.fadeIn(200);
         });
 
         $('.tooltip-container').on('mousemove', function (e) {
             const tooltipElement = $('.tooltip-content');
-            const position = $(this).data('position') || 'top'; // Default to 'top'
+            const position = $(this).data('position') || 'top';
             positionTooltip(tooltipElement, e, position);
         });
 
         $('.tooltip-container').on('mouseleave', function () {
             $('.tooltip-content').fadeOut(200, function () {
-                $(this).remove(); // Remove the tooltip element
+                $(this).remove();
             });
         });
     }
 
-    // Function to position the tooltip dynamically
     function positionTooltip(tooltipElement, event, position) {
         const tooltipWidth = tooltipElement.outerWidth();
         const tooltipHeight = tooltipElement.outerHeight();
@@ -576,17 +575,16 @@ $(document).ready(function () {
                 left = event.pageX - tooltipWidth - 20;
                 break;
             default:
-                top = event.pageY - tooltipHeight - 20; // Default to 'top'
+                top = event.pageY - tooltipHeight - 20;
                 left = event.pageX - tooltipWidth / 2;
         }
 
         tooltipElement.css({
             top: top + 'px',
-            left: left + 'px',
+            left: left + 'px'
         });
     }
 
-    // Initialize tooltips
     initializeTooltips();
 });
 

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -391,19 +392,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 					+ "    SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
 		
 			//Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status FROM fund_approval f LEFT JOIN employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId  WHERE f.FinYear=:finYear AND f.ProjectId=:projectId  AND f.BudgetHeadId=:budgetHeadId AND f.BudgetItemId=:budgetItemId AND f.Status=:statuss AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) AND f.Status='N' GROUP BY f.FundApprovalId HAVING SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost");
-			System.out.println("--------------------in db---------------------------------");
-			System.out.println("fin yr---"+finYear);
-			System.out.println("divisionId---"+divisionId);
-			System.out.println("estimateType---"+estimateType);
-			System.out.println("loginType---"+loginType);
-			System.out.println("empId---"+empId);
-			System.out.println("projectId---"+projectId);
-			System.out.println("budgetHeadId---"+budgetHeadId);
-			System.out.println("budgetItemId---"+budgetItemId);
-			System.out.println("fromCost---"+fromCost);
-			System.out.println("toCost---"+toCost);
-			System.out.println("status---"+status);
-			
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
 			query.setParameter("estimateType",estimateType);
@@ -570,6 +558,47 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 	
+	private static final String GETFBESUBCOUNTONSINO="SELECT MaxCount, finYear FROM (SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(IFNULL(s.ItemSerialNo, 'NA/0'), '/', -1) AS UNSIGNED)), 0) AS MaxCount,:fbeReYear AS finYear FROM fbe_sub s INNER JOIN fbe_main a ON a.FbeMainId = s.FbeMainId AND a.Status = 'A' AND (CASE WHEN :estimateType = 'R' THEN a.REYear WHEN :estimateType = 'F' THEN a.FBEYear END) = :fbeReYear WHERE s.Status = 'A' UNION ALL SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(IFNULL(fa.SerialNo, 'NA/0'), '/', -1) AS UNSIGNED)), 0) AS MaxCount,:fbeReYear AS finYear FROM fund_approval fa WHERE fa.REFBEYear = :fbeReYear AND fa.EstimateType = :estimateType) AS CombinedTable ORDER BY MaxCount DESC LIMIT 1";
+	@Override
+	public List<Object[]> getMaxSerialNoCount(String fbeReYear,String estimateType) throws Exception {
+		
+       try {
+			Query query= manager.createNativeQuery(GETFBESUBCOUNTONSINO);
+			query.setParameter("fbeReYear", fbeReYear);
+			query.setParameter("estimateType", estimateType);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:previousFinYear,:asOnDate,:labCode);";
+	@Override
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
+		 try {
+			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getBudgetHeadId()+"','"+fundApprovalDto.getBudgetItemId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0)+"','"+LocalDate.now()+"','"+labCode+"');");
+				Query query= manager.createNativeQuery(GETFUNDREQUESTCARRYFORWARD);
+				query.setParameter("divisionId", fundApprovalDto.getDivisionId());
+				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
+				query.setParameter("asOnDate", LocalDate.now());
+				query.setParameter("labCode",labCode);
+				query.setParameter("budgetHeadId",fundApprovalDto.getBudgetHeadId());
+				query.setParameter("budgetItemId",fundApprovalDto.getBudgetItemId());
+				query.setParameter("finYear",fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn());
+				query.setParameter("previousFinYear", (fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0));  // passing previous financialYear
+				List<Object[]> result = (List<Object[]>)query.getResultList();
+				return result; 
+				
+			}catch (Exception e) {
+				logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+				e.printStackTrace();
+				return null;
+			}
+	}
 	
 	@Override
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
@@ -610,6 +639,22 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			logger.error(new Date() +"Inside DAO estimateTypeParticularDivList "+ e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	
+	@Override
+	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception {
+		try {
+			manager.persist(fundRequest);
+			manager.flush();
+			
+			return fundRequest.getFundApprovalId();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO insertCarryForwardItemDetails() "+ e);
+			e.printStackTrace();
+			return 0L;
 		}
 	}
 	

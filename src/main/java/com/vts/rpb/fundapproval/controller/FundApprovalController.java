@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +37,7 @@ import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
+import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.master.service.MasterService;
 import com.vts.rpb.utils.CharArrayWriterResponse;
@@ -86,9 +88,6 @@ public class FundApprovalController
          String DivisionDetails = safeTrim(req.getParameter("DivisionDetails"));
          String estimateType = safeTrim(req.getParameter("EstimateType"));
    			
-   			System.err.println("Back to list_-------------------------");
-   			System.err.println("DivisionDetails->"+DivisionDetails+"..estimateType->"+estimateType+"..FromYear->"+FromYear+"..ToYear->"+ToYear);
-   			System.err.println("From session empDivisionCode->"+empDivisionCode+"..empDivisionName->"+empDivisionName+"..empId->"+empId);
    			if(estimateType==null)
    			{
    				estimateType="R";
@@ -148,17 +147,6 @@ public class FundApprovalController
    			   backDto.setREYear(FromYear+"-"+ToYear);
    			   backDto.setFBEYear((Long.parseLong(FromYear)+1)+"-"+(Long.parseLong(ToYear)+1));
    			   
-   			System.err.println("DivisionDetails: " + DivisionDetails);
-   			System.err.println("Division Name: " + DivisionDetails.split("#")[2]);
-   			System.err.println("Division Code: " + DivisionDetails.split("#")[1]);
-   			System.err.println("FromYearBackBtn: " + FinYear.split("-")[0]);
-   			System.err.println("ToYearBackBtn: " + FinYear.split("-")[1]);
-   			System.err.println("EstimatedTypeBackBtn: " + estimateType);
-   			System.err.println("DivisionId: " + DivisionId);
-   			System.err.println("REYear: " + (FromYear + "-" + ToYear));
-   			System.err.println("FBEYear: " + ((Long.parseLong(FromYear) + 1) + "-" + (Long.parseLong(ToYear) + 1)));
-
-   			   
    			   ses.setAttribute("FundApprovalAttributes", backDto);
    			
    		}
@@ -175,7 +163,6 @@ public class FundApprovalController
     private String safeTrim(String value) {
         return value == null ? null : value.trim();
     }
-
 	
 	@RequestMapping(value="FundApprovalList.htm",method = {RequestMethod.GET,RequestMethod.POST})
 	public String fundApprovalList(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
@@ -239,7 +226,6 @@ public class FundApprovalController
 				{
 					req.setAttribute("fundDetails",fundDetails.get(0));
 				}
-				fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
 			}
 			
 			return "fundapproval/fundApprovalPreview";
@@ -263,7 +249,6 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String action=req.getParameter("Action");
 			String remarks=req.getParameter("remarks");
-			System.out.println("fundApprovalId****"+fundApprovalId);
 			if(fundApprovalId==null || action==null)
 			{
 				redir.addAttribute("resultFailure", "Something Went Wrong..!");
@@ -281,7 +266,7 @@ public class FundApprovalController
 			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
 			
 			if(status > 0) {
-				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully Submitted..!");
+				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully..!");
 			}else {
 				redir.addAttribute("resultFailure", "Fund Request Recommended Unsuccessful or Something Went Wrong..!");
 			}
@@ -299,6 +284,251 @@ public class FundApprovalController
 		
 	}
 	
+	@RequestMapping(value="FundRequestCarryForward.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String fundRequestCarryForward(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		String labCode = (ses.getAttribute("client_name")).toString();
+		logger.info(new Date() + "Inside fundRequestCarryForward.htm " + UserName);
+		try
+		{	
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			if(fundApprovalDto==null)
+			{
+				return "redirect:/FundRequest.htm";
+			}
+			
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			
+			if(budgetHeadId==null)
+			{
+				budgetHeadId="-1";
+			}
+			
+			if(budgetItemId==null)
+			{
+				budgetItemId="-1";
+			}
+			
+			fundApprovalDto.setBudgetHeadId(budgetHeadId!=null ? Long.parseLong(budgetHeadId) : 0);			
+			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);			
+			if(fundApprovalDto!=null)
+			{
+				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
+				if(carryForwardList!=null && carryForwardList.size()>0)
+				{
+					req.setAttribute("carryForwardList", carryForwardList);
+				}
+			}
+			
+			req.setAttribute("budgetHeadId", budgetHeadId);
+			req.setAttribute("budgetItemId", budgetItemId);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside fundRequestCarryForward.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/fundCarryForward";
+		
+	}
+	
+	@RequestMapping(value="CarryForwardDetails.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String CarryForwardDetails(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside CarryForwardDetails.htm " + UserName);
+		try
+		{
+			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			int stringLength=1;
+			if(demandItemOrderDetails!=null) 
+			{
+				stringLength=demandItemOrderDetails.length;
+			}
+			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
+					,selectedFundRequestId=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
+					mayMonth=new String[stringLength],juneMonth=new String[stringLength],julyMonth=new String[stringLength],
+					augustMonth=new String[stringLength],septemberMonth=new String[stringLength],octoberMonth=new String[stringLength],
+					novemberMonth=new String[stringLength],decemberMonth=new String[stringLength],januaryMonth=new String[stringLength],
+					februaryMonth=new String[stringLength],marchMonth=new String[stringLength],fundRequestSerialNo=new String[stringLength];
+			
+			FundRequestCOGDetails cogMonth=new FundRequestCOGDetails();
+			if(demandItemOrderDetails.length>0)
+			{
+				for (int i=0;i<demandItemOrderDetails.length;i++)
+				{
+					if(demandItemOrderDetails[i]!=null)
+					{
+						String serialNo=demandItemOrderDetails[i];
+						
+						String[] commitPayIds=req.getParameterValues("CommitmentPayId-"+serialNo);
+						if(commitPayIds!=null && commitPayIds.length>0)
+						{
+							String commitmentPayIdDetails = Arrays.stream(commitPayIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							commitmentPayId[i]=commitmentPayIdDetails;
+						}
+						
+						String[] demandIds=req.getParameterValues("BookingId-"+serialNo);
+						if(demandIds!=null && demandIds.length>0)
+						{
+							String demandDetails = Arrays.stream(demandIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							demandId[i]=demandDetails;
+						}
+						
+						String[] fundApprovalIds=req.getParameterValues("FundRequestId-"+serialNo);
+						if(fundApprovalIds!=null && fundApprovalIds.length>0)
+						{
+							String fundRequestDetails = Arrays.stream(fundApprovalIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
+							cfFundRequestId[i]=fundRequestDetails;
+						}
+						
+						
+						fundRequestSerialNo[i]=serialNo;
+						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
+						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
+						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
+						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
+						mayMonth[i]=req.getParameter("CFMayMonth-"+serialNo);
+						juneMonth[i]=req.getParameter("CFJuneMonth-"+serialNo);
+						julyMonth[i]=req.getParameter("CFJulyMonth-"+serialNo);
+						augustMonth[i]=req.getParameter("CFAugustMonth-"+serialNo);
+						septemberMonth[i]=req.getParameter("CFSeptemberMonth-"+serialNo);
+						octoberMonth[i]=req.getParameter("CFOctoberMonth-"+serialNo);
+						novemberMonth[i]=req.getParameter("CFNovemberMonth-"+serialNo);
+						decemberMonth[i]=req.getParameter("CFDecemberMonth-"+serialNo);
+						januaryMonth[i]=req.getParameter("CFJanuaryMonth-"+serialNo);
+						februaryMonth[i]=req.getParameter("CFFebruaryMonth-"+serialNo);
+						marchMonth[i]=req.getParameter("CFMarchMonth-"+serialNo);
+					}
+				}
+			}
+			
+			if(fundRequestSerialNo!=null)
+			{
+				cogMonth.setSelectedFundRequestId(selectedFundRequestId);
+			}
+			
+			if(fundRequestSerialNo!=null)
+			{
+				cogMonth.setCarryForwardSerialNo(selectedFundRequestId);
+			}
+			
+			if(cfFundRequestId!=null) 
+			{
+				cogMonth.setFundRequestId(cfFundRequestId);
+			}
+			
+			if(demandId!=null) 
+			{
+				cogMonth.setDemandId(demandId);
+			}
+			
+			if(commitmentPayId!=null) 
+			{
+				cogMonth.setCommitmentPayId(commitmentPayId);
+			}
+			
+			if(itemNomenclature!=null)
+			{
+				cogMonth.setItemNomenclature(itemNomenclature);
+			}
+			if(ItemAmount!=null)
+			{
+				cogMonth.setFbeAmount(ItemAmount);
+			}
+			if(aprilMonth!=null)
+			{
+				cogMonth.setAprAmount(aprilMonth);;
+			}
+			if(mayMonth!=null)
+			{
+				cogMonth.setMayAmount(mayMonth);
+			}
+			if(juneMonth!=null)
+			{
+				cogMonth.setJunAmount(juneMonth);
+			}
+			if(julyMonth!=null)
+			{
+				cogMonth.setJulAmount(julyMonth);
+			}
+			if(augustMonth!=null)
+			{
+				cogMonth.setAugAmount(augustMonth);
+			}
+			if(septemberMonth!=null)
+			{
+				cogMonth.setSepAmount(septemberMonth);
+			}
+			if(octoberMonth!=null)
+			{
+				cogMonth.setOctAmount(octoberMonth);
+			}
+			if(novemberMonth!=null)
+			{
+				cogMonth.setNovAmount(novemberMonth);
+			}
+			if(decemberMonth!=null)
+			{
+				cogMonth.setDecAmount(decemberMonth);
+			}
+			if(januaryMonth!=null)
+			{
+				cogMonth.setJanAmount(januaryMonth);
+			}
+			if(februaryMonth!=null)
+			{
+				cogMonth.setFebAmount(februaryMonth);
+			}
+			if(marchMonth!=null)
+			{
+				cogMonth.setMarAmount(marchMonth);
+			}
+			
+			long status=fundApprovalService.insertCarryForwardItemDetails(cogMonth,fundApprovalDto,UserName);
+			
+			String estimateTypeName="";
+			if(fundApprovalDto!=null && (fundApprovalDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("F"))
+			{
+				estimateTypeName="Forecast Budget Estimate Item(s)";
+			}
+			else if(fundApprovalDto!=null && (fundApprovalDto.getEstimatedTypeBackBtn()).equalsIgnoreCase("R"))
+			{
+				estimateTypeName="Revised Estimate Item(s)";
+			}
+			
+			if(status>0)
+			{
+				redir.addAttribute("Status", estimateTypeName+" Transfered Successfully ..&#128077;");
+			}
+			else
+			{
+				redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+			}
+			
+			if(fundApprovalDto!=null)
+			{
+				redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+				redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+				redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+				redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside CarryForwardDetails.htm " + UserName, e);
+			return "static/error";
+		}
+		return "redirect:/FundRequest.htm";
+		
+	}
+	
 	
 	
 	@RequestMapping(value="AddFundRequest.htm",method = {RequestMethod.GET,RequestMethod.POST})
@@ -308,8 +538,7 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside AddFundRequest.htm " + UserName);
 		Long empId = (Long) ses.getAttribute("EmployeeId");
 		try
-		{	
-			
+		{
 			req.setAttribute("rpbMemberType", fundApprovalService.getCommitteeMemberType(empId));
 			req.setAttribute("ActionType", "add");	
 			req.setAttribute("filesize", attach_file_size);
@@ -347,7 +576,7 @@ public class FundApprovalController
 			
 			String itemNomenclature=req.getParameter("ItemFor");
 			String justification=req.getParameter("fileno");
-			String FBEamount=req.getParameter("FBEamount");
+			String fundRequestAmount=req.getParameter("TotalFundReguestAmount");
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
 			String jun=req.getParameter("JuneMonth");
@@ -383,6 +612,7 @@ public class FundApprovalController
 			fundApproval.setItemNomenclature(itemNomenclature);
 			fundApproval.setJustification(justification);
 			fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate));
+			fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 			fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 			fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
 			fundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);
@@ -400,7 +630,7 @@ public class FundApprovalController
 			fundApproval.setRcStatusCode("INITIATION");
 			fundApproval.setRcStatusCodeNext("FORWARDED");
 			fundApproval.setStatus("N");
-			
+			fundApproval.setSerialNo("0");			
 			FundApprovalAttachDto attachDto=new FundApprovalAttachDto();
 			attachDto.setFileName(filenames);
 			attachDto.setFiles(FileAttach);
@@ -409,14 +639,13 @@ public class FundApprovalController
 			
 			 long status = fundApprovalService.AddFundRequestSubmit(fundApproval,attachDto); 
 			
-			
+			 
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request Submitted Successfully");
 			}else {
 				redir.addAttribute("resultFailure", "Fund Request submit Unsuccessful");
 			}
-		}
-			else if(action.equalsIgnoreCase("Update")) {
+		}else if(action.equalsIgnoreCase("Update")) {
 				FundApproval fundApproval=new FundApproval();
 				
 				fundApproval.setFundApprovalId(Long.valueOf(fundApprovalId));
@@ -430,6 +659,7 @@ public class FundApprovalController
 				fundApproval.setItemNomenclature(itemNomenclature);
 				fundApproval.setJustification(justification);
 				fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate));
+				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 				fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 				fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
 				fundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);
@@ -465,8 +695,17 @@ public class FundApprovalController
 						redir.addAttribute("resultFailure", "Fund Request Update Unsuccessful");
 					}
 			}
+			
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			if(fundApprovalDto!=null)
+			{
+				redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+				redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+				redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+				redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
+			}
+			
 		}
-		
 		catch(Exception e)
 		{
 			e.printStackTrace();
@@ -552,7 +791,6 @@ public class FundApprovalController
 	        List<Object[]> list = fundApprovalService.getFundRequestAttachList(fundApprovalId);
 	        if (list != null) {
 	            for (Object[] obj : list) {
-	            	System.out.println("obj[2]->"+obj[2]);
 	                Map<String, Object> map = new HashMap<>();
 	                map.put("fundApprovalAttachId", obj[0]);
 	                map.put("fileName", obj[1]); // stored file name
@@ -818,36 +1056,8 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 				
-				System.err.println("****************************************************");
-
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
-				
-				RequisitionList.stream().forEach(a->System.err.println("List"+Arrays.toString(a)));
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
@@ -1013,21 +1223,6 @@ public class FundApprovalController
 			    	ReOrFbe="F";
 				}
 			    
-				System.err.println("****************************************************");
-				System.err.println("ReOrFbeYear---"+ReOrFbeYear);
-				System.out.println("PrintAction---"+PrintAction);
-				System.out.println("divisionId---"+divisionId);
-				System.out.println("estimateType---"+estimateType);
-				System.out.println("loginType---"+loginType);
-				System.out.println("empId---"+empId);
-				System.out.println("budgetHeadId---"+budgetHeadId);
-				System.out.println("budgetItemId---"+budgetItemId);
-				System.out.println("fromCost---"+fromCost);
-				System.out.println("toCost---"+toCost);
-				System.out.println("status---"+status);
-				
-				System.err.println("****************************************************");
-				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
 				
 				System.err.println("RequisitionList"+RequisitionList.size());
@@ -1103,10 +1298,6 @@ public class FundApprovalController
 				if(fundApprovalId!=null)
 				{ 
 					 fundDetails = fundApprovalService.getParticularFundApprovalTransDetails(fundApprovalId);
-							
-					 	if(fundDetails!=null) {
-					fundDetails.forEach(row->System.out.println(Arrays.toString(row)));
-					 		}
 				}
 				
 			} catch (Exception e) {
@@ -1136,10 +1327,6 @@ public class FundApprovalController
 				if(fundApprovalId!=null)
 				{ 
 					  fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
-							
-				if(fundDetails!=null) {
-					fundDetails.forEach(row->System.out.println("FundApprovalDetails->"+Arrays.toString(row)));
-						}
 				}
 				
 			} catch (Exception e) {

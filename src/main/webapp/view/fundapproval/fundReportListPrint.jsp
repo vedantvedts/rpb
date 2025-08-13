@@ -259,11 +259,7 @@ padding : 7px;
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
-		
-		if(requisitionList != null) {
-		    System.out.println("In JSP - requisitionList size: " + requisitionList.size()); 
-		}
-		
+	
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
 		if(fundApprovalDto!=null)

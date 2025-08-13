@@ -3,6 +3,7 @@ package com.vts.rpb.fundapproval.dao;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
@@ -69,9 +70,15 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public int updateFundRequestAttach(FundApprovalAttach attach) throws Exception;
 	
 	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception;
+
+	public List<Object[]> getMaxSerialNoCount(String fbeReYear, String estimateType) throws Exception;
+
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception;
 	
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status,String memberType) throws Exception;
-	
+String fromCost, String toCost,String status,String memberType) throws Exception;
+
+	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
+
 	public String getCommitteeMemberType (long empId) throws Exception;
 }
