@@ -56,7 +56,7 @@ body {
     padding: 20px;
     overflow-y: auto; /* Enable vertical scrolling */
     min-height:auto !important;
-    max-height: calc(100vh - 250px) !important; /* Adjust based on your header height */
+    max-height: calc(110vh - 250px) !important; /* Adjust based on your header height */
     align-content: flex-start; /* Align items to the top */
     justify-content: center; /* Center cards horizontally */
     flex-direction: row;
@@ -251,7 +251,7 @@ if(fundApprovalDto!=null)
 	    No matching Division(s) found
 	</div>
 	
-<div class="page card dashboard-card">
+<div class="page card dashboard-card" style="height: 200px">
     <% if (DivisionDetailsList != null && !DivisionDetailsList.isEmpty()) {
         for (Object[] row : DivisionDetailsList) {
             String divisionName = (String) row[1];
