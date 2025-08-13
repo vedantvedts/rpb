@@ -403,14 +403,14 @@ public class FundApprovalController
 				}
 			}
 			
-			if(fundRequestSerialNo!=null)
+			if(selectedFundRequestId!=null)
 			{
 				cogMonth.setSelectedFundRequestId(selectedFundRequestId);
 			}
 			
 			if(fundRequestSerialNo!=null)
 			{
-				cogMonth.setCarryForwardSerialNo(selectedFundRequestId);
+				cogMonth.setCarryForwardSerialNo(fundRequestSerialNo);
 			}
 			
 			if(cfFundRequestId!=null) 
@@ -499,11 +499,11 @@ public class FundApprovalController
 			
 			if(status>0)
 			{
-				redir.addAttribute("Status", estimateTypeName+" Transfered Successfully ..&#128077;");
+				redir.addAttribute("resultSuccess", estimateTypeName+" Transfered Successfully ..&#128077;");
 			}
 			else
 			{
-				redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+				redir.addAttribute("resultFailure", "Something Went Wrong..&#128078;");
 			}
 			
 			if(fundApprovalDto!=null)

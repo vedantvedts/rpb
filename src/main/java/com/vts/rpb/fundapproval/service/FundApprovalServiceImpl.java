@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
+import com.vts.rpb.utils.DateTimeFormatUtil;
 
 @Service
 public class FundApprovalServiceImpl implements FundApprovalService 
@@ -808,6 +810,56 @@ public class FundApprovalServiceImpl implements FundApprovalService
 							
 							long fbeStatus=fundApprovalDao.insertCarryForwardItemDetails(fundRequest);
 							
+							if(fundRequest!=null) 
+							{
+								// Copy Attachement Details
+								List<Object[]> attachementList=fundApprovalDao.getFundRequestAttachList(lastYearfundRequest.getFundApprovalId());
+								if(attachementList!=null && attachementList.size()>0)
+								{
+									attachementList.forEach(row->{
+										FundApprovalAttach attachement=new FundApprovalAttach();
+										attachement.setFundApprovalId(fundRequest.getFundApprovalId());
+										attachement.setFileName(row[1]!=null ? row[1].toString() : null);
+										attachement.setOriginalFileName(row[2]!=null ? row[2].toString() : null);
+										attachement.setPath(row[4]!=null ? row[4].toString() : null);
+										attachement.setCreatedBy(userName);
+										attachement.setCreatedDate(LocalDateTime.now());
+										
+										try {
+											fundApprovalDao.AddFundRequestAttachSubmit(attachement);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+									});
+									
+								}
+								
+								
+								// Copying Transaction Details
+								List<Object[]> transList=fundApprovalDao.getParticularFundApprovalTransDetails(String.valueOf(lastYearfundRequest.getFundApprovalId()));
+								if(transList!=null && transList.size()>0)
+								{
+									transList.forEach(row->{
+										FundApprovalTrans transModal=new FundApprovalTrans();
+										transModal.setFundApprovalId(fundRequest.getFundApprovalId());
+										transModal.setRcStausCode(row[3]!=null ? row[3].toString() : null);
+										transModal.setRemarks(row[4]!=null ? row[4].toString() : null);
+										transModal.setActionBy(row[6]!=null ? Long.parseLong(row[6].toString()): 0);
+										try {
+											transModal.setActionDate(row[5]!=null ? DateTimeFormatUtil.getSqlToLocalDateTime(row[5].toString()) : null);
+										} catch (ParseException e) {
+											e.printStackTrace();
+										}
+										try {
+											fundApprovalDao.AddFundApprovalTrans(transModal);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+									});
+								}
+								
+							}
+							
 							if(fbeStatus>0)
 							{
 								count++;
@@ -832,7 +884,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public String getCommitteeMemberType (long empId) throws Exception{
-		return fbedao.getCommitteeMemberType(empId);
+		return fundApprovalDao.getCommitteeMemberType(empId);
 	}
 	
 }

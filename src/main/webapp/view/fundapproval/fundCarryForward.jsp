@@ -287,6 +287,7 @@ tr:last-of-type th:last-of-type {
      FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
      String budgetHeadId=(String)request.getAttribute("budgetHeadId");
      String budgetItemId=(String)request.getAttribute("budgetItemId");
+     carryForwardList.forEach(row->System.out.println(Arrays.toString(row)));
  %>
  
 				<%String BudgetYear="-";
@@ -408,14 +409,14 @@ tr:last-of-type th:last-of-type {
 		                       
 		                       <th class="text-nowrap" >Demand No /<br>So No</th>
 		                       <th class="text-nowrap" >Demand Cost /<br>So Cost</th>
-		                       <th class="text-nowrap" >DIPL /<br>Out Cost / Item Balance</th>
+		                       <th class="text-nowrap" >DIPL / Out Cost /<br>Item Balance</th>
 		                       <th class="text-nowrap" >Pay Amount</th>
 		                       <th class="text-nowrap" >Pay Date</th>
 		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
 	                       </tr>
 	                   </thead>
 	                   <tbody>
-	                   <%int sn=1;
+	                   <%int sn=0;
 	                   long currentFundRequestId=0,previousFundRequestId=-1;  // restricting duplicate Fund request Details 
 	                   long currentBookingId=0,previousBookingId=-1;  // restricting duplicate Demand Details 
 	                   long currentCommitmentId=0,previousCommitmentId=-1;  // restricting duplicate Supply Order Details 
@@ -438,18 +439,20 @@ tr:last-of-type th:last-of-type {
 	                     <tr>
 	                     
 	                     <!-- Fund Request Details -->
-	                      <% if(currentFundRequestId!=previousFundRequestId){ %>
+	                      <% if(currentFundRequestId!=previousFundRequestId){ sn++;%>
 	                      
 	                     <%
-								Set<Object> commitmentSet = new HashSet<>();
-								
+								Set<Object> commitmentSet = new HashSet<>();fundRequestIdCount=0;
+								System.out.println("***fundRequestIdCount*****"+fundRequestIdCount);
+								System.out.println("***currentFundRequestId*****"+currentFundRequestId);
+								System.out.println("***previousFundRequestId*****"+previousFundRequestId);
 								fundRequestIdCount = carryForwardList.stream()
 								    .mapToLong(obj -> {
 								        long count = 0;
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString())) {
 								        	count++;
 								        }
-								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "I".equalsIgnoreCase(obj[32].toString())) {
+								       /*  if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "I".equalsIgnoreCase(obj[32].toString())) {
 								        	count++;
 								        }
 								        if (obj[0]!=null && carryForward[0]!=null && (carryForward[0].toString()).equalsIgnoreCase(obj[0].toString()) && "D".equalsIgnoreCase(obj[32].toString())) {
@@ -459,55 +462,28 @@ tr:last-of-type th:last-of-type {
 								            if (commitmentSet.add(obj[21])) {
 								            	count++;
 								            }
-								        }
+								        } */
 								        return count;
 								    })
 								    .sum();%>
 
-	                      
+	                      <%System.out.println("***fundRequestIdCount**After***"+fundRequestIdCount); %>
 	                      	<% //fundRequestIdCount = carryForwardList.stream().filter(item -> item[0]!=null && (carryForward[0]).equals(item[0])).count(); %>
 	                      
-		                     	<td rowspan="<%=fundRequestIdCount %>"  align="center"><%=sn++ %>.</td>
-		                     	<td rowspan="<%=fundRequestIdCount %>"  align="center"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
-		                     	<td rowspan="<%=fundRequestIdCount %>" ><%if(carryForward[8]!=null){ %> <%=carryForward[8] %> <%}else{ %> - <%} %></td>
-		                     	<td rowspan="<%=fundRequestIdCount %>"  align="right"><%if(carryForward[11]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[11], "R") %> <%}else{ %> 0.00 <%} %></td>
+		                     	<td class="fundDetails-<%=sn %>" rowspan="<%=fundRequestIdCount %>"  align="center"><%=sn %>.</td>
+		                     	<td class="fundDetails-<%=sn %>" rowspan="<%=fundRequestIdCount %>"  align="center"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
+		                     	<td class="fundDetails-<%=sn %>" rowspan="<%=fundRequestIdCount %>" ><%if(carryForward[8]!=null){ %> <%=carryForward[8] %> <%}else{ %> - <%} %></td>
+		                     	<td class="fundDetails-<%=sn %>" rowspan="<%=fundRequestIdCount %>"  align="right"><%if(carryForward[11]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[11], "R") %> <%}else{ %> 0.00 <%} %></td>
 	                      
 	                       <%} %>
-	                       
-	                       <%long count=0;
-	                       Set<Object> commitmentSet = new HashSet<>();
-
-	                       for(Object[] obj:carryForwardList)
-	                    	   {
-	                    	   			if(carryForward[0].equals(obj[0]))
-                    	   				{
-	                    	   				count++;
-                    	   				}
-	                    	   			
-	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("I"))
-	                    	   			{
-	                    	   				count++;
-	                    	   			}
-	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("D"))
-	                    	   			{
-	                    	   				count++;
-	                    	   			}
-	                    	   			
-	                    	   			if(carryForward[0].equals(obj[0]) && obj[32].equals("C") && obj[21]!=null)  // && commitmentId should not repeat only 1 time data has to count
-	                    	   			{
-	                    	   				if (commitmentSet.add(obj[21])) {
-	                    	   					count++;
-	                    	   	            }
-	                    	   			}
-	                    	   }%>
 	                       
 	                      <% if(carryForward[32]!=null){ %>
 	                      
 	                       <%if((carryForward[32].toString()).equalsIgnoreCase("I")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
-		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[7]%>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[8]%>">
 		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
@@ -515,7 +491,7 @@ tr:last-of-type th:last-of-type {
 		                     	<td align="center">-</td>
 		                     	<td align="right">
 						        <input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="FundRequestId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[0] %>#<%=carryForward[12]!=null ? carryForward[12] : 0 %>" style="display: none;">    <% // Value - FundApprovalId and Item Balance %>
-		                     	<% if(carryForward[12]!=null){ // Item Balance%><%=carryForward[12] %> <%}else{ %> - <%} %></td>
+		                     	<% if(carryForward[12]!=null){ // Item Balance%><%=AmountConversion.amountConvertion(carryForward[12], "R") %> <%}else{ %> - <%} %></td>
 		                     	<td align="center">-</td>
 		                     	<td align="center">-</td>
 		                     	<td align="center"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
@@ -525,16 +501,16 @@ tr:last-of-type th:last-of-type {
 	                      <%if((carryForward[32].toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
 		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[33]%>">
 		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
 		                     	<td align="center"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %></td>
-		                     	<td align="right"><% if(carryForward[17]!=null){ // Demand Cost%><%=carryForward[19] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right"><% if(carryForward[17]!=null){ // Demand Cost%><%=AmountConversion.amountConvertion(carryForward[19], "R") %> <%}else{ %> - <%} %></td>
 		                     	<td align="right">
 		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="BookingId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[16] %>#<%=carryForward[20]!=null ? carryForward[20] : 0 %>" style="display: none;">     <% // Value - BookingId(Demand) and DIPL %>
-		                     	<% if(carryForward[20]!=null){ // DIPL%><%=carryForward[20] %> <%}else{ %> 0.00 <%} %></td>
+		                     	<% if(carryForward[20]!=null){ // DIPL%><%=AmountConversion.amountConvertion(carryForward[20], "R") %><%}else{ %> 0.00 <%} %></td>
 		                     	<td align="center">-</td>
 		                     	<td align="center">-</td>
 		                     	<td align="center"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
@@ -548,21 +524,21 @@ tr:last-of-type th:last-of-type {
 	                      	<% commitmentIdCount = carryForwardList.stream().filter(item -> item[21]!=null && (carryForward[21]).equals(item[21])).count(); %>
 	                      	
 	                      		<td align="center" rowspan="<%=commitmentIdCount %>">
-		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
 		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[34]%>">
 		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
 		                     	</td>
 		                     	
 		                     	<td align="center" rowspan="<%=commitmentIdCount %>"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %></td>
-		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[26]!=null){ // SO Cost%><%=carryForward[26] %> <%}else{ %> - <%} %></td>
-		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[27]!=null){ // OutCost%><%=carryForward[27] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[26]!=null){ // SO Cost%><%=AmountConversion.amountConvertion(carryForward[26], "R") %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="<%=commitmentIdCount %>"><% if(carryForward[27]!=null){ // OutCost%><%=AmountConversion.amountConvertion(carryForward[27], "R") %> <%}else{ %> - <%} %></td>
 		                     	
 		                     	<%} %>
 		                     	
 		                     	<% commitmentSerialNo++; %>
 		                     	
 		                     	<td align="right">
-		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="CommitmentPayId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[21] %>#<%=carryForward[29]!=null ? carryForward[29] : 0 %>" style="display: none;">     <% // Value - CommitmentId(Supplu Order) and Oustanding Cost %>
+		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="CommitmentPayId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[28] %>#<%=carryForward[29]!=null ? carryForward[29] : 0 %>" style="display: none;">     <% // Value - CommitmentId(Supplu Order) and Oustanding Cost %>
 		                     	<%if(carryForward[29]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[29], "R") %> <%}else{ %> - <%} %></td>
 	                     	    <td align="center"><%if(carryForward[30]!=null){ %> <%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[30].toString()) %> <%}else{ %> - <%} %></td>
 		                     	<% if(currentCommitmentId!=previousCommitmentId){ %>
@@ -672,6 +648,12 @@ $(document).ready(function(){
     			if(this.checked)
     			{
     				var serialNo=$(this).val();
+    				 var tableSerialNo=$(this).attr("data-table-serialno"); 
+    	        	 let fundDetailsRowSpan = parseInt($('.fundDetails-' + tableSerialNo).attr('rowspan')) || 1;
+    	        		
+   	        		 // expanding rowspan for Hidden row
+   	    			 $('.fundDetails-' + tableSerialNo).attr('rowspan', fundDetailsRowSpan - 1);
+    				
     				$('.DemandOrderItemDetails-'+ serialNo).each(function() {
     		            this.checked = false;
     		        });
@@ -685,6 +667,12 @@ $(document).ready(function(){
                 this.checked = true;
                 var TotalItemCost=parseFloat(0);
                 var serialNo=$(this).val();
+                var tableSerialNo=$(this).attr("data-table-serialno"); 
+        		let fundDetailsRowSpan = parseInt($('.fundDetails-' + tableSerialNo).attr('rowspan')) || 1;
+        		
+        		// expanding rowspan for Hidden row
+    			$('.fundDetails-' + tableSerialNo).attr('rowspan', fundDetailsRowSpan + 1);
+        		
                 $(".CashOutgoRow-"+ serialNo +',.DemandOrderItemDetails-'+ serialNo).fadeIn();
     			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
     		            this.checked = true;
@@ -704,6 +692,11 @@ $(document).ready(function(){
              $('.checkbox').each(function(){
                 this.checked = false;
                 var serialNo=$(this).val();
+                var tableSerialNo=$(this).attr("data-table-serialno"); 
+        		let fundDetailsRowSpan = parseInt($('.fundDetails-' + tableSerialNo).attr('rowspan')) || 1;
+        		
+        		// expanding rowspan for Hidden row
+    			$('.fundDetails-' + tableSerialNo).attr('rowspan', fundDetailsRowSpan - 1);
 				$('.DemandOrderItemDetails-'+ serialNo).each(function() {
 		            this.checked = false;
 		        });
@@ -717,6 +710,11 @@ $(document).ready(function(){
     	let serialNo = $(this).val();
     	if(this.checked)
     		{
+	    		var tableSerialNo=$(this).attr("data-table-serialno"); 
+	    		let fundDetailsRowSpan = parseInt($('.fundDetails-' + tableSerialNo).attr('rowspan')) || 1;
+	    		
+	    		// expanding rowspan for Hidden row
+				$('.fundDetails-' + tableSerialNo).attr('rowspan', fundDetailsRowSpan + 1);
     			$(".CashOutgoRow-"+ serialNo+',.DemandOrderItemDetails-'+ serialNo).fadeIn();
     			var TotalItemCost=parseFloat(0);
     			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
@@ -737,6 +735,11 @@ $(document).ready(function(){
     		}
     	else
     		{
+	    		var tableSerialNo=$(this).attr("data-table-serialno"); 
+	    		let fundDetailsRowSpan = parseInt($('.fundDetails-' + tableSerialNo).attr('rowspan')) || 1;
+	    		
+	    		// expanding rowspan for Hidden row
+				$('.fundDetails-' + tableSerialNo).attr('rowspan', fundDetailsRowSpan - 1);
     			$('.DemandOrderItemDetails-'+ serialNo).each(function() {
 		            this.checked = false;
 		        });

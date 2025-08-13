@@ -165,7 +165,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	public List<Object[]> getFundRequestAttachList(long fundApprovalId) throws Exception{
 		try {
 			List<Object[]> getFundRequestAttachList = null;
-			Query query= manager.createNativeQuery("SELECT FundApprovalAttachId,FileName,OriginalFileName,FundApprovalId  FROM fund_approval_attach  WHERE FundApprovalId=:fundApprovalId");
+			Query query= manager.createNativeQuery("SELECT FundApprovalAttachId,FileName,OriginalFileName,FundApprovalId,Path FROM fund_approval_attach  WHERE FundApprovalId=:fundApprovalId");
 			query.setParameter("fundApprovalId", fundApprovalId);
 			getFundRequestAttachList=(List<Object[]>)query.getResultList();
 			
@@ -297,12 +297,10 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,f.RCStausCode,f.Remarks,f.ActionDate FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId WHERE FundApprovalId=:fundApprovalId");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,f.RCStausCode,f.Remarks,f.ActionDate,f.ActionBy FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId WHERE FundApprovalId=:fundApprovalId");
 			query.setParameter("fundApprovalId",fundApprovalId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
-			 
-			
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getParticularFundApprovalTransDetails() "+ e);
