@@ -2,6 +2,7 @@ package com.vts.rpb.authenticate;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -59,6 +60,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	    	      ses.setAttribute("EmployeeNo", EmpDetails[2]); 
 	    	      ses.setAttribute("EmployeeName", EmpDetails[0]); 
 	    	      ses.setAttribute("EmployeeDesign", EmpDetails[4]); 
+	    	      ses.setAttribute("EmployeeDivisionCode", EmpDetails[5]); 
+	    	      ses.setAttribute("EmployeeDivisionName", EmpDetails[6]); 
 	    	      ses.setAttribute("client_name", labcode);
 	    			
 	    		validUrl="/rpb/MainDashBoard.htm";

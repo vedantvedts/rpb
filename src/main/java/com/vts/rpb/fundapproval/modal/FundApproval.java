@@ -25,6 +25,9 @@ public class FundApproval {
 	@Column(name = "EstimateType", length = 1)
 	private String estimateType;
 	
+	@Column(name = "SerialNo", length = 20)
+	private String serialNo;
+	
 	@Column(name = "DivisionId")
 	private long divisionId;
 	
@@ -43,6 +46,9 @@ public class FundApproval {
 	@Column(name = "BudgetItemId")
 	private long budgetItemId;
 	
+	@Column(name = "FundRequestId")
+	private long fundRequestId=0;
+	
 	@Column(name = "BookingId")
 	private long bookingId=0;
 	
@@ -57,6 +63,9 @@ public class FundApproval {
 	
 	@Column(name = "Justification", length = 500)
 	private String justification;
+	
+	@Column(name = "FundRequestAmount", precision = 17, scale = 2, nullable = false)
+	private BigDecimal fundRequestAmount = BigDecimal.ZERO;
 	
 	@Column(name = "Apr", precision = 17, scale = 2, nullable = false)
 	private BigDecimal april = BigDecimal.ZERO;

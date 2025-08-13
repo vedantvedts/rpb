@@ -266,7 +266,6 @@ String failure=(String)request.getParameter("resultFailure");%>
 						 <tbody>
 							<%
 							  int sn=1; 
-							approvalPendingList.forEach(row->System.out.println(Arrays.toString(row)));
 							  if (approvalPendingList != null && approvalPendingList.size() != 0) { 
 								      for (Object[] obj : approvalPendingList) { 
 						    %>
@@ -308,6 +307,21 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     </td>
 			                     <td align="center">
 			                     
+			                           
+			                           <% String rc1Status = obj[34] != null ? obj[34].toString().toUpperCase() : "NA";
+			                           String rc2Status = obj[35] != null ? obj[35].toString().toUpperCase() : "NA";
+			                           String rc3Status = obj[36] != null ? obj[36].toString().toUpperCase() : "NA";
+			                           String rc4Status = obj[37] != null ? obj[37].toString().toUpperCase() : "NA";
+			                           
+			                           boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
+			                           boolean hasN = rc1Status.equals("N") || rc2Status.equals("N") || rc3Status.equals("N") || rc4Status.equals("N");
+			                           
+			                           if((currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC")) && !allNA && hasN){ %>
+			                           
+			                           <span style="color: #783d00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 11px;font-weight: 800;">Recommendation Pending</span>
+			                           
+			                           <%}else{%>
+			                           
 			                            <form action="#" method="POST" name="myfrm" style="display: inline">  <!-- preview Start -->
 			                               <button type="submit" data-tooltip="Preview & <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve
 													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
@@ -322,6 +336,8 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                             <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
 			                           
 			                           </form>
+			                           
+			                           <%} %>
 			                     </td>  
 			                 </tr>
 						    <% 
@@ -422,7 +438,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			
 </div> <!-- Page End -->
 <div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document">
+ <div class="modal-dialog modal-lg custom-width-modal" role="document" style="">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
