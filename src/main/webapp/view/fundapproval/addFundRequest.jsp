@@ -396,7 +396,11 @@ tr:last-of-type th:last-of-type {
 	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
-	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
+	    	 <li class="breadcrumb-item"> <a href="FundRequest.htm?DivisionDetails=<%= java.net.URLEncoder.encode(dto.getDivisionBackBtn(), "UTF-8") %>
+    &EstimateType=<%= java.net.URLEncoder.encode(dto.getEstimatedTypeBackBtn(), "UTF-8") %>
+    &FromYear=<%= java.net.URLEncoder.encode(dto.getFromYearBackBtn(), "UTF-8") %>
+    &ToYear=<%= java.net.URLEncoder.encode(dto.getToYearBackBtn(), "UTF-8") %>">
+<i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
 	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
              </ol>
@@ -418,6 +422,7 @@ tr:last-of-type th:last-of-type {
 			           		<div class="form-inline" style="padding: 10px;">
 			           			
 			           			<%if(action!=null && action.equalsIgnoreCase("Add")){ %>
+			           			<%System.err.println("------------JSP---------Division->"+dto.getDivisionBackBtn()); %>
 			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><% if(dto!=null && dto.getDivisionName()!=null){%><%=dto.getDivisionName() %>&nbsp;<%}else{ %>-<%} %><% if(dto!=null && dto.getDivisionCode()!=null){%>(<%=dto.getDivisionCode() %>)<%}%></span>
 			           		<%} else { %>
 			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><%if(FundRequestObj!=null) {%><%=FundRequestObj[29] %> (<%=FundRequestObj[28] %>)<%} else{ %>-<%} %></span>
@@ -631,7 +636,7 @@ tr:last-of-type th:last-of-type {
         </button>
     </td>
     <% } else { %>
-    <td></td>
+    
     <% } %>
 </tr>
 
@@ -660,7 +665,7 @@ tr:last-of-type th:last-of-type {
         </button>
     </td>
     <% } else { %>
-    <td></td>
+    
     <% } %>
 </tr>
 
@@ -689,7 +694,7 @@ tr:last-of-type th:last-of-type {
         </button>
     </td>
     <% } else { %>
-    <td></td>
+    
     <% } %>
 </tr>
 
@@ -734,7 +739,7 @@ tr:last-of-type th:last-of-type {
     <td>
         <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
     </td>
-    <td></td>
+    
     <% } %>
 </tr>
 
@@ -1340,6 +1345,11 @@ function deleteFile(fileId) {
     	$('#deleteFileName').val(fileId);
         document.getElementById("deleteForm").submit();
     }
+}
+
+function backbtnRestore() {
+	$('#downloadFileName').val(fileId);
+    document.getElementById("downloadForm").submit();
 }
 
 $(document).ready(function() {

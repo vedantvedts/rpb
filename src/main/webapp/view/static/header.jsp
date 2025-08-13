@@ -732,6 +732,19 @@ input[type=number] {
    {
 		color:#ff6868 !important;
    }
+   
+ .subModule :hover {
+		
+		color:black !important;
+	}
+	
+	.hovercolorsub:hover{
+
+	background-color: #ffd392 !important;
+	/* color: white; */
+	width: auto !important;
+}
+	
 
 </style>
 <script>
@@ -867,6 +880,11 @@ function showFailureFlyMessage(message) {
        String developerToolsStatus = (String)session.getAttribute("DeveloperToolsStatus");
        String labCode = (String)session.getAttribute("client_name");
        String LoginTypeName = (String)session.getAttribute("LoginTypeName");
+       
+       List<Object[]> MainModuleList = (List<Object[]>)session.getAttribute("MainModuleList");
+ 	  List<Object[]> SubModuleList =(List<Object[]>)session.getAttribute("SubModuleList");
+ 	 int temp=-1;
+ 	String applicationType = "F";
     %>
     <input type="hidden" id="hiddendeveloperToolsStatus" value="<%=developerToolsStatus%>">
       <div id="custom-menu" class="custom-menu" style="z-index: 10000;">
@@ -904,18 +922,58 @@ function showFailureFlyMessage(message) {
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 17px;font-weight: 700; color: #a7ffff;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 16px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: white;margin-left: -0.3rem;font-weight: 600;"><%=LocalDate.now().getMonth() %> &nbsp;<%=LocalDate.now().getYear() %> </span></div>
 			
-							
+								
+								 <% for (Object[] mainModule : MainModuleList) { %>
+    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")){%>
 		<!-- Emp Name -->					
 		<div style="margin-left: -0.9rem;">&nbsp;
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
-							
-							
-        	<ul class="navbar-nav ml-auto">
-	        <li class="nav-item active">
-	        </li>
-	        </ul>
-            	            
+	
+
+    <ul class="navbar-nav ml-auto " style="margin-left: 20px;"> <!-- adds extra space from left -->
+    <% for (Object[] subModule : SubModuleList) {
+    if (subModule[0].equals(mainModule[0])) { %>
+    <span style="font-size: 22px;color: darkgray;">| </span>
+        <li class="nav-item active " style=" margin: 2px 4px;"> <!-- hovercolorsub -->
+            <a class="dropdown-item subModule  hovercolorsub" 
+               style="width: 105%;
+                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
+                      border-radius: 3px;
+                      margin-top: 0.1rem;
+                      padding: 3px;"
+               role="button"
+               aria-controls="otherSections"
+               class="text-nowrap bi-list"
+               href="<%=subModule[1]%>">
+              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+                &nbsp;
+                <span style="font-weight: 700; color: white; font-size: 15px;">
+                    <%=subModule[2] %>
+                </span>
+            </a>
+        </li>
+        
+        <% } 
+    temp = Integer.parseInt(subModule[0].toString());
+} %>
+    </ul>
+<span style="font-size: 20px;color: darkgray;">| </span>
+
+            	   <%}else if(applicationType!=null && applicationType.equalsIgnoreCase("I")){ %>
+      
+       <li id="MainModuleId" value="<%= mainModule[0] %>" class='nav-link mb-2 shadow custom_width hovercolor dropdown-toggle' onclick="toggleSubmoduleList('<%= mainModule[0] %>')"><span class="<%=mainModule[2]%>">&nbsp;&nbsp;</span><%= mainModule[1]%></li>
+      <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0]%>">
+        <!-- Populate submodule list with items for the current main module -->
+        <div class="sidebar-content">
+        <% for (Object[] subModule : SubModuleList) {
+               if (subModule[0].equals(mainModule[0])) {%>
+          <li class="" style="margin-left:-0.3rem"><a class="dropdown-item hovercolorsub" style='width: 105%;margin-bottom: 7px !important;border-radius: 3px;margin-top:0.1rem;padding:3px;margin:4px' role='button' aria-controls='otherSections' class="text-nowrap bi-list" href='<%=subModule[1]%>'><i id="my-icon" class='fas fa-arrow-right' style="font-size: 11px;font-weight:800"></i>&nbsp;&nbsp;<span style="font-weight:700;color:#0303b9;font-size: 15px;"><%=subModule[2] %></span></a></li>
+        <%    } temp=Integer.parseInt(subModule[0].toString());
+             } %>
+             </div>
+      </ul>       
+       <% }} %>
 			<%if(!logintype.equalsIgnoreCase("P")){ %>
 						 <div  class="btn-group HeaderNotifications">
 	                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

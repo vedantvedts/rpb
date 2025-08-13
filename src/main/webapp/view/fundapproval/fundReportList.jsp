@@ -16,7 +16,6 @@
 <head>
 <meta charset="ISO-8859-1">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<jsp:include page="../static/sidebar.jsp"></jsp:include>
 <title>Fund Requisition List</title>
 <style>
 
@@ -300,26 +299,26 @@ input[name="ItemNomenclature"]::placeholder {
 
 <div class="card-header page-top">
 	 	<div class="row">
-	 	  <div class="col-md-3"><h5>Fund Report</h5></div>
-	      <!-- <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	 <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
-	          <li class="breadcrumb-item active " aria-current="page">Fund Report</li>
+	 	  <div class="col-md-3"><h5>Report List</h5></div>
+	      <div class="col-md-9">
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	          <li class="breadcrumb-item active" aria-current="page">Report List</li>
              </ol>
-           </div> -->
+           </div>
          </div>
        </div> 
      
   	    
   	    
 		
-       <div class="page card dashboard-card">
-            
+      <div class="page card dashboard-card">
+        <div class="" style="width: 100%;background-color: #fff8ed;padding: 5px">
     <form action="FundReport.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
- <div class="flex-container" style="width: 100%;">
+
         <!-- Division + From/To Year Row -->
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
             <!-- Division -->
@@ -631,6 +630,7 @@ input[name="ItemNomenclature"]::placeholder {
     </div>
   </div>
 </div>	
+</div>
 </body>
 <script type="text/javascript">
 

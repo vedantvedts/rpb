@@ -15,7 +15,6 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<jsp:include page="../static/sidebar.jsp"></jsp:include>
 <title>FUND APPROVAL</title>
 
 <style type="text/css">
