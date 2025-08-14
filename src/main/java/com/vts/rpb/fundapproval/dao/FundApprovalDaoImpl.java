@@ -602,7 +602,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	
 	@Override
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status) throws Exception{
+			String fromCost, String toCost,String status,String memberType) throws Exception{
 		try {
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
 					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
@@ -617,7 +617,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 					+ "AND f.EstimateType=:estimateType\n"
 					+ "AND (CASE WHEN '-1' = :divisionId\n"
 					+ "THEN 1 = 1 ELSE f.DivisionId = :divisionId END) \n"
-					+ "AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) \n"
+					+ "AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType = 'CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId ) END)  END)  \n"
 					+ "AND (CASE WHEN :statuss = 'A' THEN CASE WHEN f.Status = 'A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status != 'A' THEN 1 ELSE 0 END END) = 1\n"
 					+ "GROUP BY f.FundApprovalId \n"
 					+ "HAVING \n"
@@ -632,6 +632,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("fromCost",fromCost);
 			query.setParameter("toCost",toCost);
 			query.setParameter("statuss",status);
+			query.setParameter("memberType",memberType);
 			return query.getResultList();
 			
 		}catch (Exception e) {

@@ -20,7 +20,6 @@
 <meta name="_csrf" content="${_csrf.token}"/>
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 <jsp:include page="../static/header.jsp"></jsp:include>
-<jsp:include page="../static/sidebar.jsp"></jsp:include>
 <title>Fund Requisition List</title>
 <style>
 

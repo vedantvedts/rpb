@@ -56,7 +56,7 @@ body {
     padding: 20px;
     overflow-y: auto; /* Enable vertical scrolling */
     min-height:auto !important;
-    max-height: calc(100vh - 250px) !important; /* Adjust based on your header height */
+    max-height: calc(110vh - 250px) !important; /* Adjust based on your header height */
     align-content: flex-start; /* Align items to the top */
     justify-content: center; /* Center cards horizontally */
     flex-direction: row;
@@ -231,12 +231,12 @@ if(fundApprovalDto!=null)
         </div>
     </div>
 </div>
-
+<%-- 
                 <div style="font-weight: 600;color:#ff8f00;text-align: center;margin-top: 40px;font-size: 20px;">
                 <form action="FundRequest.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <button type="submit" class="btn btn-sm">&nbsp;&nbsp;Go&nbsp;&nbsp;</button>
-                </form>  </div>
+                </form>  </div> --%>
          
 <div style="text-align: center; margin-bottom: 20px;">
    <span style="font-weight: 700;font-size: 16px;">RE - </span>
@@ -251,7 +251,7 @@ if(fundApprovalDto!=null)
 	    No matching Division(s) found
 	</div>
 	
-<div class="page card dashboard-card">
+<div class="page card dashboard-card" style="height: 200px">
     <% if (DivisionDetailsList != null && !DivisionDetailsList.isEmpty()) {
         for (Object[] row : DivisionDetailsList) {
             String divisionName = (String) row[1];

@@ -422,7 +422,7 @@ padding : 7px;
 
         <td align="left" id="Officer">
             <% if (data[20] != null) { %>
-                <%= data[20] %> <% if (data[21] != null) { %>, <%= data[21] %> <% } %>
+                <%= data[20] %><% if (data[21] != null) { %>, <%= data[21] %> <% } %>
             <% } else { %> - <% } %>
         </td>
 
