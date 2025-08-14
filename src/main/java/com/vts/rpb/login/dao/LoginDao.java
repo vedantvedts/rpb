@@ -8,6 +8,6 @@ public interface LoginDao
 
 	List<Object[]> getSubModuleList(String loginType) throws Exception;
 
-	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear) throws Exception;
+	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId) throws Exception;
 
 }

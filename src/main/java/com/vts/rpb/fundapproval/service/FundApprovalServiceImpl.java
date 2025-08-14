@@ -674,9 +674,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status) throws Exception{
-		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status);
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception{
+		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType);
 	}
 
 	@Override
