@@ -739,7 +739,7 @@ input[type=number] {
 	.hovercolorsub:hover{
 
 	background-color: #ffd392 !important;
-	/* color: white; */
+	color: black !important; 
 	width: auto !important;
 }
 	

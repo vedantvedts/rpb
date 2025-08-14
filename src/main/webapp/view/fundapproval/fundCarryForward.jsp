@@ -375,8 +375,221 @@ tr:last-of-type th:last-of-type {
 				             </div>
 			           </div>
 			       </form>
-		
+			       
+			       
   <div class="page card dashboard-card" style="margin-top: 5px;max-height: 442px !important;min-height: 442px;">
+ 
+	<div class="card-body" style="background-color:white;">		
+								
+		<form action="CarryForwardDetails.htm" id="CFForm" autocomplete="off">
+	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	         <div class="table-responsive">
+			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTable">
+	                   <thead>
+	                       <tr style="background-color:#ffda96;color:#000000;">
+	                   
+		                       <th class="text-nowrap" style="width: 3%;">SN</th>
+		                       <th class="text-nowrap" style="width: 4%;">Serial No</th>
+		                       
+		                       <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
+		                       <th align="center" style="padding:0px !important;margin:0px !important;background: #edffeb;width: 3%;vertical-align: bottom !important;">
+		                        <div class="checkbox-wrapper-12">
+								  <div class="cbx">
+								    <input class="selectall" type="checkbox" style="height: 16px;width: 16px;"/>
+								    <label for="selectall" style="width: 16px;height: 16px;"></label>
+								    <svg width="13" height="13" viewbox="0 0 15 14" fill="none">
+								      <path d="M2 8.36364L6.23077 12L13 2"></path>
+								    </svg>
+								  </div>
+								</div>
+
+		                       	</th>
+		                       <%} %>
+		                       
+		                       <th class="text-nowrap" >SO No /<br>Demand No</th>
+		                       <th class="text-nowrap" >File No</th>
+		                       <th class="text-nowrap" >Item Nomenclature</th>
+		                       <th class="text-nowrap" >SO Cost /<br>Demand Cost</th>
+		                       <th class="text-nowrap" >Out Cost /<br>DIPL</th>
+		                       <th class="text-nowrap" >COG Amount</th>
+		                       <th class="text-nowrap" >COG Date</th>
+		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
+	                       </tr>
+	                   </thead>
+	                   <tbody>
+	                   <%int sn=0;String cfType=null,previousCFType="NA";
+	                   long currentFundRequestId=0,previousFundRequestId=-1;  // restricting duplicate Fund request Details 
+	                   long currentBookingId=0,previousBookingId=-1;  // restricting duplicate Demand Details 
+	                   long currentCommitmentId=0,previousCommitmentId=-1;  // restricting duplicate Supply Order Details 
+	                   long fundRequestIdCount=0,bookingIdCount=0,commitmentIdCount=0;
+	                   long totalSerialNo=0,commitmentSerialNo=0;
+	                   
+	                   if(carryForwardList!=null && carryForwardList.size()>0){
+	                     for(Object[] carryForward:carryForwardList){ %>
+	                     
+	                     <% cfType = carryForward[32]!=null ? carryForward[32].toString() : null;%>
+	                     
+	                     <%if(cfType!=null){ %>
+		                     <% if(!cfType.equalsIgnoreCase(previousCFType)){%>
+		                     
+		                     <tr>
+		                     	<td colspan="11">
+		                     		<span style="color:#046e6e;font-size: 17px;"><%if(cfType.equalsIgnoreCase("D")){ %> Demand Details <%}else if(cfType.equalsIgnoreCase("C")){ %> Supply Order Details <%} %></span>
+		                     	</td>
+		                     </tr>
+		                     
+		                     <%} %>
+	                     <%} %>
+	                     
+	                     <% if(cfType!=null){ %>
+	                     
+	                     <%if(((cfType.toString()).equalsIgnoreCase("D") && (carryForward[20]!=null && !(carryForward[20].toString()).equalsIgnoreCase("0.00"))) 
+	                       || ((cfType.toString()).equalsIgnoreCase("C") && (carryForward[27]!=null && !(carryForward[27].toString()).equalsIgnoreCase("0.00")))){ %>
+	                     
+	                     <% currentFundRequestId = carryForward[0]!=null ? Long.parseLong(carryForward[0].toString()) : 0;%>
+	                     <% currentBookingId = carryForward[16]!=null ? Long.parseLong(carryForward[16].toString()) : 0;%>
+	                     <% currentCommitmentId = carryForward[21]!=null ? Long.parseLong(carryForward[21].toString()) : 0;%>
+	                     
+	                     <tr>
+	                     
+	                     <!-- Fund Request Details -->
+	                      <% if(currentFundRequestId!=previousFundRequestId){ sn++;%>
+	                      
+		                     	<td class="fundDetails-<%=sn %>" rowspan="1"  align="center"><%=sn %>.</td>
+		                     	<td class="fundDetails-<%=sn %>" rowspan="1"  align="center"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
+	                      
+	                       <%} %>
+	                       
+	                      <% if(cfType!=null){ %>
+	                      
+	                      <%if((cfType.toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
+	                      
+	                      		<td align="center">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[33]%>">
+		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
+		                     	</td>
+		                     	
+		                     	<td align="center"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right"><% if(carryForward[17]!=null){ // Demand Cost%><%=AmountConversion.amountConvertion(carryForward[19], "R") %> <%}else{ %> - <%} %></td>
+		                     	<td align="right">
+		                      	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="BookingId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[16] %>#<%=carryForward[20]!=null ? carryForward[20] : 0 %>" style="display: none;">     <% // Value - BookingId(Demand) and DIPL %>
+		                     	<% if(carryForward[20]!=null){ // DIPL%><%=AmountConversion.amountConvertion(carryForward[20], "R") %><%}else{ %> 0.00 <%} %></td>
+		                     	<td align="center">-</td>
+		                     	<td align="center">-</td>
+		                     	<td align="center"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
+		                     	
+	                      <%} %>
+	                      
+	                      <%if((cfType.toString()).equalsIgnoreCase("C")){ %>
+	                      
+	                      	<% if(currentCommitmentId!=previousCommitmentId){ totalSerialNo++;commitmentSerialNo=0;%>
+	                      	
+	                      		<td align="center" rowspan="1">
+		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
+		                     	   <input type="hidden" name="CFItemNomenclature-<%=totalSerialNo %>" value="<%=carryForward[34]%>">
+		                    	   <input type="hidden" name="CFFundRequestId-<%=totalSerialNo %>" value="<%=carryForward[0]%>">
+		                     	</td>
+		                     	
+		                     	<td align="center" rowspan="1"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="1"><% if(carryForward[26]!=null){ // SO Cost%><%=AmountConversion.amountConvertion(carryForward[26], "R") %> <%}else{ %> - <%} %></td>
+		                     	<td align="right" rowspan="1"><% if(carryForward[27]!=null){ // OutCost%><%=AmountConversion.amountConvertion(carryForward[27], "R") %> <%}else{ %> - <%} %></td>
+		                     	
+		                     	<%} %>
+		                     	
+		                     	<% commitmentSerialNo++; %>
+		                     	
+		                     	<td align="right">
+		                     	<input type="checkbox" class="DemandOrderItemDetails-<%=totalSerialNo %>" name="CommitmentPayId-<%=totalSerialNo %>" onclick="IndividualDemandItemsOutStandingCost('<%=totalSerialNo %>','DemandOrderItemDetails')" value="<%=carryForward[28] %>#<%=carryForward[29]!=null ? carryForward[29] : 0 %>" style="display: none;">     <% // Value - CommitmentId(Supplu Order) and Oustanding Cost %>
+		                     	<%if(carryForward[29]!=null){ %> <%=AmountConversion.amountConvertion(carryForward[29], "R") %> <%}else{ %> - <%} %></td>
+	                     	    <td align="center"><%if(carryForward[30]!=null){ %> <%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[30].toString()) %> <%}else{ %> - <%} %></td>
+		                     	<% if(currentCommitmentId!=previousCommitmentId){ %>
+		                     	<td align="center" rowspan="1"><input type="number" readonly="readonly" placeholder="Item Amount" id="CFItemAmount-<%=totalSerialNo%>" name="CFItemAmount-<%=totalSerialNo%>" style="font-weight: 600;" class="form-control" value="0" oninput="limitDigits(this, 15)"></td>
+		                     	<%} %>
+	                      <%} %>
+	                      
+	                     <%} %>
+	                     
+	                     </tr>
+	                     
+                       <%} %>
+                       
+                       <%if((cfType.toString()).equalsIgnoreCase("I") || (cfType.toString()).equalsIgnoreCase("D") || ((cfType.toString()).equalsIgnoreCase("C") && commitmentIdCount == commitmentSerialNo)){ %>
+                       
+                       <tr style="display: none;" class="CashOutgoRow-<%=totalSerialNo %>">
+                       		<td colspan="7">
+                       			  	<div class="row" style="width: 98%;margin:auto;">
+					                       	  <div class="flex-container" style="justify-content: left;margin-bottom: 10px !important;;width: 90%;background-color: #ffffff !important;height:auto;">
+									            <div class="form-inline" style="font-weight: 600;color:#055505;">
+									            Total&nbsp;<input type="checkbox" class="displayPurpose" checked="checked">&nbsp;Checked Item Balance / Outstanding Cost / DIPL: &nbsp;<span style="color: red;" id="TotalItemOutstanding-<%=totalSerialNo %>"></span>&nbsp; for Selected Serial No&nbsp;<span style="color:red;" id="DisplaySerialNo-<%=totalSerialNo%>"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></span>
+									            </div>
+									          </div>
+										     
+					                       	  <div class="col-md-12" style="margin: auto;padding: 0px;">
+					                       	     <div class="form-inline" style="justify-content:center;width: 100%;background-color: #ffefe3;border-radius: 5px;">
+					                       		 <div class="inputBox"><input required id="AprilMonthForward-<%=totalSerialNo %>" name="CFAprilMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AprilMonthForward')"><span>April</span></div>
+									             <div class="inputBox"><input required id="MayMonthForward-<%=totalSerialNo %>" name="CFMayMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MayMonthForward')"><span>May</span></div>
+									             <div class="inputBox"><input required id="JuneMonthForward-<%=totalSerialNo %>" name="CFJuneMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JuneMonthForward')"><span>June</span></div>
+									             <div class="inputBox"><input required id="JulyMonthForward-<%=totalSerialNo %>" name="CFJulyMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JulyMonthForward')"><span>July</span></div>
+									             <div class="inputBox"><input required id="AugustMonthForward-<%=totalSerialNo %>" name="CFAugustMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AugustMonthForward')"><span>August</span></div>
+									             <div class="inputBox"><input required id="SeptemberMonthForward-<%=totalSerialNo %>" name="CFSeptemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','SeptemberMonthForward')"><span>September</span></div>
+									             <div class="inputBox"><input required id="OctoberMonthForward-<%=totalSerialNo %>" name="CFOctoberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','OctoberMonthForward')"><span>October</span></div>
+									             <div class="inputBox"><input required id="NovemberMonthForward-<%=totalSerialNo %>" name="CFNovemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','NovemberMonthForward')"><span>November</span></div>
+									             <div class="inputBox"><input required id="DecemberMonthForward-<%=totalSerialNo %>" name="CFDecemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','DecemberMonthForward')"><span>December</span></div>
+									             <div class="inputBox"><input required id="JanuaryMonthForward-<%=totalSerialNo %>" name="CFJanuaryMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JanuaryMonthForward')"><span>January</span></div>
+									             <div class="inputBox"><input required id="FebruaryMonthForward-<%=totalSerialNo %>" name="CFFebruaryMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','FebruaryMonthForward')"><span>February</span></div>
+									             <div class="inputBox"><input required id="MarchMonthForward-<%=totalSerialNo %>" name="CFMarchMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MarchMonthForward')"><span>March</span></div>
+					                       	</div>
+					                       </div>
+					         
+					                       	</div>
+                       		</td>
+                       </tr>
+                       
+                       <%} %>
+                      
+                      <%} %>
+                      
+                      <% previousFundRequestId=currentFundRequestId; %>
+                      <% previousBookingId=currentBookingId; %>
+                      <% previousCommitmentId=currentCommitmentId; %>
+                      <% previousCFType=cfType; %>
+                      
+                     <%} // List for Loop End %>  
+	                       
+                    <%}else{ %>
+                     
+                       <tr>
+                       	<td colspan="11" align="center" style="font-weight: 600;color:red;">No Record Found</td>
+                       </tr>
+                       
+                    <%} %>
+                      
+                    </tbody>
+                 </table>
+                 
+                    <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
+				       <div class="row" style="justify-content: center !important;width: 90% !important;margin:auto;">
+				           <span style="font-size:14px;font-weight:bold;color:#6000ff;">1. Click Submit Button To Transfer Items. <br>
+				            2.Choose Only Confirmed Items/DIPL/Out Cost. <br>
+				            3.Once Transfered Cannot Be Undo.</span></div>
+			         <%} %>
+			          <%if(carryForwardList!=null && carryForwardList.size()>0){ %>
+			          <div style="justify-content: center;width: 90% !important;margin:auto;text-align: center;padding: 12px;">
+				        <button type="button" class="btn btn-sm submit-btn" onclick="SubmitCFDetails()">Submit</button>
+				        </div>
+				        <%} %>
+               
+               </div>
+		    </form>
+			<br><br><br><br>		   
+	     </div>
+	     <br><br><br><br><br>
+	   </div>
+			       
+			       
+		
+<%--   <div class="page card dashboard-card" style="margin-top: 5px;max-height: 442px !important;min-height: 442px;">
  
 	<div class="card-body" style="background-color:white;">		
 								
@@ -426,11 +639,11 @@ tr:last-of-type th:last-of-type {
 	                   if(carryForwardList!=null && carryForwardList.size()>0){
 	                     for(Object[] carryForward:carryForwardList){ %>
 	                     
-	                     <% if(carryForward[32]!=null){ %>
+	                     <% if(cfType!=null){ %>
 	                     
-	                     <%if(((carryForward[32].toString()).equalsIgnoreCase("D") && (carryForward[20]!=null && !(carryForward[20].toString()).equalsIgnoreCase("0.00"))) 
-	                       || ((carryForward[32].toString()).equalsIgnoreCase("I") && (carryForward[12]!=null && !(carryForward[12].toString()).equalsIgnoreCase("0.00")))
-	                       || ((carryForward[32].toString()).equalsIgnoreCase("C") && (carryForward[27]!=null && !(carryForward[27].toString()).equalsIgnoreCase("0.00")))){ %>
+	                     <%if(((cfType.toString()).equalsIgnoreCase("D") && (carryForward[20]!=null && !(carryForward[20].toString()).equalsIgnoreCase("0.00"))) 
+	                       || ((cfType.toString()).equalsIgnoreCase("I") && (carryForward[12]!=null && !(carryForward[12].toString()).equalsIgnoreCase("0.00")))
+	                       || ((cfType.toString()).equalsIgnoreCase("C") && (carryForward[27]!=null && !(carryForward[27].toString()).equalsIgnoreCase("0.00")))){ %>
 	                     
 	                     <% currentFundRequestId = carryForward[0]!=null ? Long.parseLong(carryForward[0].toString()) : 0;%>
 	                     <% currentBookingId = carryForward[16]!=null ? Long.parseLong(carryForward[16].toString()) : 0;%>
@@ -477,9 +690,9 @@ tr:last-of-type th:last-of-type {
 	                      
 	                       <%} %>
 	                       
-	                      <% if(carryForward[32]!=null){ %>
+	                      <% if(cfType!=null){ %>
 	                      
-	                       <%if((carryForward[32].toString()).equalsIgnoreCase("I")){  totalSerialNo++;%>
+	                       <%if((cfType.toString()).equalsIgnoreCase("I")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
 		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
@@ -498,7 +711,7 @@ tr:last-of-type th:last-of-type {
 		                     	
 	                      <%} %>
 	                      
-	                      <%if((carryForward[32].toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
+	                      <%if((cfType.toString()).equalsIgnoreCase("D")){  totalSerialNo++;%>
 	                      
 	                      		<td align="center">
 		                    	   <input type="checkbox" class="checkbox" id="cashOutgoCheckbox-<%=totalSerialNo %>" data-table-serialno="<%=sn %>" name="DemandItemOrderDetails" value="<%=totalSerialNo %>">
@@ -517,7 +730,7 @@ tr:last-of-type th:last-of-type {
 		                     	
 	                      <%} %>
 	                      
-	                      <%if((carryForward[32].toString()).equalsIgnoreCase("C")){ %>
+	                      <%if((cfType.toString()).equalsIgnoreCase("C")){ %>
 	                      
 	                      	<% if(currentCommitmentId!=previousCommitmentId){ totalSerialNo++;commitmentSerialNo=0;%>
 	                      	
@@ -561,7 +774,7 @@ tr:last-of-type th:last-of-type {
 	                     
                        <%} %>
                        
-                       <%if((carryForward[32].toString()).equalsIgnoreCase("I") || (carryForward[32].toString()).equalsIgnoreCase("D") || ((carryForward[32].toString()).equalsIgnoreCase("C") && commitmentIdCount == commitmentSerialNo)){ %>
+                       <%if((cfType.toString()).equalsIgnoreCase("I") || (cfType.toString()).equalsIgnoreCase("D") || ((cfType.toString()).equalsIgnoreCase("C") && commitmentIdCount == commitmentSerialNo)){ %>
                        
                        <tr style="display: none;" class="CashOutgoRow-<%=totalSerialNo %>">
                        		<td colspan="7">
@@ -631,7 +844,7 @@ tr:last-of-type th:last-of-type {
 			<br><br><br><br>		   
 	     </div>
 	     <br><br><br><br><br>
-	   </div>
+	   </div> --%>
 			
 </body>
 

@@ -490,8 +490,16 @@ input[name="ItemNomenclature"]::placeholder {
 					       <%} %>     
 					            &nbsp;
 					            
-				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="AddDataOfSel" name="Action" value="Add" 
-					            data-tooltip="&lt;div class=&quot;div-tooltip-container&quot;&gt;&lt;strong&gt;Carry Forward Existing&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;1.Item(s)&lt;/li&gt;&lt;li&gt;2.Demand(s)&lt;/li&gt;&lt;li&gt;3.Supply Order(s)/Commitment(s)&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward </button>
+				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Demand" 
+					            data-tooltip="Carry Forward Existing Demand(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Demand </button>
+					            &nbsp;
+					            
+				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="SupplyOrder" 
+					            data-tooltip="Carry Forward Existing Supply Order(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Supply Order </button>
+					            &nbsp;
+					            
+				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Item" 
+					            data-tooltip="Carry Forward Previous Year Existing Item(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Item </button>
 						
 						</div>
 						

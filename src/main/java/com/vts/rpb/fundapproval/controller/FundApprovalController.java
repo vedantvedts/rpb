@@ -292,8 +292,10 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside fundRequestCarryForward.htm " + UserName);
 		try
 		{	
+			String action=req.getParameter("Action");
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
-			if(fundApprovalDto==null)
+			
+			if(fundApprovalDto==null || action==null)
 			{
 				return "redirect:/FundRequest.htm";
 			}
@@ -315,7 +317,7 @@ public class FundApprovalController
 			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);			
 			if(fundApprovalDto!=null)
 			{
-				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
+				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode,action);
 				if(carryForwardList!=null && carryForwardList.size()>0)
 				{
 					req.setAttribute("carryForwardList", carryForwardList);
@@ -324,6 +326,7 @@ public class FundApprovalController
 			
 			req.setAttribute("budgetHeadId", budgetHeadId);
 			req.setAttribute("budgetItemId", budgetItemId);
+			req.setAttribute("action", action);
 			
 		}
 		catch(Exception e)
