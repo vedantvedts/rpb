@@ -593,7 +593,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 				return result; 
 				
 			}catch (Exception e) {
-				logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+				logger.error(new Date() +"Inside DAO getFundRequestCarryForwardDetails "+ e);
 				e.printStackTrace();
 				return null;
 			}

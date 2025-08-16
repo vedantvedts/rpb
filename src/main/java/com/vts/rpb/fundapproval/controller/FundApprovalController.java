@@ -293,9 +293,10 @@ public class FundApprovalController
 		try
 		{	
 			String action=req.getParameter("Action");
+			System.out.println("action****"+action);
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
 			
-			if(fundApprovalDto==null || action==null)
+			if(fundApprovalDto==null)
 			{
 				return "redirect:/FundRequest.htm";
 			}
