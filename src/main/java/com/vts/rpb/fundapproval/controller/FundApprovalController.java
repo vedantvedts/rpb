@@ -347,13 +347,14 @@ public class FundApprovalController
 		try
 		{
 			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
+			String action=req.getParameter("Action");
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
 			int stringLength=1;
 			if(demandItemOrderDetails!=null) 
 			{
 				stringLength=demandItemOrderDetails.length;
 			}
-			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
+			String[] commitmentPayId = new String[stringLength],commitmentId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
 					,selectedFundRequestId=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
 					mayMonth=new String[stringLength],juneMonth=new String[stringLength],julyMonth=new String[stringLength],
 					augustMonth=new String[stringLength],septemberMonth=new String[stringLength],octoberMonth=new String[stringLength],
@@ -393,6 +394,7 @@ public class FundApprovalController
 						
 						fundRequestSerialNo[i]=serialNo;
 						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
+						commitmentId[i]=req.getParameter("CFCommitmentId-"+serialNo);
 						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
 						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
 						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
@@ -410,6 +412,8 @@ public class FundApprovalController
 					}
 				}
 			}
+			
+			cogMonth.setActionType(action!=null ? action : null);
 			
 			if(selectedFundRequestId!=null)
 			{
@@ -434,6 +438,11 @@ public class FundApprovalController
 			if(commitmentPayId!=null) 
 			{
 				cogMonth.setCommitmentPayId(commitmentPayId);
+			}
+			
+			if(commitmentId!=null) 
+			{
+				cogMonth.setCommitmentId(commitmentId);
 			}
 			
 			if(itemNomenclature!=null)

@@ -671,4 +671,34 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
+	@Override
+	public List<Object[]> getDemandDetails(String demandId) throws Exception {
+	 try {
+			Query query= manager.createNativeQuery("SELECT b.BookingId,b.DemandNo,b.ProjectCode,b.ProjectId,b.BudgetHeadId,b.BudgetItemId,b.DivisionCode,d.DivisionId,b.OfficerCode,e.EmpId FROM tblbooking b LEFT JOIN division_master d ON d.DivisionCode=b.DivisionCode LEFT JOIN employee e ON e.EmpNo=b.OfficerCode WHERE b.BookingId=:demandId");
+			query.setParameter("demandId", demandId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getDemandDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT c.CommitmentId,c.SoNo,c.ProjectCode,c.ProjectId,c.BudgetHeadId,c.BudgetItemId,c.DivisionCode,d.DivisionId,c.OfficerCode,e.EmpId FROM tblcommitment c LEFT JOIN division_master d ON d.DivisionCode=c.DivisionCode LEFT JOIN employee e ON e.EmpNo=c.OfficerCode WHERE c.CommitmentId=:commitmentId");
+			query.setParameter("commitmentId", commitmentId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getCommitmmentDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }
