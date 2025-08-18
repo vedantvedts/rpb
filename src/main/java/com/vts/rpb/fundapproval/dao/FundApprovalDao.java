@@ -73,12 +73,16 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getMaxSerialNoCount(String fbeReYear, String estimateType) throws Exception;
 
-	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception;
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
-String fromCost, String toCost,String status,String memberType) throws Exception;
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
 
-	public List<Object[]> getCommitteeMemberType (long empId) throws Exception;
+	public String getCommitteeMemberType (long empId) throws Exception;
+
+	public List<Object[]> getDemandDetails(String demandId) throws Exception;
+
+	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception;
+
 }

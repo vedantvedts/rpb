@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -666,168 +669,211 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode)
-			throws Exception {
-		return fundApprovalDao.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception {
+		return fundApprovalDao.getFundRequestCarryForwardDetails(fundApprovalDto,labCode,action);
 	}
 	
 	@Override
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception{
 		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType);
 	}
-
+	
+	
 	@Override
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
-		long status=0,count=0;
-		if(cogMonth!=null && cogMonth.getCarryForwardSerialNo().length>0)
-		{
-			String fbeReYear=null,estimateType=null;
-			if(backDto!=null)
-			{
-				if(backDto.getEstimatedTypeBackBtn()!=null)
-				{
-					estimateType=backDto.getEstimatedTypeBackBtn();
-				}
-				
-				if(estimateType.equalsIgnoreCase("R"))
-				{
-					fbeReYear=backDto.getREYear();
-				}
-				else if(estimateType.equalsIgnoreCase("F"))
-				{
-					fbeReYear=backDto.getFBEYear();
-				}
-			}
-			for(int i=0;i<cogMonth.getCarryForwardSerialNo().length;i++)
-			{
-				if(cogMonth.getItemNomenclature()[i]!=null && cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && !(cogMonth.getFbeAmount()[i]).equalsIgnoreCase("0"))
-				{
-					if(cogMonth.getSelectedFundRequestId()!=null && cogMonth.getSelectedFundRequestId()[i]!=null && cogMonth.getSelectedFundRequestId()[i]!="")
-					{
-						FundApproval lastYearfundRequest=fundApprovalDao.getFundRequestDetails(Long.parseLong(cogMonth.getSelectedFundRequestId()[i]));
-						
-						if(lastYearfundRequest!=null) 
-						{
-							FundApproval fundRequest=new FundApproval();
-							String serialNo=createSerialNo(fbeReYear,estimateType);
-							fundRequest.setSerialNo(serialNo!=null ? serialNo : "0");
-							fundRequest.setEstimateType(estimateType);
-							fundRequest.setDivisionId(lastYearfundRequest.getDivisionId());
-							fundRequest.setFinYear(backDto.getFromYearBackBtn() +"-"+ backDto.getToYearBackBtn());
-							fundRequest.setReFbeYear(fbeReYear);
-							fundRequest.setProjectId(lastYearfundRequest.getProjectId());
-							fundRequest.setBudgetHeadId(lastYearfundRequest.getBudgetHeadId());
-							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
-							fundRequest.setBookingId(cogMonth.getDemandId()[i]!=null ? Long.parseLong(cogMonth.getDemandId()[i]) : 0);
-							fundRequest.setFundRequestId(cogMonth.getFundRequestId()!=null && cogMonth.getFundRequestId()[i]!=null ? Long.parseLong(cogMonth.getFundRequestId()[i]) : 0);
-							fundRequest.setCommitmentPayIds(cogMonth.getCommitmentPayId()[i]!=null ? cogMonth.getCommitmentPayId()[i].toString() : null);
-							fundRequest.setBudgetItemId(lastYearfundRequest.getBudgetItemId());
-							fundRequest.setInitiatingOfficer(lastYearfundRequest.getInitiatingOfficer());
-							fundRequest.setItemNomenclature(cogMonth.getItemNomenclature()[i]!=null ? cogMonth.getItemNomenclature()[i] : null);
-							fundRequest.setRequisitionDate(LocalDate.now());
-							
-							if(cogMonth.getFbeAmount()!=null && cogMonth.getFbeAmount()[i]!=null && cogMonth.getFbeAmount()[i]!="")
-							{
-								fundRequest.setFundRequestAmount(new BigDecimal(cogMonth.getFbeAmount()[i]));
-							}
-							
-							if(cogMonth.getAprAmount()!=null && cogMonth.getAprAmount()[i]!=null && cogMonth.getAprAmount()[i]!="")
-							{
-								fundRequest.setApril(new BigDecimal(cogMonth.getAprAmount()[i]));
-							}
-							
-							if(cogMonth.getMayAmount()!=null && cogMonth.getMayAmount()[i]!=null && cogMonth.getMayAmount()[i]!="")
-							{
-								fundRequest.setMay(new BigDecimal(cogMonth.getMayAmount()[i]));
-							}
-							if(cogMonth.getJunAmount()!=null && cogMonth.getJunAmount()[i]!=null && cogMonth.getJunAmount()[i]!="")
-							{
-								fundRequest.setJune(new BigDecimal(cogMonth.getJunAmount()[i]));
-							}
-							if(cogMonth.getJulAmount()!=null && cogMonth.getJulAmount()[i]!=null && cogMonth.getJulAmount()[i]!="")
-							{
-								fundRequest.setJuly(new BigDecimal(cogMonth.getJulAmount()[i]));
-							}
-							if(cogMonth.getAugAmount()!=null && cogMonth.getAugAmount()[i]!=null && cogMonth.getAugAmount()[i]!="")
-							{
-								fundRequest.setAugust(new BigDecimal(cogMonth.getAugAmount()[i]));
-							}
-							if(cogMonth.getSepAmount()!=null && cogMonth.getSepAmount()[i]!=null && cogMonth.getSepAmount()[i]!="")
-							{
-								fundRequest.setSeptember(new BigDecimal(cogMonth.getSepAmount()[i]));
-							}
-							if(cogMonth.getOctAmount()!=null && cogMonth.getOctAmount()[i]!=null && cogMonth.getOctAmount()[i]!="")
-							{
-								fundRequest.setOctober(new BigDecimal(cogMonth.getOctAmount()[i]));
-							}
-							if(cogMonth.getNovAmount()!=null && cogMonth.getNovAmount()[i]!=null && cogMonth.getNovAmount()[i]!="")
-							{
-								fundRequest.setNovember(new BigDecimal(cogMonth.getNovAmount()[i]));
-							}
-							if(cogMonth.getDecAmount()!=null && cogMonth.getDecAmount()[i]!=null && cogMonth.getDecAmount()[i]!="")
-							{
-								fundRequest.setDecember(new BigDecimal(cogMonth.getDecAmount()[i]));
-							}
-							if(cogMonth.getJanAmount()!=null && cogMonth.getJanAmount()[i]!=null && cogMonth.getJanAmount()[i]!="")
-							{
-								fundRequest.setJanuary(new BigDecimal(cogMonth.getJanAmount()[i]));
-							}
-							if(cogMonth.getFebAmount()!=null && cogMonth.getFebAmount()[i]!=null && cogMonth.getFebAmount()[i]!="")
-							{
-								fundRequest.setFebruary(new BigDecimal(cogMonth.getFebAmount()[i]));
-							}
-							if(cogMonth.getMarAmount()!=null && cogMonth.getMarAmount()[i]!=null && cogMonth.getMarAmount()[i]!="")
-							{
-								fundRequest.setMarch(new BigDecimal(cogMonth.getMarAmount()[i]));
-							}
-							
-							fundRequest.setRc1(lastYearfundRequest.getRc1());
-							fundRequest.setRc1Role(lastYearfundRequest.getRc1Role());
-							
-							fundRequest.setRc2(lastYearfundRequest.getRc2());
-							fundRequest.setRc2Role(lastYearfundRequest.getRc2Role());
-							
-							fundRequest.setRc3(lastYearfundRequest.getRc3());
-							fundRequest.setRc3Role(lastYearfundRequest.getRc3Role());
-							
-							fundRequest.setRc4(lastYearfundRequest.getRc4());
-							fundRequest.setRc4Role(lastYearfundRequest.getRc4Role());
-							
-							fundRequest.setRc5(lastYearfundRequest.getRc5());
-							fundRequest.setRc5Role(lastYearfundRequest.getRc5Role());
-							
-							fundRequest.setApprovingOfficer(lastYearfundRequest.getApprovingOfficer());
-							fundRequest.setApprovingOfficerRole(lastYearfundRequest.getApprovingOfficerRole());
-							
-							fundRequest.setApprovalDate(lastYearfundRequest.getApprovalDate());				
-							
-							fundRequest.setStatus("A");
-							fundRequest.setCreatedBy(userName);
-							fundRequest.setCreatedDate(LocalDateTime.now());
-							
-							long fbeStatus=fundApprovalDao.insertCarryForwardItemDetails(fundRequest);
-							
-							if(fbeStatus>0)
-							{
-								count++;
-							}
-						}
-					}
-				}
-			}
-
-			if(count==cogMonth.getCarryForwardSerialNo().length)
-			{
-				status=1;
-			}
-		}
-		else
-		{
-			status=-1;
-		}
 		
-		return status;
+	    if (cogMonth == null || isEmpty(cogMonth.getCarryForwardSerialNo()) || cogMonth.getActionType() == null) {
+	        return -1;
+	    }
+
+	    String estimateType = Optional.ofNullable(backDto).map(FundApprovalBackButtonDto::getEstimatedTypeBackBtn).orElse(null);
+
+	    String fbeReYear = resolveFbeReYear(backDto, estimateType);
+
+	    long count = 0;
+	    String action = cogMonth.getActionType();
+
+	    for (int i = 0; i < cogMonth.getCarryForwardSerialNo().length; i++) {
+	        FundApproval fundRequest = buildFundRequest(cogMonth, backDto, estimateType, fbeReYear, action, i);
+	        fundRequest.setCreatedBy(userName);
+	        fundRequest.setCreatedDate(LocalDateTime.now());
+	        fundRequest.setStatus("N");
+
+	        long fbeStatus = fundApprovalDao.insertCarryForwardItemDetails(fundRequest);
+
+	        if (fbeStatus > 0) {
+	            count++;
+	            copyAttachments(fundRequest, cogMonth, i, userName);
+	            transactionHistry(fundRequest, userName);
+	        }
+	    }
+
+	    return (count == cogMonth.getCarryForwardSerialNo().length) ? 1 : 0;
 	}
+
+	// ---------------- Helper Methods ----------------
+
+	private boolean isEmpty(Object[] arr) {
+	    return arr == null || arr.length == 0;
+	}
+
+	private String resolveFbeReYear(FundApprovalBackButtonDto backDto, String estimateType) {
+	    if (backDto == null || estimateType == null) return null;
+
+	    switch (estimateType.toUpperCase()) {
+	        case "R":
+	            return backDto.getREYear();
+	        case "F":
+	            return backDto.getFBEYear();
+	        default:
+	            return null;
+	    }
+	}
+
+	private FundApproval buildFundRequest(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto,String estimateType,String fbeReYear,String action,int index) throws Exception{
+
+	    long projectId = 0, budgetHeadId = 0, budgetItemId = 0, initiatingOfficer = 0, divisionId = 0;
+
+	    if ("Demand".equalsIgnoreCase(action) && cogMonth.getDemandId().length > 0 && cogMonth.getDemandId()[index]!=null) 
+	    {
+	        Object[] demandArray = getFirstRow(fundApprovalDao.getDemandDetails(cogMonth.getDemandId()[index]));
+	        if (demandArray != null) 
+	        {
+	            projectId = getLong(demandArray[3]);
+	            budgetHeadId = getLong(demandArray[4]);
+	            budgetItemId = getLong(demandArray[5]);
+	            initiatingOfficer = getLong(demandArray[9]);
+	            divisionId = getLong(demandArray[7]);
+	        }
+	    } 
+	    else if ("SupplyOrder".equalsIgnoreCase(action) && cogMonth.getCommitmentId().length > 0 && cogMonth.getCommitmentId()[index]!=null) 
+	    {
+	        Object[] commitmentArray = getFirstRow(fundApprovalDao.getCommitmmentDetails(cogMonth.getCommitmentId()[index]));
+	        if (commitmentArray != null) 
+	        {
+	            projectId = getLong(commitmentArray[3]);
+	            budgetHeadId = getLong(commitmentArray[4]);
+	            budgetItemId = getLong(commitmentArray[5]);
+	            initiatingOfficer = getLong(commitmentArray[9]);
+	            divisionId = getLong(commitmentArray[7]);
+	        }
+	    } 
+	    else if ("Item".equalsIgnoreCase(action)) 
+	    {
+	        FundApproval lastYearfundRequest = fundApprovalDao.getFundRequestDetails(Long.parseLong(cogMonth.getSelectedFundRequestId()[index]));
+	        if (lastYearfundRequest != null) 
+	        {
+	            projectId = lastYearfundRequest.getProjectId();
+	            budgetHeadId = lastYearfundRequest.getBudgetHeadId();
+	            budgetItemId = lastYearfundRequest.getBudgetItemId();
+	            initiatingOfficer = lastYearfundRequest.getInitiatingOfficer();
+	            divisionId = lastYearfundRequest.getDivisionId();
+	        }
+	    }
+
+	    FundApproval fundRequest = new FundApproval();
+	    fundRequest.setSerialNo("0");
+	    fundRequest.setEstimateType(estimateType);
+	    fundRequest.setDivisionId(divisionId);
+	    fundRequest.setFinYear(backDto.getFromYearBackBtn() + "-" + backDto.getToYearBackBtn());
+	    fundRequest.setReFbeYear(fbeReYear);
+	    fundRequest.setProjectId(projectId);
+	    fundRequest.setBudgetHeadId(budgetHeadId);
+	    fundRequest.setBudgetItemId(budgetItemId);
+	    fundRequest.setBookingId(parseLongSafe(cogMonth.getDemandId(), index));
+	    fundRequest.setFundRequestId(parseLongSafe(cogMonth.getFundRequestId(), index));
+	    fundRequest.setCommitmentPayIds(getStringSafe(cogMonth.getCommitmentPayId(), index));
+	    fundRequest.setInitiatingOfficer(initiatingOfficer);
+	    fundRequest.setItemNomenclature(getStringSafe(cogMonth.getItemNomenclature(), index));
+	    fundRequest.setRequisitionDate(LocalDate.now());
+
+	    setMonthlyAmounts(fundRequest, cogMonth, index);
+
+	    return fundRequest;
+	}
+
+	private void copyAttachments(FundApproval fundRequest, FundRequestCOGDetails cogMonth,int index, String userName) throws Exception {
+		
+	    List<Object[]> attachments = fundApprovalDao.getFundRequestAttachList(fundRequest.getFundApprovalId());
+	    if (attachments == null || attachments.isEmpty()) return;
+
+	    attachments.forEach(row -> {
+	        FundApprovalAttach attach = new FundApprovalAttach();
+	        attach.setFundApprovalId(fundRequest.getFundApprovalId());
+	        attach.setFileName(getString(row[1]));
+	        attach.setOriginalFileName(getString(row[2]));
+	        attach.setPath(getString(row[4]));
+	        attach.setCreatedBy(userName);
+	        attach.setCreatedDate(LocalDateTime.now());
+
+	        try {
+	            fundApprovalDao.AddFundRequestAttachSubmit(attach);
+	        } catch (Exception e) {
+	            logger.error("Failed to copy attachment for FundApprovalId {}", fundRequest.getFundApprovalId(), e);
+	            e.printStackTrace();
+	        }
+	    });
+	}
+	
+	private void transactionHistry(FundApproval fundRequest, String userName) throws Exception {
+		
+		FundApprovalTrans transModal=new FundApprovalTrans();
+		transModal.setFundApprovalId(fundRequest.getFundApprovalId());
+		transModal.setRcStausCode("INITIATION");
+		transModal.setRemarks(fundRequest.getRemarks());
+		transModal.setActionBy(fundRequest.getInitiatingOfficer());
+		transModal.setActionDate(LocalDateTime.now());
+		fundApprovalDao.AddFundApprovalTrans(transModal);
+	}
+
+	private void setMonthlyAmounts(FundApproval fundRequest, FundRequestCOGDetails cogMonth, int i) {
+	    setAmount(fundRequest::setFundRequestAmount, cogMonth.getFbeAmount(), i);
+	    setAmount(fundRequest::setApril, cogMonth.getAprAmount(), i);
+	    setAmount(fundRequest::setMay, cogMonth.getMayAmount(), i);
+	    setAmount(fundRequest::setJune, cogMonth.getJunAmount(), i);
+	    setAmount(fundRequest::setJuly, cogMonth.getJulAmount(), i);
+	    setAmount(fundRequest::setAugust, cogMonth.getAugAmount(), i);
+	    setAmount(fundRequest::setSeptember, cogMonth.getSepAmount(), i);
+	    setAmount(fundRequest::setOctober, cogMonth.getOctAmount(), i);
+	    setAmount(fundRequest::setNovember, cogMonth.getNovAmount(), i);
+	    setAmount(fundRequest::setDecember, cogMonth.getDecAmount(), i);
+	    setAmount(fundRequest::setJanuary, cogMonth.getJanAmount(), i);
+	    setAmount(fundRequest::setFebruary, cogMonth.getFebAmount(), i);
+	    setAmount(fundRequest::setMarch, cogMonth.getMarAmount(), i);
+	}
+
+	// ---------------- Utility Methods ----------------
+
+	private void setAmount(Consumer<BigDecimal> setter, String[] arr, int index) {
+	    if (arr != null && arr.length > index && arr[index] != null && !arr[index].isEmpty()) {
+	        setter.accept(new BigDecimal(arr[index]));
+	    }
+	}
+
+	private long parseLongSafe(String[] arr, int index) {
+	    try {
+	        return (arr != null && arr.length > index && arr[index] != null) ? Long.parseLong(arr[index]) : 0;
+	    } catch (NumberFormatException e) {
+	        return 0;
+	    }
+	}
+
+	private String getStringSafe(String[] arr, int index) {
+	    return (arr != null && arr.length > index) ? arr[index] : null;
+	}
+
+	private Object[] getFirstRow(List<Object[]> list) {
+	    return (list != null && !list.isEmpty()) ? list.get(0) : null;
+	}
+
+	private long getLong(Object obj) {
+	    return (obj != null) ? Long.parseLong(obj.toString()) : 0;
+	}
+
+	private String getString(Object obj) {
+	    return (obj != null) ? obj.toString() : null;
+	}
+
 	
 	@Override
 	public String getCommitteeMemberType (long empId) throws Exception{

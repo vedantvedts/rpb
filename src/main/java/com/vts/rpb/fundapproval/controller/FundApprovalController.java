@@ -292,7 +292,10 @@ public class FundApprovalController
 		logger.info(new Date() + "Inside fundRequestCarryForward.htm " + UserName);
 		try
 		{	
+			String action=req.getParameter("Action");
+			System.out.println("action****"+action);
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			
 			if(fundApprovalDto==null)
 			{
 				return "redirect:/FundRequest.htm";
@@ -315,7 +318,7 @@ public class FundApprovalController
 			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);			
 			if(fundApprovalDto!=null)
 			{
-				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode);
+				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode,action);
 				if(carryForwardList!=null && carryForwardList.size()>0)
 				{
 					req.setAttribute("carryForwardList", carryForwardList);
@@ -324,6 +327,7 @@ public class FundApprovalController
 			
 			req.setAttribute("budgetHeadId", budgetHeadId);
 			req.setAttribute("budgetItemId", budgetItemId);
+			req.setAttribute("action", action);
 			
 		}
 		catch(Exception e)
@@ -344,13 +348,14 @@ public class FundApprovalController
 		try
 		{
 			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
+			String action=req.getParameter("Action");
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
 			int stringLength=1;
 			if(demandItemOrderDetails!=null) 
 			{
 				stringLength=demandItemOrderDetails.length;
 			}
-			String[] commitmentPayId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
+			String[] commitmentPayId = new String[stringLength],commitmentId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
 					,selectedFundRequestId=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
 					mayMonth=new String[stringLength],juneMonth=new String[stringLength],julyMonth=new String[stringLength],
 					augustMonth=new String[stringLength],septemberMonth=new String[stringLength],octoberMonth=new String[stringLength],
@@ -390,6 +395,7 @@ public class FundApprovalController
 						
 						fundRequestSerialNo[i]=serialNo;
 						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
+						commitmentId[i]=req.getParameter("CFCommitmentId-"+serialNo);
 						itemNomenclature[i]=req.getParameter("CFItemNomenclature-"+serialNo);
 						ItemAmount[i]=req.getParameter("CFItemAmount-"+serialNo);
 						aprilMonth[i]=req.getParameter("CFAprilMonth-"+serialNo);
@@ -408,14 +414,16 @@ public class FundApprovalController
 				}
 			}
 			
-			if(fundRequestSerialNo!=null)
+			cogMonth.setActionType(action!=null ? action : null);
+			
+			if(selectedFundRequestId!=null)
 			{
 				cogMonth.setSelectedFundRequestId(selectedFundRequestId);
 			}
 			
 			if(fundRequestSerialNo!=null)
 			{
-				cogMonth.setCarryForwardSerialNo(selectedFundRequestId);
+				cogMonth.setCarryForwardSerialNo(fundRequestSerialNo);
 			}
 			
 			if(cfFundRequestId!=null) 
@@ -431,6 +439,11 @@ public class FundApprovalController
 			if(commitmentPayId!=null) 
 			{
 				cogMonth.setCommitmentPayId(commitmentPayId);
+			}
+			
+			if(commitmentId!=null) 
+			{
+				cogMonth.setCommitmentId(commitmentId);
 			}
 			
 			if(itemNomenclature!=null)
@@ -504,11 +517,11 @@ public class FundApprovalController
 			
 			if(status>0)
 			{
-				redir.addAttribute("Status", estimateTypeName+" Transfered Successfully ..&#128077;");
+				redir.addAttribute("resultSuccess", estimateTypeName+" Transfered Successfully ..&#128077;");
 			}
 			else
 			{
-				redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+				redir.addAttribute("resultFailure", "Something Went Wrong..&#128078;");
 			}
 			
 			if(fundApprovalDto!=null)

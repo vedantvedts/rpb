@@ -28,4 +28,5 @@ public class FundRequestCOGDetails
 	private String[] fundRequestId;
 	private String[] carryForwardSerialNo;
 	private String[] selectedFundRequestId;
+	private String actionType;
 }

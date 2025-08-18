@@ -69,7 +69,7 @@ body {
     min-height: 162px; /* Fixed minimum height */
     margin-bottom: 20px; /* Space between rows */
     background-color: white;
-    border-radius: 16px;
+    border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -95,12 +95,12 @@ body {
 }
 
 .custom-card .card-name {
-    background-color: #2929afe3;
+    background-color: #00007e;
     color: white;
     font-weight: 600;
     text-align: center;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     padding: 12px;
     font-size: 18px;
     letter-spacing: 0.5px;
@@ -251,7 +251,7 @@ if(fundApprovalDto!=null)
 	    No matching Division(s) found
 	</div>
 	
-<div class="page card dashboard-card" style="height: 200px">
+<div class="page card dashboard-card" style="border: 0px;">
     <% if (DivisionDetailsList != null && !DivisionDetailsList.isEmpty()) {
         for (Object[] row : DivisionDetailsList) {
             String divisionName = (String) row[1];
@@ -263,7 +263,7 @@ if(fundApprovalDto!=null)
             BigDecimal fbeAmount = new BigDecimal(row[6].toString());
     %>
     <div class="custom-card">
-    <div class="card-name" style="font-size: 16px; background-image: linear-gradient(rgb(138 190 229), rgb(3 75 159) 50%) !important;" >
+    <div class="card-name" style="font-size: 16px;/*  background-image: linear-gradient(rgb(138 190 229), rgb(3 75 159) 50%) !important; */" >
             <%= divisionName %> <span>(<%= row[7]%>)</span>
         </div>
         <div class="card-body">
