@@ -82,7 +82,7 @@ public class LoginController {
 			}
 			System.err.println("DivisionID after if->"+divisionId);
 		    
-		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
+		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
 			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId);
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);
