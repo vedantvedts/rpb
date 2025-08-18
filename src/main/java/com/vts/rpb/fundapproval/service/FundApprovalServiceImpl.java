@@ -545,9 +545,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status)  throws Exception{
+			String fromCost, String toCost, String status,String committeeMember)  throws Exception{
 		
-		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
+		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember);
 	}
 	
 	@Override
@@ -877,7 +877,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public String getCommitteeMemberType (long empId) throws Exception{
-		return fundApprovalDao.getCommitteeMemberType(empId);
+		List<Object[]> committeeType= fundApprovalDao.getCommitteeMemberType(empId);
+		 if (committeeType != null && !committeeType.isEmpty()) {
+		        Object[] firstRow = committeeType.get(0);
+		        return firstRow[0].toString();
+		    }
+		    return null;
 	}
 	
 }

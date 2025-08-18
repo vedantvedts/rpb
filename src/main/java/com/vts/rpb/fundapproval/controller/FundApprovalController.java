@@ -125,11 +125,11 @@ public class FundApprovalController
    			{
    				FinYear=FromYear.trim()+"-"+ToYear.trim();
    			}
-   				
+   			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
    			
    			System.err.println("FromYear->"+FromYear+" ToYear->"+ToYear+" DivisionDetails->"+DivisionDetails+" estimateType->"+estimateType);
    			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId);
-   			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
+   			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
@@ -1062,15 +1062,19 @@ public class FundApprovalController
 				}
 				
 				if(status==null) {
-					status="N";
+					status="NA";
 				}
 				
 				if(Long.valueOf(budgetHeadId)==0) {
 					budgetItemId="0";
 				}
 				
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
-				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType);
+				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+				
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember);
+				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
+				
+				RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
@@ -1080,7 +1084,7 @@ public class FundApprovalController
 				req.setAttribute("ExistingfromCost", fromCost);
 				req.setAttribute("ExistingtoCost", toCost);
 				req.setAttribute("Existingstatus", status);
-				
+				req.setAttribute("committeeMember", committeeMember);
 				
 				//user selected different year Estimate type reset to RE
 				FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -1236,7 +1240,9 @@ public class FundApprovalController
 			    	ReOrFbe="F";
 				}
 			    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status);
+			    String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			    
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember);
 				
 				System.err.println("RequisitionList"+RequisitionList.size());
 				req.setAttribute("RequisitionList", RequisitionList);
@@ -1511,7 +1517,7 @@ public class FundApprovalController
 				}
 				
 				if(status==null) {
-					status="N";
+					status="NA";
 				}
 				
 				if(Long.valueOf(budgetHeadId)==0) {

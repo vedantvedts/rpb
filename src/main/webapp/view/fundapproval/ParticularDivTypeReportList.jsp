@@ -342,16 +342,23 @@ input[name="ItemNomenclature"]::placeholder {
             <!-- Budget -->
            <div style="align-items: center;align-content: space-evenly;">
 			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
-					<span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;">
+					<span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;background-color: white;">
+					
 			    <input type="radio" id="approvalStatus"
 			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="A" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;
+			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			
 			    <input type="radio" id="approvalStatus"
 			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="N" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">No</span>
+			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    
+			    <input type="radio" id="approvalStatus"
+			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+			        name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
+			    &nbsp;<span style="font-weight: 600">Both</span>
+			    
 			    </span>
 			</div>
             &nbsp;
