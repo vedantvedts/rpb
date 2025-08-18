@@ -165,7 +165,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	public List<Object[]> getFundRequestAttachList(long fundApprovalId) throws Exception{
 		try {
 			List<Object[]> getFundRequestAttachList = null;
-			Query query= manager.createNativeQuery("SELECT FundApprovalAttachId,FileName,OriginalFileName,FundApprovalId  FROM fund_approval_attach  WHERE FundApprovalId=:fundApprovalId");
+			Query query= manager.createNativeQuery("SELECT FundApprovalAttachId,FileName,OriginalFileName,FundApprovalId,Path FROM fund_approval_attach  WHERE FundApprovalId=:fundApprovalId");
 			query.setParameter("fundApprovalId", fundApprovalId);
 			getFundRequestAttachList=(List<Object[]>)query.getResultList();
 			
@@ -297,12 +297,10 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,f.RCStausCode,f.Remarks,f.ActionDate FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId WHERE FundApprovalId=:fundApprovalId");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,f.RCStausCode,f.Remarks,f.ActionDate,f.ActionBy FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId WHERE FundApprovalId=:fundApprovalId");
 			query.setParameter("fundApprovalId",fundApprovalId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
-			 
-			
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getParticularFundApprovalTransDetails() "+ e);
@@ -578,16 +576,17 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
-	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:previousFinYear,:asOnDate,:labCode);";
+	private static final String GETFUNDREQUESTCARRYFORWARD="CALL Ibas_Fund_Approval_CarryForward(:divisionId,:budgetHeadId,:budgetItemId,:estimatedType,:finYear,:previousFinYear,:asOnDate,:labCode,:action)";
 	@Override
-	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode) throws Exception {
+	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception {
 		 try {
-			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getBudgetHeadId()+"','"+fundApprovalDto.getBudgetItemId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0)+"','"+LocalDate.now()+"','"+labCode+"');");
+			    System.out.println("CALL Ibas_Fund_Approval_CarryForward('"+fundApprovalDto.getDivisionId()+"','"+fundApprovalDto.getBudgetHeadId()+"','"+fundApprovalDto.getBudgetItemId()+"','"+fundApprovalDto.getEstimatedTypeBackBtn()+"','"+fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn()+"','"+(fundApprovalDto.getFromYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getFromYearBackBtn())-1 : 0)+ "-" +(fundApprovalDto.getToYearBackBtn()!=null ? Integer.parseInt(fundApprovalDto.getToYearBackBtn())-1 : 0)+"','"+LocalDate.now()+"','"+labCode+"','"+action+"');");
 				Query query= manager.createNativeQuery(GETFUNDREQUESTCARRYFORWARD);
 				query.setParameter("divisionId", fundApprovalDto.getDivisionId());
 				query.setParameter("estimatedType", fundApprovalDto.getEstimatedTypeBackBtn());
 				query.setParameter("asOnDate", LocalDate.now());
 				query.setParameter("labCode",labCode);
+				query.setParameter("action",action);
 				query.setParameter("budgetHeadId",fundApprovalDto.getBudgetHeadId());
 				query.setParameter("budgetItemId",fundApprovalDto.getBudgetItemId());
 				query.setParameter("finYear",fundApprovalDto.getFromYearBackBtn() +"-" +fundApprovalDto.getToYearBackBtn());
@@ -596,7 +595,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 				return result; 
 				
 			}catch (Exception e) {
-				logger.error(new Date() +"Inside DAO getMaxSerialNoCount "+ e);
+				logger.error(new Date() +"Inside DAO getFundRequestCarryForwardDetails "+ e);
 				e.printStackTrace();
 				return null;
 			}
@@ -669,6 +668,36 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO findCommitteeMemberType "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getDemandDetails(String demandId) throws Exception {
+	 try {
+			Query query= manager.createNativeQuery("SELECT b.BookingId,b.DemandNo,b.ProjectCode,b.ProjectId,b.BudgetHeadId,b.BudgetItemId,b.DivisionCode,d.DivisionId,b.OfficerCode,e.EmpId FROM tblbooking b LEFT JOIN division_master d ON d.DivisionCode=b.DivisionCode LEFT JOIN employee e ON e.EmpNo=b.OfficerCode WHERE b.BookingId=:demandId");
+			query.setParameter("demandId", demandId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getDemandDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT c.CommitmentId,c.SoNo,c.ProjectCode,c.ProjectId,c.BudgetHeadId,c.BudgetItemId,c.DivisionCode,d.DivisionId,c.OfficerCode,e.EmpId FROM tblcommitment c LEFT JOIN division_master d ON d.DivisionCode=c.DivisionCode LEFT JOIN employee e ON e.EmpNo=c.OfficerCode WHERE c.CommitmentId=:commitmentId");
+			query.setParameter("commitmentId", commitmentId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result; 
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getCommitmmentDetails "+ e);
 			e.printStackTrace();
 			return null;
 		}

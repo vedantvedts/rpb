@@ -315,6 +315,10 @@ public class DateTimeFormatUtil
 	{
 		return LocalDate.parse(sqlDate);
 	}
+	public static LocalDateTime getSqlToLocalDateTime (String sqlDate) throws ParseException
+	{
+		return LocalDateTime.parse(sqlDate);
+	}
 	
 	public static  String getSqlToRegularDateTime (String sqlDateTime) throws ParseException
 	{
