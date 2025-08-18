@@ -291,6 +291,11 @@ input[name="ItemNomenclature"]::placeholder {
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		
+		String committeeMember=null;
+		if(!"A".equalsIgnoreCase(loginType)){
+		 committeeMember=(String)request.getAttribute("committeeMember");
+		}
 		%>
 			<%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
@@ -327,7 +332,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails"
                     data-live-search="true" onchange="this.form.submit();" required
                     style="font-size: 12px; min-width: 240px;">
-                    <% if (loginType.equalsIgnoreCase("A")) { %>
+                    <% if ( committeeMember!=null && committeeMember.equalsIgnoreCase("CS") || committeeMember!=null && committeeMember.equalsIgnoreCase("CC") || loginType.equalsIgnoreCase("A")) { %>
                         <option value="-1#All#All" <% if (divisionId != null && divisionId.equalsIgnoreCase("-1")) { %> selected <% } %> hidden>All</option>
                     <% } %>
                     <% if (DivisionList != null && DivisionList.size() > 0) {
@@ -381,7 +386,7 @@ input[name="ItemNomenclature"]::placeholder {
            <div style="align-items: center;">
 			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
 			
-			<span style="border: solid 0.1px;padding: 2px 5px;border-radius: 6px;border-color: darkgray;">
+			<span style="border: solid 0.1px;padding: 2px 5px;border-radius: 6px;border-color: darkgray;background-color: white;">
 			    <input type="radio" id="approvalStatus"
 			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="A" onchange="this.form.submit();" />
@@ -390,7 +395,12 @@ input[name="ItemNomenclature"]::placeholder {
 			    <input type="radio" id="approvalStatus"
 			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="N" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">No</span>
+			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    
+			    <input type="radio" id="approvalStatus"
+			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+			        name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
+			    &nbsp;<span style="font-weight: 600">Both</span>
 			    </span>
 			</div>
 

@@ -107,14 +107,16 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 	@Override
-	public List<Object[]> getDivisionList(String labCode,String empId,String logintype) throws Exception {
+	public List<Object[]> getDivisionList(String labCode,String empId,String logintype,String committeeMember) throws Exception {
 		logger.info(new Date() +"Inside DaoImpl getDivisionList");
 		try
 		{
-			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
+			System.err.println("CommitteeMember->"+committeeMember);
+			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype OR :committeeMember IN ('CS', 'CC')  THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
 			query.setParameter("labCode", labCode);
 			query.setParameter("empId", empId);
 			query.setParameter("logintype", logintype);
+			query.setParameter("committeeMember", committeeMember);
 			List<Object[]> List=(List<Object[]>)query.getResultList();
 			return List;
 		}

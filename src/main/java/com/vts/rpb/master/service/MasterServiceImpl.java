@@ -36,8 +36,8 @@ public class MasterServiceImpl implements MasterService
 	}
 
 	@Override
-	public List<Object[]> getDivisionList(String labCode, String empId, String loginType) throws Exception {
-		return masterDao.getDivisionList(labCode,empId,loginType);
+	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception {
+		return masterDao.getDivisionList(labCode,empId,loginType,committeeMember);
 	}
 
 	@Override
