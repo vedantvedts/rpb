@@ -664,7 +664,6 @@ $(window).resize(resizeCards);
                    <%}else{ %>
                    
                    <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
-	                   <thead>
 	                       <tr style="background-color:#ffda96;color:#000000;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
@@ -685,7 +684,6 @@ $(window).resize(resizeCards);
 	                       		<td colspan="11" align="center" style="font-weight: 600;color:red;">No Record Found</td>
 	                       </tr>
 	                       
-	                   </thead>
 	                  </table>
                      
                       

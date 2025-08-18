@@ -487,7 +487,6 @@ input[name="ItemNomenclature"]::placeholder {
 					      <%if(divisionId!=null && !divisionId.equalsIgnoreCase("-1")){ %>
 				               <button type="submit" class="btn btn-sm add-btn tooltip-container" name="AddDataOfSel" name="Action" value="Add" 
 					            data-tooltip="Add New Item(s)" data-placement="top" formaction="AddFundRequest.htm"> New Request </button>
-					       <%} %>     
 					            &nbsp;
 					            
 				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Demand" 
@@ -500,6 +499,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Item" 
 					            data-tooltip="Carry Forward Previous Year Existing Item(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Item </button>
+					       <%} %>     
 						
 						</div>
 						
@@ -643,8 +643,9 @@ input[name="ItemNomenclature"]::placeholder {
 							
 							    </div>
 			
-			
 				      </div>
+				      </div>
+				      
 				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
 				        <button type="button" class="btn btn-sm submit-btn" onclick="ApprovalFlowForward()">Forward</button>
 				        
@@ -652,7 +653,6 @@ input[name="ItemNomenclature"]::placeholder {
 				      </div>
 				      
 				      
-				    </div>
 				  </div>
 				</div>
 				</div>
@@ -1193,6 +1193,14 @@ function refreshModal(modalId) {
 
 
   </script>
+  
+  <script>
+  $(function() {
+    console.log("jQuery version: " + $.fn.jquery);
+    console.log("Bootstrap version: " + $.fn.carousel.Constructor.VERSION);
+  });
+</script>
+  
  
   
 </html>
