@@ -356,10 +356,16 @@ tr:last-of-type th:last-of-type {
   	    <%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
               
-              <%String BudgetYear=null;
+              				<%String BudgetYear=null;
 			           		  String BudgetYearType=null;
+			           		  String estimateType=null;
+			           		  String fromYear=null;
+			           		  String toYear=null;
 			           		if(dto!=null)
 			           		{
+			           			estimateType = dto.getEstimatedTypeBackBtn();
+			           			fromYear = dto.getFromYearBackBtn();
+			           			toYear = dto.getToYearBackBtn();
 			           			if(dto.getEstimatedTypeBackBtn()!=null && dto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
 			           			{
 				           			BudgetYear=dto.getFBEYear();
@@ -388,6 +394,11 @@ tr:last-of-type th:last-of-type {
 		           					FinYear="-";
 		           				}
 			           		}%>
+			           		
+			           		<input type="hidden" id="estimateTypeHidden" value="<%=estimateType %>">
+			           		<input type="hidden" id="fromYearHidden" value="<%=fromYear %>">
+			           		<input type="hidden" id="toYearHidden" value="<%=toYear %>">
+			           		
 <div class="card-header page-top">
 	 	<div class="row">
 	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
@@ -413,7 +424,7 @@ tr:last-of-type th:last-of-type {
   	    
 		
       <div class="page card dashboard-card">
-            <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
+            <div class="flex-container" style="margin-top:7px !important;background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 			           		<div class="form-inline" style="padding: 10px;">
 			           		
 			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
@@ -452,17 +463,27 @@ tr:last-of-type th:last-of-type {
              		    <input type="hidden" name="fbeYear" value="<%= dto.getFBEYear() %>">
                
                
-                <div class="flex-container" style="height:auto;background-color: transparent;margin-top:0.5rem;" data-select2-id="84">	
+                <div class="flex-container" style="height:auto;background-color: transparent;margin-top:0.5rem;">	
                    
-              <div class="form-inline" data-select2-id="98">
-                         <label style="font-weight: bold;">Budget <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
-                            <select id="selProject" name="projectSel" class="form-control select2" style="width:100%;">
-							    <option  value="" >Select Budget</option>
-							  <option value="0"  <%if(FundRequestObj!=null){ %>  selected="selected" <%} %>	 >GEN (General)</option>
-					     </select>
-              </div>
-                    
-                   <div class="form-inline" data-select2-id="27">
+	              <div class="form-inline">
+                        <label style="font-weight: bold;">Budget <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
+                           <select id="selBudget" name="budgetSel" class="form-control select2" style="width:100%;">
+						    <option>Select Budget</option>
+						  <option value="B">GEN (General)</option>
+						  <option value="N">Proposed Project</option>
+				     </select>
+	              </div>
+	              
+	               
+	              <div class="form-inline ProposedProject">
+                        <label style="font-weight: bold;">Proposed Project <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
+                           <select id="selProposedProject" name="selProposedProject" class="form-control select2" style="width:100%;">
+						    <option  value="" >Select Proposed Project</option>
+						  <option value="0"  <%if(FundRequestObj!=null){ %>  selected="selected" <%} %>	 >GEN (General)</option>
+				     </select>
+	              </div>
+	                    
+	               <div class="form-inline">
                         <label style="font-weight: bold;">Budget Head <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
 							<select id="selbudgethead" name="budgetHeadId" class="form-control select2 readOnlyClass" required="required" style="width:100%;" data-live-search="true">
                                
@@ -480,7 +501,7 @@ tr:last-of-type th:last-of-type {
 					 		   </select>              
 			         </div>
 			          <div class="form-inline" style="display: flex; flex-direction: column;">
-					    <label style="font-weight: bold;padding-right: 50%;">Initiation Date<span class="text-danger">*</span></label>
+					    <label style="font-weight: bold;padding-right: 35px;">Date of Demand Initiation&nbsp;<span class="text-danger">*</span></label>
 					    <input style="background-color:white;width: 100%" type="text" readonly id="InitiationDate" name="InitiationDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
 					</div>
 			         
@@ -494,7 +515,7 @@ tr:last-of-type th:last-of-type {
                   <tbody>
                        <tr class="InsertRow-1">
 										
-							 <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap" for="textinput">Initiating Officer<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+							 <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Initiating Officer<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
 										   
 						    <td style="padding:7px;">
 						    
@@ -513,25 +534,27 @@ tr:last-of-type th:last-of-type {
 						     
 						    </td> 
 						    
-						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap" for="textinput">Item Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Item Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                      <td><input type="text" placeholder="Enter Item Detail" maxlength="4000" id="ItemFor" name="ItemFor" class="form-control" <%if(FundRequestObj!=null && FundRequestObj[10]!=null){ %> value="<%=FundRequestObj[10] %>" <%} %>></td>
 						    
 						</tr>
 						
 						 <tr>
-	                    <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap" for="textinput">Justification<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+	                    <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Justification<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                         <td><textarea placeholder="Enter Justification" id="fileNo" maxlength="500" name="fileno" required="required" class="form-control"><%if(FundRequestObj!=null && FundRequestObj[11]!=null){ %> <%=FundRequestObj[11] %> <%} %></textarea></td>
-	                  <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap" for="textinput">Estimated Cost<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+	                  <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Estimated Cost<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
 					<td style="padding:7px;"><input class="form-control input-sm FBEAmountAdd" style="width:100%;font-weight: 600;" id="FBEamountAdd-1" name="TotalFundReguestAmount" type="text" <%if(FundRequestObj!=null && FundRequestObj[24]!=null){ %> value="<%=df.format(FundRequestObj[24]) %>" <%} %> onkeydown="preventInvalidInput(event)" readonly="readonly"/></td> 
                      </tr>
 										
 										<tr class="InsertRow-1">
 										    <td style="padding:7px;" colspan="4">
-										    <div class="form-inline" style="justify-content:center;width: 100%;background-color: #ffefe3;border-radius: 5px;">
+										    <div class="form-inline" style="justify-content:center;width: 95%;margin:auto;background-color: #ffefe3;border-radius: 5px;">
+								             <% if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>
 								             <div class="inputBox"><input required type="number" id="AprilMonthAdd-1" name="AprilMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AprilMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[12]!=null && new BigDecimal(FundRequestObj[12].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[12]) %>" <%} %>><span>April</span></div>
 								             <div class="inputBox"><input required type="number" id="MayMonthAdd-1" name="MayMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','MayMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[13]!=null && new BigDecimal(FundRequestObj[13].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[13]) %>" <%} %>><span>May</span></div>
 								             <div class="inputBox"><input required type="number" id="JuneMonthAdd-1" name="JuneMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JuneMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[14]!=null && new BigDecimal(FundRequestObj[14].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[14]) %>" <%} %>><span>June</span></div>
 								             <div class="inputBox"><input required type="number" id="JulyMonthAdd-1" name="JulyMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JulyMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[15]!=null && new BigDecimal(FundRequestObj[15].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[15]) %>" <%} %>><span>July</span></div>
+								             <%} %>
 								             <div class="inputBox"><input required type="number" id="AugustMonthAdd-1" name="AugustMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AugustMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[16]!=null && new BigDecimal(FundRequestObj[16].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[16]) %>" <%} %>><span >August</span></div>
 								             <div class="inputBox"><input required type="number" id="SeptemberMonthAdd-1" name="SeptemberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','SeptemberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[17]!=null && new BigDecimal(FundRequestObj[17].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[17]) %>" <%} %>><span>September</span></div>
 								             <div class="inputBox"><input required type="number" id="OctoberMonthAdd-1" name="OctoberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','OctoberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[18]!=null && new BigDecimal(FundRequestObj[18].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[18]) %>" <%} %>><span>October</span></div>
@@ -546,7 +569,7 @@ tr:last-of-type th:last-of-type {
                      	
                      
                      <tr>
-                        <td colspan="4" align="center"><span style="font-size: 19px;color:#034189;font-weight: 600;background-color: #ffae4e6b;padding: 10px;padding-top:7px;padding-bottom:7px; border-radius: 5px;font-family: math;">Enclosures</span></td>
+                        <td colspan="4" align="center"><span style="font-size: 19px;color:#090957;font-weight: 600;background-color: #ffae4e6b;padding: 10px;padding-top:7px;padding-bottom:7px; border-radius: 5px;font-family: math;">Enclosures</span></td>
                      </tr>
                      
                    
@@ -578,28 +601,7 @@ tr:last-of-type th:last-of-type {
         <%} %>
     </thead>
     <tbody id="attachmentBody">
-        <!-- Existing Attachments -->
-     <%--    <% if (AttachList != null && !AttachList.isEmpty()) {
-            for (Object[] attach : AttachList) { %>
-                <tr>
-             <td>
-                <input type="text" class="form-control" name="filename" maxlength="255"	 value="<%=attach[1]%>" readonly="readonly">
-            </td>
-            <td>
-                <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-            </td>
-             <td>
-                        <button type="button" class="btn" onclick="downloadFile('<%=attach[0]%>')" title="<%=attach[2]%>">
-                            <i class="fa fa-download" style="color: green;"></i>
-                        </button>
-                        
-                         <button type="button" class="btn" onclick="deleteFile('<%=attach[0]%>')" title="Delete File">
-                            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-                        </button>
-                    </td>
-                </tr>
-        <%  }
-        } %> --%>	<!-- var $project= $("#projectIDHiden").val -->
+  
 
 <%!public Object[] findAttachmentByName(List attachList, String name) {
         if (attachList == null || name == null) return null;
@@ -926,73 +928,105 @@ $("#AllOfficers").click(function(){
 
 <script>
 
- $('#selProject').change(function(event) {
-	 
-						var project= $("select#selProject").val();  
-						
-						$(".SanctionDetails,.GeneralDetails,#SanctionandFBEDetails").hide();
-						<!------------------Project Id not Equal to Zero [Project]-------------------->
-						
-						if(project!=null  && project!='Select Project')
+
+
+		$(document).ready(function(){
+			$(".ProposedProject").hide();
+			var proposedProjectId=$("#ProposedProjectHidden").val();
+			
+			$.get('getProposedProjectDetails.htm', {
+			}, function(responseJson) {
+				$('#selProposedProject').find('option').remove();
+				$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
+					var result = JSON.parse(responseJson);
+					$.each(result, function(key, value) {
+						if(proposedProjectId!=null && proposedProjectId==value[0])
 						{
-							$.get('GetBudgetHeadList.htm', {
-								ProjectDetails : project
-							}, function(responseJson) 
+							$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+						}
+						else
+						{
+							$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+						}
+						
+					});
+			});
+		});
+
+ 				$('#selBudget').change(function(event) {
+	 
+						var budgetDetails= $("select#selBudget").val();
+						var budget = '0#General';
+						
+						if(budgetDetails!=null && budgetDetails!="")
+						{
+							if(budgetDetails == 'B')
 							{
-								$('#selbudgethead').find('option').remove();
-								$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
-									var result = JSON.parse(responseJson);
-									$.each(result, function(key, value) {
-										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
-									});
-									SetBudgetItem(''); 
-							});
-                       }
+								$(".ProposedProject").hide();
+							}
+							else if(budgetDetails == 'N')
+							{
+								$(".ProposedProject").show();
+							}
+						}
+						
+						$.get('GetBudgetHeadList.htm', {
+							ProjectDetails : budget
+						}, function(responseJson) 
+						{
+							$('#selbudgethead').find('option').remove();
+							$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
+								var result = JSON.parse(responseJson);
+								$.each(result, function(key, value) {
+									$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+								});
+								SetBudgetItem(''); 
+						});
 						
 					});
 					
 					$(document).ready(function(event) {
 						
-								var $project= $("#projectIdHidden").val();
-								//projectIDHiden
-								
-								var $budgetHeadId = $("#budgetHeadIdHidden").val();
-								<!------------------Project Id not Equal to Zero [Project]-------------------->
-								//alert($budgetHeadId)
-								if($project!=null && $project!='')
-									{
-										var $projectId=$project!=null && $project.split("#")!=null && $project.split("#").length>0 ? $project.split("#")[0] : '0';
-										$.get('GetBudgetHeadList.htm', {
-											ProjectDetails : $project
-										}, function(result) {
-											$('#selbudgethead').find('option').remove();
-											var result = JSON.parse(result);
-											var html1='';
-											$.each(result, function(key, value) {
-												 if(value.budgetHeadId== $budgetHeadId)
-												 {
-													html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
-												 }
-												 else
-													{
-														html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
-													}
-												 $("#selbudgethead").append(html1);
-											});
-											var budgetItemId = $("#budgetItemIdHidden").val();
-										    SetBudgetItem(budgetItemId);
-										    
-										    if($projectId!=0)
-										    {
-												$("#SanctionBalance").show();
-											}
-										    else if($projectId==0)
-											{
-												$("#SanctionBalance").hide();
-											}
+							var $project= $("#projectIdHidden").val();
+							//projectIDHiden
+							
+							var $budgetHeadId = $("#budgetHeadIdHidden").val();
+							<!------------------Project Id not Equal to Zero [Project]-------------------->
+							//alert($budgetHeadId)
+							if($project!=null && $project!='')
+								{
+									var $projectId=$project!=null && $project.split("#")!=null && $project.split("#").length>0 ? $project.split("#")[0] : '0';
+									$.get('GetBudgetHeadList.htm', {
+										ProjectDetails : $project
+									}, function(result) {
+										$('#selbudgethead').find('option').remove();
+										var result = JSON.parse(result);
+										var html1='';
+										$.each(result, function(key, value) {
+											 if(value.budgetHeadId== $budgetHeadId)
+											 {
+												html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+											 }
+											 else
+												{
+													html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+												}
+											 $("#selbudgethead").append(html1);
 										});
-									}
+										var budgetItemId = $("#budgetItemIdHidden").val();
+									    SetBudgetItem(budgetItemId);
+									    
+									    if($projectId!=0)
+									    {
+											$("#SanctionBalance").show();
+										}
+									    else if($projectId==0)
+										{
+											$("#SanctionBalance").hide();
+										}
 									});
+								}
+							});
 				
 <!------------------Select Budget Item using Ajax-------------------->
 
@@ -1003,7 +1037,7 @@ $("#AllOfficers").click(function(){
 		function SetBudgetItem(budgetItemId)
 		{
 			// Set BudgetItem
-			var project= $("select#selProject").val(); 
+			var project = '0#General';
 			var budgetHeadId = $("select#selbudgethead").val();
 			//calling controller using ajax for project Drop Down based on projectId
 			$.get('SelectbudgetItem.htm', {
@@ -1055,26 +1089,6 @@ $("#AllOfficers").click(function(){
 			 $(".ReFeSpan").html('<span style="font-weight:600;">RE / FE</span>');
         }
         
-    /*     function projectDetails()
-        {
-			$.get('GetProjectList.htm', {}, 
-				function(responseJson) {
-				var result = JSON.parse(responseJson);
-				if(result.length>0){
-					$('select#selProject').find('option').remove();
-					$("select#selProject").append("<option value=''>Select Project</option>"); 
-				    
-					$.each(result, function(key, value) 
-					{
-						if(value[0]!=="-1")
-						{
-							$("select#selProject").append('<option value="'+ value[0] +'#'+ value[1] +'">'+ value[1] +' ('+ value[12] +')</option>');
-						}
-					});
-				}
-			});
-        } */
-        
         function budgetDetails(projectId,budgetHeadId,budgetItemId,serialNoType)
         {
         	$.get('GetProjectDetailsAjax.htm', {
@@ -1095,17 +1109,7 @@ $("#AllOfficers").click(function(){
 							$("select#selProject").append("<option value='0'>GEN (General)</option>"); 
 						} 
 					
-					/* $.each(result, function(key, value) {
-						
-						if(projectId!=null && projectId==value[0])
-						{
-							$("select#selProject").append('<option selected="selected" value="'+ value[0] +'#'+ value[1] +'">'+ value[1] +'('+ value[1] +')</option>');
-						}
-						else
-							{
-								$("select#selProject").append('<option value="'+ value[0] +'#'+ value[1] +'">'+ value[1] +'('+ value[1] +')</option>');
-							}
-					}); */
+			
 					
 					if(serialNoType=='F')
 					{
@@ -1191,7 +1195,7 @@ function preventInvalidInput(event) {
 
 function validateFormFields() {
     // First validate all required fields
-    const budget = document.getElementById("selProject");
+    const budget = document.getElementById("selBudget");
     if (!budget || budget.value.trim() === "") {
         alert('Please select a Budget');
         return false;
@@ -1409,17 +1413,45 @@ $(document).ready(function() {
     });
 });
 </script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $("#InitiationDate").daterangepicker({
-            autoclose: true,
-            singleDatePicker: true,
-            linkedCalendars: false,
-            showCustomRangeLabel: true,
-            showDropdowns: true,
-            locale: {
-                format: 'DD-MM-YYYY'
-            }
-        });
-    });</script>
+ 
+<script type="text/javascript">
+$(document).ready(function() {
+    var estimateType = $("#estimateTypeHidden").val();
+    var fromYear = $("#fromYearHidden").val();
+    var toYear = $("#toYearHidden").val();
+    var startDate = null;
+    var endDate = null;
+
+    if (estimateType == 'R') {
+        startDate = '01-08-' + fromYear;
+        endDate = '31-03-' + toYear;
+    } else if (estimateType == 'F') {
+        startDate = '01-04-' + toYear;
+        endDate = '31-03-' + (parseInt(toYear) + 1);
+    }
+
+    $("#InitiationDate").daterangepicker({
+        singleDatePicker: true,
+        autoApply: true,
+        showDropdowns: true,
+        locale: {
+            format: 'DD-MM-YYYY'
+        },
+        minDate: moment(startDate, 'DD-MM-YYYY'), 
+        maxDate: moment(endDate, 'DD-MM-YYYY'),   
+        startDate: moment(startDate, 'DD-MM-YYYY') 
+    });
+});
+</script>
+
+ <script>
+function limitDigits(input, maxDigits) {
+    input.value = input.value.replace(/\D/g, '');
+
+    if (input.value.length > maxDigits) {
+        input.value = input.value.slice(0, maxDigits);
+    }
+}
+</script>
+ 
 </html>

@@ -37,6 +37,12 @@ public class FundApproval {
 	@Column(name = "REFBEYear", length = 5)
 	private String reFbeYear;
 	
+	@Column(name = "InitiationId")
+	private long initiationId;
+	
+	@Column(name = "BudgetType", length = 1)
+	private String budgetType;
+	
 	@Column(name = "ProjectId")
 	private long projectId;
 	

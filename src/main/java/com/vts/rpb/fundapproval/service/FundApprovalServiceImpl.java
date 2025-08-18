@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
+import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -66,7 +67,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public long AddFundRequestSubmit(FundApproval fundApproval, FundApprovalAttachDto attachDto) throws Exception
 	{	
 		 long FundApprovalId=fundApprovalDao.AddFundRequestSubmit(fundApproval);
-		 	System.err.println("SERVICE FundApprovalId->"+FundApprovalId);
 		 	if(FundApprovalId >0) {
 		 		
 		 		String filePath = Paths.get(uploadpath, "FundApproval",String.valueOf(FundApprovalId)).toString();
@@ -883,6 +883,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		        return firstRow[0].toString();
 		    }
 		    return null;
+	}
+
+	@Override
+	public List<Object[]> getProposedProjectDetails() throws Exception {
+		return fundApprovalDao.getProposedProjectDetails();
 	}
 	
 }
