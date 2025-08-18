@@ -579,7 +579,9 @@ public class FundApprovalController
 			String finYear=req.getParameter("finYear");
 			String estimatedType=req.getParameter("estimatedType");
 			String divisionId=req.getParameter("divisionId");
-			String budget=req.getParameter("projectSel");
+			String initiationId=req.getParameter("selProposedProject");
+			String budgetType=req.getParameter("budgetSel");
+			String budget="0";
 			String budgetHeadId=req.getParameter("budgetHeadId");
 			String budgetItemId=req.getParameter("budgetItemId");
 			String empId=req.getParameter("OfficerCode");
@@ -605,23 +607,24 @@ public class FundApprovalController
 			String filenames[] = req.getParameterValues("filename");
 		    String[] existingAttachmentIds = req.getParameterValues("existingAttachmentId");
 			
-			System.err.println("Exisattach ID->"+Arrays.toString(existingAttachmentIds));
 			if(action.equalsIgnoreCase("Add")) {
 			FundApproval fundApproval=new FundApproval();
 			
 			fundApproval.setFinYear(finYear);
 			fundApproval.setEstimateType(estimatedType);
-			fundApproval.setDivisionId(Long.valueOf(divisionId));
-			fundApproval.setInitiatingOfficer(Long.valueOf(empId));
+			fundApproval.setDivisionId(divisionId!=null ? Long.valueOf(divisionId) : 0);
+			fundApproval.setInitiatingOfficer(empId!=null ? Long.valueOf(empId) : 0);
 			 if("R".equalsIgnoreCase(estimatedType)) {
 				 fundApproval.setReFbeYear(reYear);
 			    }
 			    else if ("F".equalsIgnoreCase(estimatedType)) {
 			     fundApproval.setReFbeYear(fbeYear);
 				}
-			fundApproval.setProjectId(Long.valueOf(budget));
-			fundApproval.setBudgetHeadId(Long.valueOf(budgetHeadId));
-			fundApproval.setBudgetItemId(Long.valueOf(budgetItemId));
+			fundApproval.setBudgetType(budgetType);
+			fundApproval.setInitiationId(initiationId!=null ? Long.parseLong(initiationId) : 0);
+			fundApproval.setProjectId(budget!=null ? Long.valueOf(budget) : 0);
+			fundApproval.setBudgetHeadId(budgetHeadId!=null ? Long.valueOf(budgetHeadId) : 0);
+			fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 			fundApproval.setItemNomenclature(itemNomenclature);
 			fundApproval.setJustification(justification);
 			fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate));
@@ -745,6 +748,20 @@ public class FundApprovalController
 				
 		} catch (Exception e) {
 			logger.error(new Date() + "Inside GetMasterFlowDetails.htm " + UserName, e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = "getProposedProjectDetails.htm", method = RequestMethod.GET)
+	public @ResponseBody String getProposedProjectDetails(HttpSession ses, HttpServletRequest req) throws Exception {
+		Gson json = new Gson();
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside getProposedProjectDetails.htm " + UserName);
+		try {
+				return json.toJson(fundApprovalService.getProposedProjectDetails()); 
+		} catch (Exception e) {
+			logger.error(new Date() + "Inside getProposedProjectDetails.htm " + UserName, e);
 			e.printStackTrace();
 			return null;
 		}

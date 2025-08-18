@@ -56,14 +56,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public long AddFundRequestSubmit(FundApproval fundApproval) throws Exception {
 		try {
-			System.err.println("InitiationDate DAo-"+fundApproval.getRequisitionDate());
 			manager.persist(fundApproval);
 			manager.flush();
 			
 			return fundApproval.getFundApprovalId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundRequestSubmit() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -72,14 +71,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public long AddFundApprovalTrans(FundApprovalTrans fundApprovalTrans) throws Exception {
 		try {
-			System.err.println("InitiationDate DAo-"+fundApprovalTrans.getFundApprovalId());
 			manager.persist(fundApprovalTrans);
 			manager.flush();
 			
 			return fundApprovalTrans.getFundApprovalId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundApprovalTrans() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -93,7 +91,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return Attach.getFundApprovalAttachId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundRequestAttachSubmit() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -698,6 +696,20 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getCommitmmentDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getProposedProjectDetails() throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT i.InitiationId,i.EmpId,i.DivisionId,i.ProjectShortName,i.ProjectTitle,i.FeCost,i.ReCost,i.ProjectCost FROM "+mdmdb+".pfms_initiation i WHERE i.IsActive='1'");
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getProposedProjectDetails "+ e);
 			e.printStackTrace();
 			return null;
 		}

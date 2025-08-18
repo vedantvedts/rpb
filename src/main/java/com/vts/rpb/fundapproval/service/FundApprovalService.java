@@ -3,6 +3,7 @@ package com.vts.rpb.fundapproval.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -60,4 +61,6 @@ public interface FundApprovalService
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth, FundApprovalBackButtonDto dto, String userName) throws Exception;
 
 	public String getCommitteeMemberType (long empId) throws Exception;
+
+	public List<Object[]> getProposedProjectDetails() throws Exception;
 }
