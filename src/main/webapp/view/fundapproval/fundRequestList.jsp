@@ -493,12 +493,12 @@ input[name="ItemNomenclature"]::placeholder {
 					            data-tooltip="Carry Forward Existing Demand(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Demand </button>
 					            &nbsp;
 					            
-				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="SupplyOrder" 
+				               <button type="submit" class="btn btn-sm carry-forward-so-btn tooltip-container" name="Action" value="SupplyOrder" 
 					            data-tooltip="Carry Forward Existing Supply Order(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Supply Order </button>
 					            &nbsp;
 					            
-				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Item" 
-					            data-tooltip="Carry Forward Previous Year Existing Item(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Item </button>
+				               <button type="submit" class="btn btn-sm carry-forward-request-btn tooltip-container" name="Action" value="Item" 
+					            data-tooltip="Carry Forward Previous Year Existing Request" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Request </button>
 					       <%} %>     
 						
 						</div>

@@ -99,6 +99,22 @@
       border-color: rgba(240, 152, 25); 
       
 }
+.carry-forward-so-btn{
+	
+     color: #ffffff;
+     background-image: linear-gradient(rgb(0 183 185 / 84%), rgb(0 74 68 / 84%) 50%) !important;
+     background-color: #00ffb8;
+     border-color: rgb(0 151 123);
+      
+}
+.carry-forward-request-btn{
+	
+    color: #ffffff;
+	background-image: linear-gradient(rgb(240 176 25 / 84%), rgb(149 139 8 / 60%) 50%) !important;
+    background-color: #484300;
+    border-color: rgb(207 188 97);
+      
+}
 .close-btn{
 	
       color: #ffffff;
