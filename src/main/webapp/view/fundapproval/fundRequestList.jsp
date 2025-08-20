@@ -267,7 +267,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 </head>
 <body>
-		<%
+		<% DecimalFormat df=new DecimalFormat("####################");
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
 		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
@@ -284,7 +284,6 @@ input[name="ItemNomenclature"]::placeholder {
 			estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
 			fbeYear=fundApprovalDto.getFBEYear();
 			reYear=fundApprovalDto.getREYear();
-			System.err.print("REQUEST LIST DIVID-"+fundApprovalDto.getDivisionId());
 		}
 		
 		%>
@@ -447,7 +446,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
 										        </button>
 												
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? AmountConversion.amountConvertion(data[18], "R") : 0 %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		<%}else{ %>
 					                       		<span style="font-weight: 800;">***</span>
 					                       		<%} %>
@@ -525,13 +524,24 @@ input[name="ItemNomenclature"]::placeholder {
 				      </div>
 				      <div class="modal-body">
 				      
+				      <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
+			           		<div class="form-inline" style="padding: 10px;">
+			           		
+			           			<label style="font-size: 19px;"><b>RE :&nbsp;</b></label><span class="spanClass">2025-2026</span>
+			           		</div>
+			           		<div class="form-inline" style="padding: 10px;">
+			           			
+			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass">Material Management Division&nbsp;</span>
+			           		</div>
+			           </div>
+				      
 				      	<div id="itemDetailsCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
 							    <div class="carousel-inner">
 							
 							      <!-- Slide 1: Item Details -->
 							      <div class="carousel-item active">
 							      <div style="text-align: right;">
-							      <button class="btn btn-info mb-3" onclick="$('#itemDetailsCarousel').carousel(1)">Approval Details &#10097;&#10097;</button>
+							      <button class="btn btn-info mb-3" onclick="openApprovalFlow()">Approval Details &#10097;&#10097;</button>
 							      </div>
 							        
 							
@@ -641,13 +651,50 @@ input[name="ItemNomenclature"]::placeholder {
 							        </div>
 							      </div>
 							
-							    </div>
-			
-				      </div>
+							      <!-- Slide 2: Approval Authority Table -->
+							      <div class="carousel-item">
+							        <div style="text-align: right;">
+							        	<button class="btn btn-secondary mb-3" onclick="openFundDetails()">Back</button>
+							        </div>
+							
+							        <table class="table table-bordered">
+							          <thead>
+							            <tr>
+							              <th>Case</th>
+							              <th>Signature Mandated</th>
+							              <th>Approval Authority</th>
+							            </tr>
+							          </thead>
+							          <tbody>
+							            <tr>
+							              <td>Case I<br>Upto Rs. 10 Lakhs</td>
+							              <td>GH/GD/TD (User)<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case II<br>Above Rs. 10 Lakhs & Upto Rs. 50 Lakhs</td>
+							              <td>GD/TD (User) <br> one RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case III<br>Above Rs. 50 Lakhs & Upto Rs. 2 Crore</td>
+							              <td>GD/TD (User) <br> Two RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case IV<br>Above Rs. 2 Crore</td>
+							              <td>GD/TD (User) <br> Three RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							          </tbody>
+							        </table>
+							      </div>
+							   </div>
+				          </div>
 				      </div>
 				      
 				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
-				        <button type="button" class="btn btn-sm submit-btn" onclick="ApprovalFlowForward()">Forward</button>
+				        <button type="button" class="btn btn-sm submit-btn fundForwardButton" onclick="ApprovalFlowForward()">Forward</button>
 				        
 				        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" style="background-color: darkred;color:white;">Close</button>
 				      </div>
@@ -742,6 +789,21 @@ input[name="ItemNomenclature"]::placeholder {
 	showFailureFlyMessage('<%=failure %>');
 
 <%}%>
+</script>
+
+<script type="text/javascript">
+
+function openApprovalFlow()
+{
+	$('#itemDetailsCarousel').carousel(1);
+	$(".fundForwardButton").hide();
+}
+function openFundDetails()
+{
+	$('#itemDetailsCarousel').carousel(0);
+	$(".fundForwardButton").show();
+}
+
 </script>
 
 <script type="text/javascript">

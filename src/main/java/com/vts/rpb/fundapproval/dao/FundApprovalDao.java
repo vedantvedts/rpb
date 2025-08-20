@@ -1,4 +1,4 @@
-package com.vts.rpb.fundapproval.dao;
+	package com.vts.rpb.fundapproval.dao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -79,7 +79,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
 
-	public String getCommitteeMemberType (long empId) throws Exception;
+	public List<Object[]> getCommitteeMemberType (long empId) throws Exception;
 
 	public List<Object[]> getDemandDetails(String demandId) throws Exception;
 
