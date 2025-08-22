@@ -291,6 +291,9 @@ input[name="ItemNomenclature"]::placeholder {
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		String AmtFormat =(String)request.getAttribute("amountFormat");
+		
+		System.err.println("***************JSP amt->"+AmtFormat);
 		
 		String committeeMember=null;
 		if(!"A".equalsIgnoreCase(loginType)){
@@ -450,6 +453,14 @@ input[name="ItemNomenclature"]::placeholder {
                     class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
+              <div class="d-flex align-items-center">
+                    <label for="CostFormat" class="fw-bold me-2"><b>Cost:</b>&nbsp;&nbsp;&nbsp;</label>
+                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat" onchange="this.form.submit()">
+                        <option value="R" <%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Rupees</option>
+                        <option value="L" <%if((AmtFormat==null) || "L".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Lakhs</option>
+                        <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
+                    </select>
+                </div>
         </div>
 
         <input type="hidden" id="projectIdHidden" value="0#GEN#General" />

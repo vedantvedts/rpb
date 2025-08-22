@@ -47,7 +47,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 	
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember)  throws Exception;
+			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
 
 	public long insertFundApprovalTransaction(FundApprovalTrans transaction) throws Exception;
 
