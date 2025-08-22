@@ -59,8 +59,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	private static final Logger logger=LogManager.getLogger(FundApprovalServiceImpl.class);
 	
 	@Override
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
-		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId);
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetType, String proposedProject) throws Exception {
+		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId,budgetType,proposedProject);
 	}
 	
 	@Override
@@ -131,7 +131,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
 	    long fundApprovalId = fundApprovalDao.EditFundRequestSubmit(approval);
-	    System.err.println("SERVICE FundApprovalId->" + fundApprovalId);
 	    
 	    if (fundApprovalId > 0) {
 	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
@@ -146,7 +145,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	            if (!attachDto.getFiles()[i].isEmpty()) {
 	                // Check if attachment with this name already exists
 	                Object[] existingAttach = fundApprovalDao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
-	                System.err.println("Service->existingAttach--"+Arrays.toString(existingAttach));
 	                
 	                if (existingAttach != null) {
 	                    // Update existing attachment
@@ -195,7 +193,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
 	                    fundApprovalDao.AddFundRequestAttachSubmit(modal);
 	                    
-	                    System.err.println("NEW else SECTION-");
 	                }
 	            }
 	        }
@@ -886,8 +883,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getProposedProjectDetails() throws Exception {
-		return fundApprovalDao.getProposedProjectDetails();
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception {
+		return fundApprovalDao.getProposedProjectDetails(divisionId);
 	}
 	
 }

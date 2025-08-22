@@ -361,11 +361,13 @@ tr:last-of-type th:last-of-type {
 			           		  String estimateType=null;
 			           		  String fromYear=null;
 			           		  String toYear=null;
+			           		  String divisionId=null;
 			           		if(dto!=null)
 			           		{
 			           			estimateType = dto.getEstimatedTypeBackBtn();
 			           			fromYear = dto.getFromYearBackBtn();
 			           			toYear = dto.getToYearBackBtn();
+			           			divisionId = dto.getDivisionId();
 			           			if(dto.getEstimatedTypeBackBtn()!=null && dto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
 			           			{
 				           			BudgetYear=dto.getFBEYear();
@@ -393,31 +395,50 @@ tr:last-of-type th:last-of-type {
 		           				{
 		           					FinYear="-";
 		           				}
+			           			
 			           		}%>
+			           		
+			           		<% String budgetType=null,initiationId=null,initiationDate=null; 
+			           		if(FundRequestObj!=null){
+			           			if(FundRequestObj[32]!=null){
+			           				budgetType=FundRequestObj[32].toString();
+			           			}
+			           			if(FundRequestObj[32]!=null){
+				           			initiationId=FundRequestObj[33].toString();
+				           		}
+			           			if(FundRequestObj[30]!=null){
+			           				initiationDate=FundRequestObj[30].toString();
+				           		}
+			           		}
+			           			%>
 			           		
 			           		<input type="hidden" id="estimateTypeHidden" value="<%=estimateType %>">
 			           		<input type="hidden" id="fromYearHidden" value="<%=fromYear %>">
 			           		<input type="hidden" id="toYearHidden" value="<%=toYear %>">
+			           		<input type="hidden" id="budgetTypeHidden" value="<%=budgetType %>">
+			           		<input type="hidden" id="InitiationIdHidden" value="<%=initiationId %>">
+			           		<input type="hidden" id="divisionIdHidden" value="<%=divisionId %>">
+			           		<input type="hidden" id="initiationDateHidden" <%if(initiationDate!=null){ %> value="<%=DateTimeFormatUtil.getSqlToRegularDate(initiationDate) %>" <%} %>>
 			           		
-<div class="card-header page-top">
-	 	<div class="row">
-	 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
-	 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
-	 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
-	      <div class="col-md-9">
-	    	 <ol class="breadcrumb" style="justify-content: right;">
-	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
-	    	 <li class="breadcrumb-item"> <a href="FundRequest.htm?DivisionDetails=<%= java.net.URLEncoder.encode(dto.getDivisionBackBtn(), "UTF-8") %>
-															    &EstimateType=<%= java.net.URLEncoder.encode(dto.getEstimatedTypeBackBtn(), "UTF-8") %>
-															    &FromYear=<%= java.net.URLEncoder.encode(dto.getFromYearBackBtn(), "UTF-8") %>
-															    &ToYear=<%= java.net.URLEncoder.encode(dto.getToYearBackBtn(), "UTF-8") %>">
-  			 Requisition List </a></li>
-	         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
-	         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
-             </ol>
-           </div>
-         </div>
-       </div> 
+		<div class="card-header page-top">
+		 	<div class="row">
+		 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
+		 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
+		 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
+		      <div class="col-md-9">
+		    	 <ol class="breadcrumb" style="justify-content: right;">
+		    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+		    	 <li class="breadcrumb-item"> <a href="FundRequest.htm?DivisionDetails=<%= java.net.URLEncoder.encode(dto.getDivisionBackBtn(), "UTF-8") %>
+																    &EstimateType=<%= java.net.URLEncoder.encode(dto.getEstimatedTypeBackBtn(), "UTF-8") %>
+																    &FromYear=<%= java.net.URLEncoder.encode(dto.getFromYearBackBtn(), "UTF-8") %>
+																    &ToYear=<%= java.net.URLEncoder.encode(dto.getToYearBackBtn(), "UTF-8") %>">
+	  			 Requisition List </a></li>
+		         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
+		         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
+	             </ol>
+	           </div>
+	         </div>
+	       </div> 
      
      
     
@@ -433,7 +454,6 @@ tr:last-of-type th:last-of-type {
 			           		<div class="form-inline" style="padding: 10px;">
 			           			
 			           			<%if(action!=null && action.equalsIgnoreCase("Add")){ %>
-			           			<%System.err.println("------------JSP---------Division->"+dto.getDivisionBackBtn()); %>
 			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><% if(dto!=null && dto.getDivisionName()!=null){%><%=dto.getDivisionName() %>&nbsp;<%}else{ %>-<%} %><% if(dto!=null && dto.getDivisionCode()!=null){%>(<%=dto.getDivisionCode() %>)<%}%></span>
 			           		<%} else { %>
 			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><%if(FundRequestObj!=null) {%><%=FundRequestObj[29] %> (<%=FundRequestObj[28] %>)<%} else{ %>-<%} %></span>
@@ -443,9 +463,9 @@ tr:last-of-type th:last-of-type {
 				<div class="card-body">		
 				<form  action="AddFundRequestSubmit.htm" method="post" id="AddFundRequestForm" enctype="multipart/form-data" onsubmit="return validateFormFields();">
  					<%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
- 					<input type="hidden" name="Action" value="Update">
+ 					<input type="hidden" id="actionType" name="Action" value="Update">
  					<%}else{ %>
- 					<input type="hidden" name="Action" value="Add">
+ 					<input type="hidden" id="actionType" name="Action" value="Add">
  					<%} %>
  					
  				<%if(FundRequestObj!=null ){ %>	<input type="hidden" name="fundApprovalId" value="<%=FundRequestObj[0] %>" ><%} %>
@@ -469,8 +489,8 @@ tr:last-of-type th:last-of-type {
                         <label style="font-weight: bold;">Budget <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
                            <select id="selBudget" name="budgetSel" class="form-control select2" style="width:100%;">
 						    <option>Select Budget</option>
-						  <option value="B">GEN (General)</option>
-						  <option value="N">Proposed Project</option>
+						  <option value="B" <%if(budgetType!=null && budgetType.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
+						  <option value="N" <%if(budgetType!=null && budgetType.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
 				     </select>
 	              </div>
 	              
@@ -478,17 +498,14 @@ tr:last-of-type th:last-of-type {
 	              <div class="form-inline ProposedProject">
                         <label style="font-weight: bold;">Proposed Project <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
                            <select id="selProposedProject" name="selProposedProject" class="form-control select2" style="width:100%;">
-						    <option  value="" >Select Proposed Project</option>
-						  <option value="0"  <%if(FundRequestObj!=null){ %>  selected="selected" <%} %>	 >GEN (General)</option>
+						    <option  value="" disabled="disabled">Select Proposed Project</option>
 				     </select>
 	              </div>
 	                    
 	               <div class="form-inline">
                         <label style="font-weight: bold;">Budget Head <span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span>&nbsp;&nbsp;</label>
 							<select id="selbudgethead" name="budgetHeadId" class="form-control select2 readOnlyClass" required="required" style="width:100%;" data-live-search="true">
-                               
                                 <option value="">Select BudgetHead</option>
-                               <%-- <%if(FundRequestObj!=null){ %>  <option value="0" selected="selected" ><%=FundRequestObj[7] %><option><%} %> --%>
                       	  </select>                  
                     </div>
                    
@@ -526,7 +543,6 @@ tr:last-of-type th:last-of-type {
 					           <%} %>
                        <select name="OfficerCode" id="OfficerCode" class="form-control officerCode select2"
                              data-container="body" data-live-search="true"  style="align-items: center; font-size: 5px;width: 95%">
-                         <%--   <%if(FundRequestObj!=null){ %>  <option value="0" selected="selected" ><%=FundRequestObj[26] %>, <%=FundRequestObj[27] %><option> <%} %> --%>
                               <option value="">Select Officer</option>
                              </select>
                              <input type="hidden" id="fbeItemEmployee"  value="<%= (FundRequestObj != null && FundRequestObj[25] != null) ? FundRequestObj[25].toString() : "0" %>">
@@ -928,29 +944,42 @@ $("#AllOfficers").click(function(){
 
 <script>
 
+	function getProposedProjectDetails(proposedProjectId)
+	{
+		var divisionId = $("#divisionIdHidden").val();
+		$.get('getProposedProjectDetails.htm', {
+			divisionId : divisionId
+		}, function(responseJson) {
+			$('#selProposedProject').find('option').remove();
+			$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
+				var result = JSON.parse(responseJson);
+				$.each(result, function(key, value) {
+					if(proposedProjectId!=null && proposedProjectId==value[0])
+					{
+						$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+					}
+					else
+					{
+						$("#selProposedProject").append("<option value="+value[0]+" >"+ value[3]+"</option>");
+					}
+					
+				});
+		});	
+	}
+
 
 
 		$(document).ready(function(){
 			$(".ProposedProject").hide();
-			var proposedProjectId=$("#ProposedProjectHidden").val();
+			var budgetType=$("#budgetTypeHidden").val();
+			var proposedProjectId=$("#InitiationIdHidden").val();
 			
-			$.get('getProposedProjectDetails.htm', {
-			}, function(responseJson) {
-				$('#selProposedProject').find('option').remove();
-				$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
-					var result = JSON.parse(responseJson);
-					$.each(result, function(key, value) {
-						if(proposedProjectId!=null && proposedProjectId==value[0])
-						{
-							$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
-						}
-						else
-						{
-							$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
-						}
-						
-					});
-			});
+			if(budgetType!=null && budgetType == 'N')    // N - proposed Project
+			{
+				$(".ProposedProject").show();
+				getProposedProjectDetails(proposedProjectId);
+			}
+			
 		});
 
  				$('#selBudget').change(function(event) {
@@ -962,11 +991,14 @@ $("#AllOfficers").click(function(){
 						{
 							if(budgetDetails == 'B')
 							{
+								$("#selProposedProject").prop("disabled", false);
 								$(".ProposedProject").hide();
 							}
 							else if(budgetDetails == 'N')
 							{
 								$(".ProposedProject").show();
+								var proposedProjectId=$("#InitiationIdHidden").val();
+								getProposedProjectDetails(proposedProjectId);
 							}
 						}
 						
@@ -977,33 +1009,43 @@ $("#AllOfficers").click(function(){
 							$('#selbudgethead').find('option').remove();
 							$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
 								var result = JSON.parse(responseJson);
+								var budgetHeadId = $("#budgetHeadIdHidden").val();
 								$.each(result, function(key, value) {
-									$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+									if(budgetHeadId != null && budgetHeadId == value.budgetHeadId)
+									{
+										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+									}
+									else
+									{
+										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+									}
 								});
-								SetBudgetItem(''); 
+								
+								var budgetItemId = $("#budgetItemIdHidden").val();
+								SetBudgetItem(budgetItemId); 
 						});
 						
 					});
 					
 					$(document).ready(function(event) {
 						
-							var $project= $("#projectIdHidden").val();
+						var action = $("#actionType").val();
+						
+						if(action == 'Update')
+						{
+							var budget= '0#General';
 							//projectIDHiden
 							
-							var $budgetHeadId = $("#budgetHeadIdHidden").val();
-							<!------------------Project Id not Equal to Zero [Project]-------------------->
-							//alert($budgetHeadId)
-							if($project!=null && $project!='')
-								{
-									var $projectId=$project!=null && $project.split("#")!=null && $project.split("#").length>0 ? $project.split("#")[0] : '0';
-									$.get('GetBudgetHeadList.htm', {
-										ProjectDetails : $project
+							var budgetHeadId = $("#budgetHeadIdHidden").val();
+							
+								$.get('GetBudgetHeadList.htm', {
+										ProjectDetails : budget
 									}, function(result) {
 										$('#selbudgethead').find('option').remove();
 										var result = JSON.parse(result);
 										var html1='';
 										$.each(result, function(key, value) {
-											 if(value.budgetHeadId== $budgetHeadId)
+											 if(value.budgetHeadId== budgetHeadId)
 											 {
 												html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
 											 }
@@ -1013,20 +1055,14 @@ $("#AllOfficers").click(function(){
 												}
 											 $("#selbudgethead").append(html1);
 										});
-										var budgetItemId = $("#budgetItemIdHidden").val();
-									    SetBudgetItem(budgetItemId);
+										
+									var budgetItemId = $("#budgetItemIdHidden").val();
+								    SetBudgetItem(budgetItemId);
 									    
-									    if($projectId!=0)
-									    {
-											$("#SanctionBalance").show();
-										}
-									    else if($projectId==0)
-										{
-											$("#SanctionBalance").hide();
-										}
-									});
-								}
-							});
+								});
+						}
+							
+					});
 				
 <!------------------Select Budget Item using Ajax-------------------->
 
@@ -1264,7 +1300,7 @@ document.getElementById("AddFundRequestForm").addEventListener("submit", functio
 
 function validateFormFieldsEdit() {
     // First validate all required fields
-    const budget = document.getElementById("selProject");
+    const budget = document.getElementById("selBudget");
     if (!budget || budget.value.trim() === "") {
         alert('Please select a Budget');
         return false;
@@ -1429,6 +1465,26 @@ $(document).ready(function() {
         startDate = '01-04-' + toYear;
         endDate = '31-03-' + (parseInt(toYear) + 1);
     }
+    
+    var minDate = moment(startDate, 'DD-MM-YYYY');
+    var maxDate = moment(endDate, 'DD-MM-YYYY');
+    var today = moment();
+    
+    var action=$("#actionType").val();
+    var initiationDate=$("#initiationDateHidden").val();
+    var defaultDate;
+
+    if (action === 'Add') {
+        if (today.isBetween(minDate, maxDate, null, '[]')) {
+            defaultDate = today;
+        } else if (today.isBefore(minDate)) {
+            defaultDate = minDate;
+        } else {
+            defaultDate = maxDate;
+        }
+    } else if (action === 'Update') {
+        defaultDate = moment(initiationDate, 'DD-MM-YYYY');
+    }
 
     $("#InitiationDate").daterangepicker({
         singleDatePicker: true,
@@ -1437,9 +1493,9 @@ $(document).ready(function() {
         locale: {
             format: 'DD-MM-YYYY'
         },
-        minDate: moment(startDate, 'DD-MM-YYYY'), 
-        maxDate: moment(endDate, 'DD-MM-YYYY'),   
-        startDate: moment(startDate, 'DD-MM-YYYY') 
+        minDate: minDate,
+        maxDate: maxDate,
+        startDate: defaultDate
     });
 });
 </script>

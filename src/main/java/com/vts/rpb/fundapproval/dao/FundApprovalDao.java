@@ -19,7 +19,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public long AddFundRequestAttachSubmit(FundApprovalAttach Attach) throws Exception;
 
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetType, String proposedProject) throws Exception;
 
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception;
 
@@ -85,6 +85,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception;
 
-	public List<Object[]> getProposedProjectDetails() throws Exception;
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
 
 }

@@ -23,4 +23,6 @@ public class FundApprovalBackButtonDto implements Serializable
     private String previousFinYear;
     private long budgetHeadId;
     private long budgetItemId;
+    private String budgetType;
+    private String proposedProject;
 }
