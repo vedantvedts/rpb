@@ -545,9 +545,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember)  throws Exception{
+			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception{
 		
-		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember);
+		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,RupeeValue);
 	}
 	
 	@Override

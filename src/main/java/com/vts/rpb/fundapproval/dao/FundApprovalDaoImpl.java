@@ -367,11 +367,11 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 	
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status,String committeeMember)  throws Exception{
+			String fromCost, String toCost,String status,String committeeMember,String RupeeValue)  throws Exception{
 		try {
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
 					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
-					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
+					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar)/:rupeeValue AS EstimatedCost,\n"
 					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate FROM fund_approval f \n"
 					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer \n"
 					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId \n"
@@ -401,6 +401,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("toCost",toCost);
 			query.setParameter("statuss",status);
 			query.setParameter("memberType",committeeMember);
+			query.setParameter("rupeeValue",RupeeValue);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			

@@ -1009,7 +1009,8 @@ public class FundApprovalController
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
 				String toCost=req.getParameter("ToCost");
-				
+				String amountFormat = req.getParameter("AmountFormat");
+				int RupeeValue=0;
 				
 				
 				if(fromCost!=null) {
@@ -1086,9 +1087,26 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 				
+				  if (amountFormat == null || amountFormat.isEmpty()) {
+				        amountFormat = "L"; // default
+				    }
+				    
+				    if(amountFormat.equalsIgnoreCase("L")) {
+				    	 RupeeValue = 100000;
+				    }
+				    else if (amountFormat.equalsIgnoreCase("R")) {
+				    	RupeeValue = 1;
+					}
+				    else if (amountFormat.equalsIgnoreCase("C")) {
+				    	RupeeValue = 10000000;
+					}
+				    
+				    System.err.println("Controller amtfrm->"+amountFormat);
+				    System.err.println("ro->"+RupeeValue);
+				
 				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember);
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
 				
 				RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
@@ -1102,6 +1120,7 @@ public class FundApprovalController
 				req.setAttribute("ExistingtoCost", toCost);
 				req.setAttribute("Existingstatus", status);
 				req.setAttribute("committeeMember", committeeMember);
+				req.setAttribute("amountFormat", amountFormat);
 				
 				//user selected different year Estimate type reset to RE
 				FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -1155,6 +1174,8 @@ public class FundApprovalController
 				String reYear=req.getParameter("reYear");
 				String ReOrFbe=null;
 				String ReOrFbeYear=null;
+				String amountFormat = req.getParameter("AmountFormat");
+				int RupeeValue=0;
 				/*
 				 * String ReOrFbe=estimateType.split("#")[1];
 				 * System.err.println("ReOrFbe-"+ReOrFbe);
@@ -1257,9 +1278,26 @@ public class FundApprovalController
 			    	ReOrFbe="F";
 				}
 			    
+			    if (amountFormat == null || amountFormat.isEmpty()) {
+			        amountFormat = "L"; // default
+			    }
+			    
+			    if(amountFormat.equalsIgnoreCase("L")) {
+			    	 RupeeValue = 100000;
+			    }
+			    else if (amountFormat.equalsIgnoreCase("R")) {
+			    	RupeeValue = 1;
+				}
+			    else if (amountFormat.equalsIgnoreCase("C")) {
+			    	RupeeValue = 10000000;
+				}
+			    
+			    System.err.println("Controller amtfrm->"+amountFormat);
+			    System.err.println("ro->"+RupeeValue);
+			    
 			    String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 			    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember);
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,String.valueOf(RupeeValue));
 				
 				System.err.println("RequisitionList"+RequisitionList.size());
 				req.setAttribute("RequisitionList", RequisitionList);
@@ -1274,7 +1312,8 @@ public class FundApprovalController
 			    req.setAttribute("FinYear", FinYear);
 			    req.setAttribute("labName", labName);
 			    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
-				
+			    req.setAttribute("amountFormat", amountFormat);
+			    
 				if("pdf".equalsIgnoreCase(PrintAction)) {
 					
 					
