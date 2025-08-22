@@ -253,6 +253,12 @@ input[name="ItemNomenclature"]::placeholder {
 					    border-radius: 5px;
 					    margin-top: 8px;
 					}
+					
+.page.card.dashboard-card {
+            min-height: 141px !important;
+            max-height: 141px !important;
+
+        }
     </style>
     
     
@@ -287,6 +293,8 @@ input[name="ItemNomenclature"]::placeholder {
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
 		Long divisionId=(Long)request.getAttribute("divisionId");
 		String estimateType=(String)request.getAttribute("estimateType");
+		String AmtFormat =(String)request.getAttribute("amountFormat");
+		String MemberType =(String)request.getAttribute("MemberType");
 
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
@@ -317,97 +325,103 @@ input[name="ItemNomenclature"]::placeholder {
   	    
   	    
 		
-       <div class="page card dashboard-card">
-            
+      <div class="page card dashboard-card">
     <form action="estimateTypeParticularDivList.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
- 		<input type="hidden" name="divisionId" value="<%= divisionId %>">
- 		<input type="hidden" name="estimateType" value="<%= estimateType %>">
- 		<input type="hidden" name="fromYear" value="<%= fromYear %>">
- 		<input type="hidden" name="toYear" value="<%= toYear %>">
- <div class="flex-container" style="width: 100%;">
-        <!-- Division + From/To Year Row -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
-            <!-- Division -->
-            <div style="display: flex; align-items: center;">
+        <input type="hidden" name="divisionId" value="<%= divisionId %>">
+        <input type="hidden" name="estimateType" value="<%= estimateType %>">
+        <input type="hidden" name="fromYear" value="<%= fromYear %>">
+        <input type="hidden" name="toYear" value="<%= toYear %>">
+        
+        <div class="flex-container" style="width: 100%;">
+            <!-- First Row: Approved, Budget, Budget Head, Budget Item -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
+                <!-- Approved Dropdown -->
+                <div style="align-items: center;align-content: space-evenly;">
+                    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
+                    <span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;background-color: white;">
+                        <input type="radio" id="approvalStatus"
+                            <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="A" onchange="this.form.submit();" />
+                        &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    
+                        <input type="radio" id="approvalStatus"
+                            <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="N" onchange="this.form.submit();" />
+                        &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        
+                        <input type="radio" id="approvalStatus"
+                            <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
+                        &nbsp;<span style="font-weight: 600">Both</span>
+                    </span>
+                </div>
+                
+                <!-- Budget -->
+                <div style="display: flex; align-items: center;">
+                    <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
+                    <select class="form-control select2" id="selProject" name="selProject"
+                        data-live-search="true" onchange="this.form.submit();" required
+                        style="font-size: 12px; min-width: 200px;">
+                        <option value="0#GEN#General" hidden>GEN (General)</option>
+                    </select>
+                </div>
 
-            <!-- Approved Dropdown -->
+                <!-- Budget Head -->
+                <div style="display: flex; align-items: center;">
+                    <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
+                    <select id="selbudgethead" name="budgetHeadId" class="form-control select2"
+                        data-live-search="true" onchange="this.form.submit();" required style="font-size: 12px; min-width: 200px;">
+                        <option value="">Select BudgetHead</option>
+                    </select>
+                </div>
 
+                <%if(ExistingbudgetHeadId != null && Long.valueOf(ExistingbudgetHeadId)!=0 ){ %>
+                <!-- Budget Item -->
+                <div style="display: flex; align-items: center;">
+                    <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
+                    <select id="selbudgetitem" name="budgetItemId" class="form-control select2"
+                        data-live-search="true" onchange="this.form.submit();" required
+                        style="font-size: 12px; min-width: 200px;">
+                        <option value="">Select BudgetItem</option>
+                    </select>
+                </div>
+                <%} %>
+            </div>
+
+            <!-- Second Row: Cost Range and Cost Format -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%; margin-top: 15px;">
+                <!-- Cost Range -->
+                <div style="display: flex; align-items: center;">
+                    <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
+                    <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %><%=ExistingfromCost.trim()%><%} else {%>0<%} %>"  required
+                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                        onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    <span style="margin: 0 10px; font-weight: bold;">--</span>
+                    <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %><%=ExistingtoCost.trim()%><%} else {%>1000000<%} %>" required
+                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                        onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                </div>
+                &nbsp;&nbsp;
+                <!-- Cost Format (if applicable) -->
+                <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
+                <div style="display: flex; align-items: center;">
+                    <label for="CostFormat" style="font-weight: bold; margin-right: 8px;">Cost:</label>
+                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat" onchange="this.form.submit()">
+                        <option value="R" <%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Rupees</option>
+                        <option value="L" <%if((AmtFormat==null) || "L".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Lakhs</option>
+                        <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
+                    </select>
+                </div>
+                <%} %>
+            </div>
         </div>
-
-        <!-- Budget Details -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
-            <!-- Budget -->
-           <div style="align-items: center;align-content: space-evenly;">
-			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
-					<span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;background-color: white;">
-					
-			    <input type="radio" id="approvalStatus"
-			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="A" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			    <input type="radio" id="approvalStatus"
-			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="N" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			    
-			    <input type="radio" id="approvalStatus"
-			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
-			    &nbsp;<span style="font-weight: 600">Both</span>
-			    
-			    </span>
-			</div>
-            &nbsp;
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
-                <select class="form-control select2" id="selProject" name="selProject"
-                    data-live-search="true" onchange="this.form.submit();" required
-                    style="font-size: 12px; min-width: 200px;">
-                    <option value="0#GEN#General" hidden>GEN (General)</option>
-                </select>
-            </div>
-
-            <!-- Budget Head -->
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
-                <select id="selbudgethead" name="budgetHeadId" class="form-control select2"
-                    data-live-search="true" onchange="this.form.submit();" required style="font-size: 12px; min-width: 200px;">
-                    <option value="">Select BudgetHead</option>
-                </select>
-            </div>
-
- <%if(ExistingbudgetHeadId != null && Long.valueOf(ExistingbudgetHeadId)!=0 ){ %>
-            <!-- Budget Item -->
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
-                <select id="selbudgetitem" name="budgetItemId" class="form-control select2"
-                    data-live-search="true" onchange="this.form.submit();" required
-                    style="font-size: 12px; min-width: 200px;">
-                    <option value="">Select BudgetItem</option>
-                </select>
-            </div>
-            <%} %>
-
-            <!-- Cost Range -->
-            <div style="display: flex; align-items: center;">
-                <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
-                <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %> <%=ExistingfromCost.trim() %> <%} else {%>0<%} %>"  required
-                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
-                    onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                <span style="margin: 0 10px; font-weight: bold;">--</span>
-                <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %> <%=ExistingtoCost.trim() %> <%} else {%>1000000<%} %>" required
-                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
-                    onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-            </div>
-        </div>
-</div>
+        
         <input type="hidden" id="projectIdHidden" value="0#GEN#General" />
     </form>
-</div> <!-- Flex-container ends -->
+</div>
 
 
 				 
@@ -489,7 +503,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td align="center" id="budgetHead"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
-				                   			<td align="right"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
+				                   			<td align="right"><%if(data[20]!=null){ %><%= AmountConversion.amountConvertion(data[20], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
@@ -504,7 +518,7 @@ input[name="ItemNomenclature"]::placeholder {
 											       </button>
 											       
 									       </td>
-				                   			<td align="center">-</td>
+				                   			<td align="center"><%if(data[29]!=null && !data[29].toString().isEmpty()){ %> <%=data[29] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>
@@ -532,7 +546,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            	
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
 							            <td colspan="4" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
+							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, AmtFormat) %></td>
 							            <td colspan="4"></td>
 						   		     </tr>
 					            </tfoot> 

@@ -65,6 +65,7 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		String AmountFormat=null;
 		
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
@@ -77,6 +78,19 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
 		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
 		    System.err.print("Divname->"+firstItem[2]);
+		}
+		
+		String AmtFormat =(String)request.getAttribute("amountFormat");
+		if(AmtFormat!=null){
+			if("R".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Rupees";
+			}
+			else if("L".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Lakhs";
+			}
+			else if("C".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Crores";
+			}
 		}
 		%>
 		
@@ -271,7 +285,7 @@ padding : 7px;
     }
     /* Position the additional text below the logo */
 	@top-right::after {
-  content: "(Rs. in Rupees)";
+  content: "(Rs. in <%=AmountFormat%>)";
 	    font-size: 14px;
 	    color: #00008B; /* Ensure the text color matches the requirement */
 	    display: block;
@@ -328,6 +342,7 @@ padding : 7px;
 					                    <th>Initiating Officer</th>
 					                    <th>Item Nomenclature</th>
 					                    <th class="text-nowrap">Estimated Cost</th>
+					                    <th>Files</th>
 					                    <th>Justification</th>
 					                    <th>Remarks</th>
 					                </tr>
@@ -351,8 +366,9 @@ padding : 7px;
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
 				                   			<td align="right" style="font-weight: 400;color: #00008B;"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
+				                   			<td>-</td>
 				                   			<td style="font-weight: 400"><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-				                   			<td align="center">-</td>
+				                   			<td align="center" style="font-weight: 200"><%if(data[29]!=null && !"".equalsIgnoreCase(data[29].toString())){ %> <%=data[29] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>
