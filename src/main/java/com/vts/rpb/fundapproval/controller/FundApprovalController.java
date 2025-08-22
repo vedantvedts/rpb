@@ -1014,7 +1014,8 @@ public class FundApprovalController
 				String amountFormat = req.getParameter("AmountFormat");
 				int RupeeValue=0;
 				
-				
+				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+
 				if(fromCost!=null) {
 					fromCost=fromCost.trim();
 				}
@@ -1089,9 +1090,16 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 				
-				  if (amountFormat == null || amountFormat.isEmpty()) {
-				        amountFormat = "L"; // default
+				if (amountFormat == null || amountFormat.isEmpty()) {
+				    if ("A".equalsIgnoreCase(loginType) 
+				        || "CS".equalsIgnoreCase(committeeMember) 
+				        || "CC".equalsIgnoreCase(committeeMember)) {
+				        amountFormat = "L"; // Lakhs
+				    } else {
+				        amountFormat = "R"; // Rupees (default for normal users)
 				    }
+				}
+
 				    
 				    if(amountFormat.equalsIgnoreCase("L")) {
 				    	 RupeeValue = 100000;
@@ -1106,10 +1114,10 @@ public class FundApprovalController
 				    System.err.println("Controller amtfrm->"+amountFormat);
 				    System.err.println("ro->"+RupeeValue);
 				
-				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
+				String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
 				RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
 				
@@ -1123,6 +1131,7 @@ public class FundApprovalController
 				req.setAttribute("Existingstatus", status);
 				req.setAttribute("committeeMember", committeeMember);
 				req.setAttribute("amountFormat", amountFormat);
+				req.setAttribute("MemberType", MemberType);
 				
 				//user selected different year Estimate type reset to RE
 				FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -1184,7 +1193,7 @@ public class FundApprovalController
 				 * estimateType=estimateType.split("#")[0];
 				 * System.err.println("estimateType split-"+estimateType);
 				 */
-				
+				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
 				String projectId="0";
 				
@@ -1281,8 +1290,15 @@ public class FundApprovalController
 				}
 			    
 			    if (amountFormat == null || amountFormat.isEmpty()) {
-			        amountFormat = "L"; // default
+			        if ("A".equalsIgnoreCase(loginType) 
+			            || "CS".equalsIgnoreCase(committeeMember) 
+			            || "CC".equalsIgnoreCase(committeeMember)) {
+			            amountFormat = "L"; 
+			        } else {
+			            amountFormat = "R"; 
+			        }
 			    }
+
 			    
 			    if(amountFormat.equalsIgnoreCase("L")) {
 			    	 RupeeValue = 100000;
@@ -1297,7 +1313,7 @@ public class FundApprovalController
 			    System.err.println("Controller amtfrm->"+amountFormat);
 			    System.err.println("ro->"+RupeeValue);
 			    
-			    String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			    
 			    
 				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,String.valueOf(RupeeValue));
 				
@@ -1539,6 +1555,8 @@ public class FundApprovalController
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
 				String toCost=req.getParameter("ToCost");
+				String amountFormat = req.getParameter("AmountFormat");
+				int RupeeValue=0;
 				
 				String memberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
@@ -1582,6 +1600,33 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 				
+				 
+				if (amountFormat == null || amountFormat.isEmpty()) {
+				    if ("A".equalsIgnoreCase(loginType) 
+				        || "CH".equalsIgnoreCase(memberType) 
+				        || "CS".equalsIgnoreCase(memberType)) {
+				        amountFormat = "L"; // Lakhs
+				    } else {
+				        amountFormat = "R"; // Rupees (default for normal users)
+				    }
+				}
+
+			    
+			    if(amountFormat.equalsIgnoreCase("L")) {
+			    	 RupeeValue = 100000;
+			    }
+			    else if (amountFormat.equalsIgnoreCase("R")) {
+			    	RupeeValue = 1;
+				}
+			    else if (amountFormat.equalsIgnoreCase("C")) {
+			    	RupeeValue = 10000000;
+				}
+			    
+			    System.err.println("Controller amtfrm->"+amountFormat);
+			    System.err.println("ro->"+RupeeValue);
+			    
+			    
+				
 				System.err.println("divisionId->"+divisionId);
 				System.err.println("estimateType->"+estimateType);
 				System.err.println("FromYear->"+FromYear);
@@ -1595,7 +1640,7 @@ public class FundApprovalController
 				System.err.println("empId->"+empId);
 				System.err.println("FinYear->"+FinYear);
 				
-				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType);
+				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 				
 				req.setAttribute("attachList",estimateTypeParticularDivList);
 				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
@@ -1608,6 +1653,9 @@ public class FundApprovalController
 				req.setAttribute("FinYear", FinYear);
 				req.setAttribute("FromYear", FromYear);
 				req.setAttribute("ToYear", ToYear);
+				req.setAttribute("amountFormat", amountFormat);
+				req.setAttribute("MemberType", memberType);
+				
 				
 			}
 			catch(Exception e)
@@ -1642,6 +1690,8 @@ public class FundApprovalController
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
 				String toCost=req.getParameter("ToCost");
+				String amountFormat = req.getParameter("AmountFormat");
+				int RupeeValue=0;
 				
 				String memberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
 				
@@ -1692,6 +1742,29 @@ public class FundApprovalController
 				     labName = String.valueOf(obj[1].toString());
 			    }   
 			    
+			    String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+
+			    
+			    if (amountFormat == null || amountFormat.isEmpty()) {
+				    if ("A".equalsIgnoreCase(loginType) 
+				        || "CC".equalsIgnoreCase(memberType) 
+				        || "CS".equalsIgnoreCase(memberType)) {
+				        amountFormat = "L"; // Lakhs
+				    } else {
+				        amountFormat = "R"; // Rupees (default for normal users)
+				    }
+				}
+			    
+			    if(amountFormat.equalsIgnoreCase("L")) {
+			    	 RupeeValue = 100000;
+			    }
+			    else if (amountFormat.equalsIgnoreCase("R")) {
+			    	RupeeValue = 1;
+				}
+			    else if (amountFormat.equalsIgnoreCase("C")) {
+			    	RupeeValue = 10000000;
+				}
+			    
 			    
 			    System.err.println("labCode--"+labCode);
 				System.err.println("labName--"+labName);
@@ -1708,7 +1781,7 @@ public class FundApprovalController
 				System.err.println("empId->"+empId);
 				System.err.println("FinYear->"+FinYear);
 				
-				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType);
+				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 				
 				req.setAttribute("attachList",estimateTypeParticularDivList);
 				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
@@ -1723,6 +1796,8 @@ public class FundApprovalController
 				req.setAttribute("ToYear", ToYear);
 				req.setAttribute("labName", labName);
 			    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
+			    req.setAttribute("amountFormat", amountFormat);
+				req.setAttribute("MemberType", MemberType);
 				
 				if("pdf".equalsIgnoreCase(PrintAction)) {
 					

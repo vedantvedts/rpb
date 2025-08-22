@@ -29,11 +29,24 @@
 <script src="./webjars/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
 <title></title>
 <%
+String AmountFormat=null;
 String labName=(String)request.getAttribute("labName");
 String LabLogo=(String)request.getAttribute("LabLogo");
 String FinYear=(String)request.getAttribute("FinYear");
 String ReOrFbeYear=(String)request.getAttribute("ReOrFbeYear");
 String ReOrFbe=(String)request.getAttribute("ReOrFbe");
+String AmtFormat =(String)request.getAttribute("amountFormat");
+if(AmtFormat!=null){
+	if("R".equalsIgnoreCase(AmtFormat)){
+		AmountFormat="Rupees";
+	}
+	else if("L".equalsIgnoreCase(AmtFormat)){
+		AmountFormat="Lakhs";
+	}
+	else if("C".equalsIgnoreCase(AmtFormat)){
+		AmountFormat="Crores";
+	}
+}
 %>
 <style>
 
@@ -227,7 +240,7 @@ padding : 7px;
     }
     /* Position the additional text below the logo */
 	@top-right::after {
-  content: "(Rs. in Rupees)";
+  content: "(Rs. in <%=AmountFormat%>)";
 	    font-size: 14px;
 	    color: #00008B; /* Ensure the text color matches the requirement */
 	    display: block;
