@@ -528,7 +528,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td align="center" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
-				                   			<td align="right"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
+				                   			<td align="right"><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td style="width: 120px;">
@@ -575,7 +575,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            	
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
 							            <td colspan="4" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
+							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, AmtFormat) %></td>
 							            <td colspan="4"></td>
 						   		     </tr>
 					            </tfoot> 

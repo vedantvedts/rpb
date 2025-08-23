@@ -358,17 +358,28 @@ padding : 7px;
 					            <%for(Object[] data:requisitionList){ 
 					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
+					            	
+					            	System.err.println("!!!!!fundapproval ID->"+data[0]);
 					            %>
 					            
 					            	 <tr >
+					            	   <input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments">
 				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.</td>
 				                   			<td align="center" id="budgetHead" style="font-weight: 400"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
 				                   			<td align="right" style="font-weight: 400;color: #00008B;"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
-				                   			<td>-</td>
+				                   			<td id="Files">  <% if (data[29] != null && data[30] != null) { %>
+										      <a href="PreviewAttachment.htm?attachid=<%=data[29]%>"
+										         target="_blank"
+										         style="color: blue; text-decoration: none; font-weight: 600;" title="Click to download">
+										         <i class="fa fa-download"></i> <%=data[30]%>
+										      </a>
+										   <% } else { %>
+										      -
+										   <% } %></td>
 				                   			<td style="font-weight: 400"><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-				                   			<td align="center" style="font-weight: 200"><%if(data[29]!=null && !"".equalsIgnoreCase(data[29].toString())){ %> <%=data[29] %><%} else { %>-<%} %></td>
+				                   			<td align="center" style="font-weight: 200"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>
@@ -399,6 +410,10 @@ padding : 7px;
 					    </div>
 						
 					  </form>
+ <form id="downloadForm" target="_blank" action="FundRequestAttachDownload.htm" method="get" style="display:none;">
+    <input type="hidden" name="attachid" id="downloadFileName">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+</form>
   </div>
 </body>
 <script>
@@ -414,7 +429,10 @@ padding : 7px;
 	});
 	
 
- 
+	function downloadFile(fileId) {
+	    $('#downloadFileName').val(fileId);
+	    document.getElementById("downloadForm").submit();
+	}
     
 
  
