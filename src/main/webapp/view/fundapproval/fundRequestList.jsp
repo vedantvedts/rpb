@@ -464,7 +464,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
 										        </button>
 										        
-										        <% String divisionDetails = data[25] != null ? data[25].toString() +"("+ (data[26]!=null ? data[26].toString() : "NA") +")" : "";
+										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";
 										        %>
 												
 												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
@@ -540,19 +540,19 @@ input[name="ItemNomenclature"]::placeholder {
 					    </h5>&nbsp;&nbsp;
 					     <span style="color:#00f6ff;font-weight: 600;margin-top:3px;" class="ReFbeYearModal">(Current Financial Year - <%=currentFinYear %>)</span>
 					     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				         <span aria-hidden="true" style="font-size: 25px;color:white;">&#10006;</span>
+				         <span aria-hidden="true" style="font-size: 19px;color:white;">&#10006;</span>
 				        </button>
 				      </div>
 				      <div class="modal-body">
 				      
-				      <div class="flex-container" style="background-color:#ffedc6;height: auto;width: 70%;margin: auto;box-shadow: 0px 0px 4px #6b797c;margin-bottom:10px;">
+				      <div class="flex-container" style="background-color:transparent !important;height: auto;width: 70%;margin: auto;margin-bottom:10px;">
 			           		<div class="form-inline" style="padding: 10px;">
 			           		
 			           			<label style="font-size: 19px;"><b>RE :&nbsp;</b></label><span class="spanClass reFbeYearForward"></span>
 			           		</div>
 			           		<div class="form-inline" style="padding: 10px;">
 			           			
-			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass">Material Management Division&nbsp;</span>
+			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass divisionDetailsForward">-</span>
 			           		</div>
 			           </div>
 				      
@@ -607,6 +607,14 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		<tr>
 				                              			<td style="padding: 8px; text-align: right; color: blue; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>
 				                              			<td style="padding: 8px;width: 70% !important;" colspan="2"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="-"></td>
+				                              		</tr>
+				                              		
+				                              		<tr class="DivisionHead">
+				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
+				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="DivisionHeadRole" name="DivisionHeadRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
+				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="divisionHeadDetails" name="divisionHeadDetails">
+				                              			<input type="text" class="form-control" readonly="readonly" id="divisionHeadName" name="divisionHeadName" value="-"></td>
 				                              		</tr>
 				                              		
 				                              		<tr class="RPBMember1">
@@ -859,6 +867,13 @@ function openFundDetails()
 	    }
 	});
 	
+	const getEmployeeDetailsById = (list, id) => {
+	    if (!Array.isArray(list)) return "";
+	    const emp = list.find(emp => emp[0] === id);
+	    return emp ? emp[2] + ", " + emp[3] : "";
+	};
+
+	
 function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
 		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails)
 {
@@ -874,6 +889,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$(".JustificationDetails").html(justification);
 	$(".MainEstimateType").html(estimatedType!=null && estimatedType=='R' ? 'RE' : 'FBE');
 	$(".reFbeYearForward").html(ReFbeYear);
+	$(".divisionDetailsForward").html(divisionDetails);
 	
 	$("#initiating_officer_display").val(empName +', '+designation);
 	$("#FundRequestIdForward").val(fundRequestId);
@@ -893,32 +909,38 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	var idAttribute='';
 			    	if(value[2]!=null)
 			   		{
-			    		if(value[2]=='RO1 RECOMMENDED')
+			    		if(value[2]=='DIVISION HEAD APPROVED')
+		    			{
+			    			const empDetails = getEmployeeDetailsById(allEmployeeList, value[4]);
+			    			$("#divisionHeadName").val(empDetails);
+			    			$("#divisionHeadDetails").val(value[4]);
+		    			}
+			    		else if(value[2]=='RO1 RECOMMENDED')
 			       		{
 			        		$(".RPBMember1").show();
 			        		idAttribute='#RPBMemberDetails1';
 			       		}
-			    		if(value[2]=='RO2 RECOMMENDED')
+			    		else if(value[2]=='RO2 RECOMMENDED')
 			       		{
 			        		$(".RPBMember2").show();
 			        		idAttribute='#RPBMemberDetails2';
 			       		}
-			    		if(value[2]=='RO3 RECOMMENDED')
+			    		else if(value[2]=='RO3 RECOMMENDED')
 			       		{
 			        		$(".RPBMember3").show();
 			        		idAttribute='#RPBMemberDetails3';
 			       		}
-			    		if(value[2]=='SE RECOMMENDED')
+			    		else if(value[2]=='SE RECOMMENDED')
 			       		{
 			        		$(".SubjectExpert").show();
 			        		idAttribute='#SubjectExpertDetails';
 			       		}
-			    		if(value[2]=='RPB MEMBER SECRETARY APPROVED')
+			    		else if(value[2]=='RPB MEMBER SECRETARY APPROVED')
 			       		{
 			        		$(".RPBMemberSecretary").show();
 			        		idAttribute='#RPBMemberSecretaryDetails';
 			       		}
-			    		if(value[2]=='CHAIRMAN APPROVED')
+			    		else if(value[2]=='CHAIRMAN APPROVED')
 			       		{
 			        		$(".chairman").show();
 			        		idAttribute='#chairmanDetails';
@@ -929,6 +951,10 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	var flowEmpRole=value[5];
 			    	
 			    	//Employee Role
+			    	if(value[2] == 'DIVISION HEAD APPROVED')
+			    	 {
+			    		$("#DivisionHeadRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
 			    	if(value[2] == 'RO1 RECOMMENDED')
 			    	 {
 			    		$("#RPBMemberRole1").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
@@ -957,11 +983,11 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	// employee details
 			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
 			    	 
-			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
+			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
 			    	 {
 			    		 $.each(committeeMemberList, function(key, value) 
 						 {
-			    			 if(value[1]!=null && value[1] == 'CM')   // CM-Committee Member
+			    			 if(value[1]!=null && (value[1] == 'CM' || value[1] == 'SE'))   // CM-Committee Member
 			   				 {
 			    				 if(flowEmpId!=null && flowEmpId == value[2])
 		    					 {
@@ -972,21 +998,6 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 		    					 	$(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
 		    					 }
 			   				 }
-						 });
-			    	 }
-			    	 
-			    	 if(value[2] == 'SE RECOMMENDED')
-			    	 {
-			    		 $.each(allEmployeeList, function(key, value) 
-						 {
-			    			 if(flowEmpId!=null && flowEmpId == value[0])
-	    					 {
-			    				 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
-	    					 }
-		    				 else
-	    					 {
-		    					 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
-	    					 }
 						 });
 			    	 }
 			    	 
@@ -1038,7 +1049,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
     });
 }
 
-const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails, #RPBMemberSecretaryDetails, #chairmanDetails";
+const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails";
 
 $(document).on("change", dropdownSelector, function () {
     
@@ -1081,6 +1092,10 @@ function ApprovalFlowForward() {
 
             if (value[2] != null) {
                 switch (value[2]) {
+                    case 'DIVISION HEAD APPROVED':
+                        roleId = '#DivisionHeadRole';
+                        message="Division Head";
+                        break;
                     case 'RO1 RECOMMENDED':
                         idAttribute = '#RPBMemberDetails1';
                         roleId = '#RPBMemberRole1';

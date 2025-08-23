@@ -290,7 +290,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				    
 				    if(row[2]!=null)
 				    {
-				    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+				    	if((row[2].toString()).equalsIgnoreCase("DIVISION HEAD APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc6());
+				    		linkedMembers.setMemberType("DH");    // Division Head
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
 				    	{
 				    		linkedMembers.setEmpId(fundApprovalData.getRc1());
 				    		linkedMembers.setMemberType("CM");    // CM-Committee Member

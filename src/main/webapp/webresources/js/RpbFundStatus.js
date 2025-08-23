@@ -27,7 +27,7 @@ function generateTableHTML(data) {
 		return '<p>No Status available.</p>';
 	}
 
-	var table = '<table class="table table-bordered" style="width: 100%;font-weight: 600;">';
+	var table = '<table class="table table-bordered" style="width: 95%;font-weight: 600;margin:auto;">';
 	table += '<thead><tr style="background-color: #edab33;color:#034189;"><th>Officer Name</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead>';
 	table += '<tbody>';
 
@@ -61,7 +61,7 @@ function previewInformation(fundApprovalId) {
 			var html = '';
 
 			// Create table structure
-			html += '<div class="table-responsive" style="">';
+			html += '<div class="table-responsive" style="width:95%;margin:auto;">';
 			html += '<table class="table table-bordered" style="box-shadow: 5px 0px 5px rgba(0, 0, 5, 5);">';
 			html += '<thead style="background-color: #f7f4e9;">';
 			html += '<tr>';
