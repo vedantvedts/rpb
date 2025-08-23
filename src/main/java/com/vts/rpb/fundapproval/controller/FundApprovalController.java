@@ -962,6 +962,8 @@ public class FundApprovalController
 					return "redirect:/FundRequest.htm";
 				}
 				
+				String divisionHead=req.getParameter("divisionHeadDetails");
+				String divisionHeadRole=req.getParameter("DivisionHeadRole");
 				String rpbMember1=req.getParameter("RPBMemberDetails1");
 				String rpbMemberRole1=req.getParameter("RPBMemberRole1");
 				String rpbMember2=req.getParameter("RPBMemberDetails2");
@@ -976,6 +978,10 @@ public class FundApprovalController
 				String chairmanRole=req.getParameter("chairmanRole");
 				
 				FundApproval fundApprovalData=fundApprovalService.getFundRequestDetails(fundRequestId);
+				
+				fundApprovalData.setRc6(divisionHead!=null && divisionHead!="" ? Long.parseLong(divisionHead) : 0);
+				fundApprovalData.setRc6Role(divisionHeadRole!=null && divisionHeadRole!="" ? divisionHeadRole : null);
+				
 				fundApprovalData.setRc1(rpbMember1!=null && rpbMember1!="" ? Long.parseLong(rpbMember1) : 0);
 				fundApprovalData.setRc1Role(rpbMemberRole1!=null && rpbMemberRole1!="" ? rpbMemberRole1 : null);
 				
@@ -1001,9 +1007,9 @@ public class FundApprovalController
 				
 				
 				if(status > 0) {
-					redir.addAttribute("resultSuccess", "Fund Request Successfully Submitted");
+					redir.addAttribute("resultSuccess", "Fund Request Successfully Forwarded..!");
 				}else {
-					redir.addAttribute("resultFailure", "Fund Request submit Unsuccessful");
+					redir.addAttribute("resultFailure", "Something Went Wrong..!");
 				}
 			}
 			catch(Exception e)
