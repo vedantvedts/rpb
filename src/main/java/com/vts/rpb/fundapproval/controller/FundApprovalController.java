@@ -89,22 +89,13 @@ public class FundApprovalController
          String ToYear = safeTrim(req.getParameter("ToYear"));
          String DivisionDetails = safeTrim(req.getParameter("DivisionDetails"));
          String estimateType = safeTrim(req.getParameter("EstimateType"));
-         String budgetType = safeTrim(req.getParameter("budgetTypeSel"));
-         String proposedProject = safeTrim(req.getParameter("proposedProjectSel"));
          
          System.out.println("FromYear*****"+FromYear);
          System.out.println("ToYear*****"+ToYear);
          System.out.println("DivisionDetails*****"+DivisionDetails);
          System.out.println("estimateType*****"+estimateType);
-         System.out.println("budgetType*****"+budgetType);
-         System.out.println("proposedProject*****"+proposedProject);
          System.out.println("empId*****"+empId);
          
-	         if(budgetType == null)
-	         {
-	        	 budgetType = "B";
-	         }
-   			
    			if(estimateType==null)
    			{
    				estimateType="R";
@@ -144,7 +135,7 @@ public class FundApprovalController
    			}
    			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
    			
-   			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId,budgetType,proposedProject);
+   			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId);
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
    			System.out.println("RequisitionList****"+RequisitionList.size());
@@ -165,8 +156,6 @@ public class FundApprovalController
    			   backDto.setDivisionId(DivisionId);
    			   backDto.setREYear(FromYear+"-"+ToYear);
    			   backDto.setFBEYear((Long.parseLong(FromYear)+1)+"-"+(Long.parseLong(ToYear)+1));
-   			   backDto.setBudgetType(budgetType);
-   			   backDto.setProposedProject(proposedProject);;
    			   
    			   ses.setAttribute("FundApprovalAttributes", backDto);
    			

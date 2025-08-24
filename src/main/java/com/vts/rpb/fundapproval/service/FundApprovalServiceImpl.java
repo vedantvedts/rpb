@@ -59,8 +59,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	private static final Logger logger=LogManager.getLogger(FundApprovalServiceImpl.class);
 	
 	@Override
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetType, String proposedProject) throws Exception {
-		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId,budgetType,proposedProject);
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
+		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId);
 	}
 	
 	@Override
