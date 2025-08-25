@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           custom:
-            client-id: rpb_vts21
-            client-secret: HZgYsqoeTMjQpFur69wJPA8Zq8xu52YA
+            client-id: rpb_vts21_ubuntu
+            client-secret: d4clfXnBW6jY2o2c1j6G1CP1jSoZEv4T
             scope: openid
             authorization-grant-type: authorization_code
             redirect-uri: http://192.168.1.51:8080/rpb/login/oauth2/code/custom
@@ -31,7 +31,7 @@ spring:
       suffix: .jsp
     
 server: 
-  port: 8085
+  port: 8080
   servlet: 
     context-path: /ibas
     
@@ -43,10 +43,10 @@ logging:
   level: 
     org.springframework: INFO
 
-rpbLogOut: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/logout?client_id=rpb_vts21&post_logout_redirect_uri=http://192.168.1.51:8080/rpb
+rpbLogOut: http://192.168.1.61:8888/realms/DRDONEW/protocol/openid-connect/logout?client_id=rpb_vts21_ubuntu&post_logout_redirect_uri=http://192.168.1.51:8080/rpb
 
 LabCode: VEDTS
-ApplicationFilesDrive: /opt/IBAS/    # windows D:\\IBAS\\      Ubuntu /opt/IBAS/ 
+ApplicationFilesDrive: /opt/IBAS/   # windows D:\\IBAS\\      Ubuntu /opt/IBAS/ 
 Attach_File_Size: 50
 
 #headerLogo
@@ -55,7 +55,7 @@ headerLogo: "drdo.png"
 #image
 image: "vedts.png"
 
-MdmDb : ibas_saran_test
+MdmDb : ibas_saran_test  #pms_dms_dev
 
 app:
   datasource:

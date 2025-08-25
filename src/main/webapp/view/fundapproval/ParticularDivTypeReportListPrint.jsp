@@ -65,6 +65,7 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		String AmountFormat=null;
 		
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
@@ -77,6 +78,19 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
 		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
 		    System.err.print("Divname->"+firstItem[2]);
+		}
+		
+		String AmtFormat =(String)request.getAttribute("amountFormat");
+		if(AmtFormat!=null){
+			if("R".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Rupees";
+			}
+			else if("L".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Lakhs";
+			}
+			else if("C".equalsIgnoreCase(AmtFormat)){
+				AmountFormat="Crores";
+			}
 		}
 		%>
 		
@@ -271,7 +285,7 @@ padding : 7px;
     }
     /* Position the additional text below the logo */
 	@top-right::after {
-  content: "(Rs. in Rupees)";
+  content: "(Rs. in <%=AmountFormat%>)";
 	    font-size: 14px;
 	    color: #00008B; /* Ensure the text color matches the requirement */
 	    display: block;
@@ -328,6 +342,7 @@ padding : 7px;
 					                    <th>Initiating Officer</th>
 					                    <th>Item Nomenclature</th>
 					                    <th class="text-nowrap">Estimated Cost</th>
+					                    <th>Files</th>
 					                    <th>Justification</th>
 					                    <th>Remarks</th>
 					                </tr>
@@ -343,16 +358,28 @@ padding : 7px;
 					            <%for(Object[] data:requisitionList){ 
 					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
+					            	
+					            	System.err.println("!!!!!fundapproval ID->"+data[0]);
 					            %>
 					            
 					            	 <tr >
+					            	   <input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments">
 				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.</td>
 				                   			<td align="center" id="budgetHead" style="font-weight: 400"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
 				                   			<td align="right" style="font-weight: 400;color: #00008B;"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
+				                   			<td id="Files">  <% if (data[29] != null && data[30] != null) { %>
+										      <a href="PreviewAttachment.htm?attachid=<%=data[29]%>"
+										         target="_blank"
+										         style="color: blue; text-decoration: none; font-weight: 600;" title="Click to download">
+										         <i class="fa fa-download"></i> <%=data[30]%>
+										      </a>
+										   <% } else { %>
+										      -
+										   <% } %></td>
 				                   			<td style="font-weight: 400"><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-				                   			<td align="center">-</td>
+				                   			<td align="center" style="font-weight: 200"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>
@@ -383,6 +410,10 @@ padding : 7px;
 					    </div>
 						
 					  </form>
+ <form id="downloadForm" target="_blank" action="FundRequestAttachDownload.htm" method="get" style="display:none;">
+    <input type="hidden" name="attachid" id="downloadFileName">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+</form>
   </div>
 </body>
 <script>
@@ -398,7 +429,10 @@ padding : 7px;
 	});
 	
 
- 
+	function downloadFile(fileId) {
+	    $('#downloadFileName').val(fileId);
+	    document.getElementById("downloadForm").submit();
+	}
     
 
  

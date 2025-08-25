@@ -291,6 +291,11 @@ input[name="ItemNomenclature"]::placeholder {
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
+		String AmtFormat =(String)request.getAttribute("amountFormat");
+		String MemberType =(String)request.getAttribute("MemberType");
+		
+		
+		System.err.println("***************JSP amt->"+AmtFormat);
 		
 		String committeeMember=null;
 		if(!"A".equalsIgnoreCase(loginType)){
@@ -442,14 +447,24 @@ input[name="ItemNomenclature"]::placeholder {
             <!-- Cost Range -->
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
-                <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %> <%=ExistingfromCost %> <%} else {%>0<%} %>"  required
-                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %><%=ExistingfromCost.trim()%><%} else {%>0<%} %>"  required
+                    class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 <span style="margin: 0 10px; font-weight: bold;">--</span>
-                <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %> <%=ExistingtoCost %> <%} else {%>1000000<%} %>" required
-                    class="form-control" style="width: 100px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %><%=ExistingtoCost.trim()%><%} else {%>1000000<%} %>" required
+                    class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
+            <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
+              <div class="d-flex align-items-center">
+                    <label for="CostFormat" class="fw-bold me-2"><b>Cost:</b>&nbsp;&nbsp;&nbsp;</label>
+                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat" onchange="this.form.submit()">
+                        <option value="R" <%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Rupees</option>
+                        <option value="L" <%if((AmtFormat==null) || "L".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Lakhs</option>
+                        <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
+                    </select>
+                </div>
+                <%} %>
         </div>
 
         <input type="hidden" id="projectIdHidden" value="0#GEN#General" />
@@ -513,7 +528,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td align="center" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
-				                   			<td align="right"><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], "R") %><%}else{ %> - <%} %></td>
+				                   			<td align="right"><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td style="width: 120px;">
@@ -560,7 +575,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            	
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
 							            <td colspan="4" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
+							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, AmtFormat) %></td>
 							            <td colspan="4"></td>
 						   		     </tr>
 					            </tfoot> 

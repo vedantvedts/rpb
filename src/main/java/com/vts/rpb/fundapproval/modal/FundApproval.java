@@ -37,6 +37,12 @@ public class FundApproval {
 	@Column(name = "REFBEYear", length = 5)
 	private String reFbeYear;
 	
+	@Column(name = "InitiationId")
+	private long initiationId;
+	
+	@Column(name = "BudgetType", length = 1)
+	private String budgetType;
+	
 	@Column(name = "ProjectId")
 	private long projectId;
 	
@@ -135,6 +141,12 @@ public class FundApproval {
 	
 	@Column(name = "RC5Role", length = 50)
 	private String rc5Role;
+	
+	@Column(name = "RC6")
+	private long rc6=0;
+	
+	@Column(name = "RC6Role", length = 50)
+	private String rc6Role;
 	
 	@Column(name = "ApprovingOfficer")
 	private long approvingOfficer=0;

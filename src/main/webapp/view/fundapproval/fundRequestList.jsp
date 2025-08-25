@@ -256,25 +256,31 @@ input[name="ItemNomenclature"]::placeholder {
     </style>
     
     
-    <style type="text/css">
+<style type="text/css">
     
-    
-   .div-tooltip-container ul {
-  padding: 5px !important;
-}
+	.div-tooltip-container ul {
+	  padding: 5px !important;
+	}
+	
+	.spanClass
+	{
+		font-size:16px;
+		color:red;
+		font-weight: 600;
+	}
 
 </style>
 
 </head>
 <body>
-		<%
+		<% DecimalFormat df=new DecimalFormat("#########################");
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
 		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
 		
-		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
+		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null;
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
 		if(fundApprovalDto!=null)
 		{
@@ -284,7 +290,6 @@ input[name="ItemNomenclature"]::placeholder {
 			estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
 			fbeYear=fundApprovalDto.getFBEYear();
 			reYear=fundApprovalDto.getREYear();
-			System.err.print("REQUEST LIST DIVID-"+fundApprovalDto.getDivisionId());
 		}
 		
 		%>
@@ -292,6 +297,9 @@ input[name="ItemNomenclature"]::placeholder {
               String failure=(String)request.getParameter("resultFailure");%>
               
               <input type="hidden" id="estimateType" value="<%=estimateType%>">
+              <input type="hidden" id="budgetTypeHidden" <%if(budgetType!=null){ %> value="<%=budgetType%>" <%} %>>
+              <input type="hidden" id="proposedProjectHidden" <%if(proposedProject!=null){ %> value="<%=proposedProject%>" <%} %>>
+              <input type="hidden" id="divisionIdHidden" <%if(divisionId!=null){ %> value="<%=divisionId%>" <%} %>>
 
 <div class="card-header page-top">
 	 	<div class="row">
@@ -361,22 +369,32 @@ input[name="ItemNomenclature"]::placeholder {
 								</div>
 							</td>
 							</tr>
-						  </table> 
+						  </table>
 					</div>
 					
-					<div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: end;border-bottom-right-radius: 0px !important;margin:0px !important;width: 100%;background-color: transparent !important;">
+				<%-- 	<div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: end;border-bottom-right-radius: 0px !important;margin:0px !important;width: 100%;background-color: transparent !important;">
 						 <div class="form-inline" style="justify-content: end;">
 				           <label style="font-weight: bold;">Budget :&nbsp;&nbsp;</label>
 					            <div class="form-inline">
-								 <select class="form-control select2" id="" name="DivisionDetails" 
-								  data-container="body" data-live-search="true" onchange="this.form.submit();"  
-								  required="required"  style="align-items: center;font-size: 5px;min-width:200px;">
-								 	<option value="0#GEN#General" hidden="true">GEN (General)</option>
-									
+								 <select class="form-control select2" id="budgetType" name="budgetTypeSel" style="align-items: center;font-size: 5px;min-width:200px;">
+								 	<option value="B" <%if(budgetType!=null && budgetType.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
+								 	<option value="N" <%if(budgetType!=null && budgetType.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
 							    </select>
 							  </div>
-						</div>  
-					</div>
+						</div> 
+						
+						
+						
+						 <div class="form-inline proposedProjectClass" style="justify-content: end;display: none;">&nbsp;&nbsp;
+				           <label style="font-weight: bold;">Proposed Project :&nbsp;&nbsp;</label>
+					            <div class="form-inline">
+								 <select class="form-control select2" id="proposedProject" name="proposedProjectSel" style="align-items: center;font-size: 5px;min-width:200px;width: 300px;">
+							    
+							    </select>
+							  </div>
+						</div> 
+						 
+					</div> --%>
 					
 				 </form> 
 				 
@@ -385,15 +403,13 @@ input[name="ItemNomenclature"]::placeholder {
 				 	
 					<form action="#" id="RequistionFormAction" autocomplete="off"> 
 				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				        <!-- <input type="hidden" name="RedirectVal" value="RequisitionList"/> -->
-				        <input type="hidden" name="RedirectVal" value="B"/>   <!-- B- Redirect from Budget List -->
-						   
 						
 						<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">
 					        <table class="table table-bordered table-hover table-striped table-condensed" id="RequisitionList">
 					            <thead>
 					                <tr>
 					                    <th>SN</th>
+					                    <th>Budget</th>
 					                    <th>Budget Head</th>
 					                    <th>Initiating Officer</th>
 					                    <th>Item Nomenclature</th>
@@ -401,7 +417,6 @@ input[name="ItemNomenclature"]::placeholder {
 					                    <th>Justification</th>
 					                    <th>Enclosures</th>
 					                    <th>Status</th>
-					                    <th>Remarks</th>
 					                    <th class="text-nowrap" style="width: 10%;">Action</th>
 					                </tr>
 					            </thead>
@@ -420,6 +435,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 					            	 <tr>
 				                   			<td align="center"><%=sn++ %>.</td>
+				                   			<td align="center"><%if(data[7]!=null){  if((data[28].toString()).equalsIgnoreCase("B")){%> General <%}else{ %> <%if(data[29]!=null){%><%=data[29] %><%}else{ %> - <%} %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td align="left" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
@@ -438,7 +454,6 @@ input[name="ItemNomenclature"]::placeholder {
 											       </button>
 											       
 									       </td>
-				                   			<td align="center">-</td>
 				                   			<td align="center">
 													      
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
@@ -446,8 +461,11 @@ input[name="ItemNomenclature"]::placeholder {
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
 										        </button>
+										        
+										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";
+										        %>
 												
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18] %>','<%=data[11] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		<%}else{ %>
 					                       		<span style="font-weight: 800;">***</span>
 					                       		<%} %>
@@ -474,7 +492,7 @@ input[name="ItemNomenclature"]::placeholder {
 					               <tfoot>
 					            	
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="4" align="right">Grand Total</td>
+							            <td colspan="5" align="right">Grand Total</td>
 							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
 							            <td colspan="5"></td>
 						   		     </tr>
@@ -493,12 +511,12 @@ input[name="ItemNomenclature"]::placeholder {
 					            data-tooltip="Carry Forward Existing Demand(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Demand </button>
 					            &nbsp;
 					            
-				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="SupplyOrder" 
+				               <button type="submit" class="btn btn-sm carry-forward-so-btn tooltip-container" name="Action" value="SupplyOrder" 
 					            data-tooltip="Carry Forward Existing Supply Order(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> CF Supply Order </button>
 					            &nbsp;
 					            
-				               <button type="submit" class="btn btn-sm revise-btn tooltip-container" name="Action" value="Item" 
-					            data-tooltip="Carry Forward Previous Year Existing Item(s)" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Item </button>
+				               <button type="submit" class="btn btn-sm carry-forward-request-btn tooltip-container" name="Action" value="Item" 
+					            data-tooltip="Carry Forward Previous Year Existing Request" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Request </button>
 					       <%} %>     
 						
 						</div>
@@ -517,13 +535,24 @@ input[name="ItemNomenclature"]::placeholder {
 				      <div class="modal-header">
                         <h5 class="modal-title" style="font-family:'Times New Roman';font-weight: 600;">
 					            <span style="font-family:'Times New Roman';font-weight: 600;font-size: 18px;" class="MainEstimateType">-</span> Item Details
-					    </h5>&nbsp;
-					     <span style="color:#00f6ff;font-weight: 600;margin-top:3px;" class="ReFbeYearModal">- </span>
+					    </h5>&nbsp;&nbsp;
+					     <span style="color:#00f6ff;font-weight: 600;margin-top:3px;" class="ReFbeYearModal">(Current Financial Year - <%=currentFinYear %>)</span>
 					     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				         <span aria-hidden="true" style="font-size: 25px;color:white;">&#10006;</span>
+				         <span aria-hidden="true" style="font-size: 19px;color:white;">&#10006;</span>
 				        </button>
 				      </div>
 				      <div class="modal-body">
+				      
+				      <div class="flex-container" style="background-color:transparent !important;height: auto;width: 70%;margin: auto;margin-bottom:10px;">
+			           		<div class="form-inline" style="padding: 10px;">
+			           		
+			           			<label style="font-size: 19px;"><b>RE :&nbsp;</b></label><span class="spanClass reFbeYearForward"></span>
+			           		</div>
+			           		<div class="form-inline" style="padding: 10px;">
+			           			
+			           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass divisionDetailsForward">-</span>
+			           		</div>
+			           </div>
 				      
 				      	<div id="itemDetailsCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
 							    <div class="carousel-inner">
@@ -531,7 +560,7 @@ input[name="ItemNomenclature"]::placeholder {
 							      <!-- Slide 1: Item Details -->
 							      <div class="carousel-item active">
 							      <div style="text-align: right;">
-							      <button class="btn btn-info mb-3" onclick="$('#itemDetailsCarousel').carousel(1)">Approval Details &#10097;&#10097;</button>
+							      <button class="btn btn-info mb-3" onclick="openApprovalFlow()">Approval Details &#10097;&#10097;</button>
 							      </div>
 							        
 							
@@ -576,6 +605,14 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		<tr>
 				                              			<td style="padding: 8px; text-align: right; color: blue; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>
 				                              			<td style="padding: 8px;width: 70% !important;" colspan="2"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="-"></td>
+				                              		</tr>
+				                              		
+				                              		<tr class="DivisionHead">
+				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
+				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="DivisionHeadRole" name="DivisionHeadRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
+				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="divisionHeadDetails" name="divisionHeadDetails">
+				                              			<input type="text" class="form-control" readonly="readonly" id="divisionHeadName" name="divisionHeadName" value="-"></td>
 				                              		</tr>
 				                              		
 				                              		<tr class="RPBMember1">
@@ -641,13 +678,50 @@ input[name="ItemNomenclature"]::placeholder {
 							        </div>
 							      </div>
 							
-							    </div>
-			
-				      </div>
+							      <!-- Slide 2: Approval Authority Table -->
+							      <div class="carousel-item">
+							        <div style="text-align: right;">
+							        	<button class="btn btn-secondary mb-3" onclick="openFundDetails()">Back</button>
+							        </div>
+							
+							        <table class="table table-bordered">
+							          <thead>
+							            <tr>
+							              <th>Case</th>
+							              <th>Signature Mandated</th>
+							              <th>Approval Authority</th>
+							            </tr>
+							          </thead>
+							          <tbody>
+							            <tr>
+							              <td>Case I<br>Upto Rs. 10 Lakhs</td>
+							              <td>GH/GD/TD (User)<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case II<br>Above Rs. 10 Lakhs & Upto Rs. 50 Lakhs</td>
+							              <td>GD/TD (User) <br> one RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case III<br>Above Rs. 50 Lakhs & Upto Rs. 2 Crore</td>
+							              <td>GD/TD (User) <br> Two RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							            <tr>
+							              <td>Case IV<br>Above Rs. 2 Crore</td>
+							              <td>GD/TD (User) <br> Three RPB Members<br>One Subject Expert<br>RPB Member Secretary</td>
+							              <td>RPB Standby Chairman / Chairman</td>
+							            </tr>
+							          </tbody>
+							        </table>
+							      </div>
+							   </div>
+				          </div>
 				      </div>
 				      
 				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
-				        <button type="button" class="btn btn-sm submit-btn" onclick="ApprovalFlowForward()">Forward</button>
+				        <button type="button" class="btn btn-sm submit-btn fundForwardButton" onclick="ApprovalFlowForward()">Forward</button>
 				        
 				        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" style="background-color: darkred;color:white;">Close</button>
 				      </div>
@@ -746,6 +820,21 @@ input[name="ItemNomenclature"]::placeholder {
 
 <script type="text/javascript">
 
+function openApprovalFlow()
+{
+	$('#itemDetailsCarousel').carousel(1);
+	$(".fundForwardButton").hide();
+}
+function openFundDetails()
+{
+	$('#itemDetailsCarousel').carousel(0);
+	$(".fundForwardButton").show();
+}
+
+</script>
+
+<script type="text/javascript">
+
 	var allEmployeeList = null;
 	var committeeMemberList=null;
 	var masterFlowDetails=null;
@@ -776,8 +865,15 @@ input[name="ItemNomenclature"]::placeholder {
 	    }
 	});
 	
+	const getEmployeeDetailsById = (list, id) => {
+	    if (!Array.isArray(list)) return "";
+	    const emp = list.find(emp => emp[0] === id);
+	    return emp ? emp[2] + ", " + emp[3] : "";
+	};
+
+	
 function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
-		CodeHead,Itemnomenclature,justification,empName,designation)
+		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails)
 {
 	refreshModal('.ItemForwardModal');
 	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
@@ -790,7 +886,8 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$(".ItemNomenclatureDetails").html(Itemnomenclature);
 	$(".JustificationDetails").html(justification);
 	$(".MainEstimateType").html(estimatedType!=null && estimatedType=='R' ? 'RE' : 'FBE');
-	$(".ReFbeYearModal").html('(' +ReFbeYear+ ')');
+	$(".reFbeYearForward").html(ReFbeYear);
+	$(".divisionDetailsForward").html(divisionDetails);
 	
 	$("#initiating_officer_display").val(empName +', '+designation);
 	$("#FundRequestIdForward").val(fundRequestId);
@@ -810,32 +907,38 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	var idAttribute='';
 			    	if(value[2]!=null)
 			   		{
-			    		if(value[2]=='RO1 RECOMMENDED')
+			    		if(value[2]=='DIVISION HEAD APPROVED')
+		    			{
+			    			const empDetails = getEmployeeDetailsById(allEmployeeList, value[4]);
+			    			$("#divisionHeadName").val(empDetails);
+			    			$("#divisionHeadDetails").val(value[4]);
+		    			}
+			    		else if(value[2]=='RO1 RECOMMENDED')
 			       		{
 			        		$(".RPBMember1").show();
 			        		idAttribute='#RPBMemberDetails1';
 			       		}
-			    		if(value[2]=='RO2 RECOMMENDED')
+			    		else if(value[2]=='RO2 RECOMMENDED')
 			       		{
 			        		$(".RPBMember2").show();
 			        		idAttribute='#RPBMemberDetails2';
 			       		}
-			    		if(value[2]=='RO3 RECOMMENDED')
+			    		else if(value[2]=='RO3 RECOMMENDED')
 			       		{
 			        		$(".RPBMember3").show();
 			        		idAttribute='#RPBMemberDetails3';
 			       		}
-			    		if(value[2]=='SE RECOMMENDED')
+			    		else if(value[2]=='SE RECOMMENDED')
 			       		{
 			        		$(".SubjectExpert").show();
 			        		idAttribute='#SubjectExpertDetails';
 			       		}
-			    		if(value[2]=='RPB MEMBER SECRETARY APPROVED')
+			    		else if(value[2]=='RPB MEMBER SECRETARY APPROVED')
 			       		{
 			        		$(".RPBMemberSecretary").show();
 			        		idAttribute='#RPBMemberSecretaryDetails';
 			       		}
-			    		if(value[2]=='CHAIRMAN APPROVED')
+			    		else if(value[2]=='CHAIRMAN APPROVED')
 			       		{
 			        		$(".chairman").show();
 			        		idAttribute='#chairmanDetails';
@@ -846,6 +949,10 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	var flowEmpRole=value[5];
 			    	
 			    	//Employee Role
+			    	if(value[2] == 'DIVISION HEAD APPROVED')
+			    	 {
+			    		$("#DivisionHeadRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    	 }
 			    	if(value[2] == 'RO1 RECOMMENDED')
 			    	 {
 			    		$("#RPBMemberRole1").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
@@ -874,11 +981,11 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	// employee details
 			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
 			    	 
-			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
+			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
 			    	 {
 			    		 $.each(committeeMemberList, function(key, value) 
 						 {
-			    			 if(value[1]!=null && value[1] == 'CM')   // CM-Committee Member
+			    			 if(value[1]!=null && (value[1] == 'CM' || value[1] == 'SE'))   // CM-Committee Member
 			   				 {
 			    				 if(flowEmpId!=null && flowEmpId == value[2])
 		    					 {
@@ -889,21 +996,6 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 		    					 	$(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
 		    					 }
 			   				 }
-						 });
-			    	 }
-			    	 
-			    	 if(value[2] == 'SE RECOMMENDED')
-			    	 {
-			    		 $.each(allEmployeeList, function(key, value) 
-						 {
-			    			 if(flowEmpId!=null && flowEmpId == value[0])
-	    					 {
-			    				 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
-	    					 }
-		    				 else
-	    					 {
-		    					 $(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
-	    					 }
 						 });
 			    	 }
 			    	 
@@ -955,7 +1047,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
     });
 }
 
-const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails, #RPBMemberSecretaryDetails, #chairmanDetails";
+const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails";
 
 $(document).on("change", dropdownSelector, function () {
     
@@ -998,6 +1090,10 @@ function ApprovalFlowForward() {
 
             if (value[2] != null) {
                 switch (value[2]) {
+                    case 'DIVISION HEAD APPROVED':
+                        roleId = '#DivisionHeadRole';
+                        message="Division Head";
+                        break;
                     case 'RO1 RECOMMENDED':
                         idAttribute = '#RPBMemberDetails1';
                         roleId = '#RPBMemberRole1';
@@ -1194,11 +1290,101 @@ function refreshModal(modalId) {
 
   </script>
   
-  <script>
-  $(function() {
-    console.log("jQuery version: " + $.fn.jquery);
-    console.log("Bootstrap version: " + $.fn.carousel.Constructor.VERSION);
-  });
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	var budgetType = $("#budgetTypeHidden").val();
+	if(budgetType!=null)
+	{
+		if(budgetType == 'N')
+		{
+			$(".proposedProjectClass").show();
+			var proposedProject = $("#proposedProjectHidden").val();
+			getProposedProjectDetails(proposedProject);
+		}
+	}
+	
+});
+
+$("#budgetType").change(function(){
+	
+	var budgetType = $("#budgetType").val();
+	if(budgetType == 'B')
+	{
+		$("#proposedProject").prop("disabled", true);
+		var form=$("#RequistionForm");
+		if(form)
+		{
+			form.submit();
+		}
+	}else if(budgetType == 'N')
+	{
+		$(".proposedProjectClass").show();
+		$("#proposedProject").prop("disabled", false);
+		proposedProjectOnChange();
+	}
+	
+});
+
+// onchange of BudgetType
+function proposedProjectOnChange()
+{
+	var divisionId = $("#divisionIdHidden").val();
+	$.get('getProposedProjectDetails.htm', {
+		divisionId : divisionId
+	}, function(responseJson) {
+		$('#proposedProject').find('option').remove();
+		$("#proposedProject").append("<option disabled > Select Proposed Project </option>");
+			var result = JSON.parse(responseJson);
+			$.each(result, function(key, value) {
+				
+				$("#proposedProject").append("<option value="+value[0]+" >"+ value[3]+"</option>");
+				
+			});
+			
+			var form=$("#RequistionForm");
+			if(form)
+			{
+				form.submit();
+			}
+	});
+}
+
+// onchange of Proposed Project Drop down
+$("#proposedProject").change(function(){
+	
+	var form=$("#RequistionForm");
+	if(form)
+	{
+		form.submit();
+	}
+	
+});
+
+
+function getProposedProjectDetails(proposedProjectId)
+{
+	var divisionId = $("#divisionIdHidden").val();
+	$.get('getProposedProjectDetails.htm', {
+		divisionId : divisionId
+	}, function(responseJson) {
+		$('#proposedProject').find('option').remove();
+		$("#proposedProject").append("<option disabled > Select Proposed Project </option>");
+			var result = JSON.parse(responseJson);
+			$.each(result, function(key, value) {
+				if(proposedProjectId!=null && proposedProjectId==value[0])
+				{
+					$("#proposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+				}
+				else
+				{
+					$("#proposedProject").append("<option value="+value[0]+" >"+ value[3]+"</option>");
+				}
+			});
+	});	
+}
+
 </script>
   
  

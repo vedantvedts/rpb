@@ -315,7 +315,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                           boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
 			                           boolean hasN = rc1Status.equals("N") || rc2Status.equals("N") || rc3Status.equals("N") || rc4Status.equals("N");
 			                           
-			                           if((currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC")) && !allNA && hasN){ %>
+			                           if(currentEmpStatus!=null && (currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC")) && !allNA && hasN){ %>
 			                           
 			                           <span style="color: #783d00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 11px;font-weight: 800;">Recommendation Pending</span>
 			                           

@@ -3,6 +3,7 @@ package com.vts.rpb.fundapproval.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -12,7 +13,7 @@ import com.vts.rpb.fundapproval.modal.FundApproval;
 
 public interface FundApprovalService 
 {
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId)  throws Exception;
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
 
 	public long AddFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
 	
@@ -45,7 +46,7 @@ public interface FundApprovalService
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember)  throws Exception;
+			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
 	
 	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception;
 	
@@ -55,9 +56,11 @@ public interface FundApprovalService
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception;
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth, FundApprovalBackButtonDto dto, String userName) throws Exception;
 
 	public String getCommitteeMemberType (long empId) throws Exception;
+
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
 }

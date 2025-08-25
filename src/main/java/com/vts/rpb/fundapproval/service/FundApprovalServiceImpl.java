@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
+import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -66,7 +67,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public long AddFundRequestSubmit(FundApproval fundApproval, FundApprovalAttachDto attachDto) throws Exception
 	{	
 		 long FundApprovalId=fundApprovalDao.AddFundRequestSubmit(fundApproval);
-		 	System.err.println("SERVICE FundApprovalId->"+FundApprovalId);
 		 	if(FundApprovalId >0) {
 		 		
 		 		String filePath = Paths.get(uploadpath, "FundApproval",String.valueOf(FundApprovalId)).toString();
@@ -131,7 +131,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
 	    long fundApprovalId = fundApprovalDao.EditFundRequestSubmit(approval);
-	    System.err.println("SERVICE FundApprovalId->" + fundApprovalId);
 	    
 	    if (fundApprovalId > 0) {
 	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
@@ -146,7 +145,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	            if (!attachDto.getFiles()[i].isEmpty()) {
 	                // Check if attachment with this name already exists
 	                Object[] existingAttach = fundApprovalDao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
-	                System.err.println("Service->existingAttach--"+Arrays.toString(existingAttach));
 	                
 	                if (existingAttach != null) {
 	                    // Update existing attachment
@@ -195,7 +193,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
 	                    fundApprovalDao.AddFundRequestAttachSubmit(modal);
 	                    
-	                    System.err.println("NEW else SECTION-");
 	                }
 	            }
 	        }
@@ -293,7 +290,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				    
 				    if(row[2]!=null)
 				    {
-				    	if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+				    	if((row[2].toString()).equalsIgnoreCase("DIVISION HEAD APPROVED"))
+				    	{
+				    		linkedMembers.setEmpId(fundApprovalData.getRc6());
+				    		linkedMembers.setMemberType("DH");    // Division Head
+				    	}
+				    	else if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
 				    	{
 				    		linkedMembers.setEmpId(fundApprovalData.getRc1());
 				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
@@ -545,9 +547,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember)  throws Exception{
+			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception{
 		
-		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember);
+		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,RupeeValue);
 	}
 	
 	@Override
@@ -674,8 +676,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception{
-		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType);
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception{
+		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 	}
 	
 	
@@ -883,6 +885,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		        return firstRow[0].toString();
 		    }
 		    return null;
+	}
+
+	@Override
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception {
+		return fundApprovalDao.getProposedProjectDetails(divisionId);
 	}
 	
 }

@@ -1,11 +1,8 @@
 package com.vts.rpb.utils;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 public class AmountConversion {
-	
-	static DecimalFormat df = new DecimalFormat( "#####################");
 
 	public static String DecimalRupeeFormat(String value) {
 		String[] parts = value.split("\\.");
@@ -51,42 +48,6 @@ public class AmountConversion {
 				if(amountType!=null)
 				{
 					String finalAmount=amount.toString();
-					if(amountType.equalsIgnoreCase("R"))
-					{
-						result=rupeeFormatForTypeRupees(finalAmount);
-					}
-					else if(amountType.equalsIgnoreCase("L") || amountType.equalsIgnoreCase("C"))
-					{
-						result=rupeeFormat(finalAmount);
-					}
-					else
-					{
-						result=rupeeFormat(finalAmount);
-					}
-				}
-			}
-			else
-			{
-				result=amount.toString();
-			}
-		}
-		else
-		{
-			result="0.00";
-		}
-		return result;
-	}
-	
-	private static String amountConvertionDetailsWithoutDecimal(Object amount,String amountType)
-	{
-		String result="";
-		if(amount!=null) 
-		{
-			if(isNumber(amount))
-			{
-				if(amountType!=null)
-				{
-					String finalAmount=amount.toString();
 					if(amountType.equalsIgnoreCase("R") || amountType.equalsIgnoreCase("Rupees"))
 					{
 						result=rupeeFormat(finalAmount);
@@ -106,7 +67,30 @@ public class AmountConversion {
 		{
 			result="0.00";
 		}
-		return df.format(result);
+		return result;
+	}
+	
+	private static String decimalRequiredOrNot(String amount)   //if decimal value is there, it will return whole Amount + decimal or else return whole Amount
+	{
+		String[] amountarray=amount.split("\\.");
+		if(amountarray!=null && amountarray.length > 0) 
+		{
+			String number=amountarray[0];
+			String paisa="0";
+			try {
+				paisa=(amountarray[1]!=null && amountarray[1]!="") ? amountarray[1] : "0" ;
+			}
+			catch (Exception e) {
+				paisa="0";
+			}
+			String decimal=paisa!=null && (new BigDecimal(paisa).compareTo(BigDecimal.ZERO) > 0) && amountarray[1] !=null ? "."+amountarray[1] : "";
+			return number+decimal;
+		}
+		else
+		{
+			return amount;
+		}
+		
 	}
 	
 	private static String rupeeFormat(String amount)
@@ -165,43 +149,6 @@ public class AmountConversion {
 		return minus + result + decimal;
 	}
 	
-	private static String rupeeFormatForTypeRupees(String amount) {
-	    String result = "", minus = "";
-
-	    if (amount != null && !amount.equalsIgnoreCase("-")) {
-	        // Take only integer part (ignore decimals completely)
-	        if (amount.contains(".")) {
-	            amount = amount.substring(0, amount.indexOf("."));
-	        }
-
-	        amount = amount.replace(",", ""); // Remove commas
-
-	        // Handle negatives
-	        if ((new BigDecimal(amount)).compareTo(BigDecimal.ZERO) < 0) {
-	            amount = amount.substring(1); // remove minus sign
-	            minus = "-";
-	        }
-
-	        int len = amount.length();
-	        if (len <= 3) {
-	            result = amount;
-	        } else {
-	            int a = 0;
-	            for (int i = len - 1; i >= 0; i--) {
-	                a++;
-	                result += amount.charAt(i);
-	                if ((a == 3 || (a > 3 && a % 2 == 1)) && i != 0) {
-	                    result += ",";
-	                }
-	            }
-	            result = new StringBuilder(result).reverse().toString();
-	        }
-	    } else {
-	        result = "0";
-	    }
-	    return minus + result;
-	}
-	
 	private static boolean isNumber(Object amount) {
 	    try {
 	        new BigDecimal(amount.toString());
@@ -217,7 +164,9 @@ public class AmountConversion {
 		String[] RupeePaisaSplit = null;
 
 		try {
+			System.out.println("%%%%%%-----"+RupeeAndPaisa);
 			RupeePaisaSplit = RupeeAndPaisa.split("\\.");
+            System.out.println("%%length---"+RupeePaisaSplit.length);
 		} catch (Exception e) {
 
 		}

@@ -49,6 +49,11 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.card{
+	border: 0px solid rgba(0, 0, 0, .125) !important;
+	
+}
+
 .page.card.dashboard-card {
     display: flex;
     flex-wrap: wrap;
@@ -240,10 +245,8 @@ if(fundApprovalDto!=null)
          
 <div style="text-align: center; margin-bottom: 20px;">
    <span style="font-weight: 700;font-size: 16px;">RE - </span>
-    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid "> Request Count</span> &nbsp;
-    <span style="color: #00008B; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
+    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
     <span style="font-weight: 700;font-size: 16px;">FBE - </span>
-    <span style="color: #701fa1; font-weight: 600;font-size: 14px;background-color: white;border-radius: 20px;padding: 5px 5px;border: solid"> Request Count</span> &nbsp;
     <span style="color: #004a8b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span>
 </div>
 
@@ -263,14 +266,15 @@ if(fundApprovalDto!=null)
             BigDecimal fbeAmount = new BigDecimal(row[6].toString());
     %>
     <div class="custom-card">
-    <div class="card-name" style="font-size: 16px;/*  background-image: linear-gradient(rgb(138 190 229), rgb(3 75 159) 50%) !important; */" >
+    <div class="card-name" style="font-size: 16px;background-image: linear-gradient(rgb(89 147 191), rgb(28 32 175 / 73%) 50%) !important;" >
+
             <%= divisionName %> <span>(<%= row[7]%>)</span>
         </div>
         <div class="card-body">
             <div class="row">
                 <!-- RE DETAILS -->
                 <div class="col-6 border-end Repopup" style="border-right: 1px solid #ccc;" align="center" title="RE Details">
-                        <div style="position: absolute; top: -16px;left: -1px;padding: 2px 6px; font-weight: 600; font-size: 16px;color: #2f3247;
+                        <div style="position: absolute; top: -16px;left: -1px;padding: 2px 6px; font-weight: 600; font-size: 16px;color: black;
                         /* border-radius: 4px; */background-image: linear-gradient(rgb(179 157 122), rgb(253 227 204) 50%) !important;border-bottom-right-radius: 12px;"> RE
                         </div>
                         
@@ -283,10 +287,10 @@ if(fundApprovalDto!=null)
                  <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <!-- <h5 class="card-title" style="color: #2f3247;"><b>RE DETAILS</b></h5> -->
                     <p style="display: flex; justify-content: center; align-items: center; position: relative;">
-					  <span style="font-weight: 600; color: #8f550b; font-size: 32px;"><%= reCount %></span>
+					  <span style="font-weight: 600;/*  color: #8f550b; */ font-size: 32px;background-color: #068b35; padding: 4px 10px; border-radius: 50%;color: white;"><%= reCount %></span>
 					</p>
                    <hr style="margin: 5px 0; border: none; border-top: 1px solid #ccc;">
-                    <p><span style="color: #00008B;font-weight: 600;<%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %>font-size: 19px;<%}%><%else if(AmtFormat!=null && "L".equalsIgnoreCase(AmtFormat)){ %>font-size: 24px;<%} %><%else if(AmtFormat!=null && "C".equalsIgnoreCase(AmtFormat)){ %>font-size: 27px;<%} %>"> <%= AmountConversion.amountConvertion(reAmount, AmtFormat) %></span></p>
+                    <p><span style="color: #8f550b;font-weight: 600;<%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %>font-size: 19px;<%}%><%else if(AmtFormat!=null && "L".equalsIgnoreCase(AmtFormat)){ %>font-size: 24px;<%} %><%else if(AmtFormat!=null && "C".equalsIgnoreCase(AmtFormat)){ %>font-size: 27px;<%} %>"> <%= AmountConversion.amountConvertion(reAmount, AmtFormat) %></span></p>
           	    </button>
                 </form>
                 </div>
@@ -295,7 +299,7 @@ if(fundApprovalDto!=null)
                 <div class="col-6 Fbepopup" align="center" title="FBE Details">
                 
                    <div style="position: absolute;top: -16px;left: -1px;padding: 2px 6px;font-weight: 600;
-                   font-size: 16px;color: #2f3247;/*  border-radius: 4px; */background-color: white;background-image: linear-gradient(rgb(150, 145, 196), rgb(221, 218, 253) 50%) !important;border-bottom-right-radius: 12px;">FBE </div> <!-- linear-gradient(rgb(126 185 223), rgb(176 233 253) 50%) !important -->
+                   font-size: 16px;color: black;/*  border-radius: 4px; */background-color: white;background-image: linear-gradient(rgb(150, 145, 196), rgb(221, 218, 253) 50%) !important;border-bottom-right-radius: 12px;">FBE </div> <!-- linear-gradient(rgb(126 185 223), rgb(176 233 253) 50%) !important -->
             
                 <form action="estimateTypeParticularDivList.htm" onclick="this.form.submit()">
                 <input type="hidden" name="divisionId" value="<%=row[0]%>">
@@ -305,7 +309,7 @@ if(fundApprovalDto!=null)
                 
                 <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <p style="display: flex; justify-content: center; align-items: center; position: relative;">
-					  <span style="font-weight: 600; color: #701fa1; font-size: 32px;"><%= fbeCount %></span> 
+					  <span style="font-weight: 600; font-size: 32px; background-color: #d56e04; padding: 4px 10px; border-radius: 50%;color: white;"><%= fbeCount %></span> 
 					</p>
                 	<hr style="margin: 5px 0; border: none; border-top: 1px solid #ccc;" />
                     <p><span style="color: #004a8b;font-weight: 600;<%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %>font-size: 19px;<%}%><%else if(AmtFormat!=null && "L".equalsIgnoreCase(AmtFormat)){ %>font-size: 24px;<%} %><%else if(AmtFormat!=null && "C".equalsIgnoreCase(AmtFormat)){ %>font-size: 27px;<%} %>"><%= AmountConversion.amountConvertion(fbeAmount, AmtFormat) %></span></p>

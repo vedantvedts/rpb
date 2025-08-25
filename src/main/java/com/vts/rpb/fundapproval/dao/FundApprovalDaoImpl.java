@@ -36,7 +36,9 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
+
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status, d.DivisionCode, d.DivisionName,f.InitiationId, f.BudgetType, ini.ProjectShortName, ini.ProjectTitle FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=f.DivisionId LEFT JOIN  pms_dms_dev.pfms_initiation ini ON ini.InitiationId = f.InitiationId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
+
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
 			query.setParameter("estimateType",estimateType);
@@ -56,14 +58,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public long AddFundRequestSubmit(FundApproval fundApproval) throws Exception {
 		try {
-			System.err.println("InitiationDate DAo-"+fundApproval.getRequisitionDate());
 			manager.persist(fundApproval);
 			manager.flush();
 			
 			return fundApproval.getFundApprovalId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundRequestSubmit() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -72,14 +73,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public long AddFundApprovalTrans(FundApprovalTrans fundApprovalTrans) throws Exception {
 		try {
-			System.err.println("InitiationDate DAo-"+fundApprovalTrans.getFundApprovalId());
 			manager.persist(fundApprovalTrans);
 			manager.flush();
 			
 			return fundApprovalTrans.getFundApprovalId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundApprovalTrans() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -93,7 +93,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return Attach.getFundApprovalAttachId();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getAllEmployeeDetailsByDivisionId() "+ e);
+			logger.error(new Date() +"Inside DAO AddFundRequestAttachSubmit() "+ e);
 			e.printStackTrace();
 			return 0L;
 		}
@@ -136,7 +136,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType,IFNULL((CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1 WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2 WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3 WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4 WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5 WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficer WHEN f.StatusName='INITIATION' THEN fa.InitiatingOfficer END),0) AS EmpId,(CASE WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1Role WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2Role WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3Role WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4Role WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5Role WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficerRole END) AS EmpRole FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' LEFT JOIN fund_approval fa ON fa.FundApprovalId=:fundRequestId WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
+			Query query= manager.createNativeQuery("SELECT f.FlowDetailsId,f.FlowMasterId,f.StatusName,f.StatusType,IFNULL((CASE WHEN f.StatusName='DIVISION HEAD APPROVED' THEN (CASE WHEN fa.RC6 = 0 THEN (SELECT e.EmpId FROM "+mdmdb+".employee e INNER JOIN "+mdmdb+".division_master d ON d.DivisionHeadId=e.EmpId WHERE e.IsActive = '1' AND d.DivisionId = fa.DivisionId) ELSE fa.RC6 END) WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1 WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2 WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3 WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4 WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5 WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficer WHEN f.StatusName='INITIATION' THEN fa.InitiatingOfficer END),0) AS EmpId,(CASE WHEN f.StatusName='DIVISION HEAD APPROVED' THEN fa.RC6Role WHEN f.StatusName='RO1 RECOMMENDED' THEN fa.RC1Role WHEN f.StatusName='RO2 RECOMMENDED' THEN fa.RC2Role WHEN f.StatusName='RO3 RECOMMENDED' THEN fa.RC3Role WHEN f.StatusName='SE RECOMMENDED' THEN fa.RC4Role WHEN f.StatusName='RPB MEMBER SECRETARY APPROVED' THEN fa.RC5Role WHEN f.StatusName='CHAIRMAN APPROVED' THEN fa.ApprovingOfficerRole END) AS EmpRole FROM ibas_flow_details f INNER JOIN ibas_flow_master fm ON fm.FlowMasterId=f.FlowMasterId AND fm.IsActive='1' LEFT JOIN fund_approval fa ON fa.FundApprovalId=:fundRequestId WHERE (:estimatedCost BETWEEN fm.StartCost AND fm.EndCost) AND f.StatusType='A'");
 			query.setParameter("estimatedCost",estimatedCost);
 			query.setParameter("fundRequestId",fundRequestId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
@@ -151,7 +151,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception{
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,f.ItemNomenclature,f.Justification, f.Apr , f.May , f.Jun , f.Jul ,f.Aug, f.Sep , f.Oct , f.Nov , f.December ,f.Jan , f.Feb ,f.Mar,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer, e.EmpName,ed.Designation,dm.DivisionCode,dm.DivisionName,f.RequisitionDate,f.status FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN division_master dm ON dm.DivisionId=f.DivisionId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId WHERE f.FundApprovalId=:fundApprovalId ORDER BY f.FundApprovalId DESC");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,f.ItemNomenclature,f.Justification, f.Apr , f.May , f.Jun , f.Jul ,f.Aug, f.Sep , f.Oct , f.Nov , f.December ,f.Jan , f.Feb ,f.Mar,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer, e.EmpName,ed.Designation,dm.DivisionCode,dm.DivisionName,f.RequisitionDate,f.status,f.BudgetType,f.InitiationId FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=f.DivisionId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId WHERE f.FundApprovalId=:fundApprovalId ORDER BY f.FundApprovalId DESC");
 			query.setParameter("fundApprovalId", fundApprovalId);
 			return (Object[])query.getSingleResult();
 			
@@ -316,6 +316,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		try {
 			FundApproval fundApproval=manager.find(FundApproval.class, modal.getFundApprovalId());
 			
+			fundApproval.setBudgetType(modal.getBudgetType());
+			fundApproval.setInitiationId(modal.getInitiationId());
 			fundApproval.setFinYear(modal.getFinYear());
 			fundApproval.setEstimateType(modal.getEstimateType());
 			fundApproval.setDivisionId(modal.getDivisionId());
@@ -356,7 +358,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT cm.CommitteeMemberId,cm.MemberType,cm.EmpId,e.EmpName,ed.Designation,cm.FromDate,cm.ToDate FROM ibas_committee_members cm LEFT JOIN employee e ON e.EmpId=cm.EmpId LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId WHERE cm.IsActive='1' AND (:currentDate BETWEEN cm.FromDate AND cm.ToDate)");
+			Query query= manager.createNativeQuery("SELECT cm.CommitteeMemberId,cm.MemberType,cm.EmpId,e.EmpName,ed.Designation,cm.FromDate,cm.ToDate FROM ibas_committee_members cm LEFT JOIN "+mdmdb+".employee e ON e.EmpId=cm.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId WHERE cm.IsActive='1' AND (:currentDate BETWEEN cm.FromDate AND cm.ToDate)");
 			query.setParameter("currentDate",currentDate);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
@@ -369,11 +371,11 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 	
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status,String committeeMember)  throws Exception{
+			String fromCost, String toCost,String status,String committeeMember,String RupeeValue)  throws Exception{
 		try {
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
 					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
-					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
+					+ "f.Justification,CAST(SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar)/:rupeeValue AS DECIMAL(15,2)) AS EstimatedCost,\n"
 					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate FROM fund_approval f \n"
 					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer \n"
 					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId \n"
@@ -383,11 +385,11 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 					+ " AND f.EstimateType=:estimateType\n"
 					+ " AND (CASE WHEN '-1' = :divisionId\n"
 					+ " THEN 1 = 1 ELSE f.DivisionId = :divisionId END) \n"
-					+ " AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType = 'CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId ) END)  END)  \n"
+					+ " AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType = 'CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId ) END)  END)  \n"
 					+ " AND (CASE WHEN 'NA'=:statuss THEN 1=1 ELSE f.Status=:statuss END)\n"
 					+ " GROUP BY f.FundApprovalId \n"
 					+ " HAVING \n"
-					+ "    SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
+					+ "    SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar)/:rupeeValue BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
 		
 			//Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status FROM fund_approval f LEFT JOIN employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId  WHERE f.FinYear=:finYear AND f.ProjectId=:projectId  AND f.BudgetHeadId=:budgetHeadId AND f.BudgetItemId=:budgetItemId AND f.Status=:statuss AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId) END) AND f.Status='N' GROUP BY f.FundApprovalId HAVING SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost");
 			System.err.println("divid DAO->"+divisionId);
@@ -403,6 +405,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("toCost",toCost);
 			query.setParameter("statuss",status);
 			query.setParameter("memberType",committeeMember);
+			query.setParameter("rupeeValue",RupeeValue);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			
@@ -603,26 +606,12 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	
 	@Override
 	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost,String status,String memberType) throws Exception{
+			String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception{
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
-					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
-					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
-					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate,dm.DivisionCode FROM fund_approval f \n"
-					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer \n"
-					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId \n"
-					+ "LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId\n"
-					+ "LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId \n"
-					+ "LEFT JOIN  division_master dm ON dm.DivisionId = :divisionId\n"
-					+ "WHERE f.FinYear=:finYear AND f.ProjectId=0  AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END)  AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) \n"
-					+ "AND f.EstimateType=:estimateType\n"
-					+ "AND (CASE WHEN '-1' = :divisionId\n"
-					+ "THEN 1 = 1 ELSE f.DivisionId = :divisionId END) \n"
-					+ "AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType = 'CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId=:empId ) END)  END)  \n"
-					+ "AND (CASE WHEN :statuss = 'NA' THEN 1 WHEN :statuss = 'A' THEN CASE WHEN f.Status = 'A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status != 'A' THEN 1 ELSE 0 END END) = 1\n"
-					+ "GROUP BY f.FundApprovalId \n"
-					+ "HAVING \n"
-					+ "SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
+
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,CAST(SUM(f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar)/:rupeeValue AS DECIMAL(17,2)) AS EstimatedCost\n"
+					+ ",f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.Status,f.RequisitionDate,dm.DivisionCode,MAX(CASE WHEN ifa.RCStausCode='CHAIRMAN APPROVED' THEN ifa.Remarks ELSE '-' END) AS ChairmanRemarks,att.FundApprovalAttachId, att.FileName, att.OriginalFileName, att.FundApprovalId, att.Path FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=:divisionId LEFT JOIN ibas_fund_approval_trans ifa ON ifa.FundApprovalId=f.FundApprovalId LEFT JOIN fund_approval_attach att ON att.FundApprovalId=f.FundApprovalId WHERE f.FinYear=:finYear AND f.ProjectId=0 AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END) AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) AND f.EstimateType=:estimateType AND (CASE WHEN '-1'=:divisionId THEN 1=1 ELSE f.DivisionId=:divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType='CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) END) AND (CASE WHEN :statuss='NA' THEN 1 WHEN :statuss='A' THEN CASE WHEN f.Status='A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status!='A' THEN 1 ELSE 0 END END)=1 GROUP BY f.FundApprovalId,att.FundApprovalAttachId,att.FileName,att.OriginalFileName,att.FundApprovalId,att.Path HAVING SUM(f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar)/:rupeeValue BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
+
 			query.setParameter("divisionId", divisionId);
 			query.setParameter("estimateType", estimateType);
 			query.setParameter("finYear",finYear);
@@ -634,6 +623,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("toCost",toCost);
 			query.setParameter("statuss",status);
 			query.setParameter("memberType",memberType);
+			query.setParameter("rupeeValue",RupeeValue);
 			return query.getResultList();
 			
 		}catch (Exception e) {
@@ -676,7 +666,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getDemandDetails(String demandId) throws Exception {
 	 try {
-			Query query= manager.createNativeQuery("SELECT b.BookingId,b.DemandNo,b.ProjectCode,b.ProjectId,b.BudgetHeadId,b.BudgetItemId,b.DivisionCode,d.DivisionId,b.OfficerCode,e.EmpId FROM tblbooking b LEFT JOIN division_master d ON d.DivisionCode=b.DivisionCode LEFT JOIN employee e ON e.EmpNo=b.OfficerCode WHERE b.BookingId=:demandId");
+			Query query= manager.createNativeQuery("SELECT b.BookingId,b.DemandNo,b.ProjectCode,b.ProjectId,b.BudgetHeadId,b.BudgetItemId,b.DivisionCode,d.DivisionId,b.OfficerCode,e.EmpId FROM tblbooking b LEFT JOIN "+mdmdb+".division_master d ON d.DivisionCode=b.DivisionCode LEFT JOIN "+mdmdb+".employee e ON e.EmpNo=b.OfficerCode WHERE b.BookingId=:demandId");
 			query.setParameter("demandId", demandId);
 			List<Object[]> result = (List<Object[]>)query.getResultList();
 			return result; 
@@ -691,7 +681,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT c.CommitmentId,c.SoNo,c.ProjectCode,c.ProjectId,c.BudgetHeadId,c.BudgetItemId,c.DivisionCode,d.DivisionId,c.OfficerCode,e.EmpId FROM tblcommitment c LEFT JOIN division_master d ON d.DivisionCode=c.DivisionCode LEFT JOIN employee e ON e.EmpNo=c.OfficerCode WHERE c.CommitmentId=:commitmentId");
+			Query query= manager.createNativeQuery("SELECT c.CommitmentId,c.SoNo,c.ProjectCode,c.ProjectId,c.BudgetHeadId,c.BudgetItemId,c.DivisionCode,d.DivisionId,c.OfficerCode,e.EmpId FROM tblcommitment c LEFT JOIN "+mdmdb+".division_master d ON d.DivisionCode=c.DivisionCode LEFT JOIN "+mdmdb+".employee e ON e.EmpNo=c.OfficerCode WHERE c.CommitmentId=:commitmentId");
 			query.setParameter("commitmentId", commitmentId);
 			List<Object[]> result = (List<Object[]>)query.getResultList();
 			return result; 
@@ -702,5 +692,21 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return null;
 		}
 	}
+
+	@Override
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT i.InitiationId,i.EmpId,i.DivisionId,i.ProjectShortName,i.ProjectTitle,i.FeCost,i.ReCost,i.ProjectCost FROM "+mdmdb+".pfms_initiation i WHERE i.IsActive='1' AND i.DivisionId= :divisionId");
+			query.setParameter("divisionId", divisionId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getProposedProjectDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 
 }

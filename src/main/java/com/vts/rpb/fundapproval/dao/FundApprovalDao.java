@@ -1,4 +1,4 @@
-package com.vts.rpb.fundapproval.dao;
+	package com.vts.rpb.fundapproval.dao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,7 +47,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 	
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember)  throws Exception;
+			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
 
 	public long insertFundApprovalTransaction(FundApprovalTrans transaction) throws Exception;
 
@@ -75,14 +75,16 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType) throws Exception;
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
 
-	public String getCommitteeMemberType (long empId) throws Exception;
+	public List<Object[]> getCommitteeMemberType (long empId) throws Exception;
 
 	public List<Object[]> getDemandDetails(String demandId) throws Exception;
 
 	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception;
+
+	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
 
 }
