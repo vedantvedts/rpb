@@ -518,7 +518,7 @@ input[name="ItemNomenclature"]::placeholder {
 											       </button>
 											       
 									       </td>
-				                   			<td align="center"><%if(data[29]!=null && !data[29].toString().isEmpty()){ %> <%=data[29] %><%} else { %>-<%} %></td>
+				                   			<td align="center"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>
