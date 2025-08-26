@@ -892,4 +892,10 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return fundApprovalDao.getProposedProjectDetails(divisionId);
 	}
 	
+	@Override
+	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception {
+		return fundApprovalDao.getAttachmentDetails(fundApprovalId);
+	}
+	
+	
 }
