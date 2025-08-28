@@ -63,4 +63,6 @@ public interface FundApprovalService
 	public String getCommitteeMemberType (long empId) throws Exception;
 
 	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
+	
+	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception;
 }

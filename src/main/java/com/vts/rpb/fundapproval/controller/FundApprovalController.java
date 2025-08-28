@@ -144,7 +144,7 @@ public class FundApprovalController
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
    			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
-   			
+   			req.setAttribute("MemberType", committeeMember);
    			//user selected different year Estimate type reset to RE
    			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
    			   backDto.setDivisionBackBtn(DivisionDetails);
@@ -827,6 +827,40 @@ public class FundApprovalController
 		}
 		return "fundapproval/addFundRequest";
 		
+	}
+	
+	@RequestMapping(value = "GetAttachmentDetailsAjax.htm", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public List<Map<String, Object>> GetAttachmentDetailsAjax(HttpServletRequest req) {
+	    long fundApprovalId = Long.parseLong(req.getParameter("fundApprovalId"));
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+
+	    try {
+	    	List<Object[]> list = fundApprovalService.getAttachmentDetails(String.valueOf(fundApprovalId));
+	    	list.forEach(a -> System.err.println("Attachmentdetails - " + Arrays.toString(a)));
+
+	        if (list != null) {
+	            for (Object[] obj : list) {
+	                Map<String, Object> map = new HashMap<>();
+	                map.put("fundApprovalAttachId", obj[0]);
+	                map.put("BudgetHead", obj[7]);
+	                map.put("InitiatingOfficer", obj[14]); 
+	                map.put("Designation", obj[15]);
+	                map.put("DivisionShortName", obj[16]);
+	                map.put("Division", obj[17]);
+	                map.put("EstimateType", obj[1]);
+	                map.put("REFBEYear", obj[4]);
+	                map.put("ItemNomenculature", obj[10]);
+	                map.put("Justification", obj[11]);
+	                map.put("Status", obj[19]);
+	                map.put("BudgetType", obj[20]);
+	                resultList.add(map);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return resultList;
 	}
 	
 	@RequestMapping(value = "GetFundRequestAttachmentAjax.htm", method = { RequestMethod.GET, RequestMethod.POST })
@@ -1664,6 +1698,7 @@ public class FundApprovalController
 				
 				List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 				
+				estimateTypeParticularDivList.stream().forEach(a->System.err.println(Arrays.toString(a)));
 				req.setAttribute("attachList",estimateTypeParticularDivList);
 				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
 				req.setAttribute("ExistingbudgetItemId", budgetItemId);
@@ -1865,5 +1900,6 @@ public class FundApprovalController
 			return "fundapproval/fundReportListPrint";
 			
 		}
+
 		
 }

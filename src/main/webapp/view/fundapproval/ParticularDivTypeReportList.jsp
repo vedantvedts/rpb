@@ -254,7 +254,7 @@ input[name="ItemNomenclature"]::placeholder {
 					    margin-top: 8px;
 					}
 					
-.page.card.dashboard-card {
+.filterCard {
             min-height: 141px !important;
             max-height: 141px !important;
 
@@ -312,20 +312,20 @@ input[name="ItemNomenclature"]::placeholder {
 
 <div class="card-header page-top">
 	 	<div class="row">
-	 	  <div class="col-md-5"><h5> Fund Report</h5></div>
-	      <!-- <div class="col-md-9">
-	    	 <ol class="breadcrumb ">
-	    	 <li class="breadcrumb-item ml-auto"><a	href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
-	          <li class="breadcrumb-item active " aria-current="page">Fund Report</li>
+	 	  <div class="col-md-3"><h5> Fund Report</h5></div>
+	      <div class="col-md-9">
+	    	 <ol class="breadcrumb" style="justify-content: right;">
+	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
+	          <li class="breadcrumb-item active" aria-current="page">Report List</li>
              </ol>
-           </div> -->
+           </div>
          </div>
        </div> 
      
   	    
   	    
-		
-      <div class="page card dashboard-card">
+ <div class="page card dashboard-card">
+      <div class="filterCard">
     <form action="estimateTypeParticularDivList.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
@@ -480,7 +480,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                    <th>Item Nomenclature</th>
 					                    <th class="text-nowrap">Estimated Cost</th>
 					                    <th>Justification</th>
-					                    <th>Enclosures</th>
+					                    <th>View</th>
 					                    <th>Status</th>
 					                    <th>Remarks</th>
 					                </tr>
@@ -503,9 +503,9 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td align="center" id="budgetHead"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
-				                   			<td align="right"><%if(data[20]!=null){ %><%= AmountConversion.amountConvertion(data[20], AmtFormat) %><%}else{ %> - <%} %></td>
+				                   			<td class='tableEstimatedCost' align="right"><%if(data[20]!=null){ %><%= AmountConversion.amountConvertion(data[20], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>')" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
+				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>', this)" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
 				                   			<td>
 				                   			
 				                   			 
@@ -576,6 +576,7 @@ input[name="ItemNomenclature"]::placeholder {
   <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
   <input type="hidden" name="TaDaIdAjax" id="TaDaIdAjax" value="">
 
+<div class="AttachmentDetails"></div>
   <div class="row">
     <!-- Left: Attachments Table -->
     <div class="col-md-6">
@@ -583,6 +584,7 @@ input[name="ItemNomenclature"]::placeholder {
       <table class="table table-bordered table-striped mt-2" id="AttachmentModalTable">
         <thead class="thead-dark">
           <tr>
+            <th>SN</th>
             <th style="width: 60%;">Attachment Name</th>
             <th style="width: 40%; text-align: center;">Actions</th>
           </tr>
@@ -593,12 +595,12 @@ input[name="ItemNomenclature"]::placeholder {
 
     <!-- Right: File Preview Section -->
     <div class="col-md-6" id="previewSection" style="display: none;">
-      <h5 class="text-primary" style="font-weight: 600;">Preview:</h5>
-      <iframe id="filePreviewIframe" style="width: 100%; height: 600px; border: 1px solid #ccc;"></iframe>
+      <h5 class="text-primary" style="font-weight: 600;">Preview:&nbsp;&nbsp;<span  style="color:black;">(</span><span id="previewFileName" style="color:black;"></span><span  style="color:black;">)</span></h5>
+      <iframe id="filePreviewIframe" style="width: 100%; height: 440px; border: 1px solid #ccc;"></iframe>
     </div>
   </div>
 </div>
-
+</div>
 
     </div>
   </div>
@@ -1020,53 +1022,140 @@ function refreshModal(modalId) {
 	  		$("#REstimateType").prop("checked", true);
 	  	}
   });
-  
-  function openAttachmentModal(fundApprovalId) {
-	  $.ajax({
-	    url: 'GetFundRequestAttachmentAjax.htm',
-	    method: 'GET',
-	    data: { fundApprovalId: fundApprovalId },
-	    success: function(data) {
-	      var body = $("#eAttachmentModalBody");
-	      body.empty();
-
-	      if (data.length === 0) {
-	        body.append("<tr><td colspan='2' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
-	      } else {
-	        $.each(data, function(index, attach) {
-	          var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
-	          var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
-
-	          var row = "<tr>" +
-	            "<td style='text-align: center;font-weight:700'>" + attach.fileName + "</td>" +
-	            "<td style='text-align: center;'>" +
-	            "<button class='btn fa fa-eye text-primary' title='preview - "+attach.fileName+" Attachment' onclick=\"previewAttachment('" + viewUrl + "')\"></button>" +
-	            "</td>" +
-	            "</tr>";
-	          body.append(row);
-	        });
-	      }
-
-	      // Hide preview on modal open
-	      $("#previewSection").hide();
-	      $("#filePreviewIframe").attr("src", "");
-
-	      $(".AttachmentModal").modal("show");
-	    },
-	    error: function() {
-	      alert("Failed to load attachments.");
-	    }
-	  });
-	}
-
-	function previewAttachment(url) {
-	  $("#filePreviewIframe").attr("src", url);
-	  $("#previewSection").show();
-	}
-
-
-
   </script>
+ <script type="text/javascript">
+// Define function in global scope
+function openAttachmentModal(fundApprovalId, ec) {
+    console.log('Opening attachment modal for ID: ' + fundApprovalId);
+
+    var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
+
+    // First AJAX call (Details)
+    $.ajax({
+        url: 'GetAttachmentDetailsAjax.htm',
+        method: 'GET',
+        data: { fundApprovalId: fundApprovalId },
+        success: function(data) {
+            console.log('AJAX success', data);
+
+            var detailsDiv = $(".AttachmentDetails");
+            detailsDiv.empty(); // clear previous
+
+            if (data && data.length > 0) {
+                var attach = data[0];
+                var statusColor = '';
+                if (attach.Status === 'Approved') statusColor = 'green';
+                else if (attach.Status === 'Pending') statusColor = '#8c2303';
+                else if (attach.Status === 'Forwarded') statusColor = 'blue';
+                else if (attach.Status === 'Returned') statusColor = 'red';
+
+                var html = '<table class="table table-bordered table-striped">'
+                    + '<tbody>'
+                    + '<tr>'
+                    + '<th style="color:#0080b3; font-size:16px;">Budget Head</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetHead || '') + '</td>'
+                    + '<th style="color:#0080b3; font-size:16px;">Budget Type</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetType || '') + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<th style="color:#0080b3; font-size:16px;">Estimate Type</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.EstimateType || '') + ' (' + (attach.REFBEYear || '') + ')</td>'
+                    + '<th style="color:#0080b3; font-size:16px;">Initiating Officer</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.InitiatingOfficer || '') + ', ' + (attach.Designation || '') + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<th style="color:#0080b3; font-size:16px;">Item Nomenclature</th>'
+                    + '<td colspan="3" style="font-weight:600; font-size:16px;">' + (attach.ItemNomenculature || '') + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<th style="color:#0080b3; font-size:16px;">Justification</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.Justification || '') + '</td>'
+                    + '<th style="color:#0080b3; font-size:16px;">Estimated Cost</th>'
+                    + '<td style="color:#00008B;font-weight:600; font-size:16px;">' + (estimatedCost || '-') + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<th style="color:#0080b3; font-size:16px;">Division</th>'
+                    + '<td style="font-weight:600; font-size:16px;">' + (attach.Division || '') + ' (' + (attach.DivisionShortName || '') + ')</td>'
+                    + '<th style="color:#0080b3; font-size:16px;">Status</th>'
+                    + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '</td>'
+                    + '</tr>'
+                    + '</tbody>'
+                    + '</table>';
+
+                detailsDiv.append(html);
+            } else {
+                detailsDiv.append("<div class='text-danger fw-bold'>No details found</div>");
+            }
+        },
+        error: function() {
+            console.error("AJAX call failed");
+            $(".AttachmentDetails").html("<div class='text-danger fw-bold'>Failed to load details</div>");
+        }
+    });
+
+    // Second AJAX call (Attachments list)
+    $.ajax({
+        url: 'GetFundRequestAttachmentAjax.htm',
+        method: 'GET',
+        data: { fundApprovalId: fundApprovalId },
+        success: function(data) {
+            var body = $("#eAttachmentModalBody");
+            body.empty();
+            var count=1;
+
+            if (data.length === 0) {
+                body.append("<tr><td colspan='3' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
+                $("#previewSection").hide();
+                $("#filePreviewIframe").attr("src", "");
+                $("#previewFileName").text(""); 
+            } else {
+                $.each(data, function(index, attach) {
+                    var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
+                    var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
+
+                    var row = "<tr>" +
+                      "<td style='font-weight:700'>" + count++ + ".</td>" +
+                        "<td style='text-align: center; font-weight:700'>" + attach.fileName + "</td>" +
+                        "<td style='text-align: center;'>" +
+                        "<button class='btn fa fa-eye text-primary' title='Preview - " + attach.fileName + " Attachment' onclick=\"previewAttachment('" + viewUrl + "','" + attach.fileName + "')\"></button>" +
+                        "</td>" +
+                        "</tr>";
+                    body.append(row);
+
+                    // Auto-preview first attachment
+                    if (index === 0) {
+                        previewAttachment(viewUrl, attach.fileName);
+                    }
+                });
+            }
+
+            $(".AttachmentModal").modal("show");
+        },
+        error: function() {
+            alert("Failed to load attachments.");
+        }
+    });
+}
+
+// Define previewAttachment globally
+function previewAttachment(url, fileName) {
+    $("#filePreviewIframe").attr("src", url);
+    $("#previewSection").show();
+    $("#previewFileName").text(fileName || "");
+}
+
+// Document ready logic
+$(document).ready(function() {
+    var estimateType = $("#estimateType").val();
+    if (estimateType === 'F') {
+        $("#FBEstimateType").prop("checked", true);
+    } else if (estimateType === 'R') {
+        $("#REstimateType").prop("checked", true);
+    }
+});
+</script>
+
+  
   <script>
   function validateCost() {
 	    var FromCost = parseInt($("#FromCost").val(), 10);
