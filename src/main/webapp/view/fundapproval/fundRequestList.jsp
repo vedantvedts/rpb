@@ -406,7 +406,7 @@ input[name="ItemNomenclature"]::placeholder {
 				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 						
 						<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">
-					        <table class="table table-bordered table-hover table-striped table-condensed" id="RequisitionList">
+					        <table class="table table-bordered table-hover table-striped table-condensed" id="RequisitionListTable">
 					            <thead>
 					                <tr>
 					                    <th>SN</th>
@@ -1213,16 +1213,21 @@ function refreshModal(modalId) {
   </script>
   
   <script type="text/javascript">
-  
-  <% if(requisitionList!=null && requisitionList.size()>0){ %>
-  $("#RequisitionList").DataTable({
-		"lengthMenu": [[10, 25, 50, 75, 100,'-1'],[10, 25, 50, 75, 100,"All"]],
-	 	 "pagingType": "simple",
-	 	 "pageLength": 10,
-	 	 "ordering": true
+  $(document).ready(function () {
+	    $('#RequisitionListTable').DataTable({
+	        paging: true,
+	        searching: true,
+	        info: true,
+	        lengthChange: true,
+	        pageLength: 10,
+	        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+	        order: [],
+	        scrollX: true
+	    });
 	});
-  <%}%>
-  
+
+
+   
   $('#FBEstimateType,#REstimateType').change(function(event) {
 		var form=$("#RequistionForm");
 			if(form)
