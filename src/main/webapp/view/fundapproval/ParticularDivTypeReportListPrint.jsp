@@ -344,33 +344,72 @@ border-collapse: collapse;
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
 				                   			<td align="right" style="font-weight: 400;color: #00008B;"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
-				                   			<td id="Files">   <%
-				                   			int count=1;
-     if (data[29] != null && !data[29].toString().isEmpty()) {
-         String[] files = data[29].toString().split("\\|\\|");
-         for (String fileEntry : files) {
-             String[] parts = fileEntry.split("::");
-             if (parts.length == 4) {
-                 String fileName = parts[0];          // actual file ID / stored name
-                 String originalName = parts[1];      // original uploaded name
-                 String filePath = parts[2];
-                 String FundApprovalAttachId = parts[3];// storage path (if needed)
-  %>
-<a href="FundRequestAttachDownload.htm?attachid=<%=FundApprovalAttachId%>"
-  target="_blank"
-  style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
-  title="Click to preview/download">
-  <i class="fa fa-download"></i> <%=count++ %>. <%=fileName%>
-</a><br/>
-  <%
-             }
-         }
-     } else {
-  %>
-         -
-  <%
-     }
-  %></td>
+<td id="Files">
+<%
+    int count = 1;
+    if (data[29] != null && !data[29].toString().isEmpty()) {
+        String[] files = data[29].toString().split("\\|\\|");
+
+        // Categories in required order
+        String[] categories = {"BQ", "Cost Of Estimate", "Justification"};
+
+        // Track already printed files
+        java.util.Set<String> printed = new java.util.HashSet<>();
+
+        // Print files that belong to defined categories (in order)
+        for (String category : categories) {
+            for (String fileEntry : files) {
+                String[] parts = fileEntry.split("::");
+                if (parts.length == 4) {
+                    String fileName = parts[0];
+                    String originalName = parts[1];
+                    String filePath = parts[2];
+                    String FundApprovalAttachId = parts[3];
+
+                    if (fileName.contains(category) && !printed.contains(FundApprovalAttachId)) {
+                        printed.add(FundApprovalAttachId);
+%>
+                        <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                           target="_blank"
+                           style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                           title="Click to preview/download">
+                           <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                        </a><br/>
+<%
+                    }
+                }
+            }
+        }
+
+        // Print files not in predefined categories
+        for (String fileEntry : files) {
+            String[] parts = fileEntry.split("::");
+            if (parts.length == 4) {
+                String fileName = parts[0];
+                String FundApprovalAttachId = parts[3];
+
+                if (!printed.contains(FundApprovalAttachId)) {
+                    printed.add(FundApprovalAttachId);
+%>
+                    <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                       target="_blank"
+                       style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                       title="Click to preview/download">
+                       <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                    </a><br/>
+<%
+                }
+            }
+        }
+    } else {
+%>
+        -
+<%
+    }
+%>
+</td>
+
+
 				                   			<td style="font-weight: 400"><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
 				                   			<td align="center" style="font-weight: 200"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
 			                      	
