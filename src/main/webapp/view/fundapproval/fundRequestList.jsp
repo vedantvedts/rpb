@@ -290,8 +290,6 @@ input[name="ItemNomenclature"]::placeholder {
 			estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
 			fbeYear=fundApprovalDto.getFBEYear();
 			reYear=fundApprovalDto.getREYear();
-			budgetType=fundApprovalDto.getBudgetType();
-			proposedProject=fundApprovalDto.getProposedProject();
 		}
 		
 		%>
@@ -374,7 +372,7 @@ input[name="ItemNomenclature"]::placeholder {
 						  </table>
 					</div>
 					
-					<div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: end;border-bottom-right-radius: 0px !important;margin:0px !important;width: 100%;background-color: transparent !important;">
+				<%-- 	<div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: end;border-bottom-right-radius: 0px !important;margin:0px !important;width: 100%;background-color: transparent !important;">
 						 <div class="form-inline" style="justify-content: end;">
 				           <label style="font-weight: bold;">Budget :&nbsp;&nbsp;</label>
 					            <div class="form-inline">
@@ -396,7 +394,7 @@ input[name="ItemNomenclature"]::placeholder {
 							  </div>
 						</div> 
 						 
-					</div>
+					</div> --%>
 					
 				 </form> 
 				 
@@ -411,6 +409,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            <thead>
 					                <tr>
 					                    <th>SN</th>
+					                    <th>Budget</th>
 					                    <th>Budget Head</th>
 					                    <th>Initiating Officer</th>
 					                    <th>Item Nomenclature</th>
@@ -418,7 +417,6 @@ input[name="ItemNomenclature"]::placeholder {
 					                    <th>Justification</th>
 					                    <th>Enclosures</th>
 					                    <th>Status</th>
-					                    <th>Remarks</th>
 					                    <th class="text-nowrap" style="width: 10%;">Action</th>
 					                </tr>
 					            </thead>
@@ -437,6 +435,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 					            	 <tr>
 				                   			<td align="center"><%=sn++ %>.</td>
+				                   			<td align="center"><%if(data[7]!=null){  if((data[28].toString()).equalsIgnoreCase("B")){%> General <%}else{ %> <%if(data[29]!=null){%><%=data[29] %><%}else{ %> - <%} %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td align="left" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
@@ -455,7 +454,6 @@ input[name="ItemNomenclature"]::placeholder {
 											       </button>
 											       
 									       </td>
-				                   			<td align="center">-</td>
 				                   			<td align="center">
 													      
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
@@ -494,7 +492,7 @@ input[name="ItemNomenclature"]::placeholder {
 					               <tfoot>
 					            	
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="4" align="right">Grand Total</td>
+							            <td colspan="5" align="right">Grand Total</td>
 							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
 							            <td colspan="5"></td>
 						   		     </tr>

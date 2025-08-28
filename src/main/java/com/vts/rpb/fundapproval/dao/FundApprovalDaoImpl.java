@@ -34,10 +34,10 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	private String mdmdb;
 
 	@Override
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetType, String proposedProject) throws Exception {
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
 		try {
 
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status, d.DivisionCode, d.DivisionName FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=f.DivisionId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) AND (CASE WHEN 'N' = :budgetType THEN f.InitiationId=:proposedProject ELSE 1=1 END) AND f.BudgetType=:budgetType GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status, d.DivisionCode, d.DivisionName,f.InitiationId, f.BudgetType, ini.ProjectShortName, ini.ProjectTitle FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=f.DivisionId LEFT JOIN  pms_dms_dev.pfms_initiation ini ON ini.InitiationId = f.InitiationId WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) GROUP BY f.FundApprovalId ORDER BY f.FundApprovalId DESC");
 
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
@@ -45,8 +45,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("loginType",loginType);
 			query.setParameter("empId",empId);
 			query.setParameter("projectId",projectId);
-			query.setParameter("budgetType",budgetType);
-			query.setParameter("proposedProject",proposedProject);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			
@@ -611,24 +609,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception{
 		try {
 
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,\n"
-					+ "f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,\n"
-					+ "f.Justification,SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar) AS EstimatedCost,\n"
-					+ "f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.status,f.RequisitionDate,dm.DivisionCode FROM fund_approval f \n"
-					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer \n"
-					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId \n"
-					+ "LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId\n"
-					+ "LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId \n"
-					+ "LEFT JOIN  "+mdmdb+".division_master dm ON dm.DivisionId = :divisionId\n"
-					+ "WHERE f.FinYear=:finYear AND f.ProjectId=0  AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END)  AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) \n"
-					+ "AND f.EstimateType=:estimateType\n"
-					+ "AND (CASE WHEN '-1' = :divisionId\n"
-					+ "THEN 1 = 1 ELSE f.DivisionId = :divisionId END) \n"
-					+ "AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType = 'CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId ) END)  END)  \n"
-					+ "AND (CASE WHEN :statuss = 'NA' THEN 1 WHEN :statuss = 'A' THEN CASE WHEN f.Status = 'A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status != 'A' THEN 1 ELSE 0 END END) = 1\n"
-					+ "GROUP BY f.FundApprovalId \n"
-					+ "HAVING \n"
-					+ "SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar) BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,dm.DivisionId,dm.DivisionName,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,CAST(SUM(f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar)/:rupeeValue AS DECIMAL(17,2)) AS EstimatedCost\n"
+					+ ",f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.Status,f.RequisitionDate,dm.DivisionCode,MAX(CASE WHEN ifa.RCStausCode='CHAIRMAN APPROVED' THEN ifa.Remarks ELSE '-' END) AS ChairmanRemarks,att.FundApprovalAttachId, att.FileName, att.OriginalFileName, att.FundApprovalId, att.Path FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=:divisionId LEFT JOIN ibas_fund_approval_trans ifa ON ifa.FundApprovalId=f.FundApprovalId LEFT JOIN fund_approval_attach att ON att.FundApprovalId=f.FundApprovalId WHERE f.FinYear=:finYear AND f.ProjectId=0 AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END) AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) AND f.EstimateType=:estimateType AND (CASE WHEN '-1'=:divisionId THEN 1=1 ELSE f.DivisionId=:divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType='CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) END) AND (CASE WHEN :statuss='NA' THEN 1 WHEN :statuss='A' THEN CASE WHEN f.Status='A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status!='A' THEN 1 ELSE 0 END END)=1 GROUP BY f.FundApprovalId,att.FundApprovalAttachId,att.FileName,att.OriginalFileName,att.FundApprovalId,att.Path HAVING SUM(f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar)/:rupeeValue BETWEEN :fromCost AND :toCost ORDER BY f.FundApprovalId DESC");
 
 			query.setParameter("divisionId", divisionId);
 			query.setParameter("estimateType", estimateType);
