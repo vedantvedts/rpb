@@ -7,6 +7,7 @@ import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
+import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
 
 public interface FundApprovalDao 
@@ -16,6 +17,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public long AddFundApprovalTrans(FundApprovalTrans transModal) throws Exception;
 	
 	public long EditFundRequestSubmit(FundApproval modal) throws Exception;
+	
+	public long RevisionFundRequestSubmit(FundApproval approval) throws Exception;
 	
 	public long AddFundRequestAttachSubmit(FundApprovalAttach Attach) throws Exception;
 
@@ -86,5 +89,12 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception;
 
 	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
+	
+	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception;
+	
+	public FundApproval getRevisionListDetails(String fundApprovalId) throws Exception;
 
+	public long getRevisionCount(String fundApprovalId) throws Exception;
+	
+	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception;
 }

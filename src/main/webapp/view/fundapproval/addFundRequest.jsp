@@ -336,6 +336,45 @@ tr:last-of-type th:last-of-type {
      */
 </style>
 
+<style type="text/css">
+/* Highlighted effect */
+.highlight {
+  border-color: #ff9800 !important;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.7); }
+  50% { box-shadow: 0 0 20px rgba(255, 152, 0, 1); }
+  100% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.7); }
+}
+
+.hand-pointer {
+  position: absolute;
+  bottom: 100px;       /* adjust as per your UI */
+  right: 40px;         /* adjust as needed */
+  width: 80px;
+  height: 80px;
+  background: url("view/images/pointingHand.png") no-repeat center/contain;
+  z-index: 2000;
+  animation: moveHandUpDown 1.5s infinite ease-in-out;
+}
+
+/* Smooth up-down bounce */
+@keyframes moveHandUpDown {
+  0%   { transform: translateY(0) rotate(270deg); }
+  25%  { transform: translateY(-15px) rotate(267deg); }
+  50%  { transform: translateY(0) rotate(270deg); }
+  75%  { transform: translateY(15px) rotate(273deg); }
+  100% { transform: translateY(0) rotate(270deg); }
+}
+
+
+
+
+</style>
+
 
 </head>
 <body>
@@ -424,6 +463,7 @@ tr:last-of-type th:last-of-type {
 		 	<div class="row">
 		 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
 		 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
+		 	  <%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>  <div class="col-md-3"><h5>Requisition Revise</h5></div>
 		 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
 		      <div class="col-md-9">
 		    	 <ol class="breadcrumb" style="justify-content: right;">
@@ -434,6 +474,7 @@ tr:last-of-type th:last-of-type {
 																    &ToYear=<%= java.net.URLEncoder.encode(dto.getToYearBackBtn(), "UTF-8") %>">
 	  			 Requisition List </a></li>
 		         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
+		         <%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Revise</li>
 		         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
 	             </ol>
 	           </div>
@@ -464,6 +505,8 @@ tr:last-of-type th:last-of-type {
 				<form  action="AddFundRequestSubmit.htm" method="post" id="AddFundRequestForm" enctype="multipart/form-data" onsubmit="return validateFormFields();">
  					<%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
  					<input type="hidden" id="actionType" name="Action" value="Update">
+ 					<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+ 					<input type="hidden" id="actionType" name="Action" value="Revise">
  					<%}else{ %>
  					<input type="hidden" id="actionType" name="Action" value="Add">
  					<%} %>
@@ -564,15 +607,16 @@ tr:last-of-type th:last-of-type {
 										
 										<tr class="InsertRow-1">
 										    <td style="padding:7px;" colspan="4">
-										    <div class="form-inline" style="justify-content:center;width: 95%;margin:auto;background-color: #ffefe3;border-radius: 5px;">
+										    <div class="form-inline COGDetails" style="justify-content:center;width: 95%;margin:auto;background-color: #ffefe3;border-radius: 5px;">
 								             <% if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>
 								             <div class="inputBox"><input required type="number" id="AprilMonthAdd-1" name="AprilMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AprilMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[12]!=null && new BigDecimal(FundRequestObj[12].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[12]) %>" <%} %>><span>April</span></div>
 								             <div class="inputBox"><input required type="number" id="MayMonthAdd-1" name="MayMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','MayMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[13]!=null && new BigDecimal(FundRequestObj[13].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[13]) %>" <%} %>><span>May</span></div>
 								             <div class="inputBox"><input required type="number" id="JuneMonthAdd-1" name="JuneMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JuneMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[14]!=null && new BigDecimal(FundRequestObj[14].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[14]) %>" <%} %>><span>June</span></div>
 								             <div class="inputBox"><input required type="number" id="JulyMonthAdd-1" name="JulyMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JulyMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[15]!=null && new BigDecimal(FundRequestObj[15].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[15]) %>" <%} %>><span>July</span></div>
-								             <%} %>
 								             <div class="inputBox"><input required type="number" id="AugustMonthAdd-1" name="AugustMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AugustMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[16]!=null && new BigDecimal(FundRequestObj[16].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[16]) %>" <%} %>><span >August</span></div>
 								             <div class="inputBox"><input required type="number" id="SeptemberMonthAdd-1" name="SeptemberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','SeptemberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[17]!=null && new BigDecimal(FundRequestObj[17].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[17]) %>" <%} %>><span>September</span></div>
+								             <%} %>
+								             
 								             <div class="inputBox"><input required type="number" id="OctoberMonthAdd-1" name="OctoberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','OctoberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[18]!=null && new BigDecimal(FundRequestObj[18].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[18]) %>" <%} %>><span>October</span></div>
 								             <div class="inputBox"><input required type="number" id="NovemberMonthAdd-1" name="NovemberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','NovemberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[19]!=null && new BigDecimal(FundRequestObj[19].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[19]) %>" <%} %>><span>November</span></div>
 								             <div class="inputBox"><input required type="number" id="DecemberMonthAdd-1" name="DecemberMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','DecemberMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[20]!=null && new BigDecimal(FundRequestObj[20].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[20]) %>" <%} %>><span>December</span></div>
@@ -771,6 +815,8 @@ tr:last-of-type th:last-of-type {
 	          		 <td colspan="4" class="submit">
 	          		 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
 							<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="validateFormFieldsEdit()">
+							<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+							<input class="btn btn-sm btn-warning" type="button" id="submiting" value="Revise" onclick="validateFormFieldsRevise()">
 							<%} else{ %>
 							<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Submit" onclick="validateFormFields()">
 							<%} %>
@@ -796,9 +842,19 @@ tr:last-of-type th:last-of-type {
 <form id="deleteForm" action="FundRequestAttachDelete.htm" method="post" style="display:none;">
     <input type="hidden" name="attachid" id="deleteFileName">
     <input type="hidden" name="fundRequestId"  <%if(FundRequestObj!=null) {%>value="<%=FundRequestObj[0]%>"<%} %> >
+ <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
+	<input type="hidden" id="actionType" name="ActionType" value="Edit">
+	<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+	<input type="hidden" id="actionType" name="ActionType" value="Revise">
+ <%}%>
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 </form>
 			
+			
+<div class="hand-pointer" style="display: none;" id="hand"></div>
+
+
+
 </body>
 <script type="text/javascript">
 
@@ -837,7 +893,7 @@ tr:last-of-type th:last-of-type {
 		              $.each(newList, function(index, obj) {
 		                  const option = $('<option></option>').val(obj[0]).text(obj[6]).addClass('option-class');
 
-		                  if (Action === "Edit") {   
+		                  if (Action === "Edit"  || Action=="Revise") {   
 		                      if (selectedEmpId == obj[0]) {
 		                     	 matchedStatus='Y';
 		                          option.prop('selected', true); // Set as selected for "Edit"
@@ -860,7 +916,7 @@ tr:last-of-type th:last-of-type {
 	              
 	              const status = initiatingSelect.data("Employee-Matched");
 	              
-	 			if(matchedStatus=='N' && Action=='Edit' && status=='A')
+	 			if(matchedStatus=='N' && Action=='Edit' && status=='A'  || matchedStatus=='N' && Action=='Revise' && status=='A')
 	 			{
 	 				initiatingSelect.data("Employee-Matched", 'B');
 	 				$("#AllOfficers").click();
@@ -1031,7 +1087,7 @@ $("#AllOfficers").click(function(){
 						
 						var action = $("#actionType").val();
 						
-						if(action == 'Update')
+						if(action == 'Update' || action == 'Revise')
 						{
 							var budget= '0#General';
 							//projectIDHiden
@@ -1360,6 +1416,69 @@ function validateFormFieldsEdit() {
     
     return false;
 }
+
+function validateFormFieldsRevise() {
+    // First validate all required fields
+    const budget = document.getElementById("selBudget");
+    if (!budget || budget.value.trim() === "") {
+        alert('Please select a Budget');
+        return false;
+    }
+
+    const budgetHead = document.getElementById("selbudgethead");
+    if (!budgetHead || budgetHead.value.trim() === "") {
+        alert('Please select a Budget Head');
+        return false;
+    }
+
+    const budgetItem = document.getElementById("selbudgetitem");
+    if (!budgetItem || budgetItem.value.trim() === "") {
+        alert('Please select a Budget Item');
+        return false;
+    }
+
+    const officerSelect = document.getElementById("OfficerCodeVal");
+    const allOfficersCheckbox = document.getElementById("AllOfficers");
+    if (officerSelect && (!officerSelect || !officerSelect.checked)) {
+        if (officerSelect.value.trim() === "") {
+            alert('Please select an Initiating Officer');
+            return false;
+        }
+    }
+
+    const itemFor = document.getElementById("ItemFor");
+    if (!itemFor || itemFor.value.trim() === "") {
+        alert('Please enter Item Nomenclature');
+        return false;
+    }
+
+    const justification = document.getElementById("fileNo");
+    if (!justification || justification.value.trim() === "") {
+        alert('Please enter a Justification');
+        return false;
+    }
+
+    // Check if at least one month has value
+    const monthInputs = document.querySelectorAll('.FBEamountAdd-1');
+    let atLeastOneFilled = false;
+    monthInputs.forEach(input => {
+        if (input.value.trim() !== "") {
+            atLeastOneFilled = true;
+        }
+    });
+    
+    if (!atLeastOneFilled) {
+        alert('Please enter amount for at least one month');
+        return false;
+    }
+
+    if (confirm('Do you want to Revise?')) {
+        document.getElementById("AddFundRequestForm").submit();
+        return true;
+    }
+    
+    return false;
+}
 </script>
  <script type="text/javascript">
 						
@@ -1508,6 +1627,35 @@ function limitDigits(input, maxDigits) {
         input.value = input.value.slice(0, maxDigits);
     }
 }
+</script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+	  // When Estimated Cost is focused
+	  $("#FBEamountAdd-1").on("focus", function () {
+	    // Highlight Oct–Mar fields
+	    $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	      .addClass("highlight");
+
+	    // Show hand pointer near October field
+	    let target = $("#OctoberMonthAdd-1").offset();
+	    $("#hand").css({
+	      top: target.top + 40 + "px",
+	      left: target.left + 50 + "px"
+	    }).fadeIn();
+	  });
+
+	  // When user focuses any month field
+	  $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	    .on("focus input", function () {
+	      // Remove highlight and hide hand
+	      $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	        .removeClass("highlight");
+	      $("#hand").fadeOut();
+	    });
+	});
+
+
 </script>
  
 </html>

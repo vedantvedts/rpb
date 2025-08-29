@@ -10,6 +10,7 @@ import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
+import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 
 public interface FundApprovalService 
 {
@@ -18,6 +19,8 @@ public interface FundApprovalService
 	public long AddFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
 	
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
+	
+	public long RevisionFundRequestSubmit(FundApproval approved, FundApprovalAttachDto attachDto) throws Exception;
 
 	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception;
 	
@@ -63,4 +66,10 @@ public interface FundApprovalService
 	public String getCommitteeMemberType (long empId) throws Exception;
 
 	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
+	
+	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception;
+	
+	public FundApproval getExisitingFundApprovalList(String fundApprovalId) throws Exception;
+	
+	public long getRevisionListDetails(String fundApprovalId,String UserName) throws Exception;
 }
