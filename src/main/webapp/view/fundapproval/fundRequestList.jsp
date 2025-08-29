@@ -500,7 +500,7 @@ input[name="ItemNomenclature"]::placeholder {
 			                        <tr style="font-weight:bold; background-color: #ffd589;">
 							            <td colspan="5" align="right">Grand Total</td>
 							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
-							            <td colspan="5"></td>
+							            <td colspan="4"></td>
 						   		     </tr>
 					            </tfoot> 
 					            <%} %>
@@ -1213,17 +1213,14 @@ function refreshModal(modalId) {
   </script>
   
   <script type="text/javascript">
-  $(document).ready(function () {
-	    $('#RequisitionListTable').DataTable({
-	        paging: true,
-	        searching: true,
-	        info: true,
-	        lengthChange: true,
-	        pageLength: 10,
-	        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-	        order: [],
-	        scrollX: true
-	    });
+  
+  $(document).ready(function(){
+	  $("#RequisitionListTable").DataTable({
+	 "lengthMenu": [[10, 25, 50, 75, 100,-1],[10, 25, 50, 75, 100,"All"]],
+	 "pagingType": "simple",
+	 "pageLength": 10,
+	 "ordering": true
+		});
 	});
 
 

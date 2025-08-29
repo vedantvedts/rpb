@@ -360,7 +360,6 @@ tr:last-of-type th:last-of-type {
   width: 80px;
   height: 80px;
   background: url("view/images/pointingHand.png") no-repeat center/contain;
-  z-index: 2000;
   animation: zoomHand 3s infinite ease-in-out;
 }
 
