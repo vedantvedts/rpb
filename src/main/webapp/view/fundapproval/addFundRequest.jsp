@@ -462,6 +462,7 @@ tr:last-of-type th:last-of-type {
 		 	<div class="row">
 		 	 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
 		 	  <div class="col-md-3"><h5>Requisition Edit</h5></div>
+		 	  <%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>  <div class="col-md-3"><h5>Requisition Revise</h5></div>
 		 	  <%} else{ %><div class="col-md-3"><h5>Requisition Add</h5> </div><%} %>
 		      <div class="col-md-9">
 		    	 <ol class="breadcrumb" style="justify-content: right;">
@@ -472,6 +473,7 @@ tr:last-of-type th:last-of-type {
 																    &ToYear=<%= java.net.URLEncoder.encode(dto.getToYearBackBtn(), "UTF-8") %>">
 	  			 Requisition List </a></li>
 		         <%if(action!=null && action.equalsIgnoreCase("Edit")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Edit</li>
+		         <%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%> <li class="breadcrumb-item active" aria-current="page">Requisition Revise</li>
 		         <%}else{ %><li class="breadcrumb-item active" aria-current="page">Requisition Add</li><%} %>
 	             </ol>
 	           </div>
@@ -502,6 +504,8 @@ tr:last-of-type th:last-of-type {
 				<form  action="AddFundRequestSubmit.htm" method="post" id="AddFundRequestForm" enctype="multipart/form-data" onsubmit="return validateFormFields();">
  					<%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
  					<input type="hidden" id="actionType" name="Action" value="Update">
+ 					<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+ 					<input type="hidden" id="actionType" name="Action" value="Revise">
  					<%}else{ %>
  					<input type="hidden" id="actionType" name="Action" value="Add">
  					<%} %>
@@ -810,6 +814,8 @@ tr:last-of-type th:last-of-type {
 	          		 <td colspan="4" class="submit">
 	          		 <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
 							<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="validateFormFieldsEdit()">
+							<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+							<input class="btn btn-sm btn-warning" type="button" id="submiting" value="Revise" onclick="validateFormFieldsRevise()">
 							<%} else{ %>
 							<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Submit" onclick="validateFormFields()">
 							<%} %>
@@ -835,6 +841,11 @@ tr:last-of-type th:last-of-type {
 <form id="deleteForm" action="FundRequestAttachDelete.htm" method="post" style="display:none;">
     <input type="hidden" name="attachid" id="deleteFileName">
     <input type="hidden" name="fundRequestId"  <%if(FundRequestObj!=null) {%>value="<%=FundRequestObj[0]%>"<%} %> >
+ <%if(action!=null && action.equalsIgnoreCase("Edit")) {%>
+	<input type="hidden" id="actionType" name="ActionType" value="Edit">
+	<%}else if(action!=null && action.equalsIgnoreCase("Revise")) {%>
+	<input type="hidden" id="actionType" name="ActionType" value="Revise">
+ <%}%>
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 </form>
 			
@@ -881,7 +892,7 @@ tr:last-of-type th:last-of-type {
 		              $.each(newList, function(index, obj) {
 		                  const option = $('<option></option>').val(obj[0]).text(obj[6]).addClass('option-class');
 
-		                  if (Action === "Edit") {   
+		                  if (Action === "Edit"  || Action=="Revise") {   
 		                      if (selectedEmpId == obj[0]) {
 		                     	 matchedStatus='Y';
 		                          option.prop('selected', true); // Set as selected for "Edit"
@@ -904,7 +915,7 @@ tr:last-of-type th:last-of-type {
 	              
 	              const status = initiatingSelect.data("Employee-Matched");
 	              
-	 			if(matchedStatus=='N' && Action=='Edit' && status=='A')
+	 			if(matchedStatus=='N' && Action=='Edit' && status=='A'  || matchedStatus=='N' && Action=='Revise' && status=='A')
 	 			{
 	 				initiatingSelect.data("Employee-Matched", 'B');
 	 				$("#AllOfficers").click();
@@ -1075,7 +1086,7 @@ $("#AllOfficers").click(function(){
 						
 						var action = $("#actionType").val();
 						
-						if(action == 'Update')
+						if(action == 'Update' || action == 'Revise')
 						{
 							var budget= '0#General';
 							//projectIDHiden
@@ -1398,6 +1409,69 @@ function validateFormFieldsEdit() {
     }
 
     if (confirm('Do you want to Update?')) {
+        document.getElementById("AddFundRequestForm").submit();
+        return true;
+    }
+    
+    return false;
+}
+
+function validateFormFieldsRevise() {
+    // First validate all required fields
+    const budget = document.getElementById("selBudget");
+    if (!budget || budget.value.trim() === "") {
+        alert('Please select a Budget');
+        return false;
+    }
+
+    const budgetHead = document.getElementById("selbudgethead");
+    if (!budgetHead || budgetHead.value.trim() === "") {
+        alert('Please select a Budget Head');
+        return false;
+    }
+
+    const budgetItem = document.getElementById("selbudgetitem");
+    if (!budgetItem || budgetItem.value.trim() === "") {
+        alert('Please select a Budget Item');
+        return false;
+    }
+
+    const officerSelect = document.getElementById("OfficerCodeVal");
+    const allOfficersCheckbox = document.getElementById("AllOfficers");
+    if (officerSelect && (!officerSelect || !officerSelect.checked)) {
+        if (officerSelect.value.trim() === "") {
+            alert('Please select an Initiating Officer');
+            return false;
+        }
+    }
+
+    const itemFor = document.getElementById("ItemFor");
+    if (!itemFor || itemFor.value.trim() === "") {
+        alert('Please enter Item Nomenclature');
+        return false;
+    }
+
+    const justification = document.getElementById("fileNo");
+    if (!justification || justification.value.trim() === "") {
+        alert('Please enter a Justification');
+        return false;
+    }
+
+    // Check if at least one month has value
+    const monthInputs = document.querySelectorAll('.FBEamountAdd-1');
+    let atLeastOneFilled = false;
+    monthInputs.forEach(input => {
+        if (input.value.trim() !== "") {
+            atLeastOneFilled = true;
+        }
+    });
+    
+    if (!atLeastOneFilled) {
+        alert('Please enter amount for at least one month');
+        return false;
+    }
+
+    if (confirm('Do you want to Revise?')) {
         document.getElementById("AddFundRequestForm").submit();
         return true;
     }

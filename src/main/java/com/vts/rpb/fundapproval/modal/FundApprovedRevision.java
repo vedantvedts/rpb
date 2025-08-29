@@ -9,16 +9,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import lombok.Data;
 
-
 @Data
-@Entity(name ="fund_approval")
-public class FundApproval {
+@Entity(name ="fund_approved_revision")
+public class FundApprovedRevision {
+
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "FundApprovedRevisionId")
+	private long fundApprovedRevisionId;
+	
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
 	
@@ -169,19 +172,9 @@ public class FundApproval {
 	@Column(name = "ApprovalDate")
 	private LocalDate approvalDate;
 	
-	@Column(name = "RevisionCount")
-	private long revisionCount=0;
-	
 	@Column(name = "CreatedBy", length = 100)
 	private String  createdBy;
 	
 	@Column(name = "CreatedDate")
 	private LocalDateTime createdDate;
-	
-	@Column(name = "ModifiedBy", length = 100)
-	private String modifiedBy;
-	
-	@Column(name = "ModifiedDate")
-	private LocalDateTime modifiedDate;
-
 }
