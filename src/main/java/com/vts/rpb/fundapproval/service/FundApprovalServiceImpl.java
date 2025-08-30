@@ -83,8 +83,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					if (!attachDto.getFiles()[i].isEmpty()) {
 						FundApprovalAttach modal = new FundApprovalAttach();
 						modal.setFundApprovalId(FundApprovalId);
-						modal.setFileName(attachDto.getFileName()[i]);
-						modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+						modal.setFileName(attachDto.getFileName()[i].trim());
+						modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
 			
 						modal.setCreatedBy(attachDto.getCreatedBy());
 						modal.setCreatedDate(LocalDateTime.now());
@@ -152,8 +152,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    FundApprovalAttach modal = new FundApprovalAttach();
 	                    modal.setFundApprovalAttachId((Long) existingAttach[0]);
 	                    modal.setFundApprovalId(fundApprovalId);
-	                    modal.setFileName(attachDto.getFileName()[i]);
-	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setFileName(attachDto.getFileName()[i].trim());
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
 	                    modal.setModifiedBy(attachDto.getCreatedBy());
 	                    modal.setModifiedDate(LocalDateTime.now());
 	                    modal.setPath(pathDB);
@@ -162,7 +162,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
 	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
 	                    Files.deleteIfExists(oldFile.toPath());
-	                    System.err.println("EXISTING if SECTION-");
 	                    
 	                    // Save new file
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
@@ -171,8 +170,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    // Add new attachment
 	                    FundApprovalAttach modal = new FundApprovalAttach();
 	                    modal.setFundApprovalId(fundApprovalId);
-	                    modal.setFileName(attachDto.getFileName()[i]);
-	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setFileName(attachDto.getFileName()[i].trim());
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
 	                    modal.setCreatedBy(attachDto.getCreatedBy());
 	                    modal.setCreatedDate(LocalDateTime.now());
 	                    
@@ -224,8 +223,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    FundApprovalAttach modal = new FundApprovalAttach();
 	                    modal.setFundApprovalAttachId((Long) existingAttach[0]);
 	                    modal.setFundApprovalId(fundApprovalId);
-	                    modal.setFileName(attachDto.getFileName()[i]);
-	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setFileName(attachDto.getFileName()[i].trim());
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
 	                    modal.setModifiedBy(attachDto.getCreatedBy());
 	                    modal.setModifiedDate(LocalDateTime.now());
 	                    modal.setPath(pathDB);
@@ -234,7 +233,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
 	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
 	                    Files.deleteIfExists(oldFile.toPath());
-	                    System.err.println("EXISTING if SECTION-");
 	                    
 	                    // Save new file
 	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
@@ -243,8 +241,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    // Add new attachment
 	                    FundApprovalAttach modal = new FundApprovalAttach();
 	                    modal.setFundApprovalId(fundApprovalId);
-	                    modal.setFileName(attachDto.getFileName()[i]);
-	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setFileName(attachDto.getFileName()[i].trim());
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
 	                    modal.setCreatedBy(attachDto.getCreatedBy());
 	                    modal.setCreatedDate(LocalDateTime.now());
 	                    
@@ -304,7 +302,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		List<Object[]> getFundRequestAttachList = null;
 		try {
-			System.err.println("SERVICE getFundRequestAttachList-"+fundApprovalId);
 			getFundRequestAttachList = fundApprovalDao.getFundRequestAttachList(fundApprovalId);
 					
 			}catch (Exception e) {
@@ -317,7 +314,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public Object[] FundRequestAttachData(long fundApprovalAttachId) throws Exception{
 		Object[] FundRequestAttachData = null;
 		try {
-			System.err.println("SERVICE FundRequestAttachData-"+fundApprovalAttachId);
 			FundRequestAttachData = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
 			}catch (Exception e) {
 			logger.error(new Date() +"Inside MasterServiceImpl FundRequestAttachData");
@@ -503,6 +499,19 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				currentDetails[1]=fundDetails.getRc5Role();
 			}
 			
+			if(fundDetails.getRc6() > 0 && fundDetails.getRc6() == empId)
+			{
+				if(!status.equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="DIVISION HEAD APPROVED";
+				}
+				else if(status.equalsIgnoreCase("R"))
+				{
+					currentDetails[0]="DIVISION HEAD RETURNED";
+				}
+				currentDetails[1]=fundDetails.getRc6Role();
+			}
+			
 			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
 			{
 				if(!status.equalsIgnoreCase("R"))
@@ -522,7 +531,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 //	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
 //	{
-//		masterFlowList.forEach(row->System.out.println(Arrays.toString(row)));
 //		 return IntStream.range(0, masterFlowList.size() - 1).filter(i -> statusCodeNext.equals(masterFlowList.get(i)[2].toString()))
 //		            .mapToObj(i -> masterFlowList.get(i + 1)[2].toString())
 //		            .findFirst()
@@ -582,32 +590,23 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 			if(fundDto.getAction()!=null)
 			{
-				if(!fundDto.getAction().equalsIgnoreCase("R"))  // Except return 
-				{
-					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
-				}
-				
-				if(fundDto.getAction().equalsIgnoreCase("R")) 
-				{
-					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
-				}
-				
+				fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 			}
 		
 		long status=0;
 			if(fundDto.getAction()!=null)
 			{
-				if(!fundDto.getAction().equalsIgnoreCase("RE")) //  RE - Recommend
+				if(fundDto.getAction().equalsIgnoreCase("A")) //  A -Approver
 				{
 					fundApproval.setStatus(fundDto.getAction());
-				}
-				
-				if(fundDto.getAction().equalsIgnoreCase("A"))
-				{
 					fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
 				}
+				else
+				{
+					fundApproval.setStatus(fundApproval.getStatus());
+				}
 			}
-			fundApproval.setStatus(fundApproval.getStatus());
+			
 			status=fundApprovalDao.updateFundRequest(fundApproval);
 		
 		return status;

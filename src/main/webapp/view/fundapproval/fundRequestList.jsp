@@ -271,6 +271,97 @@ input[name="ItemNomenclature"]::placeholder {
 
 </style>
 
+<style type="text/css">
+
+/* Card container */
+.status-card-container {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Each card */
+.status-card {
+  flex: 1 1 22%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.status-card h6 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.status-card p {
+  font-size: 13px;
+  color: #370088;
+  margin: 0 0 8px 0;
+}
+
+/* Status label */
+.status {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.status.success {
+  color: #0a7d28;
+  background: #e6f9ec;
+}
+
+.status.warning {
+  color: #bd0707;
+  background: #ffeaea;
+}
+
+.status i {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+/* Timeline */
+.timeline-container {
+  padding: 10px;
+}
+
+.timeline-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-step {
+  text-align: center;
+  flex: 1;
+  font-size: 14px;
+  color: #888;
+}
+
+.timeline-step.done {
+  color: #28a745;
+}
+
+.timeline-step i {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.status-text {
+  color: #034189;
+  font-weight: 600;
+}
+
+
+</style>
+
 </head>
 <body>
 		<% DecimalFormat df=new DecimalFormat("#########################");
@@ -280,6 +371,7 @@ input[name="ItemNomenclature"]::placeholder {
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
 		String MemberType =(String)request.getAttribute("MemberType");
+		System.out.println("MemberType*****"+MemberType);
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null;
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
@@ -444,28 +536,49 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			 <td align="center">
 											    <button type="button" 
-											            class="btn btn-sm btn-outline-primary" 
+											            class="btn btn-sm btn-outline-primary tooltip-container" 
 											            onclick="openAttachmentModal('<%=data[0] %>', this)" 
-											            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
+											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 120px;">
-				                   			
+				                   			<td style="width: 135px;" align="center">
 				                   			 
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
+				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
-												            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
-												            </span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
+												            
+												            <% String statusColor="",message="NA";
+												            if(fundStatus!=null) { 
+												               if("A".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "green";
+												            	   message = "Approved";
+												               } else if("N".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#8c2303";
+												                   message = "Pending";
+												               } else if("F".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "blue";
+												                   message = "Forwarded";
+					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "red";
+												                   message = "Returned";
+					            							   } else {
+												            	   statusColor = "black";
+												               }
+					            							 }
+												               %>
+												               
+												           		<div class="form-inline">
+												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+												           		</div>
+												             
 											       </button>
 											       
 									       </td>
 				                   			<td align="center">
 													      
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
-												<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+												<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
 										        </button>
@@ -473,12 +586,11 @@ input[name="ItemNomenclature"]::placeholder {
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";
 										        %>
 												
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? data[17].toString().trim() : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		<%} else if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)) { %> 
 					                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 										        <i class="fa-solid fa-rotate-right" style="color:#F66B0E;"></i>
-									
 										        </button>
 					                       		<%}else{ %>
 					                       		<span style="font-weight: 800;">***</span>
@@ -544,7 +656,7 @@ input[name="ItemNomenclature"]::placeholder {
 			
 			
 			<div class="modal ItemForwardModal" tabindex="-1" role="dialog">
-				  <div class="modal-dialog modal-lg" role="document" style="max-width: 65% !important;">
+				  <div class="modal-dialog modal-lg" role="document" style="max-width: 57% !important;">
 				    <div class="modal-content">
 				      <div class="modal-header">
                         <h5 class="modal-title" style="font-family:'Times New Roman';font-weight: 600;">
@@ -618,21 +730,22 @@ input[name="ItemNomenclature"]::placeholder {
 				                              	<table style="width: 100%;" id="fundApprovalForardTable">
 				                              		<tr>
 				                              			<td style="padding: 8px; text-align: right; color: blue; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>
-				                              			<td style="padding: 8px;width: 70% !important;" colspan="2"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="-"></td>
+				                              			<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="-"></td>
 				                              		</tr>
 				                              		
 				                              		<tr class="DivisionHead">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="DivisionHeadRole" name="DivisionHeadRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
-				                              			<input type="hidden" id="divisionHeadDetails" name="divisionHeadDetails">
-				                              			<input type="text" class="form-control" readonly="readonly" id="divisionHeadName" name="divisionHeadName" value="-"></td>
+				                              			<input type="hidden" id="DivisionHeadRole" name="DivisionHeadRole">
+				                              			<select id="divisionHeadDetails" name="divisionHeadDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+				                              			<option value="">Select Employee</option>
+				                              			</select>
 				                              		</tr>
 				                              		
 				                              		<tr class="RPBMember1">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="RPBMemberRole1" name="RPBMemberRole1" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="RPBMemberRole1" name="RPBMemberRole1">
 				                              			<select id="RPBMemberDetails1" name="RPBMemberDetails1" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -640,8 +753,8 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		
 				                              		<tr class="RPBMember2">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="RPBMemberRole2" name="RPBMemberRole2" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="RPBMemberRole2" name="RPBMemberRole2">
 				                              			<select id="RPBMemberDetails2" name="RPBMemberDetails2" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -649,17 +762,17 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		
 				                              		<tr class="RPBMember3">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="RPBMemberRole3" name="RPBMemberRole3" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
-				                              			<select id="RPBMemberDetails3" name="RPBMemberDetails3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+				                              			<input type="hidden" id="RPBMemberRole2" name="RPBMemberRole2">
+				                              			<select id="RPBMemberRole3" name="RPBMemberRole3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
 				                              		</tr>
 				                              		
 				                              		<tr class="SubjectExpert">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Subject Expert<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 13%;"><input type="text" class="form-control role-input" id="SubjectExpertRole" name="SubjectExpertRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="SubjectExpertRole" name="SubjectExpertRole">
 				                              			<select id="SubjectExpertDetails" name="SubjectExpertDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -667,8 +780,8 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		
 				                              		<tr class="RPBMemberSecretary">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member Secretary<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="RPBMemberSecretaryRole" name="RPBMemberSecretaryRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="SubjectExpertRole" name="RPBMemberSecretaryRole">
 				                              			<select id="RPBMemberSecretaryDetails" name="RPBMemberSecretaryDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -676,8 +789,8 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		
 				                              		<tr class="chairman">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Chairman / Stand by Chairman<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
-				                              			<td style="padding: 8px; width: 15%;"><input type="text" class="form-control role-input" id="chairmanRole" name="chairmanRole" placeholder="Enter Role" style="width: 10rem;" maxlength="15"></td>
 				                              			<td style="padding: 8px; width: 55%;">
+				                              			<input type="hidden" id="chairmanRole" name="chairmanRole">
 				                              			<select id="chairmanDetails" name="chairmanDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -746,13 +859,13 @@ input[name="ItemNomenclature"]::placeholder {
 				</div>
 				
 				<!-- Attachment Modal -->
-<!-- Fullscreen Attachment Modal -->
+
 <div class="modal fade AttachmentModal" tabindex="-1" role="dialog" style="padding: 0;">
   <div class="modal-dialog modal-lg Exp" role="document">
     <div class="modal-content">
 
       <!-- Modal Header -->
-      <div class="modal-header bg-dark text-white">
+      <div class="modal-header bg-darktext-white ">
         <h4 class="modal-title" style="font-family:'Times New Roman'; font-weight: 600;">Attachment Details</h4>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true" style="font-size: 25px;">&times;</span>
@@ -797,18 +910,18 @@ input[name="ItemNomenclature"]::placeholder {
 <div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
  <div class="modal-dialog  custom-width-modal" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header" style="background-color: white !important;color:black;">
         <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
+          <span aria-hidden="true" style="font-size: 25px;color:#000000;">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <!-- Employee Modal Table -->
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
-        <div id="EmployeeModalTable" class="mt-2"></div>
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
-         <div id="ApprovalStatusDiv" ></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">CURRENT STATUS:</div>
+        <div id="ApprovalStatusDiv" class="mt-2" style="width: 95% !important;margin:auto;"></div>
+        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">STATUS HISTORY:</div>
+        <div id="EmployeeModalTable" class="mt-2" style="width: 95% !important;margin:auto;"></div>
         
       </div>
       
@@ -879,13 +992,6 @@ function openFundDetails()
 	    }
 	});
 	
-	const getEmployeeDetailsById = (list, id) => {
-	    if (!Array.isArray(list)) return "";
-	    const emp = list.find(emp => emp[0] === id);
-	    return emp ? emp[2] + ", " + emp[3] : "";
-	};
-
-	
 function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
 		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails)
 {
@@ -923,9 +1029,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			   		{
 			    		if(value[2]=='DIVISION HEAD APPROVED')
 		    			{
-			    			const empDetails = getEmployeeDetailsById(allEmployeeList, value[4]);
-			    			$("#divisionHeadName").val(empDetails);
-			    			$("#divisionHeadDetails").val(value[4]);
+			        		idAttribute='#divisionHeadDetails';
 		    			}
 			    		else if(value[2]=='RO1 RECOMMENDED')
 			       		{
@@ -965,35 +1069,51 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	//Employee Role
 			    	if(value[2] == 'DIVISION HEAD APPROVED')
 			    	 {
-			    		$("#DivisionHeadRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#DivisionHeadRole").val('DH'); // division Head
 			    	 }
 			    	if(value[2] == 'RO1 RECOMMENDED')
 			    	 {
-			    		$("#RPBMemberRole1").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#RPBMemberRole1").val('CM');  // Committee Member
 			    	 }
 			    	else if(value[2] == 'RO2 RECOMMENDED')
 			    	 {
-			    		$("#RPBMemberRole2").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#RPBMemberRole2").val('CM');  // Committee Member
 			    	 }
 			    	else if(value[2] == 'RO3 RECOMMENDED')
 			    	 {
-			    		$("#RPBMemberRole3").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#RPBMemberRole3").val('CM');  // Committee Member
 			    	 }
 			    	else if(value[2] == 'SE RECOMMENDED')
 			    	 {
-			    		$("#SubjectExpertRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#SubjectExpertRole").val('SE');  // Subject Expert
 			    	 }
 			    	else if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
 			    	 {
-			    		$("#RPBMemberSecretaryRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#RPBMemberSecretaryRole").val('CS');  // Committee Secretary
 			    	 }
 			    	else if(value[2] == 'CHAIRMAN APPROVED')
 			    	 {
-			    		$("#chairmanRole").val(flowEmpRole!=null && flowEmpRole!="" ? flowEmpRole : "");
+			    		$("#chairmanRole").val('CC');  // Committee Chairman
 			    	 }
 			    	
 			    	// employee details
 			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
+			    	
+			    	// Division Head
+			    	 if(value[2] == 'DIVISION HEAD APPROVED')
+			    	 {
+			    		 $.each(allEmployeeList, function(key, value) 
+						 {
+			    			 if(flowEmpId!=null && flowEmpId == value[0])
+	    					 {
+		    					 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
+		    				 else
+	    					 {
+	    					 	$(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 }
+						 });
+			    	 }
 			    	 
 			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
 			    	 {
@@ -1099,55 +1219,39 @@ function ApprovalFlowForward() {
     if (masterFlowDetails != null) {
         $.each(masterFlowDetails, function (key, value) {
             var idAttribute = '';
-            var roleId = '';
             var message = '';
 
             if (value[2] != null) {
                 switch (value[2]) {
                     case 'DIVISION HEAD APPROVED':
-                        roleId = '#DivisionHeadRole';
                         message="Division Head";
                         break;
                     case 'RO1 RECOMMENDED':
                         idAttribute = '#RPBMemberDetails1';
-                        roleId = '#RPBMemberRole1';
                         message="RPB Member";
                         break;
                     case 'RO2 RECOMMENDED':
                         idAttribute = '#RPBMemberDetails2';
-                        roleId = '#RPBMemberRole2';
                         message="RPB Member";
                         break;
                     case 'RO3 RECOMMENDED':
                         idAttribute = '#RPBMemberDetails3';
-                        roleId = '#RPBMemberRole3';
                         message="RPB Member";
                         break;
                     case 'SE RECOMMENDED':
                         idAttribute = '#SubjectExpertDetails';
-                        roleId = '#SubjectExpertRole';
                         message="Subject Expert";
                         break;
                     case 'RPB MEMBER SECRETARY APPROVED':
                         idAttribute = '#RPBMemberSecretaryDetails';
-                        roleId = '#RPBMemberSecretaryRole';
                         message="RPB Member Secretary";
                         break;
                     case 'CHAIRMAN APPROVED':
                         idAttribute = '#chairmanDetails';
-                        roleId = '#chairmanRole';
                         message="RPB Chairman / Standby Chairman";
                         break;
                 }
                 
-                // Validate role input
-                if ($(roleId).length && $(roleId).val().trim() === '') {
-                	showAlert('Please enter role for ' + message + '..!');
-                    $(roleId).focus();
-                    isValid = false;
-                    return false; 
-                }
-
                 // Validate dropdown
                 if ($(idAttribute).length && $(idAttribute).val().trim() === '') {
                 	showAlert('Please select an employee for ' + message + '..!');
@@ -1223,6 +1327,9 @@ function refreshModal(modalId) {
   <script type="text/javascript">
   
   $(document).ready(function(){
+	  
+	<% if(requisitionList!=null && requisitionList.size() > 0) %>
+	  
 	  $("#RequisitionListTable").DataTable({
 	 "lengthMenu": [[10, 25, 50, 75, 100,-1],[10, 25, 50, 75, 100,"All"]],
 	 "pagingType": "simple",

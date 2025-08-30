@@ -1651,7 +1651,7 @@ $(document).ready(function () {
 			      return; 
 			    }
 
-	    $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	    $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	      .addClass("highlight");
 
 	    let target = $("#OctoberMonthAdd-1").offset();
@@ -1663,7 +1663,7 @@ $(document).ready(function () {
 
 	  $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	    .on("focus input", function () {
-	      $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	      $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	        .removeClass("highlight");
 	      $("#hand").fadeOut();
 	    });

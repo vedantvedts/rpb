@@ -275,11 +275,6 @@ input[name="ItemNomenclature"]::placeholder {
 <body>
 		<%
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList"); 
-		if(requisitionList!=null){
-			requisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
-			System.err.print("size-"+requisitionList.size());
-		}
-		System.err.print("requisitionList JSP-"+requisitionList.size());
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");

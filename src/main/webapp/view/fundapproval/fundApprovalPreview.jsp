@@ -15,7 +15,6 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<jsp:include page="../static/sidebar.jsp"></jsp:include>
 <title>Fund Approval Preview</title>
 
 <style>
@@ -326,6 +325,11 @@ tr:last-of-type th:last-of-type {
 <body>
 <%Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 long empId = (Long) session.getAttribute("EmployeeId");
+String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
+FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
+if(currentEmpStatus == null){
+	currentEmpStatus = "NA";
+}
 
 String fundApprovalId=null;
 String estimateType=null;
@@ -333,20 +337,16 @@ String finYear=null;
 String initiatingOfficerId=null;
 String initiatingOfficer=null;
 String rc1Details=null;
-String rc1Role=null;
 String rc2Details=null;
-String rc2Role=null;
 String rc3Details=null;
-String rc3Role=null;
 String rc4Details=null;
-String rc4Role=null;
 String rc5Details=null;
-String rc5Role=null;
+String rc6Details=null;
 String approvingOfficerDetails=null;
 String approvingOfficerRole=null;
 String rcStatusCodeNext=null,budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
-String rc1Status=null,rc2Status=null,rc3Status=null,rc4Status=null,rc5Status=null,apprOffStatus=null,currentEmpStatus=null;
-long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0;
+String rc1Status=null,rc2Status=null,rc3Status=null,rc4Status=null,rc5Status=null,apprOffStatus=null,rc6Status=null;
+long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0,rc6EmpId=0;
 if(fundDetails!=null && fundDetails.length > 0)
 {
 	fundApprovalId=fundDetails[0]!=null  ? fundDetails[0].toString() : "0";
@@ -358,23 +358,21 @@ if(fundDetails!=null && fundDetails.length > 0)
 	
 	rc1EmpId=fundDetails[20]!=null  ? Long.parseLong(fundDetails[20].toString()) : 0;
 	rc1Details=fundDetails[21]!=null  ? fundDetails[21].toString() : null;
-	rc1Role=fundDetails[22]!=null  ? fundDetails[22].toString() : null;
 	
 	rc2EmpId=fundDetails[23]!=null  ? Long.parseLong(fundDetails[23].toString()) : 0;
 	rc2Details=fundDetails[24]!=null  ? fundDetails[24].toString() : null;
-	rc2Role=fundDetails[25]!=null  ? fundDetails[25].toString() : null;
 	
 	rc3EmpId=fundDetails[26]!=null  ? Long.parseLong(fundDetails[26].toString()) : 0;
 	rc3Details=fundDetails[27]!=null  ? fundDetails[27].toString() : null;
-	rc3Role=fundDetails[28]!=null  ? fundDetails[28].toString() : null;
 	
 	rc4EmpId=fundDetails[29]!=null  ? Long.parseLong(fundDetails[29].toString()) : 0;
 	rc4Details=fundDetails[30]!=null  ? fundDetails[30].toString() : null;
-	rc4Role=fundDetails[31]!=null  ? fundDetails[31].toString() : null;
 	
 	rc5EmpId=fundDetails[32]!=null  ? Long.parseLong(fundDetails[32].toString()) : 0;
 	rc5Details=fundDetails[33]!=null  ? fundDetails[33].toString() : null;
-	rc5Role=fundDetails[34]!=null  ? fundDetails[34].toString() : null;
+	
+	rc6EmpId=fundDetails[50]!=null  ? Long.parseLong(fundDetails[50].toString()) : 0;
+	rc6Details=fundDetails[51]!=null  ? fundDetails[51].toString() : null;
 	
 	appOffEmpId=fundDetails[35]!=null  ? Long.parseLong(fundDetails[35].toString()) : 0;
 	approvingOfficerDetails=fundDetails[36]!=null  ? fundDetails[36].toString() : null;
@@ -394,9 +392,31 @@ if(fundDetails!=null && fundDetails.length > 0)
 	rc3Status=fundDetails[43]!=null  ? fundDetails[43].toString() : null;
 	rc4Status=fundDetails[44]!=null  ? fundDetails[44].toString() : null;
 	rc5Status=fundDetails[45]!=null  ? fundDetails[45].toString() : null;
+	rc6Status=fundDetails[48]!=null  ? fundDetails[48].toString() : null;
 	apprOffStatus=fundDetails[46]!=null  ? fundDetails[46].toString() : null;
-	currentEmpStatus=fundDetails[47]!=null  ? fundDetails[47].toString() : null;
 } %>
+
+	<% String budgetYear = null,budgetYearType = null;
+	if(dto.getEstimatedTypeBackBtn()!=null)
+	{
+		if(dto.getEstimatedTypeBackBtn().equalsIgnoreCase("F"))
+		{
+			budgetYear=dto.getFBEYear();
+			budgetYearType="FBE Year";
+		}
+		else if(dto.getFromYearBackBtn()!=null && dto.getToYearBackBtn()!=null)
+		{
+			budgetYear=dto.getFromYearBackBtn()+"-"+dto.getToYearBackBtn();
+			budgetYearType="RE Year";
+		}
+		
+	}
+	else
+	{
+		budgetYear="-";
+		budgetYearType="***";
+	}%>
+	
 <div class="card-header page-top">
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>
@@ -404,10 +424,10 @@ if(fundDetails!=null && fundDetails.length > 0)
 	    	 <ol class="breadcrumb" style="justify-content: right !important;">
 	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	    	 <li class="breadcrumb-item">
-	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
-									         <%}else{ %> Recommend<%} %> List</a>
+	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("DH")){ %> Approval 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%}else{ %> NA <%} %> List</a>
 	         </li>
 	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>FBE<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>RE<%} %> Item</li>
              </ol>
@@ -440,6 +460,18 @@ if(fundDetails!=null && fundDetails.length > 0)
 <div class="container">
     <div class="row" style="margin-left:0px !important;margin-right:0px !important;">
         <div class="col-md-12">
+        	  <div class="flex-container" style="margin-top:7px !important;background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
+	           		<div class="form-inline" style="padding: 10px;">
+	           		
+	           			<label style="font-size: 19px;"><b> <%=budgetYearType %> :&nbsp;</b></label><span class="spanClass"> <%=budgetYear %> </span>
+	           		</div>
+	           		<div class="form-inline" style="padding: 10px;">
+	           			
+	           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><% if(dto!=null && dto.getDivisionName()!=null){%><%=dto.getDivisionName() %>&nbsp;<%}else{ %>-<%} %><% if(dto!=null && dto.getDivisionCode()!=null){%>(<%=dto.getDivisionCode() %>)<%}%></span>
+	           		
+	           		</div>
+	           </div>
+        
             <!-- Big Division -->
             <div class="big-box">
             	<div class="row">
@@ -481,11 +513,27 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     </div>
                                 <% } %>
 
+								<% if(rc6EmpId > 0){ %>
+									<div <%if(empId == rc6EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
+                                        <span><b>Division Head &nbsp;: &nbsp;</b></span>
+                                        <span class="recommendation-value">
+                                            <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
+                                            <%= rc6Details != null ? rc6Details : "-" %>
+                                             <%if(empId == rc6EmpId){ %>
+                                            <span class="badge badge-info">For Approval</span>
+                                            <%} %>
+                                            <%if(rc6Status!=null && rc6Status.equalsIgnoreCase("Y")){ %>
+                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
+                                       		<%} %>
+                                        </span>
+                                    </div>
+                                   <%} %>
+                                   
 								<% if(rc1EmpId > 0){ %>
 									<div <%if(empId == rc1EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc1Role != null ? rc1Role + " &nbsp;&nbsp; " : "-" %></span>
+                                            <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc1Details != null ? rc1Details : "-" %>
                                              <%if(empId == rc1EmpId){ %>
                                             <span class="badge badge-info">For Recommendation</span>
@@ -501,7 +549,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     <div <%if(empId == rc2EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc2Role != null ? rc2Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc2Details != null ? rc2Details : "-" %>
                                             <%if(empId == rc2EmpId){ %>
                                             <span class="badge badge-info">For Recommendation</span>
@@ -517,7 +565,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     <div <%if(empId == rc3EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc3Role != null ? rc3Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc3Details != null ? rc3Details : "-" %>
                                             <%if(empId == rc3EmpId){ %>
                                             <span class="badge badge-info">For Recommendation</span>
@@ -533,7 +581,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     <div <%if(empId == rc4EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>Subject Expert &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc4Role != null ? rc4Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc4Details != null ? rc4Details : "-" %>
                                             <%if(empId == rc4EmpId){ %>
                                             <span class="badge badge-info">For Recommendation</span>
@@ -549,7 +597,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     <div <%if(empId == rc5EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Member Secretary &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= rc5Role != null ? rc5Role + " &nbsp;&nbsp; " : "" %></span>
+                                            <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc5Details != null ? rc5Details : "-" %>
                                             <%if(empId == rc5EmpId){ %>
                                             <span class="badge badge-info">For Noting</span>
@@ -594,11 +642,12 @@ if(fundDetails!=null && fundDetails.length > 0)
 								    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
 								    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 								
+										<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
 								    
-								        <button type="button" class="btn btn-primary btn-sm submit" <% if (currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")) { %> onclick="confirmAction('Approve','A')" <%}else{ %> onclick="confirmAction('Recommend','RE')" <%} %>>
-									         <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+								        <button type="button" class="btn btn-primary btn-sm submit" <% if (currentEmpStatus.equalsIgnoreCase("CC")) { %> onclick="confirmAction('Approve','A')" <%}else if(currentEmpStatus.equalsIgnoreCase("DH")) { %> onclick="confirmAction('Recommend','DA')" <%}else { %> onclick="confirmAction('Recommend','RE')" <%} %>>
+									         <% if((currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("DH"))){ %> Approve 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %>
 								        </button>
 								        

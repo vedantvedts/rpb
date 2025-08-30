@@ -294,9 +294,6 @@ input[name="ItemNomenclature"]::placeholder {
 		String AmtFormat =(String)request.getAttribute("amountFormat");
 		String MemberType =(String)request.getAttribute("MemberType");
 		
-		
-		System.err.println("***************JSP amt->"+AmtFormat);
-		
 		String committeeMember=null;
 		if(!"A".equalsIgnoreCase(loginType)){
 		 committeeMember=(String)request.getAttribute("committeeMember");
