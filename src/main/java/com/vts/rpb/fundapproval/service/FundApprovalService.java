@@ -14,7 +14,7 @@ import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 
 public interface FundApprovalService 
 {
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId,String committeeMember) throws Exception;
 
 	public long AddFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
 	
@@ -65,7 +65,7 @@ public interface FundApprovalService
 
 	public String getCommitteeMemberType (long empId) throws Exception;
 
-	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
+	public List<Object[]> getProposedProjectDetails() throws Exception;
 	
 	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception;
 	

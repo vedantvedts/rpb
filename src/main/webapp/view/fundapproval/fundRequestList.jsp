@@ -385,6 +385,16 @@ input[name="ItemNomenclature"]::placeholder {
 			reYear=fundApprovalDto.getREYear();
 		}
 		
+		if(MemberType == null)
+		{
+			MemberType = "NA";
+		}
+		
+		if(loginType == null)
+		{
+			loginType = "NA";
+		}
+		
 		%>
 			<%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
@@ -421,7 +431,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            <div class="form-inline">
 								 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails" data-container="body" data-live-search="true" onchange="this.form.submit();"  
 								  required="required"  style="align-items: center;font-size: 5px;min-width:440px;">
-								   <%if(loginType.equalsIgnoreCase("A")) {%> 
+								   <%if(loginType.equalsIgnoreCase("A") || MemberType.equalsIgnoreCase("CC") || MemberType.equalsIgnoreCase("CS")) {%> 
 								 	<option value="-1#All#All" <%if(divisionId!=null && (divisionId).equalsIgnoreCase("-1")){%> selected="selected" <%} %> hidden="true">All</option>
 								  <%} %> 								 
 									<%if(DivisionList!=null && DivisionList.size()>0){
@@ -465,34 +475,7 @@ input[name="ItemNomenclature"]::placeholder {
 						  </table>
 					</div>
 					
-				<%-- 	<div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: end;border-bottom-right-radius: 0px !important;margin:0px !important;width: 100%;background-color: transparent !important;">
-						 <div class="form-inline" style="justify-content: end;">
-				           <label style="font-weight: bold;">Budget :&nbsp;&nbsp;</label>
-					            <div class="form-inline">
-								 <select class="form-control select2" id="budgetType" name="budgetTypeSel" style="align-items: center;font-size: 5px;min-width:200px;">
-								 	<option value="B" <%if(budgetType!=null && budgetType.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
-								 	<option value="N" <%if(budgetType!=null && budgetType.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
-							    </select>
-							  </div>
-						</div> 
-						
-						
-						
-						 <div class="form-inline proposedProjectClass" style="justify-content: end;display: none;">&nbsp;&nbsp;
-				           <label style="font-weight: bold;">Proposed Project :&nbsp;&nbsp;</label>
-					            <div class="form-inline">
-								 <select class="form-control select2" id="proposedProject" name="proposedProjectSel" style="align-items: center;font-size: 5px;min-width:200px;width: 300px;">
-							    
-							    </select>
-							  </div>
-						</div> 
-						 
-					</div> --%>
-					
 				 </form> 
-				 
-				 
-				 
 				 	
 					<form action="#" id="RequistionFormAction" autocomplete="off"> 
 				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -587,7 +570,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        %>
 												
 												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
-					                       		<%} else if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)) { %> 
+					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { %> 
 					                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 										        <i class="fa-solid fa-rotate-right" style="color:#F66B0E;"></i>
@@ -763,8 +746,8 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		<tr class="RPBMember3">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
 				                              			<td style="padding: 8px; width: 55%;">
-				                              			<input type="hidden" id="RPBMemberRole2" name="RPBMemberRole2">
-				                              			<select id="RPBMemberRole3" name="RPBMemberRole3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+				                              			<input type="hidden" id="RPBMemberRole3" name="RPBMemberRole3">
+				                              			<select id="RPBMemberDetails3" name="RPBMemberDetails3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
 				                              		</tr>
@@ -781,7 +764,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		<tr class="RPBMemberSecretary">
 				                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member Secretary<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></td>
 				                              			<td style="padding: 8px; width: 55%;">
-				                              			<input type="hidden" id="SubjectExpertRole" name="RPBMemberSecretaryRole">
+				                              			<input type="hidden" id="RPBMemberSecretaryRole" name="RPBMemberSecretaryRole">
 				                              			<select id="RPBMemberSecretaryDetails" name="RPBMemberSecretaryDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 				                              			<option value="">Select Employee</option>
 				                              			</select></td>
@@ -1102,32 +1085,51 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	// Division Head
 			    	 if(value[2] == 'DIVISION HEAD APPROVED')
 			    	 {
-			    		 $.each(allEmployeeList, function(key, value) 
+			    		 $.each(allEmployeeList, function(key, rowValue) 
 						 {
-			    			 if(flowEmpId!=null && flowEmpId == value[0])
+			    			 if(flowEmpId!=null && flowEmpId == rowValue[0])
 	    					 {
-		    					 $(idAttribute).append('<option value="'+value[0]+'" selected="selected">'+ value[2] + ', '+ value[3] +'</option>');
+		    					 $(idAttribute).append('<option value="'+rowValue[0]+'" selected="selected">'+ rowValue[2] + ', '+ rowValue[3] +'</option>');
 	    					 }
 		    				 else
 	    					 {
-	    					 	$(idAttribute).append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+	    					 	$(idAttribute).append('<option value="'+rowValue[0]+'">'+ rowValue[2] + ', '+ rowValue[3] +'</option>');
 	    					 }
 						 });
 			    	 }
 			    	 
-			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
+			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
 			    	 {
-			    		 $.each(committeeMemberList, function(key, value) 
+			    		 $.each(committeeMemberList, function(key, rowValue) 
 						 {
-			    			 if(value[1]!=null && (value[1] == 'CM' || value[1] == 'SE'))   // CM-Committee Member
+			    			 if(rowValue[1]!=null && (rowValue[1] == 'CM' || rowValue[1] == 'SE'))   // CM-Committee Member
 			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == value[2])
+			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
 		    					 {
-			    					 $(idAttribute).append('<option value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+			    					 $(idAttribute).append('<option value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			    				 else
 		    					 {
-		    					 	$(idAttribute).append('<option value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+		    					 	$(idAttribute).append('<option value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
+		    					 }
+			   				 }
+						 });
+			    	 }
+			    	 
+			    	 // Subject Expert
+			    	 if(value[2] == 'SE RECOMMENDED')
+			    	 {
+			    		 $.each(committeeMemberList, function(key, rowValue) 
+						 {
+			    			 if(rowValue[1]!=null && rowValue[1] == 'SE')
+			   				 {
+			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
+		    					 {
+			    					 $(idAttribute).append('<option value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
+		    					 }
+			    				 else
+		    					 {
+		    					 	$(idAttribute).append('<option value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			   				 }
 						 });
@@ -1135,17 +1137,17 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	 
 			    	 if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
 			    	 {
-			    		 $.each(committeeMemberList, function(key, value) 
+			    		 $.each(committeeMemberList, function(key, rowValue) 
 						 {
-			    			 if(value[1]!=null && value[1] == 'CS')   // CM-Committee Secretary
+			    			 if(rowValue[1]!=null && rowValue[1] == 'CS')   // CM-Committee Secretary
 			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == value[2])
+			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
 		    					 {
-			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			    				 else
 		    					 {
-			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			   				 }
 						 });
@@ -1153,17 +1155,17 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 			    	 
 			    	 if(value[2] == 'CHAIRMAN APPROVED')
 			    	 {
-			    		 $.each(committeeMemberList, function(key, value) 
+			    		 $.each(committeeMemberList, function(key, rowValue) 
 						 {
-			    			 if(value[1]!=null && (value[1] == 'CC' || value[1] == 'SC'))   // CM-Committee Chairman  SC-Committee Standby Chairman
+			    			 if(rowValue[1]!=null && (rowValue[1] == 'CC' || rowValue[1] == 'SC'))   // CM-Committee Chairman  SC-Committee Standby Chairman
 			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == value[2])
+			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
 		    					 {
-			    					 $(idAttribute).append('<option  value="'+value[2]+'" selected="selected">'+ value[3] + ', '+ value[4] +'</option>');
+			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			    				 else
 		    					 {
-			    					 $(idAttribute).append('<option  value="'+value[2]+'">'+ value[3] + ', '+ value[4] +'</option>');
+			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
 		    					 }
 			   				 }
 						 });

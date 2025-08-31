@@ -60,8 +60,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	private static final Logger logger=LogManager.getLogger(FundApprovalServiceImpl.class);
 	
 	@Override
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception {
-		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId);
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId,String committeeMember) throws Exception {
+		return fundApprovalDao.getFundApprovalList(finYear,divisionId,estimateType,loginType,empId,projectId,committeeMember);
 	}
 	
 	@Override
@@ -960,8 +960,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception {
-		return fundApprovalDao.getProposedProjectDetails(divisionId);
+	public List<Object[]> getProposedProjectDetails() throws Exception {
+		return fundApprovalDao.getProposedProjectDetails();
 	}
 	
 	@Override
@@ -1034,10 +1034,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			revision.setStatus(fundApprovalRevise.getStatus());
 			revision.setRemarks(fundApprovalRevise.getRemarks());
 			revision.setApprovalDate(fundApprovalRevise.getApprovalDate());
+			revision.setRevisionCount(revisionCount);
 			revision.setCreatedBy(UserName);
 			revision.setCreatedDate(LocalDateTime.now());
 
-			long fundApprovedRevisionId=fundApprovalDao.RevisionDetailsSubmit(revision);
+			fundApprovalDao.RevisionDetailsSubmit(revision);
 			
 			return revisionCount;
 		}

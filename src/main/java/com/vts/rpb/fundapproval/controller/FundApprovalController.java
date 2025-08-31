@@ -83,12 +83,20 @@ public class FundApprovalController
    		String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
    		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
    		String divisionId = ((Long) ses.getAttribute("Division")).toString();
+   		
    		try
    		{
+   			String committeeMember=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+   			
    		 String FromYear = safeTrim(req.getParameter("FromYear"));
          String ToYear = safeTrim(req.getParameter("ToYear"));
          String DivisionDetails = safeTrim(req.getParameter("DivisionDetails"));
          String estimateType = safeTrim(req.getParameter("EstimateType"));
+         
+         	if(committeeMember == null)
+         	{
+         		committeeMember = "NA";
+         	}
          
    			if(estimateType==null)
    			{
@@ -104,8 +112,16 @@ public class FundApprovalController
    			{
    				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
    				{
-   					DivisionId=divisionId;
-   					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+   					if(committeeMember!=null && (committeeMember.equalsIgnoreCase("CS") || committeeMember.equalsIgnoreCase("CC")))
+   					{
+   						DivisionId="-1";
+   	   					DivisionDetails="-1#All#All";
+   					}
+   					else
+   					{
+   						DivisionId=divisionId;
+   	   					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+   					}
    				}
    				else
    				{
@@ -127,9 +143,8 @@ public class FundApprovalController
    			{
    				FinYear=FromYear.trim()+"-"+ToYear.trim();
    			}
-   			String committeeMember=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
    			
-   			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId);
+   			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId,committeeMember);
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
    			req.setAttribute("RequisitionList", RequisitionList);
@@ -741,62 +756,31 @@ public class FundApprovalController
 				
 				FundApproval exisitingFundApproval=fundApprovalService.getExisitingFundApprovalList(fundApprovalId);
 				
-				FundApproval fundApproval=new FundApproval();
-				fundApproval.setRevisionCount(revisionCount);
-				fundApproval.setSerialNo(exisitingFundApproval.getSerialNo());
-				fundApproval.setBudgetType(budgetType.trim());
-				fundApproval.setInitiationId(initiationId!=null ? Long.parseLong(initiationId) : 0);
-				fundApproval.setFundApprovalId(fundApprovalId!=null ? Long.valueOf(fundApprovalId) : 0);
-				fundApproval.setFinYear(finYear.trim());
-				fundApproval.setReFbeYear(exisitingFundApproval.getReFbeYear().trim());
-				fundApproval.setEstimateType(estimatedType.trim());
-				fundApproval.setDivisionId(divisionId!=null ? Long.valueOf(divisionId) : 0);
-				fundApproval.setInitiatingOfficer(empId!=null ? Long.valueOf(empId) : 0);
-				fundApproval.setProjectId(budget!=null ? Long.valueOf(budget) : 0);
-				fundApproval.setBudgetHeadId(budgetHeadId!=null ? Long.valueOf(budgetHeadId) : 0);
-				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
-				fundApproval.setBookingId(exisitingFundApproval.getBookingId());
-				fundApproval.setFundRequestId(exisitingFundApproval.getFundRequestId());
-				fundApproval.setCommitmentPayIds(exisitingFundApproval.getCommitmentPayIds());
-				fundApproval.setItemNomenclature(itemNomenclature.trim());
-				fundApproval.setJustification(justification.trim());
-				fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate.trim()));
-				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
-				fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
-				fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
-				fundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);
-				fundApproval.setJuly(jul != null && !jul.trim().isEmpty() ? new BigDecimal(jul.trim()) : BigDecimal.ZERO);
-				fundApproval.setAugust(aug != null && !aug.trim().isEmpty() ? new BigDecimal(aug.trim()) : BigDecimal.ZERO);
-				fundApproval.setSeptember(sep != null && !sep.trim().isEmpty() ? new BigDecimal(sep.trim()) : BigDecimal.ZERO);
-				fundApproval.setOctober(oct != null && !oct.trim().isEmpty() ? new BigDecimal(oct.trim()) : BigDecimal.ZERO);
-				fundApproval.setNovember(nov != null && !nov.trim().isEmpty() ? new BigDecimal(nov.trim()) : BigDecimal.ZERO);
-				fundApproval.setDecember(dec != null && !dec.trim().isEmpty() ? new BigDecimal(dec.trim()) : BigDecimal.ZERO);
-				fundApproval.setJanuary(jan != null && !jan.trim().isEmpty() ? new BigDecimal(jan.trim()) : BigDecimal.ZERO);
-				fundApproval.setFebruary(feb != null && !feb.trim().isEmpty() ? new BigDecimal(feb.trim()) : BigDecimal.ZERO);
-				fundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
-				fundApproval.setRc1(exisitingFundApproval.getRc1());
-				fundApproval.setRc1Role(exisitingFundApproval.getRc1Role());
-				fundApproval.setRc2(exisitingFundApproval.getRc2());
-				fundApproval.setRc2Role(exisitingFundApproval.getRc2Role());
-				fundApproval.setRc3(exisitingFundApproval.getRc3());
-				fundApproval.setRc3Role(exisitingFundApproval.getRc3Role());
-				fundApproval.setRc4(exisitingFundApproval.getRc4());
-				fundApproval.setRc4Role(exisitingFundApproval.getRc4Role());
-				fundApproval.setRc5(exisitingFundApproval.getRc5());
-				fundApproval.setRc5Role(exisitingFundApproval.getRc5Role());
-				fundApproval.setRc6(exisitingFundApproval.getRc6());
-				fundApproval.setRc6Role(exisitingFundApproval.getRc6Role());
-				fundApproval.setApprovingOfficer(exisitingFundApproval.getApprovingOfficer());
-				fundApproval.setApprovingOfficerRole(exisitingFundApproval.getApprovingOfficerRole());
-				fundApproval.setCreatedBy(exisitingFundApproval.getCreatedBy());
-				fundApproval.setCreatedDate(exisitingFundApproval.getCreatedDate());
-				fundApproval.setModifiedBy(UserName);
-				fundApproval.setModifiedDate(LocalDateTime.now());
-				fundApproval.setRcStatusCode("INITIATION");
-				fundApproval.setRcStatusCodeNext("FORWARDED");
-				fundApproval.setStatus("A");
-				fundApproval.setRemarks(exisitingFundApproval.getRemarks().trim());
-				fundApproval.setApprovalDate(exisitingFundApproval.getApprovalDate());
+				exisitingFundApproval.setRevisionCount(revisionCount);
+				exisitingFundApproval.setInitiationId(initiationId!=null ? Long.parseLong(initiationId) : 0);
+				exisitingFundApproval.setInitiatingOfficer(empId!=null ? Long.valueOf(empId) : 0);
+				exisitingFundApproval.setProjectId(budget!=null ? Long.valueOf(budget) : 0);
+				exisitingFundApproval.setBudgetHeadId(budgetHeadId!=null ? Long.valueOf(budgetHeadId) : 0);
+				exisitingFundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
+				exisitingFundApproval.setItemNomenclature(itemNomenclature!=null ? itemNomenclature.trim() : null);
+				exisitingFundApproval.setJustification(justification!=null ? justification.trim() : null);
+				exisitingFundApproval.setRequisitionDate(InitiationDate!=null ? DateTimeFormatUtil.getRegularToSqlDate(InitiationDate.trim()) : null);
+				exisitingFundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setJune(jun != null && !jun.trim().isEmpty() ? new BigDecimal(jun.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setJuly(jul != null && !jul.trim().isEmpty() ? new BigDecimal(jul.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setAugust(aug != null && !aug.trim().isEmpty() ? new BigDecimal(aug.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setSeptember(sep != null && !sep.trim().isEmpty() ? new BigDecimal(sep.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setOctober(oct != null && !oct.trim().isEmpty() ? new BigDecimal(oct.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setNovember(nov != null && !nov.trim().isEmpty() ? new BigDecimal(nov.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setDecember(dec != null && !dec.trim().isEmpty() ? new BigDecimal(dec.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setJanuary(jan != null && !jan.trim().isEmpty() ? new BigDecimal(jan.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setFebruary(feb != null && !feb.trim().isEmpty() ? new BigDecimal(feb.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setModifiedBy(UserName);
+				exisitingFundApproval.setModifiedDate(LocalDateTime.now());
+				exisitingFundApproval.setRemarks(exisitingFundApproval.getRemarks()!=null ? exisitingFundApproval.getRemarks().trim() : null);
 				
 				FundApprovalAttachDto attachDto=new FundApprovalAttachDto();
 				attachDto.setFileName(filenames);
@@ -806,7 +790,7 @@ public class FundApprovalController
 			  
 			    attachDto.setExistingAttachmentIds(existingAttachmentIds);
 				
-				 long status = fundApprovalService.RevisionFundRequestSubmit(fundApproval, attachDto);
+				 long status = fundApprovalService.RevisionFundRequestSubmit(exisitingFundApproval, attachDto);
 				
 					
 					if(status > 0) {
@@ -864,12 +848,7 @@ public class FundApprovalController
 		String UserName = (String) ses.getAttribute("Username");
 		logger.info(new Date() + "Inside getProposedProjectDetails.htm " + UserName);
 		try {
-				String divisionId = (String)req.getParameter("divisionId");
-				if(divisionId == null)
-				{
-					return null;
-				}
-				return json.toJson(fundApprovalService.getProposedProjectDetails(divisionId)); 
+				return json.toJson(fundApprovalService.getProposedProjectDetails()); 
 		} catch (Exception e) {
 			logger.error(new Date() + "Inside getProposedProjectDetails.htm " + UserName, e);
 			e.printStackTrace();

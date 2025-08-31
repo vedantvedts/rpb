@@ -424,12 +424,12 @@ if(fundDetails!=null && fundDetails.length > 0)
 	    	 <ol class="breadcrumb" style="justify-content: right !important;">
 	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	    	 <li class="breadcrumb-item">
-	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("DH")){ %> Approval 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH")){ %> Recommend
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> NA <%} %> List</a>
 	         </li>
-	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>FBE<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>RE<%} %> Item</li>
+	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %> FBE <%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %> RE <%} %> Item</li>
              </ol>
            </div>
          </div>
@@ -520,7 +520,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                             <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= rc6Details != null ? rc6Details : "-" %>
                                              <%if(empId == rc6EmpId){ %>
-                                            <span class="badge badge-info">For Approval</span>
+                                            <span class="badge badge-info">For Recommendation</span>
                                             <%} %>
                                             <%if(rc6Status!=null && rc6Status.equalsIgnoreCase("Y")){ %>
                                            	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
@@ -613,7 +613,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     <div <%if(empId == appOffEmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
                                         <span><b>RPB Chairman &nbsp;: &nbsp;</b></span>
                                         <span class="recommendation-value">
-                                            <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>><%= approvingOfficerRole != null ? approvingOfficerRole + " &nbsp;&nbsp; " : "" %></span>
+                                            <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
                                             <%= approvingOfficerDetails != null ? approvingOfficerDetails : "-" %>
                                              <%if(empId == appOffEmpId){ %>
                                             <span class="badge badge-info">For Approval</span>
@@ -645,8 +645,8 @@ if(fundDetails!=null && fundDetails.length > 0)
 										<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
 								    
 								        <button type="button" class="btn btn-primary btn-sm submit" <% if (currentEmpStatus.equalsIgnoreCase("CC")) { %> onclick="confirmAction('Approve','A')" <%}else if(currentEmpStatus.equalsIgnoreCase("DH")) { %> onclick="confirmAction('Recommend','DA')" <%}else { %> onclick="confirmAction('Recommend','RE')" <%} %>>
-									         <% if((currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("DH"))){ %> Approve 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
+									         <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")  || currentEmpStatus.equalsIgnoreCase("DH")){ %> Recommend
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %>
 								        </button>

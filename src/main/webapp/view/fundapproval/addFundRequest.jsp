@@ -1001,9 +1001,8 @@ $("#AllOfficers").click(function(){
 
 	function getProposedProjectDetails(proposedProjectId)
 	{
-		var divisionId = $("#divisionIdHidden").val();
 		$.get('getProposedProjectDetails.htm', {
-			divisionId : divisionId
+			
 		}, function(responseJson) {
 			$('#selProposedProject').find('option').remove();
 			$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
