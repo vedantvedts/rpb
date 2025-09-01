@@ -76,7 +76,10 @@ public class LoginController {
 			}
 		    
 		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
+		    DivisionList.forEach(row -> System.out.println(Arrays.toString(row)));
+		    System.out.println("----------------------------------------");
 			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId);
+			DivisionDetailsList.forEach(row -> System.out.println(Arrays.toString(row)));
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);
 		   req.setAttribute("amountFormat", amountFormat);

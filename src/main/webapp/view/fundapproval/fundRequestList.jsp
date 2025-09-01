@@ -20,12 +20,9 @@
 <meta name="_csrf" content="${_csrf.token}"/>
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 <jsp:include page="../static/header.jsp"></jsp:include>
+<jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
 <title>Fund Requisition List</title>
 <style>
-
-/* .modal-lg {
-    max-width: 50% !important;
-} */
 
 .select2-selection
 {
@@ -369,16 +366,17 @@ input[name="ItemNomenclature"]::placeholder {
 		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
-		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
 		String MemberType =(String)request.getAttribute("MemberType");
+		String currentFinYear =(String)request.getAttribute("currentFinYear");
 		System.out.println("MemberType*****"+MemberType);
 		
-		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null;
+		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null,finYear = null;
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
 		if(fundApprovalDto!=null)
 		{
 			fromYear=fundApprovalDto.getFromYearBackBtn();
 			toYear=fundApprovalDto.getToYearBackBtn();
+			finYear = fromYear + "-" + toYear;
 			divisionId=fundApprovalDto.getDivisionId();
 			estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
 			fbeYear=fundApprovalDto.getFBEYear();
@@ -520,7 +518,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			 <td align="center">
 											    <button type="button" 
 											            class="btn btn-sm btn-outline-primary tooltip-container" 
-											            onclick="openAttachmentModal('<%=data[0] %>', this)" 
+											            onclick="openFundDetailsModal('<%=data[0] %>', this)" 
 											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
 											        <i class="fa fa-eye"></i>
 											    </button>
@@ -611,7 +609,11 @@ input[name="ItemNomenclature"]::placeholder {
 					    </div>
 					    
 					      <div class="text-center">
+					      
+					      <% if(finYear!=null && currentFinYear.equalsIgnoreCase(finYear)){ %>
+					      
 					      <%if(divisionId!=null && !divisionId.equalsIgnoreCase("-1")){ %>
+					      
 				               <button type="submit" class="btn btn-sm add-btn tooltip-container" name="AddDataOfSel" name="Action" value="Add" 
 					            data-tooltip="Add New Item(s)" data-placement="top" formaction="AddFundRequest.htm"> New Request </button>
 					            &nbsp;
@@ -626,7 +628,10 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 				               <button type="submit" class="btn btn-sm carry-forward-request-btn tooltip-container" name="Action" value="Item" 
 					            data-tooltip="Carry Forward Previous Year Existing Request" data-placement="top" formaction="FundRequestCarryForward.htm"> Carry Forward Request </button>
-					       <%} %>     
+					       
+					         <%} %>  
+					       
+					       <%} %>   
 						
 						</div>
 						
@@ -841,78 +846,7 @@ input[name="ItemNomenclature"]::placeholder {
 				</div>
 				</div>
 				
-				<!-- Attachment Modal -->
 
-<div class="modal fade AttachmentModal" tabindex="-1" role="dialog" style="padding: 0;">
-  <div class="modal-dialog modal-lg Exp" role="document">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header bg-darktext-white ">
-        <h4 class="modal-title" style="font-family:'Times New Roman'; font-weight: 600;">Attachment Details</h4>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;">&times;</span>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-<div class="modal-body">
-  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-  <input type="hidden" name="TaDaIdAjax" id="TaDaIdAjax" value="">
-<div class="AttachmentDetails"></div>
-  <div class="row">
-    <!-- Left: Attachments Table -->
-    <div class="col-md-6">
-      <h5 class="text-secondary" style="font-weight: 600;">Attachments</h5>
-      <table class="table table-bordered table-striped mt-2" id="AttachmentModalTable">
-        <thead class="thead-dark">
-          <tr>
-         	<th>SN</th>
-            <th style="width: 60%;">Attachment Name</th>
-            <th style="width: 40%; text-align: center;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="eAttachmentModalBody" style="font-weight: 400;"></tbody>
-      </table>
-    </div>
-
-    <!-- Right: File Preview Section -->
-    <div class="col-md-6" id="previewSection" style="display: none;">
-      <h5 class="text-primary" style="font-weight: 600;">Preview:&nbsp;&nbsp;<span  style="color:black;">(</span><span id="previewFileName" style="color:black;"></span><span  style="color:black;">)</span></h5>
-      <iframe id="filePreviewIframe" style="width: 100%; height: 440px; border: 1px solid #ccc;"></iframe>
-    </div>
-  </div>
-</div>
-
-
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog  custom-width-modal" role="document">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color: white !important;color:black;">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:#000000;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Employee Modal Table -->
-        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">CURRENT STATUS:</div>
-        <div id="ApprovalStatusDiv" class="mt-2" style="width: 95% !important;margin:auto;"></div>
-        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">STATUS HISTORY:</div>
-        <div id="EmployeeModalTable" class="mt-2" style="width: 95% !important;margin:auto;"></div>
-        
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<script src="webresources/js/RpbFundStatus.js"></script>
 			
 </body>
 <script type="text/javascript">
@@ -1368,118 +1302,6 @@ function refreshModal(modalId) {
   
   </script>
   <script type="text/javascript">
- // Define function in global scope
- function openAttachmentModal(fundApprovalId, ec) {
-     console.log('Opening attachment modal for ID: ' + fundApprovalId);
-
-     var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
-
-     // First AJAX call (Details)
-     $.ajax({
-         url: 'GetAttachmentDetailsAjax.htm',
-         method: 'GET',
-         data: { fundApprovalId: fundApprovalId },
-         success: function(data) {
-             console.log('AJAX success', data);
-
-             var detailsDiv = $(".AttachmentDetails");
-             detailsDiv.empty(); // clear previous
-
-             if (data && data.length > 0) {
-                 var attach = data[0];
-                 var statusColor = '';
-                 if (attach.Status === 'Approved') statusColor = 'green';
-                 else if (attach.Status === 'Pending') statusColor = '#8c2303';
-                 else if (attach.Status === 'Forwarded') statusColor = 'blue';
-                 else if (attach.Status === 'Returned') statusColor = 'red';
-
-                 var html = '<table class="table table-bordered table-striped">'
-                     + '<tbody>'
-                     + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Budget Head</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetHead || '') + '</td>'
-                     + '<th style="color:#0080b3; font-size:16px;">Budget Type</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetType || '') + '</td>'
-                     + '</tr>'
-                     + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Estimate Type</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.EstimateType || '') + ' (' + (attach.REFBEYear || '') + ')</td>'
-                     + '<th style="color:#0080b3; font-size:16px;">Initiating Officer</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.InitiatingOfficer || '') + ', ' + (attach.Designation || '') + '</td>'
-                     + '</tr>'
-                     + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Item Nomenclature</th>'
-                     + '<td colspan="3" style="font-weight:600; font-size:16px;">' + (attach.ItemNomenculature || '') + '</td>'
-                     + '</tr>'
-                     + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Justification</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.Justification || '') + '</td>'
-                     + '<th style="color:#0080b3; font-size:16px;">Estimated Cost</th>'
-                     + '<td style="color:#00008B;font-weight:600; font-size:16px;">' + (estimatedCost || '-') + '</td>'
-                     + '</tr>'
-                     + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Division</th>'
-                     + '<td style="font-weight:600; font-size:16px;">' + (attach.Division || '') + ' (' + (attach.DivisionShortName || '') + ')</td>'
-                     + '<th style="color:#0080b3; font-size:16px;">Status</th>'
-                     + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '</td>'
-                     + '</tr>'
-                     + '</tbody>'
-                     + '</table>';
-
-                 detailsDiv.append(html);
-             } else {
-                 detailsDiv.append("<div class='text-danger fw-bold'>No details found</div>");
-             }
-         },
-         error: function() {
-             console.error("AJAX call failed");
-             $(".AttachmentDetails").html("<div class='text-danger fw-bold'>Failed to load details</div>");
-         }
-     });
-
-     // Second AJAX call (Attachments list)
-     $.ajax({
-         url: 'GetFundRequestAttachmentAjax.htm',
-         method: 'GET',
-         data: { fundApprovalId: fundApprovalId },
-         success: function(data) {
-             var body = $("#eAttachmentModalBody");
-             body.empty();
-             var count=1;
-
-             if (data.length === 0) {
-                 body.append("<tr><td colspan='3' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
-                 $("#previewSection").hide();
-                 $("#filePreviewIframe").attr("src", "");
-                 $("#previewFileName").text(""); 
-             } else {
-                 $.each(data, function(index, attach) {
-                     var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
-                     var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
-
-                     var row = "<tr>" +
-                       "<td style='font-weight:700'>" + count++ + ".</td>" +
-                         "<td style='text-align: center; font-weight:700'>" + attach.fileName + "</td>" +
-                         "<td style='text-align: center;'>" +
-                         "<button class='btn fa fa-eye text-primary' title='Preview - " + attach.fileName + " Attachment' onclick=\"previewAttachment('" + viewUrl + "','" + attach.fileName + "')\"></button>" +
-                         "</td>" +
-                         "</tr>";
-                     body.append(row);
-
-                     // Auto-preview first attachment
-                     if (index === 0) {
-                         previewAttachment(viewUrl, attach.fileName);
-                     }
-                 });
-             }
-
-             $(".AttachmentModal").modal("show");
-         },
-         error: function() {
-             alert("Failed to load attachments.");
-         }
-     });
- }
 
  // Define previewAttachment globally
  function previewAttachment(url, fileName) {

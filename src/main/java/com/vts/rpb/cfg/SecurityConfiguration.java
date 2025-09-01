@@ -85,6 +85,7 @@ public class SecurityConfiguration
 		}
 		
 		@Bean
+		@Primary
 		UserDetailsService userDetailsService() 
 		{
 			return new userDetailsImp();

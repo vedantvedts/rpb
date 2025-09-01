@@ -87,6 +87,7 @@ public class FundApprovalController
    		try
    		{
    			String committeeMember=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+   			String currentFinYear=DateTimeFormatUtil.getCurrentFinancialYear();
    			
    		 String FromYear = safeTrim(req.getParameter("FromYear"));
          String ToYear = safeTrim(req.getParameter("ToYear"));
@@ -149,8 +150,9 @@ public class FundApprovalController
    			
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
-   			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
    			req.setAttribute("MemberType", committeeMember);
+   			req.setAttribute("currentFinYear", currentFinYear);
+   			
    			//user selected different year Estimate type reset to RE
    			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
    			   backDto.setDivisionBackBtn(DivisionDetails);
@@ -951,6 +953,7 @@ public class FundApprovalController
 	                map.put("Justification", obj[11]);
 	                map.put("Status", obj[19]);
 	                map.put("BudgetType", obj[20]);
+	                map.put("SerialNo", obj[22]);
 	                resultList.add(map);
 	            }
 	        }

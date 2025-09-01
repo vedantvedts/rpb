@@ -15,6 +15,7 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../static/header.jsp"></jsp:include>
+<jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
 <title>FUND APPROVAL LIST</title>
 
 <style type="text/css">
@@ -495,27 +496,6 @@ String failure=(String)request.getParameter("resultFailure");%>
  </div><!-- Body Part End --> 
 			
 </div> <!-- Page End -->
-<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document" style="">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Employee Modal Table -->
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
-        <div id="EmployeeModalTable" class="mt-2"></div>
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
-         <div id="ApprovalStatusDiv" ></div>
-        
-      </div>
-      
-    </div>
-  </div>
-</div>
 
 </body>
 
