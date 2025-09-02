@@ -530,7 +530,14 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
 				                   			<td class='tableEstimatedCost' align="right" ><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
-				                   			<td align="center"><img onclick="openAttachmentModal('<%=data[0] %>', this)" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
+				                   			 <td align="center">
+    <button type="button" 
+            class="btn btn-sm btn-outline-primary" 
+            onclick="openAttachmentModal('<%=data[0] %>', this)" 
+            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
+        <i class="fa fa-eye"></i>
+    </button>
+</td>
 				                   			<td style="width: 120px;">
 				                   			<%if(data[23]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
 				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
@@ -547,7 +554,7 @@ input[name="ItemNomenclature"]::placeholder {
 											       </button>
 											       <%} %>
 									       </td>
-				                   			<td align="center">-</td>
+				                   			<td align="center" ><%if(data[26]!=null && !data[26].toString().isEmpty()){ %> <%=data[26] %><%} else { %>-<%} %></td>
 			                      	 
 					           		  </tr>
 					            <%} %>

@@ -39,6 +39,7 @@ import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
+import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
 
 @Service
@@ -131,6 +132,78 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	@Override
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
 	    long fundApprovalId = fundApprovalDao.EditFundRequestSubmit(approval);
+	    
+	    if (fundApprovalId > 0) {
+	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
+	        String pathDB = Paths.get("FundApproval", String.valueOf(fundApprovalId)).toString();
+	        
+	        File filepath = new File(filePath);
+	        if (!filepath.exists()) {
+	            filepath.mkdirs();
+	        }
+	        
+	        for (int i = 0; i < attachDto.getFiles().length; i++) {
+	            if (!attachDto.getFiles()[i].isEmpty()) {
+	                // Check if attachment with this name already exists
+	                Object[] existingAttach = fundApprovalDao.findAttachmentByFundAndName(fundApprovalId, attachDto.getFileName()[i]);
+	                
+	                if (existingAttach != null) {
+	                    // Update existing attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalAttachId((Long) existingAttach[0]);
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setModifiedBy(attachDto.getCreatedBy());
+	                    modal.setModifiedDate(LocalDateTime.now());
+	                    modal.setPath(pathDB);
+	                    
+	                    // Delete old file
+	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
+	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
+	                    Files.deleteIfExists(oldFile.toPath());
+	                    System.err.println("EXISTING if SECTION-");
+	                    
+	                    // Save new file
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fundApprovalDao.updateFundRequestAttach(modal);
+	                } else {
+	                    // Add new attachment
+	                    FundApprovalAttach modal = new FundApprovalAttach();
+	                    modal.setFundApprovalId(fundApprovalId);
+	                    modal.setFileName(attachDto.getFileName()[i]);
+	                    modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename());
+	                    modal.setCreatedBy(attachDto.getCreatedBy());
+	                    modal.setCreatedDate(LocalDateTime.now());
+	                    
+	                    String fullFilePath = filePath + File.separator + modal.getOriginalFileName();
+	                    File file = new File(fullFilePath);
+	                    int count = 0;
+	                    while (file.exists()) {
+	                        count++;
+	                        String newName = FilenameUtils.getBaseName(modal.getOriginalFileName()) + "-" + count + 
+	                            "." + FilenameUtils.getExtension(modal.getOriginalFileName());
+	                        fullFilePath = filePath + File.separator + newName;
+	                        file = new File(fullFilePath);
+	                        if (count > 0) {
+	                            modal.setOriginalFileName(newName);
+	                        }
+	                    }
+	                    
+	                    modal.setPath(pathDB);
+	                    SaveFile(filePath, modal.getOriginalFileName(), attachDto.getFiles()[i]);
+	                    fundApprovalDao.AddFundRequestAttachSubmit(modal);
+	                    
+	                }
+	            }
+	        }
+	    }
+	    return 1L;
+	}
+	
+	@Override
+	public long RevisionFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception {
+	    long fundApprovalId = fundApprovalDao.RevisionFundRequestSubmit(approval);
 	    
 	    if (fundApprovalId > 0) {
 	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
@@ -897,5 +970,80 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return fundApprovalDao.getAttachmentDetails(fundApprovalId);
 	}
 	
+	@Override
+	public FundApproval getExisitingFundApprovalList(String fundApprovalId) throws Exception{
+	  return fundApprovalDao.getRevisionListDetails(fundApprovalId);
+	}
+	
+	@Override
+	public long getRevisionListDetails(String fundApprovalId,String UserName) throws Exception{
+		
+		FundApproval fundApprovalRevise=fundApprovalDao.getRevisionListDetails(fundApprovalId);
+		
+		if(fundApprovalRevise!=null) {
+			long revisionCount=fundApprovalDao.getRevisionCount(fundApprovalId);
+			revisionCount+=1;
+			FundApprovedRevision revision = new FundApprovedRevision();
+			
+			revision.setFundApprovalId(fundApprovalRevise.getFundApprovalId());
+			revision.setEstimateType(fundApprovalRevise.getEstimateType());
+			revision.setSerialNo(fundApprovalRevise.getSerialNo());
+			revision.setDivisionId(fundApprovalRevise.getDivisionId());
+			revision.setFinYear(fundApprovalRevise.getFinYear());
+			revision.setReFbeYear(fundApprovalRevise.getReFbeYear());
+			revision.setInitiationId(fundApprovalRevise.getInitiationId());
+			revision.setBudgetType(fundApprovalRevise.getBudgetType());
+			revision.setProjectId(fundApprovalRevise.getProjectId());
+			revision.setBudgetHeadId(fundApprovalRevise.getBudgetHeadId());
+			revision.setBudgetItemId(fundApprovalRevise.getBudgetItemId());
+			revision.setFundRequestId(fundApprovalRevise.getFundRequestId());
+			revision.setBookingId(fundApprovalRevise.getBookingId());
+			revision.setCommitmentPayIds(fundApprovalRevise.getCommitmentPayIds());
+			revision.setItemNomenclature(fundApprovalRevise.getItemNomenclature());
+			revision.setRequisitionDate(fundApprovalRevise.getRequisitionDate());
+			revision.setJustification(fundApprovalRevise.getJustification());
+			revision.setFundRequestAmount(fundApprovalRevise.getFundRequestAmount());
+			revision.setApril(fundApprovalRevise.getApril());
+			revision.setMay(fundApprovalRevise.getMay());
+			revision.setJune(fundApprovalRevise.getJune());
+			revision.setJuly(fundApprovalRevise.getJuly());
+			revision.setAugust(fundApprovalRevise.getAugust());
+			revision.setSeptember(fundApprovalRevise.getSeptember());
+			revision.setOctober(fundApprovalRevise.getOctober());
+			revision.setNovember(fundApprovalRevise.getNovember());
+			revision.setDecember(fundApprovalRevise.getDecember());
+			revision.setJanuary(fundApprovalRevise.getJanuary());
+			revision.setFebruary(fundApprovalRevise.getFebruary());
+			revision.setMarch(fundApprovalRevise.getMarch());
+			revision.setInitiatingOfficer(fundApprovalRevise.getInitiatingOfficer());
+			revision.setRc1(fundApprovalRevise.getRc1());
+			revision.setRc1Role(fundApprovalRevise.getRc1Role());
+			revision.setRc2(fundApprovalRevise.getRc2());
+			revision.setRc2Role(fundApprovalRevise.getRc2Role());
+			revision.setRc3(fundApprovalRevise.getRc3());
+			revision.setRc3Role(fundApprovalRevise.getRc3Role());
+			revision.setRc4(fundApprovalRevise.getRc4());
+			revision.setRc4Role(fundApprovalRevise.getRc4Role());
+			revision.setRc5(fundApprovalRevise.getRc5());
+			revision.setRc5Role(fundApprovalRevise.getRc5Role());
+			revision.setRc6(fundApprovalRevise.getRc6());
+			revision.setRc6Role(fundApprovalRevise.getRc6Role());
+			revision.setApprovingOfficer(fundApprovalRevise.getApprovingOfficer());
+			revision.setApprovingOfficerRole(fundApprovalRevise.getApprovingOfficerRole());
+			revision.setRcStatusCode(fundApprovalRevise.getRcStatusCode());
+			revision.setRcStatusCodeNext(fundApprovalRevise.getRcStatusCodeNext());
+			revision.setStatus(fundApprovalRevise.getStatus());
+			revision.setRemarks(fundApprovalRevise.getRemarks());
+			revision.setApprovalDate(fundApprovalRevise.getApprovalDate());
+			revision.setCreatedBy(UserName);
+			revision.setCreatedDate(LocalDateTime.now());
+
+			long fundApprovedRevisionId=fundApprovalDao.RevisionDetailsSubmit(revision);
+			
+			return revisionCount;
+		}
+		return 0;
+		
+	}
 	
 }
