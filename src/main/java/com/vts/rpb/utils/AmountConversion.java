@@ -164,9 +164,7 @@ public class AmountConversion {
 		String[] RupeePaisaSplit = null;
 
 		try {
-			System.out.println("%%%%%%-----"+RupeeAndPaisa);
 			RupeePaisaSplit = RupeeAndPaisa.split("\\.");
-            System.out.println("%%length---"+RupeePaisaSplit.length);
 		} catch (Exception e) {
 
 		}

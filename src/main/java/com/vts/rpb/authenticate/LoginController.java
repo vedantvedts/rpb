@@ -39,16 +39,11 @@ public class LoginController {
 		   String loginType= (String)ses.getAttribute("LoginType");
 		   String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
 		   Long divisionId =(Long) ses.getAttribute("Division");
-		   String EmployeeDesign = (ses.getAttribute("EmployeeDesign")).toString();
 		   String amountFormat = req.getParameter("AmountFormat");
-		   String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
-	   	   String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
 		   String FromYear=req.getParameter("FromYear");
 		   String ToYear=req.getParameter("ToYear");
 		   int RupeeValue=0;
-		   System.err.println("LOGINCONTROLLER-From session empDivisionCode->"+empDivisionCode+"..empDivisionName->"+empDivisionName+"..empId->"+empId);
-		   System.err.println("EmpID->"+empId+" amountFormat-"+amountFormat);
-		   System.err.println("EmployeeDesign-"+EmployeeDesign+"  divisionId--"+divisionId);
+		  
 		    if (amountFormat == null || amountFormat.isEmpty()) {
 		        amountFormat = "L"; // default
 		    }
@@ -76,14 +71,15 @@ public class LoginController {
 			}
 			
 			String memberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
-			System.err.println("memberType->"+memberType);
 			if("CS".equalsIgnoreCase(memberType) || "CC".equalsIgnoreCase(memberType) || "A".equalsIgnoreCase(loginType)) {
 				divisionId=-1L;
 			}
-			System.err.println("DivisionID after if->"+divisionId);
 		    
 		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
+		    DivisionList.forEach(row -> System.out.println(Arrays.toString(row)));
+		    System.out.println("----------------------------------------");
 			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId);
+			DivisionDetailsList.forEach(row -> System.out.println(Arrays.toString(row)));
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);
 		   req.setAttribute("amountFormat", amountFormat);
