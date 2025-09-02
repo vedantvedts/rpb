@@ -135,7 +135,6 @@ function generateTableHTML(data) {
 //  ******************************************* Fund Details View ************************************************************************
  
  function openFundDetailsModal(fundApprovalId, ec) {
-     console.log('Opening attachment modal for ID: ' + fundApprovalId);
 
      var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
 
@@ -145,7 +144,6 @@ function generateTableHTML(data) {
          method: 'GET',
          data: { fundApprovalId: fundApprovalId },
          success: function(data) {
-             console.log('AJAX success', data);
 
              var detailsDiv = $(".AttachmentDetails");
              detailsDiv.empty(); // clear previous
@@ -157,6 +155,9 @@ function generateTableHTML(data) {
                  else if (attach.Status === 'Pending') statusColor = '#8c2303';
                  else if (attach.Status === 'Forwarded') statusColor = 'blue';
                  else if (attach.Status === 'Returned') statusColor = 'red';
+                 
+                 var serialNo="";
+                 serialNo = attach.SerialNo != null && attach.SerialNo !=0 ? '(' + attach.SerialNo + ')' : "";
 
                  var html = '<table class="table table-bordered table-striped">'
                      + '<tbody>'
@@ -173,7 +174,7 @@ function generateTableHTML(data) {
                      + '<td style="font-weight:600; font-size:16px;">' + (attach.InitiatingOfficer || '') + ', ' + (attach.Designation || '') + '</td>'
                      + '</tr>'
                      + '<tr>'
-                     + '<th style="color:#0080b3; font-size:16px;">Item Nomenclature</th>'
+                     + '<th style="color:#0080b3; font-size:16px;">Nomenclature</th>'
                      + '<td colspan="3" style="font-weight:600; font-size:16px;">' + (attach.ItemNomenculature || '') + '</td>'
                      + '</tr>'
                      + '<tr>'
@@ -186,7 +187,7 @@ function generateTableHTML(data) {
                      + '<th style="color:#0080b3; font-size:16px;">Division</th>'
                      + '<td style="font-weight:600; font-size:16px;">' + (attach.Division || '') + ' (' + (attach.DivisionShortName || '') + ')</td>'
                      + '<th style="color:#0080b3; font-size:16px;">Status</th>'
-                     + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '&nbsp;&nbsp;<span style="color:#00008B;"> ('+(attach.SerialNo || '')+')</span></td>'
+                     + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '&nbsp;&nbsp;<span style="color:#00008B;">'+(serialNo || '')+'</span></td>'
                      + '</tr>'
                      + '</tbody>'
                      + '</table>';

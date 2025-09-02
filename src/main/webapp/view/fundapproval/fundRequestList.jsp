@@ -486,7 +486,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                    <th>Budget</th>
 					                    <th>Budget Head</th>
 					                    <th>Initiating Officer</th>
-					                    <th>Item Nomenclature</th>
+					                    <th>Nomenclature</th>
 					                    <th class="text-nowrap">Estimated Cost</th>
 					                    <th>Justification</th>
 					                    <th>View</th>
@@ -610,7 +610,7 @@ input[name="ItemNomenclature"]::placeholder {
 					    
 					      <div class="text-center">
 					      
-					      <% if(finYear!=null && currentFinYear.equalsIgnoreCase(finYear)){ %>
+					    <%--   <% if(finYear!=null && currentFinYear.equalsIgnoreCase(finYear)){ %> --%>
 					      
 					      <%if(divisionId!=null && !divisionId.equalsIgnoreCase("-1")){ %>
 					      
@@ -631,7 +631,7 @@ input[name="ItemNomenclature"]::placeholder {
 					       
 					         <%} %>  
 					       
-					       <%} %>   
+					   <%--     <%} %>    --%>
 						
 						</div>
 						

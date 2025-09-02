@@ -97,6 +97,9 @@
   font-weight: 600;
 }
 
+.modal-lg {
+    max-width: 90% !important;
+}
 
 </style>
 

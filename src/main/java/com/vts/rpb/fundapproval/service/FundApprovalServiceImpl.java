@@ -590,7 +590,14 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 			if(fundDto.getAction()!=null)
 			{
-				fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				if(fundDto.getAction().equalsIgnoreCase("A")) 
+				{
+					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R"))
+				{
+					updateLinkedCommitteeMembersReturn(fundApproval);
+				}
 			}
 		
 		long status=0;
@@ -598,18 +605,44 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			{
 				if(fundDto.getAction().equalsIgnoreCase("A")) //  A -Approver
 				{
-					fundApproval.setStatus(fundDto.getAction());
+					fundApproval.setStatus("A");
 					fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
 				}
-				else
+				else if(fundDto.getAction().equalsIgnoreCase("R")) //  R - Returned
 				{
-					fundApproval.setStatus(fundApproval.getStatus());
+					fundApproval.setStatus("R");
 				}
 			}
 			
 			status=fundApprovalDao.updateFundRequest(fundApproval);
 		
 		return status;
+	}
+	
+	private void updateLinkedCommitteeMembersReturn(FundApproval fundApproval) throws Exception
+	{
+		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getCommitteeMemberLinkedDetails(fundApproval.getFundApprovalId());
+		if(cmmtMemberLinkedList!=null && cmmtMemberLinkedList.size()>0)
+		{
+			cmmtMemberLinkedList.forEach(row -> {
+				if(row[0]!=null) 
+				{
+					LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
+					try {
+						linkedMembers = fundApprovalDao.getCommitteeMemberLinkedDetails(row[0].toString());
+						linkedMembers.setIsApproved("N");
+					    linkedMembers.setModifiedBy(fundApproval.getModifiedBy());
+					    linkedMembers.setModifiedDate(LocalDateTime.now());
+					    
+					    fundApprovalDao.updateLinkedCommitteeMembers(linkedMembers);
+					    
+					} catch (Exception e) {
+						
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 	}
 
 	@Override

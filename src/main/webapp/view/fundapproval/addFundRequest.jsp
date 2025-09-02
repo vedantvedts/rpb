@@ -592,7 +592,7 @@ tr:last-of-type th:last-of-type {
 						     
 						    </td> 
 						    
-						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Item Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                      <td><input type="text" placeholder="Enter Item Detail" maxlength="4000" id="ItemFor" name="ItemFor" class="form-control" <%if(FundRequestObj!=null && FundRequestObj[10]!=null){ %> value="<%=FundRequestObj[10] %>" <%} %>></td>
 						    
 						</tr>
@@ -1069,7 +1069,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 									{
 										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
@@ -1101,14 +1101,15 @@ $("#AllOfficers").click(function(){
 										$.each(result, function(key, value) {
 											 if(value.budgetHeadId== budgetHeadId)
 											 {
-												html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+												html1+='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
 											 }
-											 else
-												{
-													html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
-												}
-											 $("#selbudgethead").append(html1);
+											 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+											{
+												html1+="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+											}
 										});
+										
+										$("#selbudgethead").append(html1);
 										
 									var budgetItemId = $("#budgetItemIdHidden").val();
 								    SetBudgetItem(budgetItemId);
@@ -1224,7 +1225,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 										{
 											$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 										}

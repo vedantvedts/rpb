@@ -261,8 +261,9 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                    <th style="width: 12%;" class="text-nowrap">Estimate Type</th> 
 			                    <th>Division</th>
 			                    <th class="text-nowrap">Budget Head</th>
-			                    <th class="text-nowrap">Item Nomenclature</th>
+			                    <th class="text-nowrap">Nomenclature</th>
 			                    <th class="text-nowrap">Item Cost</th>
+			                    <th class="text-nowrap">View</th>
 			                    <th>Status</th>
 			                    <th style="width: 10%;" class="text-nowrap">Action</th>
 			                </tr>
@@ -284,30 +285,52 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
 			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
 			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center">
-			                     <%if(obj[31]!=null && "A".equalsIgnoreCase(obj[31].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												            <span style="color: #2b8c03;">Approved</span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
-											       </button>
-											       <%} else if(obj[31]!=null && "N".equalsIgnoreCase(obj[31].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												             <span style="color: #8c2303;">Pending</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
-											
-											       </button>
-											        <%} else if(obj[31]!=null && "F".equalsIgnoreCase(obj[31].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												             <span style="color: blue;">Forwarded</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: blue;"></i>
-											
-											       </button>
-											       <%} %>
+			                      <td align="center">
+											    <button type="button" 
+											            class="btn btn-sm btn-outline-primary tooltip-container" 
+											            onclick="openFundDetailsModal('<%=obj[0] %>', this)" 
+											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
+											        <i class="fa fa-eye"></i>
+											    </button>
+											</td>
 			                     
-			                     </td>
+			                     <%String fundStatus=obj[31]==null ? "NaN" : obj[31].toString(); %>
+			                     
+			                     <td style="width: 135px;" align="center">
+				                   			 
+				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
+												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+												            
+												            <% String statusColor="",message="NA";
+												            if(fundStatus!=null) { 
+												               if("A".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "green";
+												            	   message = "Approved";
+												               } else if("N".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#8c2303";
+												                   message = "Pending";
+												               } else if("F".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "blue";
+												                   message = "Forwarded";
+					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "red";
+												                   message = "Returned";
+					            							   } else {
+												            	   statusColor = "black";
+												               }
+					            							 }
+												               %>
+												               
+												           		<div class="form-inline">
+												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+												           		</div>
+												             
+											       </button>
+											       
+									       </td>
+			                     
+			                     
 			                     <td align="center">
 			                     
 			                           

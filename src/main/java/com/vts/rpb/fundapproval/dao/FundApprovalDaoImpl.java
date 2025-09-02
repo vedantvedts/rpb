@@ -790,6 +790,48 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return 0;
 		}
 	}
+
+	@Override
+	public List<Object[]> getCommitteeMemberLinkedDetails(long fundApprovalId) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT cml.CommitteeMemberLinkedId,cml.FundApprovalId,cml.EmpId,cml.MemberType,cml.IsApproved FROM ibas_committee_member_linked cml WHERE cml.FundApprovalId = :fundApprovalId AND cml.IsActive = '1'");
+			query.setParameter("fundApprovalId", fundApprovalId);
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getCommitteeMemberLinkedDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public LinkedCommitteeMembers getCommitteeMemberLinkedDetails(String committeMemberLinkedId) throws Exception {
+		try {
+			return manager.find(LinkedCommitteeMembers.class,committeMemberLinkedId);
+
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getCommitteeMemberLinkedDetails() "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public long updateLinkedCommitteeMembers(LinkedCommitteeMembers linkedMembers) throws Exception {
+		try {
+			manager.merge(linkedMembers);
+			manager.flush();
+			return linkedMembers.getCommitteeMemberLinkedId();
+
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside DAO updateLinkedCommitteeMembers() "+ e);
+			e.printStackTrace();
+			return 0;
+		}
+		
+	}
 	
 
 }
