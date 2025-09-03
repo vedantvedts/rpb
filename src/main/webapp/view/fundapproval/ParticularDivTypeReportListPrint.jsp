@@ -322,15 +322,16 @@ border-collapse: collapse;
 					            BigDecimal subTotal = new BigDecimal(0);
 					           
 					            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
-					           
+					           <% requisitionList.forEach(row -> System.out.println(Arrays.toString(row))); %>
 					            <%for(Object[] data:requisitionList){
 					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
 					            %>
 					           
 					            	 <tr >
-					            	   <input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments">
-				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.</td>
+					            	   
+				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.
+				                   			<input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments"></td>
 				                   			<td align="center" id="budgetHead" style="font-weight: 400"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>

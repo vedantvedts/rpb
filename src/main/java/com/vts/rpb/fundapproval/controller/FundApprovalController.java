@@ -288,6 +288,10 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String action=req.getParameter("Action");
 			String remarks=req.getParameter("remarks");
+			
+			System.out.println("fundApprovalId*****"+fundApprovalId);
+			System.out.println("action*****"+action);
+			System.out.println("remarks*****"+remarks);
 			if(fundApprovalId==null || action==null)
 			{
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
@@ -318,6 +322,43 @@ public class FundApprovalController
 		{
 			e.printStackTrace();
 			logger.error(new Date() + " Inside BudgetApprovalForward.htm " + UserName, e);
+			return "static/error";
+		}
+		return url;
+		
+	}
+	
+	@RequestMapping(value="RevokeFundRequest.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String revokeFundRequest(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		long empId = (Long) ses.getAttribute("EmployeeId");
+		logger.info(new Date() + "Inside RevokeFundRequest.htm " + UserName);
+		String url=null;
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalIdRevoke");
+			
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setAction("E");   // E -  Revoke the Request
+			fundDto.setCreatedBy(UserName);
+			
+			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
+			
+			if(status > 0) {
+				redir.addAttribute("resultSuccess", "Fund Request Revoked Successfully..&#128077;");
+			}else {
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			}
+			
+			url="redirect:/FundRequest.htm";
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside RevokeFundRequest.htm " + UserName, e);
 			return "static/error";
 		}
 		return url;

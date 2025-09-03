@@ -319,6 +319,10 @@ tr:last-of-type th:last-of-type {
     margin-right: auto;
     margin-left: auto;
 }
+
+ table.recommendation-table td {
+        border: 1px solid white;
+    }
     
 </style>
 </head>
@@ -503,129 +507,143 @@ if(fundDetails!=null && fundDetails.length > 0)
                 <div class="row">
                     <!-- Left Division -->
                     <div class="col-md-6">
-                        <div class="inner-box">
-                                <% if (initiatingOfficer != null) { %>
-                                    <div class="recommendation-item">
-                                        <span><b>Initiated By &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <%= initiatingOfficer %>
-                                        </span>
-                                    </div>
-                                <% } %>
-
-								<% if(rc6EmpId > 0){ %>
-									<div <%if(empId == rc6EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>Division Head &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc6Details != null ? rc6Details : "-" %>
-                                             <%if(empId == rc6EmpId){ %>
-                                            <span class="badge badge-info">For Recommendation</span>
-                                            <%} %>
-                                            <%if(rc6Status!=null && rc6Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                   
-								<% if(rc1EmpId > 0){ %>
-									<div <%if(empId == rc1EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Member &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc1Details != null ? rc1Details : "-" %>
-                                             <%if(empId == rc1EmpId){ %>
-                                            <span class="badge badge-info">For Recommendation</span>
-                                            <%} %>
-                                            <%if(rc1Status!=null && rc1Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                
-                                <% if(rc2EmpId > 0){ %>
-                                    <div <%if(empId == rc2EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Member &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc2Details != null ? rc2Details : "-" %>
-                                            <%if(empId == rc2EmpId){ %>
-                                            <span class="badge badge-info">For Recommendation</span>
-                                            <%} %>
-                                            <%if(rc2Status!=null && rc2Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                  <%} %>
-                                
-                                <% if(rc3EmpId > 0){ %>
-                                    <div <%if(empId == rc3EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Member &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc3Details != null ? rc3Details : "-" %>
-                                            <%if(empId == rc3EmpId){ %>
-                                            <span class="badge badge-info">For Recommendation</span>
-                                            <%} %>
-                                            <%if(rc3Status!=null && rc3Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                
-                                <% if(rc4EmpId > 0){ %>
-                                    <div <%if(empId == rc4EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>Subject Expert &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc4Details != null ? rc4Details : "-" %>
-                                            <%if(empId == rc4EmpId){ %>
-                                            <span class="badge badge-info">For Recommendation</span>
-                                            <%} %>
-                                            <%if(rc4Status!=null && rc4Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                
-                                <% if(rc5EmpId > 0){ %>
-                                    <div <%if(empId == rc5EmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Member Secretary &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= rc5Details != null ? rc5Details : "-" %>
-                                            <%if(empId == rc5EmpId){ %>
-                                            <span class="badge badge-info">For Noting</span>
-                                            <%} %>
-                                            <%if(rc5Status!=null && rc5Status.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                
-                                <% if(appOffEmpId > 0){ %>
-                                    <div <%if(empId == appOffEmpId){ %> class="recommendation-item highlight-box" <%}else{ %> class="recommendation-item" <%} %>>
-                                        <span><b>RPB Chairman &nbsp;: &nbsp;</b></span>
-                                        <span class="recommendation-value">
-                                            <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>></span>
-                                            <%= approvingOfficerDetails != null ? approvingOfficerDetails : "-" %>
-                                             <%if(empId == appOffEmpId){ %>
-                                            <span class="badge badge-info">For Approval</span>
-                                            <%} %>
-                                            <%if(apprOffStatus!=null && apprOffStatus.equalsIgnoreCase("Y")){ %>
-                                           	 <img src="view/images/verifiedIcon.png" width="20" height="20" style="background: transparent;padding: 1px;margin-top: -5px;">
-                                       		<%} %>
-                                        </span>
-                                    </div>
-                                   <%} %>
-                                    
-                        </div>
+                        <table class="table recommendation-table" border="1" style="width:100%; border-collapse: collapse;">
+					    <% if (initiatingOfficer != null) { %>
+					        <tr>
+					            <td style="width:40%;"><b>Initiated By</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <%= initiatingOfficer %>
+					            </td>
+					        </tr>
+					    <% } %>
+					
+					    <% if(rc6EmpId > 0){ %>
+					        <tr <%if(empId == rc6EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>Division Head</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc6Details != null ? rc6Details : "-" %>
+					                <%if(empId == rc6EmpId){ %>
+					                    <span class="badge badge-info">For Recommendation</span>
+					                <%} %>
+					                <%if(rc6Status!=null && rc6Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(rc1EmpId > 0){ %>
+					        <tr <%if(empId == rc1EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc1Details != null ? rc1Details : "-" %>
+					                <%if(empId == rc1EmpId){ %>
+					                    <span class="badge badge-info">For Recommendation</span>
+					                <%} %>
+					                <%if(rc1Status!=null && rc1Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(rc2EmpId > 0){ %>
+					        <tr <%if(empId == rc2EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc2Details != null ? rc2Details : "-" %>
+					                <%if(empId == rc2EmpId){ %>
+					                    <span class="badge badge-info">For Recommendation</span>
+					                <%} %>
+					                <%if(rc2Status!=null && rc2Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(rc3EmpId > 0){ %>
+					        <tr <%if(empId == rc3EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc3Details != null ? rc3Details : "-" %>
+					                <%if(empId == rc3EmpId){ %>
+					                    <span class="badge badge-info">For Recommendation</span>
+					                <%} %>
+					                <%if(rc3Status!=null && rc3Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(rc4EmpId > 0){ %>
+					        <tr <%if(empId == rc4EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>Subject Expert</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc4Details != null ? rc4Details : "-" %>
+					                <%if(empId == rc4EmpId){ %>
+					                    <span class="badge badge-info">For Recommendation</span>
+					                <%} %>
+					                <%if(rc4Status!=null && rc4Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(rc5EmpId > 0){ %>
+					        <tr <%if(empId == rc5EmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>RPB Member Secretary</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= rc5Details != null ? rc5Details : "-" %>
+					                <%if(empId == rc5EmpId){ %>
+					                    <span class="badge badge-info">For Noting</span>
+					                <%} %>
+					                <%if(rc5Status!=null && rc5Status.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					
+					    <% if(appOffEmpId > 0){ %>
+					        <tr <%if(empId == appOffEmpId){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b>RPB Chairman</b></td>
+					            <td style="width:60%;" class="recommendation-value">
+					                <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                </span>
+					                <%= approvingOfficerDetails != null ? approvingOfficerDetails : "-" %>
+					                <%if(empId == appOffEmpId){ %>
+					                    <span class="badge badge-info">For Approval</span>
+					                <%} %>
+					                <%if(apprOffStatus!=null && apprOffStatus.equalsIgnoreCase("Y")){ %>
+					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
+					                         style="background: transparent;padding: 1px;margin-top: -5px;">
+					                <%} %>
+					            </td>
+					        </tr>
+					    <%} %>
+					</table>
+                        
                     </div>
                     
                     <!-- Right Division -->

@@ -436,7 +436,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		{
 			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="RO1 RECOMMENDED";
 				}
@@ -444,12 +444,17 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="RO1 RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="RO1 REVOKED";
+				}
+				
 				currentDetails[1]=fundDetails.getRc1Role();
 			}
 			
 			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="RO2 RECOMMENDED";
 				}
@@ -457,12 +462,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="RO2 RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="RO2 REVOKED";
+				}
 				currentDetails[1]=fundDetails.getRc2Role();
 			}
 			
 			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="RO3 RECOMMENDED";
 				}
@@ -470,12 +479,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="RO3 RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="RO3 REVOKED";
+				}
 				currentDetails[1]=fundDetails.getRc3Role();
 			}
 			
 			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="SE RECOMMENDED";
 				}
@@ -483,12 +496,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="SE RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="SE REVOKED";
+				}
 				currentDetails[1]=fundDetails.getRc4Role();
 			}
 			
 			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="RPB MEMBER SECRETARY APPROVED";
 				}
@@ -496,12 +513,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="RPB MEMBER SECRETARY RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="RPB MEMBER SECRETARY REVOKED";
+				}
 				currentDetails[1]=fundDetails.getRc5Role();
 			}
 			
 			if(fundDetails.getRc6() > 0 && fundDetails.getRc6() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="DIVISION HEAD APPROVED";
 				}
@@ -509,12 +530,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="DIVISION HEAD RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="DIVISION HEAD REVOKED";
+				}
 				currentDetails[1]=fundDetails.getRc6Role();
 			}
 			
 			if(fundDetails.getApprovingOfficer() > 0 && fundDetails.getApprovingOfficer() == empId)
 			{
-				if(!status.equalsIgnoreCase("R"))
+				if(status.equalsIgnoreCase("A"))
 				{
 					currentDetails[0]="CHAIRMAN APPROVED";
 				}
@@ -522,32 +547,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					currentDetails[0]="CHAIRMAN RETURNED";
 				}
+				else if(status.equalsIgnoreCase("E"))
+				{
+					currentDetails[0]="CHAIRMAN REVOKED";
+				}
 				currentDetails[1]=fundDetails.getApprovingOfficerRole();
 			}
 		}
 		
 		return currentDetails;
 	}
-	
-//	private String getRcStatusCodeNext(List<Object[]> masterFlowList,String statusCodeNext) throws Exception
-//	{
-//		 return IntStream.range(0, masterFlowList.size() - 1).filter(i -> statusCodeNext.equals(masterFlowList.get(i)[2].toString()))
-//		            .mapToObj(i -> masterFlowList.get(i + 1)[2].toString())
-//		            .findFirst()
-//		            .orElse(null); // return null if not found or last in the list
-//	}
-//	
-//	private BigDecimal getTotalOfCashoutgoCost(FundApproval fundApproval) throws Exception
-//	{
-//		BigDecimal totalCost=BigDecimal.ZERO;
-//		if(fundApproval!=null)
-//		{
-//			totalCost=fundApproval.getApril().add(fundApproval.getMay()).add(fundApproval.getJune()).add(fundApproval.getJuly())
-//					.add(fundApproval.getAugust()).add(fundApproval.getSeptember()).add(fundApproval.getOctober()).add(fundApproval.getNovember())
-//					.add(fundApproval.getDecember()).add(fundApproval.getJanuary()).add(fundApproval.getFebruary()).add(fundApproval.getMarch());
-//		}
-//		return totalCost;
-//	}
 	
 	@Override
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception {
@@ -579,6 +588,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		FundApproval fundApproval=fundApprovalDao.getFundRequestDetails(fundDto.getFundApprovalId());
 		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId(), fundDto.getAction());
+		
 		FundApprovalTrans transaction=new FundApprovalTrans(); 
 		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
 		transaction.setRcStausCode(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[0] : null);
@@ -590,17 +600,21 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 			if(fundDto.getAction()!=null)
 			{
-				if(fundDto.getAction().equalsIgnoreCase("A")) 
+				if(fundDto.getAction().equalsIgnoreCase("A") || fundDto.getAction().equalsIgnoreCase("RE"))  // A - Approve or recommend, DH - Division Head Approve
 				{
 					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
-				else if(fundDto.getAction().equalsIgnoreCase("R"))
+				else if(fundDto.getAction().equalsIgnoreCase("R"))   // R - Return
 				{
 					updateLinkedCommitteeMembersReturn(fundApproval);
 				}
+				else if(fundDto.getAction().equalsIgnoreCase("E"))   // E - Revoke
+				{
+					deleteLinkedCommitteeMembersReturn(fundApproval);
+				}
 			}
 		
-		long status=0;
+			long status=0;
 			if(fundDto.getAction()!=null)
 			{
 				if(fundDto.getAction().equalsIgnoreCase("A")) //  A -Approver
@@ -611,6 +625,28 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				else if(fundDto.getAction().equalsIgnoreCase("R")) //  R - Returned
 				{
 					fundApproval.setStatus("R");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("E")) //  RV - Revoked
+				{
+					fundApproval.setStatus("E");
+					fundApproval.setRc1(0);
+					fundApproval.setRc1Role(null);
+					fundApproval.setRc2(0);
+					fundApproval.setRc2Role(null);
+					fundApproval.setRc3(0);
+					fundApproval.setRc3Role(null);
+					fundApproval.setRc4(0);
+					fundApproval.setRc4Role(null);
+					fundApproval.setRc5(0);
+					fundApproval.setRc5Role(null);
+					fundApproval.setRc6(0);
+					fundApproval.setRc6Role(null);
+					fundApproval.setApprovingOfficer(0);
+					fundApproval.setApprovingOfficerRole(null);
+				}
+				else
+				{
+					fundApproval.setStatus(fundApproval.getStatus());
 				}
 			}
 			
@@ -636,6 +672,26 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					    
 					    fundApprovalDao.updateLinkedCommitteeMembers(linkedMembers);
 					    
+					} catch (Exception e) {
+						
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	}
+	
+	private void deleteLinkedCommitteeMembersReturn(FundApproval fundApproval) throws Exception
+	{
+		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getCommitteeMemberLinkedDetails(fundApproval.getFundApprovalId());
+		if(cmmtMemberLinkedList!=null && cmmtMemberLinkedList.size()>0)
+		{
+			cmmtMemberLinkedList.forEach(row -> {
+				if(row[0]!=null) 
+				{
+					try {
+						  fundApprovalDao.deleteLinkedCommitteeMembers(row[0].toString());
+						
 					} catch (Exception e) {
 						
 						e.printStackTrace();
@@ -1077,6 +1133,50 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		return 0;
 		
+	}
+
+	@Override
+	public long actionForRevokeRequest(FundApprovalDto fundDto, long empId) throws Exception {
+		FundApproval fundApproval=fundApprovalDao.getFundRequestDetails(fundDto.getFundApprovalId());
+		String[] employeeDetails=getCurrentEmployeeFundDetails(empId, fundApproval.getFundApprovalId(), fundDto.getAction());
+		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		transaction.setFundApprovalId(fundApproval.getFundApprovalId());
+		transaction.setRcStausCode(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[0] : null);
+		transaction.setRemarks(fundDto.getRemarks());
+		transaction.setRole(employeeDetails!=null && employeeDetails.length > 0 ? employeeDetails[1] : null);
+		transaction.setActionBy(empId);
+		transaction.setActionDate(LocalDateTime.now());
+		fundApprovalDao.insertFundApprovalTransaction(transaction);
+		
+			if(fundDto.getAction()!=null)
+			{
+				if(fundDto.getAction().equalsIgnoreCase("A")) 
+				{
+					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R"))
+				{
+					updateLinkedCommitteeMembersReturn(fundApproval);
+				}
+			}
+		
+		long status=0;
+			if(fundDto.getAction()!=null)
+			{
+				if(fundDto.getAction().equalsIgnoreCase("A")) //  A -Approver
+				{
+					fundApproval.setStatus("A");
+					fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R")) //  R - Returned
+				{
+					fundApproval.setStatus("R");
+				}
+			}
+			
+			status=fundApprovalDao.updateFundRequest(fundApproval);
+		
+		return status;
 	}
 	
 }
