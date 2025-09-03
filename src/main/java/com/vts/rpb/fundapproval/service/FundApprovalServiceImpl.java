@@ -436,7 +436,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		{
 			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("RE"))
 				{
 					currentDetails[0]="RO1 RECOMMENDED";
 				}
@@ -454,7 +454,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc2() > 0 && fundDetails.getRc2() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("RE"))
 				{
 					currentDetails[0]="RO2 RECOMMENDED";
 				}
@@ -471,7 +471,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc3() > 0 && fundDetails.getRc3() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("RE"))
 				{
 					currentDetails[0]="RO3 RECOMMENDED";
 				}
@@ -488,7 +488,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc4() > 0 && fundDetails.getRc4() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("RE"))
 				{
 					currentDetails[0]="SE RECOMMENDED";
 				}
@@ -505,7 +505,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc5() > 0 && fundDetails.getRc5() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("RE"))
 				{
 					currentDetails[0]="RPB MEMBER SECRETARY APPROVED";
 				}
@@ -522,7 +522,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			
 			if(fundDetails.getRc6() > 0 && fundDetails.getRc6() == empId)
 			{
-				if(status.equalsIgnoreCase("A"))
+				if(status.equalsIgnoreCase("DA"))
 				{
 					currentDetails[0]="DIVISION HEAD APPROVED";
 				}
@@ -600,7 +600,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 			if(fundDto.getAction()!=null)
 			{
-				if(fundDto.getAction().equalsIgnoreCase("A") || fundDto.getAction().equalsIgnoreCase("RE"))  // A - Approve or recommend, DH - Division Head Approve
+				if(fundDto.getAction().equalsIgnoreCase("A") || fundDto.getAction().equalsIgnoreCase("DA") || fundDto.getAction().equalsIgnoreCase("RE"))  // A - Approve or recommend, DH - Division Head Approve
 				{
 					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
