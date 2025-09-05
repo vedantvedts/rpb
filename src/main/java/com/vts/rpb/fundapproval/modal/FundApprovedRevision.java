@@ -169,6 +169,9 @@ public class FundApprovedRevision {
 	@Column(name = "Remarks", length = 255)
 	private String remarks;
 	
+	@Column(name = "RevisionCount")
+	private long revisionCount=0;
+	
 	@Column(name = "ApprovalDate")
 	private LocalDate approvalDate;
 	

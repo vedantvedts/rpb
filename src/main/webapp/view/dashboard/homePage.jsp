@@ -164,14 +164,8 @@ body {
 <%
 List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 List<Object[]> DivisionDetailsList=(List<Object[]>)request.getAttribute("DivisionDetailsList"); 
-System.err.print(DivisionDetailsList);
- if(DivisionDetailsList!=null || DivisionDetailsList.isEmpty()){
-	 
-	DivisionDetailsList.stream().forEach(a->System.err.println("DivisionDetailsList->"+Arrays.toString(a)));
-} 
 String ProjectFlag=(String)request.getAttribute("ProjectFlag");
 String AmtFormat =(String)request.getAttribute("amountFormat");
-System.err.println("AmtFormat in JSP-"+AmtFormat);
 String loginType=(String)session.getAttribute("LoginType");
 String Date=(String)request.getAttribute("dateForCCM");
 Integer DigitValue = (Integer)request.getAttribute("digitValueSel");

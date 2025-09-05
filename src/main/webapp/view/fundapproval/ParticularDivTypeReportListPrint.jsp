@@ -40,16 +40,9 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 %>
 <%
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList");
-		if(requisitionList!=null){
-			requisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
-		}
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
-		
-		if(requisitionList != null) {
-		    System.out.println("In JSP - requisitionList size: " + requisitionList.size());
-		}
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
@@ -333,8 +326,6 @@ border-collapse: collapse;
 					            <%for(Object[] data:requisitionList){
 					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
-					            	
-					            	System.err.println("!!!!!fundapproval ID->"+data[0]);
 					            %>
 					           
 					            	 <tr >

@@ -350,26 +350,25 @@ tr:last-of-type th:last-of-type {
   100% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.7); }
 }
 
+/* Hand pointer with zoom in/out effect */
 .hand-pointer {
   position: absolute;
+  top: 404.625px !important;
+  left: 102.062px !important;
   bottom: 100px;       /* adjust as per your UI */
   right: 40px;         /* adjust as needed */
   width: 80px;
   height: 80px;
   background: url("view/images/pointingHand.png") no-repeat center/contain;
-  z-index: 2000;
-  animation: moveHandUpDown 1.5s infinite ease-in-out;
+  animation: zoomHand 3s infinite ease-in-out;
 }
 
-/* Smooth up-down bounce */
-@keyframes moveHandUpDown {
-  0%   { transform: translateY(0) rotate(270deg); }
-  25%  { transform: translateY(-15px) rotate(267deg); }
-  50%  { transform: translateY(0) rotate(270deg); }
-  75%  { transform: translateY(15px) rotate(273deg); }
-  100% { transform: translateY(0) rotate(270deg); }
+/* Zoom in-out effect */
+@keyframes zoomHand {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }  /* zoom in */
+  100% { transform: scale(1); }    /* zoom out */
 }
-
 
 
 
@@ -593,7 +592,7 @@ tr:last-of-type th:last-of-type {
 						     
 						    </td> 
 						    
-						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Item Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                      <td><input type="text" placeholder="Enter Item Detail" maxlength="4000" id="ItemFor" name="ItemFor" class="form-control" <%if(FundRequestObj!=null && FundRequestObj[10]!=null){ %> value="<%=FundRequestObj[10] %>" <%} %>></td>
 						    
 						</tr>
@@ -1002,9 +1001,8 @@ $("#AllOfficers").click(function(){
 
 	function getProposedProjectDetails(proposedProjectId)
 	{
-		var divisionId = $("#divisionIdHidden").val();
 		$.get('getProposedProjectDetails.htm', {
-			divisionId : divisionId
+			
 		}, function(responseJson) {
 			$('#selProposedProject').find('option').remove();
 			$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
@@ -1071,7 +1069,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 									{
 										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
@@ -1103,14 +1101,15 @@ $("#AllOfficers").click(function(){
 										$.each(result, function(key, value) {
 											 if(value.budgetHeadId== budgetHeadId)
 											 {
-												html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+												html1+='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
 											 }
-											 else
-												{
-													html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
-												}
-											 $("#selbudgethead").append(html1);
+											 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+											{
+												html1+="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+											}
 										});
+										
+										$("#selbudgethead").append(html1);
 										
 									var budgetItemId = $("#budgetItemIdHidden").val();
 								    SetBudgetItem(budgetItemId);
@@ -1226,7 +1225,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 										{
 											$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 										}
@@ -1630,14 +1629,31 @@ function limitDigits(input, maxDigits) {
 </script>
 
 <script type="text/javascript">
+
 $(document).ready(function () {
-	  // When Estimated Cost is focused
+	  
 	  $("#FBEamountAdd-1").on("focus", function () {
-	    // Highlight Oct–Mar fields
-	    $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+
+		  if (
+			      ($("#AprilMonthAdd-1").length && $("#AprilMonthAdd-1").val().trim() !== "") ||
+			      ($("#MayMonthAdd-1").length && $("#MayMonthAdd-1").val().trim() !== "") ||
+			      ($("#JuneMonthAdd-1").length && $("#JuneMonthAdd-1").val().trim() !== "") ||
+			      ($("#JulyMonthAdd-1").length && $("#JulyMonthAdd-1").val().trim() !== "") ||
+			      ($("#AugustMonthAdd-1").length && $("#AugustMonthAdd-1").val().trim() !== "") ||
+			      ($("#SeptemberMonthAdd-1").length && $("#SeptemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#OctoberMonthAdd-1").length && $("#OctoberMonthAdd-1").val().trim() !== "") ||
+			      ($("#NovemberMonthAdd-1").length && $("#NovemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#DecemberMonthAdd-1").length && $("#DecemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#JanuaryMonthAdd-1").length && $("#JanuaryMonthAdd-1").val().trim() !== "") ||
+			      ($("#FebruaryMonthAdd-1").length && $("#FebruaryMonthAdd-1").val().trim() !== "") ||
+			      ($("#MarchMonthAdd-1").length && $("#MarchMonthAdd-1").val().trim() !== "")
+			    ) {
+			      return; 
+			    }
+
+	    $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	      .addClass("highlight");
 
-	    // Show hand pointer near October field
 	    let target = $("#OctoberMonthAdd-1").offset();
 	    $("#hand").css({
 	      top: target.top + 40 + "px",
@@ -1645,17 +1661,14 @@ $(document).ready(function () {
 	    }).fadeIn();
 	  });
 
-	  // When user focuses any month field
-	  $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	  $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	    .on("focus input", function () {
-	      // Remove highlight and hide hand
-	      $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	      $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	        .removeClass("highlight");
 	      $("#hand").fadeOut();
 	    });
 	});
-
-
 </script>
+
  
 </html>

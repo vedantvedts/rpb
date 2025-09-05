@@ -24,8 +24,7 @@ public class UserLogoutHandler  implements LogoutHandler
 		 HttpSession ses=request.getSession();
 		 try 
 		 {
-	       	 String logId = ((Long) ses.getAttribute("LoginId")).toString();
-	       	 long auditStampingId = (long) ses.getAttribute("AuditStampingId");
+	       	 long auditStampingId = ses.getAttribute("AuditStampingId")!=null ? (long) ses.getAttribute("AuditStampingId") : 0;
 	       	 if(auditStampingId > 0) 
 	       	 {
 	       		AuditStamping auditDetails=masterDao.getAuditPatchDetails(auditStampingId);

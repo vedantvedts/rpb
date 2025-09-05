@@ -429,9 +429,6 @@ $(window).resize(resizeCards);
      String budgetHeadId=(String)request.getAttribute("budgetHeadId");
      String budgetItemId=(String)request.getAttribute("budgetItemId");
      String action=(String)request.getAttribute("action");
-     if(carryForwardList!=null && carryForwardList.size()>0){
-    	 carryForwardList.forEach(row->System.out.println(Arrays.toString(row)));
-     }
      
  %>
  

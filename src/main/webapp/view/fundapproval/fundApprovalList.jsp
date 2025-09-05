@@ -15,7 +15,8 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../static/header.jsp"></jsp:include>
-<title>FUND APPROVAL</title>
+<jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
+<title>FUND APPROVAL LIST</title>
 
 <style type="text/css">
 
@@ -160,6 +161,10 @@ String toYear=(String)request.getAttribute("ToYear");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
+if(currentEmpStatus == null)
+{
+	currentEmpStatus = "NA";
+}
 %>
 
 <%String success=(String)request.getParameter("resultSuccess"); 
@@ -168,17 +173,17 @@ String failure=(String)request.getParameter("resultFailure");%>
 
 <div class="card-header page-top"> 
 	<div class="row">
-	 	<div class="col-md-3"><h5><% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+	 	<div class="col-md-3"><h5><% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %> List</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
 	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
 	              <li class="breadcrumb-item active" aria-current="page">
-	              <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+	              <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %> List</li>
              </ol>
           </div>
@@ -235,15 +240,15 @@ String failure=(String)request.getParameter("resultFailure");%>
 		
 		<div class="tabs-container" style="margin-top:7px;">
 		    <input type="radio" name="tabs" id="tab-pending" checked>
-		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
-									         <%}else{ %> Recommend<%} %> Pending</label>
+		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
+									         <%}else{ %> NA <%} %> Pending</label>
 		    <input type="radio" name="tabs" id="tab-approved">
-		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommended
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
-									         <%}else{ %> Recommended<%} %></label>
+		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommended
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
+									         <%}else{ %> NA <%} %></label>
 		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
 		
 		    <div class="tab-content card">
@@ -256,8 +261,9 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                    <th style="width: 12%;" class="text-nowrap">Estimate Type</th> 
 			                    <th>Division</th>
 			                    <th class="text-nowrap">Budget Head</th>
-			                    <th class="text-nowrap">Item Nomenclature</th>
+			                    <th class="text-nowrap">Nomenclature</th>
 			                    <th class="text-nowrap">Item Cost</th>
+			                    <th class="text-nowrap">View</th>
 			                    <th>Status</th>
 			                    <th style="width: 10%;" class="text-nowrap">Action</th>
 			                </tr>
@@ -279,31 +285,52 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
 			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
 			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center"><!-- <span class="badge badge-pending">Pending</span> -->
-			                    <%System.err.print("st->"+obj[31]); %>
-			                     <%if(obj[31]!=null && "A".equalsIgnoreCase(obj[31].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												            <span style="color: #2b8c03;">Approved</span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
-											       </button>
-											       <%} else if(obj[31]!=null && "N".equalsIgnoreCase(obj[31].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												             <span style="color: #8c2303;">Pending</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
-											
-											       </button>
-											        <%} else if(obj[31]!=null && "F".equalsIgnoreCase(obj[31].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-												             <span style="color: blue;">Forwarded</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: blue;"></i>
-											
-											       </button>
-											       <%} %>
+			                      <td align="center">
+											    <button type="button" 
+											            class="btn btn-sm btn-outline-primary tooltip-container" 
+											            onclick="openFundDetailsModal('<%=obj[0] %>', this)" 
+											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
+											        <i class="fa fa-eye"></i>
+											    </button>
+											</td>
 			                     
-			                     </td>
+			                     <%String fundStatus=obj[31]==null ? "NaN" : obj[31].toString(); %>
+			                     
+			                     <td style="width: 135px;" align="center">
+				                   			 
+				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
+												            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+												            
+												            <% String statusColor="",message="NA";
+												            if(fundStatus!=null) { 
+												               if("A".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "green";
+												            	   message = "Approved";
+												               } else if("N".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#8c2303";
+												                   message = "Pending";
+												               } else if("F".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "blue";
+												                   message = "Forwarded";
+					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "red";
+												                   message = "Returned";
+					            							   } else {
+												            	   statusColor = "black";
+												               }
+					            							 }
+												               %>
+												               
+												           		<div class="form-inline">
+												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+												           		</div>
+												             
+											       </button>
+											       
+									       </td>
+			                     
+			                     
 			                     <td align="center">
 			                     
 			                           
@@ -311,32 +338,78 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                           String rc2Status = obj[35] != null ? obj[35].toString().toUpperCase() : "NA";
 			                           String rc3Status = obj[36] != null ? obj[36].toString().toUpperCase() : "NA";
 			                           String rc4Status = obj[37] != null ? obj[37].toString().toUpperCase() : "NA";
+			                           String rc5Status = obj[38] != null ? obj[38].toString().toUpperCase() : "NA";
+			                           String rc6Status = obj[40] != null ? obj[40].toString().toUpperCase() : "NA";
+			                           String apprStatus = obj[39] != null ? obj[39].toString().toUpperCase() : "NA";
 			                           
 			                           boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
-			                           boolean hasN = rc1Status.equals("N") || rc2Status.equals("N") || rc3Status.equals("N") || rc4Status.equals("N");
+			                           boolean hasN = rc1Status.equalsIgnoreCase("N") || rc2Status.equalsIgnoreCase("N") || rc3Status.equalsIgnoreCase("N") || rc4Status.equalsIgnoreCase("N");
 			                           
-			                           if(currentEmpStatus!=null && (currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC")) && !allNA && hasN){ %>
+			                           boolean isDHApproved = rc6Status.equalsIgnoreCase("Y");
+			                           boolean isCSApproved = rc5Status.equalsIgnoreCase("Y");
+			                           boolean isCCApproved = apprStatus.equalsIgnoreCase("Y");
 			                           
-			                           <span style="color: #783d00; border-radius: 10px; padding: 2px 9px; background: #ffe8cc; font-size: 11px;font-weight: 800;">Recommendation Pending</span>
+			                           System.out.println("allNA****"+allNA);
+			                           System.out.println("hasN****"+hasN);
+			                           System.out.println("isDHApproved****"+isDHApproved);
+			                           System.out.println("isCSApproved****"+isCSApproved);
+			                           System.out.println("isCCApproved****"+isCCApproved);
 			                           
-			                           <%}else{%>
+			                            %>
 			                           
-			                            <form action="#" method="POST" name="myfrm" style="display: inline">  <!-- preview Start -->
-			                               <button type="submit" data-tooltip="Preview & <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve
-													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Note
-													         <%} %>" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding: 6px;border: 1px solid #05814d;background: #d3ffe5;" formaction="FundApprovalPreview.htm">
-			                                                <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval
-													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> Recommend
-													         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
-													         <%}else{ %> Recommend<%} %> &nbsp;&#10097;&#10097;
-			                               </button>
-			                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-			                             <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
-			                           
-			                           </form>
-			                           
-			                           <%} %>
+			                 		<%
+									   String action = "";
+									   String tooltip = "";
+									   boolean showPending = false;
+									   
+									   switch(currentEmpStatus.toUpperCase()) {
+									       case "DH":
+									    	   showPending = isDHApproved;
+									           action = "Recommend";
+									           tooltip = "Preview & Recommend";
+									           break;
+									       case "CM":
+									       case "SE":
+									           showPending = !isDHApproved;
+									           action = "Recommend";
+									           tooltip = "Preview & Recommend";
+									           break;
+									       case "CS":
+									           showPending = !(isDHApproved && !hasN);
+									           action = "Noting";
+									           tooltip = "Preview & Note";
+									           break;
+									       case "CC":
+									           showPending = !(isDHApproved && isCSApproved);
+									           action = "Approval";
+									           tooltip = "Preview & Approve";
+									           break;
+									   }
+									%>
+									
+									<%System.out.println("showPending****"+showPending); %>
+									<%System.out.println("currentEmpStatus****"+currentEmpStatus); %>
+									
+									<% if(showPending) { %>
+									   <span style="color:#783d00; border-radius:10px; padding:2px 9px; background:#ffe8cc; font-size:11px; font-weight:800;">
+									       Recommendation Pending
+									   </span>
+									<% } else if(!action.isEmpty()) { %>
+									   <form action="#" method="POST" style="display:inline">
+									       <button type="submit"
+									               data-tooltip="<%= tooltip %>"
+									               data-position="top"
+									               class="btn btn-sm icon-btn tooltip-container"
+									               style="padding:6px;border:1px solid #05814d;background:#d3ffe5;"
+									               formaction="FundApprovalPreview.htm">
+									           <%= action %> &nbsp;&#10097;&#10097;
+									       </button>
+									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
+									   </form>
+									<% } %>
+												                 		
+			                          
 			                     </td>  
 			                 </tr>
 						    <% 
@@ -387,30 +460,40 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
 			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
 			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                     <td align="center"> <% if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CC")){ %> 
+			                     <td align="center"> 
+			                     
+			                         <% if(currentEmpStatus.equalsIgnoreCase("DH")){ %> 
 
-									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
-									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-									            <span style="color: #2b8c03;padding: 2%;">Approved</span> 
-									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;padding-left: 1%" ></i>											
-								       </button>
-											        
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CM")){ %> 
-
-									<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
-									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-									            <span style="color: #2b8c03;padding: 2%;">Recommended</span> 
-									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+									   <button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+								            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+								            <span style="color: #2b8c03;padding: 2%;">Approved</span> 
+								            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;padding-left: 1%" ></i>											
 								       </button>
 								       
-									         <%}else if(currentEmpStatus!=null && currentEmpStatus.equalsIgnoreCase("CS")){ %>
+								       <% } else if(currentEmpStatus.equalsIgnoreCase("CC")){ %> 
+
+									    <button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+								            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+								            <span style="color: #2b8c03;padding: 2%;">Approved</span> 
+								            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;padding-left: 1%" ></i>											
+								       </button>
+											        
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")){ %> 
+
+										<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+								            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+								            <span style="color: #2b8c03;padding: 2%;">Recommended</span> 
+								            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
+								       </button>
+								       
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %>
 									         
 									         <button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
 									            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
 									            <span style="color: #2b8c03;padding: 2%;">Reviewed</span> 
 									            <i class="fa-solid fa-arrow-up-right-from-square" style="color: #2b8c03;" ></i>											
 								       </button>
-									         <%}else{ %> Recommended<%} %></td>
+									         <%}else{ %> Recommended <%} %></td>
 			                    
 			                 </tr>
 						    <% 
@@ -436,27 +519,6 @@ String failure=(String)request.getParameter("resultFailure");%>
  </div><!-- Body Part End --> 
 			
 </div> <!-- Page End -->
-<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document" style="">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Employee Modal Table -->
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
-        <div id="EmployeeModalTable" class="mt-2"></div>
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
-         <div id="ApprovalStatusDiv" ></div>
-        
-      </div>
-      
-    </div>
-  </div>
-</div>
 
 </body>
 
