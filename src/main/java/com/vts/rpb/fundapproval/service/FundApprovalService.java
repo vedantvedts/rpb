@@ -32,7 +32,7 @@ public interface FundApprovalService
 	
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception;
 
-	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId) throws Exception;
+	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId, String fundStatus) throws Exception;
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 

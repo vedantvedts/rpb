@@ -375,12 +375,12 @@ String failure=(String)request.getParameter("resultFailure");%>
 									           tooltip = "Preview & Recommend";
 									           break;
 									       case "CS":
-									           showPending = !(isDHApproved && !hasN);
+									           showPending = false;
 									           action = "Noting";
 									           tooltip = "Preview & Note";
 									           break;
 									       case "CC":
-									           showPending = !(isDHApproved && isCSApproved);
+									           showPending = false;
 									           action = "Approval";
 									           tooltip = "Preview & Approve";
 									           break;

@@ -570,7 +570,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";
 										        %>
 												
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %> Forward <%}else if(data[24]!=null && ((data[24].toString()).equalsIgnoreCase("R") || (data[24].toString()).equalsIgnoreCase("E"))){ %> Re-Forward <%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %> Forward <%}else if(data[24]!=null && ((data[24].toString()).equalsIgnoreCase("R") || (data[24].toString()).equalsIgnoreCase("E"))){ %> Re-Forward <%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { %> 
 					                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
@@ -579,7 +579,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        </button>
 					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { %> 
 					                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
-										               name="fundApprovalIdRevoke" value="<%=data[0]%>" style="padding-top: 2px; padding-bottom: 2px;" formaction="RevokeFundRequest.htm" onclick="revokeConfirm()">
+										               name="fundApprovalIdRevoke" style="padding-top: 2px; padding-bottom: 2px;" onclick="revokeConfirm('<%=data[0]%>')">
 										        <i class="fa-solid fa-rotate-right" style="color:#F66B0E;font-size: 19px;"></i>
 										        </button>
 					                       		<%}else{ %>
@@ -711,12 +711,22 @@ input[name="ItemNomenclature"]::placeholder {
 							            </tr>
 							          </table>
 							          
-							          	                <br>
+							       <div class="card-body returnForwardAction">
+								       <form action="FundApprovalForward.htm" id="">
+								       
+										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				                            
+								             
+				                       </form>
+				                       </div>
+							          	                
+							                         
 				      
-								      <div class="card-body">
+								      <div class="card-body forwardAction">
 								       <form action="FundApprovalForward.htm" id="FundForwardForm">
 								       
 										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+										<input type="hidden" id="FundRequestStatus" name="FundRequestStatus">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
 										<input type="hidden" id="FlowMasterIdForward" name="FlowMasterIdForward">
 										<input type="hidden" id="EstimatedCostForward" name="EstimatedCostForward">
@@ -873,7 +883,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 <script type="text/javascript">
 
-function revokeConfirm()
+function revokeConfirm(fundRequestId)
 {
 	var form = $("#RequistionFormAction");
 
@@ -882,6 +892,7 @@ function revokeConfirm()
 	        function (confirmResponse) {
 	            if (confirmResponse) {
 	            	form.attr("action","RevokeFundRequest.htm");
+	            	form.append('<input type="hidden" name="fundApprovalIdRevoke" value="'+fundRequestId+'">');
 	                form.submit();
 	            }
 	        }
@@ -939,10 +950,11 @@ function openFundDetails()
 	});
 	
 function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
-		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails)
+		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails, fundStatus)
 {
 	refreshModal('.ItemForwardModal');
 	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
+	$(".forwardAction,.returnForwardAction").hide();
 	$(".ItemForwardModal").modal('show');
 	
 	$(".BudgetDetails").html("GEN (General)");
@@ -958,6 +970,24 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$("#initiating_officer_display").val(empName +', '+designation);
 	$("#FundRequestIdForward").val(fundRequestId);
 	$("#EstimatedCostForward").val(estimatedCost);
+	
+	
+	// show and Hide Approval flow action
+	if(fundStatus == 'N')    // N - New Request
+	{
+		$(".forwardAction").show();
+		$("#FundRequestStatus").val('F');
+	}
+	else if(fundStatus == 'E')    // E - Revoked
+	{ 
+		$(".forwardAction").show();
+		$("#FundRequestStatus").val(fundStatus);
+	}
+	else if(fundStatus == 'R')    // R - Returned
+	{
+		$(".returnForwardAction").show();
+		$("#FundRequestStatus").val(fundStatus);
+	}
 	
 	$.ajax({
         url: 'GetMasterFlowDetails.htm',  
