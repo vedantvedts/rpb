@@ -542,6 +542,9 @@ input[name="ItemNomenclature"]::placeholder {
 					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
 												            	   statusColor = "red";
 												                   message = "Returned";
+					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#007e68";
+												                   message = "Revoked";
 					            							   } else {
 												            	   statusColor = "black";
 												               }
@@ -558,7 +561,7 @@ input[name="ItemNomenclature"]::placeholder {
 									       </td>
 				                   			<td align="center">
 													      
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus))){ %>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus)) || "E".equalsIgnoreCase(fundStatus)){ %>
 												<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
 										        <i class="fa-solid fa-pen-to-square" style="color:#F66B0E;"></i>									
@@ -567,11 +570,17 @@ input[name="ItemNomenclature"]::placeholder {
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";
 										        %>
 												
-												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %>Forward<%}else if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("R")){ %>Re-Forward<%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+												<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %> Forward <%}else if(data[24]!=null && ((data[24].toString()).equalsIgnoreCase("R") || (data[24].toString()).equalsIgnoreCase("E"))){ %> Re-Forward <%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { %> 
-					                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+					                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
 										               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
-										        <i class="fa-solid fa-rotate-right" style="color:#F66B0E;"></i>
+										        Revision
+										        </button>
+					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { %> 
+					                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
+										               name="fundApprovalIdRevoke" value="<%=data[0]%>" style="padding-top: 2px; padding-bottom: 2px;" formaction="RevokeFundRequest.htm" onclick="revokeConfirm()">
+										        <i class="fa-solid fa-rotate-right" style="color:#F66B0E;font-size: 19px;"></i>
 										        </button>
 					                       		<%}else{ %>
 					                       		<span style="font-weight: 800;">***</span>
@@ -864,6 +873,26 @@ input[name="ItemNomenclature"]::placeholder {
 
 <script type="text/javascript">
 
+function revokeConfirm()
+{
+	var form = $("#RequistionFormAction");
+
+	if (form) {
+	    showConfirm('Are You Sure To Revoke The Fund Request..?',
+	        function (confirmResponse) {
+	            if (confirmResponse) {
+	            	form.attr("action","RevokeFundRequest.htm");
+	                form.submit();
+	            }
+	        }
+	    );
+	}
+}
+
+</script>
+
+<script type="text/javascript">
+
 function openApprovalFlow()
 {
 	$('#itemDetailsCarousel').carousel(1);
@@ -1032,7 +1061,8 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 });
 			    	 }
 			    	 
-			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED')
+			    	// RPB Member
+			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
 			    	 {
 			    		 $.each(committeeMemberList, function(key, rowValue) 
 						 {
@@ -1050,25 +1080,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 });
 			    	 }
 			    	 
-			    	 // Subject Expert
-			    	 if(value[2] == 'SE RECOMMENDED')
-			    	 {
-			    		 $.each(committeeMemberList, function(key, rowValue) 
-						 {
-			    			 if(rowValue[1]!=null && rowValue[1] == 'SE')
-			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
-		    					 {
-			    					 $(idAttribute).append('<option value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			    				 else
-		    					 {
-		    					 	$(idAttribute).append('<option value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			   				 }
-						 });
-			    	 }
-			    	 
+			    	// RPB Secratery 
 			    	 if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
 			    	 {
 			    		 $.each(committeeMemberList, function(key, rowValue) 
@@ -1087,6 +1099,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 						 });
 			    	 }
 			    	 
+			    	// RPB Chairman
 			    	 if(value[2] == 'CHAIRMAN APPROVED')
 			    	 {
 			    		 $.each(committeeMemberList, function(key, rowValue) 

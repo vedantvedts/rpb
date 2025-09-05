@@ -72,4 +72,6 @@ public interface FundApprovalService
 	public FundApproval getExisitingFundApprovalList(String fundApprovalId) throws Exception;
 	
 	public long getRevisionListDetails(String fundApprovalId,String UserName) throws Exception;
+
+	public long actionForRevokeRequest(FundApprovalDto fundDto, long empId) throws Exception;
 }

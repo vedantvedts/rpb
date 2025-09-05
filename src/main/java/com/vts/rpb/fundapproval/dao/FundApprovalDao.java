@@ -103,4 +103,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public LinkedCommitteeMembers getCommitteeMemberLinkedDetails(String committeMemberLinkedId) throws Exception;
 
 	public long updateLinkedCommitteeMembers(LinkedCommitteeMembers linkedMembers) throws Exception;
+
+	public void deleteLinkedCommitteeMembers(String committeeMemberLinkedId) throws Exception;
 }
