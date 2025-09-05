@@ -2,6 +2,7 @@ package com.vts.rpb.master.dao;
 
 import java.util.List;
 
+import com.vts.rpb.fundapproval.modal.CommitteeMembers;
 import com.vts.rpb.master.modal.AuditStamping;
 
 public interface MasterDao 
@@ -23,4 +24,12 @@ public interface MasterDao
 	public List<Object[]> getAllOfficersList() throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
+
+	public List<Object[]> getCommitteeMasterList()throws Exception;
+
+	public long saveCommitteeMembers(CommitteeMembers cm)throws Exception;
+
+	public CommitteeMembers getCommitteeMemberDetails(long committeeMemberId)throws Exception;
+
+	public long EditCommitteMemberDetails(CommitteeMembers comMember)throws Exception;
 }

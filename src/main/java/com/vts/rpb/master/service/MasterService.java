@@ -2,6 +2,7 @@ package com.vts.rpb.master.service;
 
 import java.util.List;
 
+import com.vts.rpb.fundapproval.modal.CommitteeMembers;
 import com.vts.rpb.master.modal.AuditStamping;
 
 public interface MasterService 
@@ -17,4 +18,10 @@ public interface MasterService
 	public List<Object[]> getAllOfficersList() throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
+
+	public List<Object[]> CommitteeMasterList()throws Exception;
+
+	public long saveCommitteeMembers(CommitteeMembers cm)throws Exception;
+
+	public long EditCommitteeMembers(CommitteeMembers cm)throws Exception;
 }
