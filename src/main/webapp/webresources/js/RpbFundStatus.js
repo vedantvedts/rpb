@@ -115,14 +115,15 @@ function generateTableHTML(data) {
     let timeline = '';
 
     // Officer details table under timeline
-    timeline += '<div class="table-responsive"><table class="table table-sm">';
-    timeline += '<thead><tr><th>Officer</th><th>Action Date</th><th>Status</th></tr></thead><tbody>';
+    timeline += '<div class="table-responsive"><table class="table table-bordered dataTable" style="width: 95%;margin: auto; border: 1px solid #cfcfcf;">';
+    timeline += '<thead><tr><th>Officer</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead><tbody>';
 
     data.forEach(function(row) {
         timeline += '<tr>';
-        timeline += `<td><b>${row[1] || '--'}</b>, ${row[2] || '--'}</td>`;
-        timeline += `<td>${row[5] || '--'}</td>`;
-        timeline += `<td class="status-text">${row[3] || '--'}</td>`;
+        timeline += `<td>${row[1] || '-'}, ${row[2] || '-'}</td>`;
+        timeline += `<td>${row[5] || '-'}</td>`;
+        timeline += `<td>${row[4] || '-'}</td>`;
+        timeline += `<td class="status-text">${toTitleCase(row[3]) || '-'}</td>`;
         timeline += '</tr>';
     });
 
@@ -246,3 +247,34 @@ function generateTableHTML(data) {
          }
      });
  }
+ 
+ 
+ function getAttachementDetailsInline(fundRequestId)
+ {
+	 $.ajax({
+	    url: 'GetFundRequestAttachmentAjax.htm',  
+	    method: 'GET', 
+	    data: { fundApprovalId: fundRequestId },  
+	    success: function(data) {
+	        var contentDiv = $(".attachementLink").empty();
+	        if (data.length === 0) {
+	            contentDiv.append("<span style='text-align: center; color: red; font-weight:700'>No attachment found</span>");
+	        } else {
+	            var row = data.map(function(attach) {
+	                return '<a href="PreviewAttachment.htm?attachid='+ attach.fundApprovalAttachId +'" target="_blank" style="color: blue; text-decoration: underline; font-weight: 600; font-size: 14px" title="Click to preview/download">' 
+	                        + attach.fileName + 
+	                        '</a>';
+	            }).join(", "); 
+
+	            contentDiv.append(row);
+	        }
+	    }
+	});
+
+ }
+ 
+ 
+ function toTitleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+}
+ 

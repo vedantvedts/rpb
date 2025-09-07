@@ -66,6 +66,8 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		String EstimateTypeFromList = "";
 		String financialYear = "";
 		if (requisitionList != null && !requisitionList.isEmpty()) {
+			System.out.println("******######*****");
+			requisitionList.forEach(row -> System.out.println(Arrays.toString(row)));
 		    Object[] firstItem = requisitionList.get(0);
 		    DivName = firstItem[2] != null ? firstItem[2] : "";
 		    DivCode = firstItem[27] != null ? firstItem[27] : "";

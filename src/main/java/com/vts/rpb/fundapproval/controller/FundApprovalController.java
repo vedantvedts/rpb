@@ -298,9 +298,6 @@ public class FundApprovalController
 				return "redirect:/FundApprovalPreview.htm";
 			}
 			
-			//  A - Approver, RE - Recommender, DA - Division Head Approver
-			String actionMssg=action!=null && (action.equalsIgnoreCase("A") || action.equalsIgnoreCase("DA")) ? "Approved" : "Recommended";
-			
 			FundApprovalDto fundDto=new FundApprovalDto();
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
 			fundDto.setRemarks(remarks);
@@ -308,6 +305,18 @@ public class FundApprovalController
 			fundDto.setCreatedBy(UserName);
 			
 			long status=fundApprovalService.updateRecommendAndApprovalDetails(fundDto,empId); 
+			
+			//  A - Approver, RE - Recommender, DA - Division Head Recc
+			String actionMssg="NA";
+			
+			if(action.equalsIgnoreCase("A"))
+			{
+				actionMssg = "Approved";
+			}
+			else
+			{
+				actionMssg = "Recommended";
+			}
 			
 			if(status > 0) {
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully..&#128077;");
@@ -1144,8 +1153,9 @@ public class FundApprovalController
 				String flowMasterId=req.getParameter("FlowMasterIdForward");
 				String estimatedCost=req.getParameter("EstimatedCostForward");
 				String fundStatus=req.getParameter("FundRequestStatus");
+				System.out.println("fundStatus********"+fundStatus);
 				
-				if(fundRequestId==null)
+				if(fundRequestId==null || fundStatus == null)
 				{
 					redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 					return "redirect:/FundRequest.htm";
@@ -1195,9 +1205,19 @@ public class FundApprovalController
 				long status = fundApprovalService.fundRequestForward(fundApprovalData,flowMasterId,estimatedCost,empId, fundStatus); 
 				
 				
-				if(status > 0) {
-					redir.addAttribute("resultSuccess", "Fund Request Successfully Forwarded..&#128077;");
-				}else {
+				if(status > 0) 
+				{
+					if(fundStatus.equalsIgnoreCase("F") || fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))
+					{
+						redir.addAttribute("resultSuccess", "Fund Request Successfully "+ (fundStatus!=null && (fundStatus.equalsIgnoreCase("R") || fundStatus.equalsIgnoreCase("E")) ? "Re-" : "") +"Forwarded..&#128077;");
+					}
+					else 
+					{
+						redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+					}
+				}
+				else 
+				{
 					redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 				}
 			}

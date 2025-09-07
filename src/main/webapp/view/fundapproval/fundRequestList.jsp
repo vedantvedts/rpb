@@ -356,6 +356,11 @@ input[name="ItemNomenclature"]::placeholder {
   font-weight: 600;
 }
 
+.dataTable
+{
+	font-weight:600 !important;
+}
+
 
 </style>
 
@@ -711,17 +716,17 @@ input[name="ItemNomenclature"]::placeholder {
 							            </tr>
 							          </table>
 							          
-							       <div class="card-body returnForwardAction">
-								       <form action="FundApprovalForward.htm" id="">
-								       
-										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							          <div style="font-weight: 600;color:black;"> Attachments: 
+							          <span class="attachementLink">
 				                            
-								             
-				                       </form>
-				                       </div>
-							          	                
-							                         
-				      
+				                      </span>
+				                      
+				                      <div class="statusHistory">
+				                      
+				                      </div>
+							          
+							          </div>
+							          
 								      <div class="card-body forwardAction">
 								       <form action="FundApprovalForward.htm" id="FundForwardForm">
 								       
@@ -736,7 +741,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                              <div class="card ApprovalDetails table-responsive" style="width: 100%;padding:10px;"> 
 				                              	<table style="width: 100%;" id="fundApprovalForardTable">
 				                              		<tr>
-				                              			<td style="padding: 8px; text-align: right; color: blue; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>
+				                              			<td style="padding: 8px; text-align: right; color: #00087a; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>
 				                              			<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="-"></td>
 				                              		</tr>
 				                              		
@@ -855,7 +860,7 @@ input[name="ItemNomenclature"]::placeholder {
 				      </div>
 				      
 				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
-				        <button type="button" class="btn btn-sm submit-btn fundForwardButton" onclick="ApprovalFlowForward()">Forward</button>
+				        <button type="button" class="btn btn-sm submit-btn fundForwardButton" onclick="ApprovalFlowForward()"><span class="forwardActionName">Forward</span></button>
 				        
 				        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" style="background-color: darkred;color:white;">Close</button>
 				      </div>
@@ -954,7 +959,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 {
 	refreshModal('.ItemForwardModal');
 	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
-	$(".forwardAction,.returnForwardAction").hide();
+	$(".forwardAction,.statusHistory").hide();
 	$(".ItemForwardModal").modal('show');
 	
 	$(".BudgetDetails").html("GEN (General)");
@@ -982,12 +987,36 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	{ 
 		$(".forwardAction").show();
 		$("#FundRequestStatus").val(fundStatus);
+		$(".forwardActionName").html("Re-Forward");
 	}
 	else if(fundStatus == 'R')    // R - Returned
 	{
-		$(".returnForwardAction").show();
+		$(".statusHistory").show();
 		$("#FundRequestStatus").val(fundStatus);
+		$(".forwardActionName").html("Re-Forward");
+		
+		// getting fund history
+		$.ajax({
+	        url: 'getRPBApprovalHistoryAjax.htm',
+	        type: 'GET',
+	        data: { fundApprovalId: fundRequestId },
+	        success: function(response) {
+	            var data = JSON.parse(response);
+	            if (!Array.isArray(data[0])) {
+	                data = [data]; 
+	            }
+
+	            var tableHTML = generateTableHTML(data);
+	            $('.statusHistory').html(tableHTML);
+
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX Error: ' + status + error);
+	        }
+	    });
 	}
+	
+	getAttachementDetailsInline(fundRequestId);
 	
 	$.ajax({
         url: 'GetMasterFlowDetails.htm',  

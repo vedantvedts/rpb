@@ -342,7 +342,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		FundApprovalTrans transaction=new FundApprovalTrans();
 		transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
-		transaction.setRcStausCode("FORWARDED");
+		transaction.setRcStausCode((fundStatus!=null && (fundStatus.equalsIgnoreCase("R") || fundStatus.equalsIgnoreCase("E")) ? "RE-" : "") +"FORWARDED");
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
 		long transStatus=fundApprovalDao.insertFundApprovalTransaction(transaction);
@@ -354,60 +354,65 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			if(masterFlowList!=null && masterFlowList.size()>0)
 			{
 				masterFlowList.forEach(row -> {
+					System.out.println("*******masterFlowList******");
+					System.out.println(Arrays.toString(row));
 				    LinkedCommitteeMembers linkedMembers = new LinkedCommitteeMembers();
 				    linkedMembers.setFundApprovalId(fundApprovalData.getFundApprovalId()); 
 				    
 				    if(row[2]!=null)
 				    {
-				    	if((row[2].toString()).equalsIgnoreCase("DIVISION HEAD APPROVED"))
+				    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
 				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc6());
-				    		linkedMembers.setMemberType("DH");    // Division Head
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc1());
-				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc2());
-				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc3());
-				    		linkedMembers.setMemberType("CM");    // CM-Committee Member
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc4());
-				    		linkedMembers.setMemberType("SE");    // CM-Subject Member
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getRc5());
-				    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
-				    	}
-				    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
-				    	{
-				    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
-				    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
-				    	}
-				    	
-				    	linkedMembers.setIsApproved("N");
-					    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
-					    linkedMembers.setCreatedDate(LocalDateTime.now());
-					    linkedMembers.setIsActive(1);
-					    
-					    try {
-					    	if(fundStatus.equalsIgnoreCase("F") || fundStatus.equalsIgnoreCase("E"))   // F - Forward, E - Revoke
+				    		if((row[2].toString()).equalsIgnoreCase("DIVISION HEAD APPROVED"))
 					    	{
-								fundApprovalDao.insertLinkedCommitteeMembers(linkedMembers);
+					    		linkedMembers.setEmpId(fundApprovalData.getRc6());
+					    		linkedMembers.setMemberType("DH");    // Division Head
 					    	}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					    	else if((row[2].toString()).equalsIgnoreCase("RO1 RECOMMENDED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getRc1());
+					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+					    	}
+					    	else if((row[2].toString()).equalsIgnoreCase("RO2 RECOMMENDED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getRc2());
+					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+					    	}
+					    	else if((row[2].toString()).equalsIgnoreCase("RO3 RECOMMENDED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getRc3());
+					    		linkedMembers.setMemberType("CM");    // CM-Committee Member
+					    	}
+					    	else if((row[2].toString()).equalsIgnoreCase("SE RECOMMENDED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getRc4());
+					    		linkedMembers.setMemberType("SE");    // CM-Subject Member
+					    	}
+					    	else if((row[2].toString()).equalsIgnoreCase("RPB MEMBER SECRETARY APPROVED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getRc5());
+					    		linkedMembers.setMemberType("CS");    // CM-RPB Secretary
+					    	}
+					    	else if((row[2].toString()).equalsIgnoreCase("CHAIRMAN APPROVED"))
+					    	{
+					    		linkedMembers.setEmpId(fundApprovalData.getApprovingOfficer());
+					    		linkedMembers.setMemberType("CC");    // CM-Committee chairman
+					    	}
+					    	
+					    	linkedMembers.setIsApproved("N");
+						    linkedMembers.setCreatedBy(fundApprovalData.getModifiedBy());
+						    linkedMembers.setCreatedDate(LocalDateTime.now());
+						    linkedMembers.setIsActive(1);
+						    
+						    try {
+						    	if(fundStatus.equalsIgnoreCase("F") || fundStatus.equalsIgnoreCase("E"))   // F - Forward, E - Revoke
+						    	{
+									fundApprovalDao.insertLinkedCommitteeMembers(linkedMembers);
+						    	}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+				    	}
 				    }
 				    
 				});
@@ -611,13 +616,13 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					fundApprovalDao.updateParticularLinkedCommitteeDetails(empId,fundApproval.getFundApprovalId(),"Y");
 				}
-				else if(fundDto.getAction().equalsIgnoreCase("R"))   // R - Return
-				{
-					updateLinkedCommitteeMembersReturn(fundApproval);
-				}
+//				else if(fundDto.getAction().equalsIgnoreCase("R"))   // R - Return
+//				{
+//					updateLinkedCommitteeMembersReturn(fundApproval);
+//				}
 				else if(fundDto.getAction().equalsIgnoreCase("E"))   // E - Revoke
 				{
-					deleteLinkedCommitteeMembersReturn(fundApproval);
+					deleteLinkedCommitteeMembersRevoke(fundApproval);
 				}
 			}
 		
@@ -633,7 +638,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				{
 					fundApproval.setStatus("R");
 				}
-				else if(fundDto.getAction().equalsIgnoreCase("E")) //  RV - Revoked
+				else if(fundDto.getAction().equalsIgnoreCase("E")) //  E - Revoked
 				{
 					fundApproval.setStatus("E");
 					fundApproval.setRc1(0);
@@ -688,7 +693,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 	}
 	
-	private void deleteLinkedCommitteeMembersReturn(FundApproval fundApproval) throws Exception
+	private void deleteLinkedCommitteeMembersRevoke(FundApproval fundApproval) throws Exception
 	{
 		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getCommitteeMemberLinkedDetails(fundApproval.getFundApprovalId());
 		if(cmmtMemberLinkedList!=null && cmmtMemberLinkedList.size()>0)

@@ -15,6 +15,7 @@
 <head>
 <meta charset="UTF-8">
 <jsp:include page="../static/header.jsp"></jsp:include>
+<jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
 <title>Fund Approval Preview</title>
 
 <style>
@@ -504,6 +505,14 @@ if(fundDetails!=null && fundDetails.length > 0)
 		          </table>
 	          </div>
             	</div>
+            	
+            	  <div style="font-weight: 600;color:black;margin:10px;"> Attachments: 
+		          	<span class="attachementLink">
+                           
+                     </span>
+		          </div>
+            	
+            	
                 <div class="row">
                     <!-- Left Division -->
                     <div class="col-md-6">
@@ -656,6 +665,10 @@ if(fundDetails!=null && fundDetails.length > 0)
 						  boolean isCSApproved = rc5Status.equalsIgnoreCase("Y");
 						  boolean isCCApproved = apprOffStatus.equalsIgnoreCase("Y");
 						  
+						  System.out.println("rc1Status****"+rc1Status);
+						  System.out.println("rc2Status****"+rc2Status);
+						  System.out.println("rc3Status****"+rc3Status);
+						  System.out.println("rc4Status****"+rc4Status);
 						  System.out.println("allNA****"+allNA);
 						  System.out.println("hasN****"+hasN);
 						  System.out.println("isDHApproved****"+isDHApproved);
@@ -752,6 +765,14 @@ function confirmAction(action,value) {
         form.submit();
     }
 }
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	getAttachementDetailsInline('<%=fundApprovalId %>');
+});
+
 </script>
 
 </html>
