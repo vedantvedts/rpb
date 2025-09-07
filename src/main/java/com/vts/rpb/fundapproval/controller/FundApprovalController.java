@@ -339,6 +339,11 @@ public class FundApprovalController
 		{
 			String fundApprovalId=req.getParameter("fundApprovalIdRevoke");
 			
+			if(fundApprovalId == null)
+			{
+				return "redirect:/FundRequest.htm";
+			}
+			
 			FundApprovalDto fundDto=new FundApprovalDto();
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
 			fundDto.setAction("E");   // E -  Revoke the Request
@@ -1138,6 +1143,7 @@ public class FundApprovalController
 				String fundRequestId=req.getParameter("FundRequestIdForward");
 				String flowMasterId=req.getParameter("FlowMasterIdForward");
 				String estimatedCost=req.getParameter("EstimatedCostForward");
+				String fundStatus=req.getParameter("FundRequestStatus");
 				
 				if(fundRequestId==null)
 				{
@@ -1186,7 +1192,7 @@ public class FundApprovalController
 				fundApprovalData.setModifiedBy(UserName);
 				fundApprovalData.setModifiedDate(LocalDateTime.now());;
 				
-				long status = fundApprovalService.fundRequestForward(fundApprovalData,flowMasterId,estimatedCost,empId); 
+				long status = fundApprovalService.fundRequestForward(fundApprovalData,flowMasterId,estimatedCost,empId, fundStatus); 
 				
 				
 				if(status > 0) {

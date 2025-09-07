@@ -338,9 +338,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
  }
 	
 	@Override
-	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId) throws Exception {
+	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId, String fundStatus) throws Exception {
 		
-		FundApprovalTrans transaction=new FundApprovalTrans(); 
+		FundApprovalTrans transaction=new FundApprovalTrans();
 		transaction.setFundApprovalId(fundApprovalData.getFundApprovalId());
 		transaction.setRcStausCode("FORWARDED");
 		transaction.setActionBy(empId);
@@ -348,7 +348,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		long transStatus=fundApprovalDao.insertFundApprovalTransaction(transaction);
 		
 		int fundApprovalIdCount=fundApprovalDao.getFundApprovalIdCountFromCommitteeLinked(fundApprovalData.getFundApprovalId());
-		if(fundApprovalIdCount == 0) 
+		if(fundApprovalIdCount == 0)
 		{
 			List<Object[]> masterFlowList=fundApprovalDao.getMasterFlowDetails(estimatedCost!=null ? estimatedCost : "0",fundApprovalData.getFundApprovalId());
 			if(masterFlowList!=null && masterFlowList.size()>0)
@@ -401,7 +401,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					    linkedMembers.setIsActive(1);
 					    
 					    try {
-					    	if(!(row[2].toString()).equalsIgnoreCase("INITIATION") && !(row[2].toString()).equalsIgnoreCase("FORWARDED"))
+					    	if(fundStatus.equalsIgnoreCase("F") || fundStatus.equalsIgnoreCase("E"))   // F - Forward, E - Revoke
 					    	{
 								fundApprovalDao.insertLinkedCommitteeMembers(linkedMembers);
 					    	}
@@ -434,6 +434,13 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		if(status!=null)
 		{
+			if(status.equalsIgnoreCase("E"))   // E - Revoke
+			{
+				currentDetails[0]="REVOKED";
+				currentDetails[1]=null;
+				return currentDetails;
+			}
+			
 			if(fundDetails.getRc1() > 0 && fundDetails.getRc1() == empId)
 			{
 				if(status.equalsIgnoreCase("RE"))

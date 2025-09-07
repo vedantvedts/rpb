@@ -648,6 +648,39 @@ if(fundDetails!=null && fundDetails.length > 0)
                     
                     <!-- Right Division -->
                     <div class="col-md-6">
+                    
+						<% boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
+						  boolean hasN = rc1Status.equalsIgnoreCase("N") || rc2Status.equalsIgnoreCase("N") || rc3Status.equalsIgnoreCase("N") || rc4Status.equalsIgnoreCase("N");
+						  
+						  boolean isDHApproved = rc6Status.equalsIgnoreCase("Y");
+						  boolean isCSApproved = rc5Status.equalsIgnoreCase("Y");
+						  boolean isCCApproved = apprOffStatus.equalsIgnoreCase("Y");
+						  
+						  System.out.println("allNA****"+allNA);
+						  System.out.println("hasN****"+hasN);
+						  System.out.println("isDHApproved****"+isDHApproved);
+						  System.out.println("isCSApproved****"+isCSApproved);
+						  System.out.println("isCCApproved****"+isCCApproved);
+						  
+						   %>
+						  
+						<%String tooltip = "";
+						boolean showPending = false;
+						
+						switch(currentEmpStatus.toUpperCase()) {
+						    case "CS":
+						        showPending = !(isDHApproved && !hasN);
+						        tooltip = "Preview & Note";
+						        break;
+						    case "CC":
+						        showPending = !(isDHApproved && isCSApproved);
+						        tooltip = "Preview & Approve";
+						        break;
+						}
+						%>
+									
+						<%if(!showPending){ %>
+                    
                         <div class="inner-box">
                             <div align="center">
                                 <form id="fbeForm" action="FundApprovalSubmit.htm">
@@ -677,6 +710,16 @@ if(fundDetails!=null && fundDetails.length > 0)
 
                             </div>
                         </div>
+                        
+                       <% }else { %>
+                       
+                       <div style="text-align: center; height: 100%; display: grid;place-items: center; ">
+                       <span style="color:#783d00; border-radius:10px; padding:10px 9px; background:#ffe8cc; font-size:13px; font-weight:800;"> Recommendation Pending </span>
+                       </div>
+                       
+                       <%} %>
+                        
+                        
                     </div>
                 </div>
             </div>
