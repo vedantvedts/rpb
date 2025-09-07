@@ -1190,5 +1190,19 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		return status;
 	}
+
+	@Override
+	public long deleteFundRequest(FundApprovalDto fundDto) throws Exception {
+		
+		long status = 0;
+		if(fundDto!=null) 
+		{
+			if(fundDto.getFundApprovalId()!=0) {
+				status = fundApprovalDao.deleteFundRequestDetails(fundDto.getFundApprovalId());
+			}
+			
+		}
+		return status;
+	}
 	
 }

@@ -64,9 +64,9 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                       <th>SN</th>
 				                       
 				                       <th class="text-nowrap">MemberType</th>
-				                       <th class="text-nowrap">Employee Name</th>
-				                       <th class="text-nowrap">Date</th>
-				                       <th >Valid Date</th>
+				                       <th class="text-nowrap">Employee Details</th>
+				                       <th class="text-nowrap">Valid From</th>
+				                       <th >Valid To</th>
 				                       <th >Action</th>
 				                       </tr>
 				                   </thead>
@@ -81,15 +81,17 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                  
 				                  <td class="no-wrap" style="text-align: center;"><%=a++ %>.</td>
 				                  <td class="no-wrap" style="text-align: center;"><%if(obj[0]!=null){ 
-				                  if(obj[0].toString().equalsIgnoreCase("CC")){
-				                  %>Chair Person
+				                	  
+				                  if(obj[0].toString().equalsIgnoreCase("CC")){%>
+				                  Chair Person
 				                  <%}else if(obj[0].toString().equalsIgnoreCase("CS")){%>
-				                 Commitee Seceratory  
-				                 <%}else if(obj[0].toString().equalsIgnoreCase("CM")){ %>
-				                 Commitee Member
-				                 <%}else if(obj[0].toString().equalsIgnoreCase("SC")){ %>
-				                    StandBy Chair Person
-				                 <%} %>
+				                  Secretary  
+				                  <%}else if(obj[0].toString().equalsIgnoreCase("CM")){ %>
+				                  Member
+				                  <%}else if(obj[0].toString().equalsIgnoreCase("SC")){ %>
+				                  Standby Chair Person
+				                  <%} %>
+				                 
 				                 <%}else{ %>--<%} %></td>
 				                  <td class="no-wrap" style="text-align: center;"><%=obj[4] %><%=','%> <%=obj[5] %></td>
 				                  <td class="no-wrap"style="text-align: center;"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
@@ -142,10 +144,10 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 			            <td style="padding: 10px;">
 			     
 			            <select id="MemberType" name="MemberType" class="form-control select2" style="width:100% !important" required="required">
+			             <option value="CM" >Member</option>
+			             <option value="CS" >Secretary</option>
 			             <option value="CC" >Chair Person</option>
-			             <option value="CS" >Committee Secretary</option>
-			             <option value="CM" >Committee Member</option>
-			             <option value="SC" >Stand By Chair Person</option>
+			             <option value="SC" >Standby Chair Person</option>
 			            
 			           </select>
 			           

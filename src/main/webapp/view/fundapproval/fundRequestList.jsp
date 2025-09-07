@@ -528,7 +528,7 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 135px;" align="center">
+				                   			<td style="width: 157px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
@@ -541,7 +541,7 @@ input[name="ItemNomenclature"]::placeholder {
 												               } else if("N".equalsIgnoreCase(fundStatus)) {
 												            	   statusColor = "#8c2303";
 												                   message = "Pending";
-												               } else if("F".equalsIgnoreCase(fundStatus)) {
+												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
 												            	   statusColor = "blue";
 												                   message = "Forwarded";
 					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
@@ -551,7 +551,8 @@ input[name="ItemNomenclature"]::placeholder {
 												            	   statusColor = "#007e68";
 												                   message = "Revoked";
 					            							   } else {
-												            	   statusColor = "black";
+					            								   message = "Reco Pending";
+												            	   statusColor = "#8c2303";
 												               }
 					            							 }
 												               %>
@@ -590,6 +591,9 @@ input[name="ItemNomenclature"]::placeholder {
 					                       		<%}else{ %>
 					                       		<span style="font-weight: 800;">***</span>
 					                       		<%} %>
+					                       		
+					                       		<button type="button" data-tooltip="Delete The Request" data-position="left"
+					                       		 onclick="confirmDelete('<%=data[0]%>')" class="btn btn-sm tooltip-container"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>
 					                       	</td>
 				                        </tr>	
 					            
@@ -898,6 +902,24 @@ function revokeConfirm(fundRequestId)
 	            if (confirmResponse) {
 	            	form.attr("action","RevokeFundRequest.htm");
 	            	form.append('<input type="hidden" name="fundApprovalIdRevoke" value="'+fundRequestId+'">');
+	                form.submit();
+	            }
+	        }
+	    );
+	}
+}
+
+// Delete Fund Request
+function confirmDelete(fundRequestId)
+{
+	var form = $("#RequistionFormAction");
+
+	if (form) {
+	    showConfirm('Are You Sure To Delete The Fund Request..?',
+	        function (confirmResponse) {
+	            if (confirmResponse) {
+	            	form.attr("action","DeleteFundRequest.htm");
+	            	form.append('<input type="hidden" name="fundApprovalIdDelete" value="'+fundRequestId+'">');
 	                form.submit();
 	            }
 	        }
@@ -1374,13 +1396,6 @@ function refreshModal(modalId) {
   
   </script>
   <script type="text/javascript">
-
- // Define previewAttachment globally
- function previewAttachment(url, fileName) {
-     $("#filePreviewIframe").attr("src", url);
-     $("#previewSection").show();
-     $("#previewFileName").text(fileName || "");
- }
 
  // Document ready logic
  $(document).ready(function() {

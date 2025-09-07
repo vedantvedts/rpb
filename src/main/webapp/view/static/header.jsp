@@ -1,3 +1,4 @@
+<%@page import="java.util.Arrays"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -918,135 +919,94 @@ function showFailureFlyMessage(message) {
 		<div style="margin-left: 12px;">
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 17px;font-weight: 700; color: #a7ffff;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 16px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: white;margin-left: -0.3rem;font-weight: 600;"><%=LocalDate.now().getMonth() %> &nbsp;<%=LocalDate.now().getYear() %> </span></div>
-			
-								
-								 <% for (Object[] mainModule : MainModuleList) { %>
-								
-    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")||(mainModule[1].toString()).equalsIgnoreCase("CommitteeMaster")){%>
-		 
-		 <%if((!(mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
-		<!-- Emp Name -->					
+	    
+	    <!-- Emp Name -->					
 		<div style="margin-left: -0.9rem;">&nbsp;
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
-	<%} %>
-	
-	<% if (mainModule[1].toString().equalsIgnoreCase("CommitteeMaster")) { %>
-    <!-- Main Module -->
-    <li id="MainModuleId" value="<%= mainModule[0] %>" 
-        class="nav-link mb-2 shadow custom_width hovercolor dropdown-toggle" 
-        onclick="toggleSubmoduleList('<%= mainModule[0] %>')">
-        <span class="<%= mainModule[2] %>">&nbsp;&nbsp;</span>
-        <%= mainModule[1] %>
-    </li>
-
-    <!-- Submodules List -->
-    <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0] %>" style="display:none;">
-        <% for (Object[] subModule : SubModuleList) {
-               if (subModule[0].equals(mainModule[0])) { %>
-            <li style="margin-left:0.3rem;">
-                <a class="dropdown-item hovercolorsub text-nowrap bi-list" 
-                   href="<%= subModule[1] %>" 
-                   style="border-radius:3px; margin:4px 0; padding:3px; font-weight:700; font-size:15px; color:#0303b9;">
-                    <i class="fas fa-arrow-right" style="font-size:11px; font-weight:800;"></i>
-                    &nbsp;&nbsp;<%= subModule[2] %>
-                </a>
-            </li>
-        <%   } 
-             temp = Integer.parseInt(subModule[0].toString());
-           } %>
-    </ul>
-<% } %>
-
-	
- <%if(((mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
-	    <ul class="navbar-nav ml-auto " style="margin-left: 20px;"> <!-- adds extra space from left -->
-	    <% for (Object[] subModule : SubModuleList) {
-	    if (subModule[0].equals(mainModule[0])) { %>
-	        <li class="nav-item active" style=" margin: 2px 4px;">
-	            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
-	               style="width: 95%;
-	                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
-	                      border-radius: 3px;
-	                      margin-top: 0.1rem;
-	                      padding-left: 13px;padding-right: 13px;"
-	               role="button"
-	               aria-controls="otherSections"
-	               class="text-nowrap bi-list"
-	               href="<%=subModule[1]%>">
-	              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
-	                &nbsp;
-	                <span style="font-weight: 700; color: white; font-size: 15px;">
-	                    <%=subModule[2] %>
-	                </span>
-	            </a>
-	        </li>
-	        
-	        <% } 
-	    temp = Integer.parseInt(subModule[0].toString());
-		}} %>
-	    </ul>
-	
-	   <%}else if(applicationType!=null && applicationType.equalsIgnoreCase("I")){ %>
-	      
-	       <li id="MainModuleId" value="<%= mainModule[0] %>" class='nav-link mb-2 shadow custom_width hovercolor dropdown-toggle' onclick="toggleSubmoduleList('<%= mainModule[0] %>')"><span class="<%=mainModule[2]%>">&nbsp;&nbsp;</span><%= mainModule[1]%></li>
-	      <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0]%>">
-	        <!-- Populate submodule list with items for the current main module -->
-	        <div class="sidebar-content">
-	        <% for (Object[] subModule : SubModuleList) {
-	               if (subModule[0].equals(mainModule[0])) {%>
-	          <li class="" style="margin-left:-0.3rem"><a class="dropdown-item hovercolorsub" style='width: 105%;margin-bottom: 7px !important;border-radius: 3px;margin-top:0.1rem;padding:3px;margin:4px' role='button' aria-controls='otherSections' class="text-nowrap bi-list" href='<%=subModule[1]%>'><i id="my-icon" class='fas fa-arrow-right' style="font-size: 11px;font-weight:800"></i>&nbsp;&nbsp;<span style="font-weight:700;color:#0303b9;font-size: 15px;"><%=subModule[2] %></span></a></li>
-	        <%    } temp=Integer.parseInt(subModule[0].toString());
-	             } %>
-	             </div>
-	      </ul>       
-	       <% }} %>
-	       	
-			<%if(!logintype.equalsIgnoreCase("P")){ %>
-						 <div  class="btn-group HeaderNotifications">
-	                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
-						           <!--  <span id="NotificationCount" class="badge" style="font-weight: 700;color: white;">Notifications</span> -->
-						            <span id="NotificationCount" class="badge"></span><!-- <span>Notifications</span> -->
-						            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
-					        </a>
-					        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width:200px;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
-								<span class="dropdown-header" style="background-color: #faa51e;font-size: 16px;color: #145374; margin-top: -1px;border-top-left-radius: 3px;border-top-right-radius: 3px;font-weight: 700"><i class="fa-solid fa-bell"></i>&nbsp;&nbsp;&nbsp;&nbsp;All Notifications</span>
-						        <a class="dropdown-item text-center small text-gray-500 showall notification" href="DemandApprove.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">No Notifications</span><span id="badge" class="badge"></span></a>						        
-						        </div>
-						    </div>
-						    <%} %>
-						    
-						    <div class="btn-group HeaderUserAction">
-						        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
-							            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
-							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
-							  	</button>
-							
-							    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
-							    	
-								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
-								    <div class="dropdown-divider logoutdivider"></div>
-								    
-									 <div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
-								  	<div class="dropdown-divider logoutdivider"></div> 
+		
+		
+		<ul class="navbar-nav ml-auto"> 						
+	 <% MainModuleList.forEach(row -> System.out.println(Arrays.toString(row)));
+	 for (Object[] mainModule : MainModuleList) { %>
 									
-									<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
-								            
-								    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
-									        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-								                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
-								                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
-								                    &nbsp;&nbsp;Logout
-								                </button>
-								        </form>
-							        
+	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master")) {%>
+		    
+		    <% for (Object[] subModule : SubModuleList) {
+		    if (subModule[0].equals(mainModule[0])) { %>
+		        <li class="nav-item active" style=" margin: 2px 4px;">
+		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
+		               style="width: 95%;
+		                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
+		                      border-radius: 3px;
+		                      margin-top: 0.1rem;
+		                      padding-left: 13px;padding-right: 13px;"
+		               role="button"
+		               aria-controls="otherSections"
+		               class="text-nowrap bi-list"
+		               href="<%=subModule[1]%>">
+		              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+		                &nbsp;
+		                <span style="font-weight: 700; color: white; font-size: 15px;">
+		                    <%=subModule[2] %>
+		                </span>
+		            </a>
+		        </li>
+		        
+		        <% } 
+		    temp = Integer.parseInt(subModule[0].toString());
+			} %>
+		    <%} %>
+		
+		   <%} %>
+		   
+		   </ul>
+		       	
+			<%-- 	<%if(!logintype.equalsIgnoreCase("P")){ %>
+							 <div  class="btn-group HeaderNotifications">
+		                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
+							           <!--  <span id="NotificationCount" class="badge" style="font-weight: 700;color: white;">Notifications</span> -->
+							            <span id="NotificationCount" class="badge"></span><!-- <span>Notifications</span> -->
+							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+						        </a>
+						        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width:200px;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
+									<span class="dropdown-header" style="background-color: #faa51e;font-size: 16px;color: #145374; margin-top: -1px;border-top-left-radius: 3px;border-top-right-radius: 3px;font-weight: 700"><i class="fa-solid fa-bell"></i>&nbsp;&nbsp;&nbsp;&nbsp;All Notifications</span>
+							        <a class="dropdown-item text-center small text-gray-500 showall notification" href="DemandApprove.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">No Notifications</span><span id="badge" class="badge"></span></a>						        
+							        </div>
 							    </div>
+							    <%} %> --%>
+							    
+							    <div class="btn-group HeaderUserAction">
+							        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
+								            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
+								            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+								  	</button>
+								
+								    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
+								    	
+									    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
+									    <div class="dropdown-divider logoutdivider"></div>
+										<div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
+									  	<div class="dropdown-divider logoutdivider"></div> 
+										 <a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
+										<div class="dropdown-divider logoutdivider"></div>
+										<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
+									            
+									    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
+										        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+									                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
+									                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
+									                    &nbsp;&nbsp;Logout
+									                </button>
+									        </form>
+								        
+								    </div>
+								</div>
 							</div>
 						</div>
-					</div>
-			 </nav>
+				 </nav>
 			 
 			 
 	<script type="text/javascript">

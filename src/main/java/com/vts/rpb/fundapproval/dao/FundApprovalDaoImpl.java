@@ -391,31 +391,27 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost,String status,String committeeMember,String RupeeValue)  throws Exception{
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId, f.EstimateType, f.DivisionId, f.FinYear, f.REFBEYear, f.ProjectId, f.BudgetHeadId, h.BudgetHeadDescription, " +
-					"f.BudgetItemId, i.HeadOfAccounts, i.MajorHead, i.MinorHead, i.SubHead, i.SubMinorHead, f.BookingId, f.CommitmentPayIds, f.ItemNomenclature, " +
-					"f.Justification, CAST(SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar)/:rupeeValue AS DECIMAL(15,2)) AS EstimatedCost, " +
-					"f.InitiatingOfficer, e.EmpName, ed.Designation, f.Remarks, f.status, f.RequisitionDate, MAX(ifa.RCStausCode) AS RCStausCode,MAX(ifa.Remarks) AS Remarks," +
-					"GROUP_CONCAT(CONCAT(att.FileName, '::', att.OriginalFileName, '::', att.Path, '::', att.FundApprovalAttachId) SEPARATOR '||') AS Attachments,dm.divisionId,dm.divisionName,dm.divisionCode " +
-					"FROM fund_approval f " +
-					"LEFT JOIN " + mdmdb + ".employee e ON e.EmpId=f.InitiatingOfficer " +
-					"LEFT JOIN " + mdmdb + ".employee_desig ed ON ed.DesigId=e.DesigId " +
-					"LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId " +
-					"LEFT JOIN ibas_fund_approval_trans ifa ON ifa.FundApprovalId=f.FundApprovalId " +
-					"LEFT JOIN fund_approval_attach att ON att.FundApprovalId=f.FundApprovalId " +
-					"LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId "
-					+"LEFT JOIN " + mdmdb + ".division_master dm ON dm.DivisionId=:divisionId " +
-					"WHERE f.FinYear=:finYear " +
-					"  AND f.ProjectId=:projectId " +
-					"  AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END) " +
-					"  AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) " +
-					"  AND f.EstimateType=:estimateType " +
-					"  AND (CASE WHEN '-1'=:divisionId THEN 1=1 ELSE f.DivisionId=:divisionId END) " +
-					"  AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType='CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM " + mdmdb + ".employee WHERE EmpId=:empId) END) END) " +
-					"  AND (CASE WHEN 'NA'=:statuss THEN 1=1 ELSE f.Status=:statuss END) " +
-					"GROUP BY f.FundApprovalId " +
-					"HAVING SUM(f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar)/:rupeeValue BETWEEN :fromCost AND :toCost " +
-					"ORDER BY f.FundApprovalId DESC"
-);
+			Query query= manager.createNativeQuery("\r\n"
+					+ "SELECT f.FundApprovalId, f.EstimateType, f.DivisionId,  f.FinYear, f.REFBEYear, f.ProjectId, f.BudgetHeadId, h.BudgetHeadDescription, f.BudgetItemId, i.HeadOfAccounts, i.MajorHead, i.MinorHead, i.SubHead, i.SubMinorHead, f.BookingId, f.CommitmentPayIds, f.ItemNomenclature, f.Justification, ROUND(IFNULL((f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb + f.Mar)/:rupeeValue,0),2) AS EstimatedCost, f.InitiatingOfficer, e.EmpName, ed.Designation, f.Remarks, f.status, f.RequisitionDate, ifa.RCStausCode, ifa.Remarks, GROUP_CONCAT(CONCAT(att.FileName, '::', att.OriginalFileName, '::', att.Path, '::', att.FundApprovalAttachId) SEPARATOR '||') AS Attachments, dm.divisionId, dm.divisionName, dm.divisionCode\r\n"
+					+ "FROM fund_approval f \r\n"
+					+ "LEFT JOIN pms_dms_dev.employee e ON e.EmpId=f.InitiatingOfficer \r\n"
+					+ "LEFT JOIN pms_dms_dev.employee_desig ed ON ed.DesigId=e.DesigId \r\n"
+					+ "LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId \r\n"
+					+ "LEFT JOIN ibas_fund_approval_trans ifa ON ifa.FundApprovalId=f.FundApprovalId AND ifa.RCStausCode = 'CHAIRMAN APPROVED'\r\n"
+					+ "LEFT JOIN fund_approval_attach att ON att.FundApprovalId=f.FundApprovalId \r\n"
+					+ "LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId \r\n"
+					+ "LEFT JOIN pms_dms_dev.division_master dm ON dm.DivisionId='1' \r\n"
+					+ "WHERE f.FinYear=:finYear \r\n"
+					+ "  AND f.ProjectId=:projectId \r\n"
+					+ "  AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END) \r\n"
+					+ "  AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END) \r\n"
+					+ "  AND f.EstimateType=:estimateType \r\n"
+					+ "  AND (CASE WHEN '-1'=:divisionId THEN 1=1 ELSE f.DivisionId=:divisionId END) \r\n"
+					+ "  AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType='CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM pms_dms_dev.employee WHERE EmpId=:empId) END) END) \r\n"
+					+ "  AND (CASE WHEN 'NA'=:statuss THEN 1=1 ELSE f.Status=:statuss END) \r\n"
+					+ "GROUP BY  f.FundApprovalId, f.EstimateType, f.DivisionId, f.FinYear, f.REFBEYear, f.ProjectId, f.BudgetHeadId, h.BudgetHeadDescription, f.BudgetItemId, i.HeadOfAccounts, i.MajorHead, i.MinorHead, i.SubHead, i.SubMinorHead, f.BookingId, f.CommitmentPayIds, f.ItemNomenclature, f.Justification, f.InitiatingOfficer, e.EmpName, ed.Designation, f.Remarks, f.status, f.RequisitionDate, ifa.RCStausCode, ifa.Remarks, dm.divisionId, dm.divisionName, dm.divisionCode \r\n"
+					+ "HAVING EstimatedCost BETWEEN :fromCost AND :toCost \r\n"
+					+ "ORDER BY f.FundApprovalId DESC");
 		
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
@@ -854,6 +850,23 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		    e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public long deleteFundRequestDetails(long fundApprovalId) throws Exception {
+		try {
+			FundApproval fundApprovalModal = manager.find(FundApproval.class, fundApprovalId);
+
+		    if (fundApprovalModal != null) {
+		        manager.remove(fundApprovalModal);
+		        manager.flush();
+		    } 
+		    return 1;
+		} catch (Exception e) {
+		    logger.error(new Date() + " Inside DAO deleteFundRequestDetails() " + e);
+		    e.printStackTrace();
+		    return 0;
+		}
 	}
 	
 

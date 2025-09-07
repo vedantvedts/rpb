@@ -40,58 +40,70 @@ function previewInformation(fundApprovalId) {
             var row = data[0];
             var html = '<div class="status-card-container">';
 
-			html += createCard("Initiated By", row[19], "Initiated", true, "Initiated", "fa-solid fa-circle-check");
-			html += createCard("Division Head", row[51], row[48] === "Y" ? "Recommended" : "Pending", row[48] === "Y", "Recommendation Pending", row[48] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+			html += createCard("Initiated By", row[19], "Initiated", true, "Initiated", "fa-solid fa-circle-check","left");  // last parameter text-alight : left
+			
+			if(row[38] != 'N' && row[38] != 'E')
+			{
+				html += createCard("Division Head", row[51], row[48] === "Y" ? "Recommended" : "Pending", row[48] === "Y", "Recommendation Pending", row[48] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+			}
 			
 			// RC1 
             if(parseInt(row[20]!= null ? row[20] : 0) > 0 && row[22]!=null && row[22] == 'CM')
             {
 				var rc1Status=row[41];
-				html += createCard("RPB Member", row[21], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+				html += createCard("RPB Member", row[21], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 			}
             
 			// RC2 
             if(parseInt(row[23]!= null ? row[23] : 0) > 0 && row[25]!=null && row[25] == 'CM')
             {
 				var rc1Status=row[42];
-				html += createCard("RPB Member", row[24], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+				html += createCard("RPB Member", row[24], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 			}
             
 			// RC3 
             if(parseInt(row[26]!= null ? row[26] : 0) > 0 && row[28]!=null && row[28] == 'CM')
             {
 				var rc1Status=row[43];
-				html += createCard("RPB Member", row[27], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+				html += createCard("RPB Member", row[27], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 			}
 			
 			// RC4
             if(parseInt(row[29]!= null ? row[29] : 0) > 0 && row[31]!=null && row[31] == 'CM')
             {
 				var rc1Status=row[44];
-				html += createCard("RPB Member", row[30], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+				html += createCard("RPB Member", row[30], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 			}
             
 			// RC5
             if(parseInt(row[32]!= null ? row[32] : 0) > 0 && row[34]!=null && row[34] == 'CM')
             {
 				var rc1Status=row[45];
-				html += createCard("RPB Member", row[33], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
+				html += createCard("RPB Member", row[33], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 			}
             
-            html += createCard("RPB Member Secretary", row[33], row[45] === "Y" ? "Reviewed" : "Pending", row[45] === "Y", "Review Pending", row[45] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
-            html += createCard("RPB Chairman", row[36], row[46] === "Y" ? "Approved" : "Pending", row[46] === "Y", "Approval Pending", row[46] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half");
-
+            if(row[38] != 'N' && row[38] != 'E')
+			{
+	            html += createCard("RPB Member Secretary", row[33], row[45] === "Y" ? "Reviewed" : "Pending", row[45] === "Y", "Review Pending", row[45] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+	            html += createCard("RPB Chairman", row[36], row[46] === "Y" ? "Approved" : "Pending", row[46] === "Y", "Approval Pending", row[46] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+	        }
+	        
+	        if(row[38] == 'N' || row[38] == 'E')
+	        {
+				html += createCard("", "","",false,"Forward Pending","fa-solid fa-hourglass-half","center");
+			}
+	            
             html += '</div>';
             
               // Utility to render a card
-            function createCard(title, officer, status, isApproved, pendingText, iconClass) {
+            function createCard(title, officer, status, isApproved, pendingText, iconClass, align) {
                 let statusClass = isApproved ? "success" : "warning";
                 let statusText = isApproved ? status : pendingText;
 
                 return `
-                <div class="status-card">
+                <div class="status-card" style="text-align:${align} !important;">
                     <h6>${title}</h6>
-                    <p><b>${officer || "--"}</b></p>
+                    <p><b>${officer}</b></p>
                     <div class="status ${statusClass}">
                         <i class="${iconClass}"></i> ${statusText}
                     </div>
@@ -246,6 +258,13 @@ function generateTableHTML(data) {
              alert("Failed to load attachments.");
          }
      });
+ }
+ 
+  // Define previewAttachment globally
+ function previewAttachment(url, fileName) {
+     $("#filePreviewIframe").attr("src", url);
+     $("#previewSection").show();
+     $("#previewFileName").text(fileName || "");
  }
  
  

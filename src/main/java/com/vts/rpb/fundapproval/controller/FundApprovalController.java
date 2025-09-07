@@ -313,6 +313,10 @@ public class FundApprovalController
 			{
 				actionMssg = "Approved";
 			}
+			else if(action.equalsIgnoreCase("R"))
+			{
+				actionMssg = "Returned";
+			}
 			else
 			{
 				actionMssg = "Recommended";
@@ -373,6 +377,46 @@ public class FundApprovalController
 		{
 			e.printStackTrace();
 			logger.error(new Date() + " Inside RevokeFundRequest.htm " + UserName, e);
+			return "static/error";
+		}
+		return url;
+		
+	}
+	// Delete Fund Request
+	@RequestMapping(value="DeleteFundRequest.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String deleteFundRequest(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside DeleteFundRequest.htm " + UserName);
+		String url=null;
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalIdDelete");
+			
+			if(fundApprovalId == null)
+			{
+				return "redirect:/FundRequest.htm";
+			}
+			
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setCreatedBy(UserName);
+			
+			long status=fundApprovalService.deleteFundRequest(fundDto); 
+			
+			if(status > 0) {
+				redir.addAttribute("resultSuccess", "Fund Request Deleted Successfully..&#128077;");
+			}else {
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			}
+			
+			url="redirect:/FundRequest.htm";
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside DeleteFundRequest.htm " + UserName, e);
 			return "static/error";
 		}
 		return url;
@@ -2014,8 +2058,6 @@ public class FundApprovalController
 				{
 					return "fundapproval/ParticularDivTypeReportListPrint";
 				}
-				
-				
 			}
 			catch(Exception e)
 			{
@@ -2026,6 +2068,19 @@ public class FundApprovalController
 			return "fundapproval/fundReportListPrint";
 			
 		}
-
+		
+		@RequestMapping(value = "HeaderHelpAction.htm", method = RequestMethod.GET)
+		public String headerHelpAction(HttpServletRequest req, HttpSession ses, HttpServletResponse res) throws Exception {
+			String UserId = (String) ses.getAttribute("Username");
+			logger.info(new Date() +"Inside HeaderHelpAction.htm "+UserId);		
+			try {
+				
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				logger.error(new Date() +" Inside HeaderHelpAction.htm "+UserId, e);
+			}
+			return "fundapproval/rpbuserguide";
+		}
 		
 }

@@ -45,6 +45,6 @@ public class CommitteeMembers {
 	private LocalDateTime modifiedDate;
 	
 	@Column(name = "IsActive")
-	private int isActive;
+	private int isActive=1;
 
 }
