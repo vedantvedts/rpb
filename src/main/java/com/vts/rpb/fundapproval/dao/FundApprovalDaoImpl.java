@@ -661,12 +661,45 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			return (List<Object[]>) query.getResultList();
 			
 		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO findCommitteeMemberType "+ e);
+			logger.error(new Date() +"Inside DAO getCommitteeMemberType "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public List<Object[]> getCommitteeMembersLinked (long empId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT MemberType,EmpId FROM ibas_fund_members_linked WHERE EmpId=:empId");
+			query.setParameter("empId", empId);
+			return (List<Object[]>) query.getResultList();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getCommitteeMembersLinked "+ e);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	@Override
+	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT COUNT(fm.MemberLinkedId) AS totalcount , f. EstimateType, f.FinYear,dm.DivisionCode,ROUND(IFNULL((f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar),0),2) AS EstimatedCost, f.FundApprovalId FROM ibas_fund_members_linked fm\n"
+					+ "LEFT JOIN fund_approval f  ON f.fundApprovalId= fm.fundApprovalId\n"
+					+ "LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=f.DivisionId\n"
+					+ "WHERE fm.MemberType=:member AND fm.empId=:EmpId AND fm.IsApproved='N'AND f.status='F'\n"
+					+ "GROUP BY dm.DivisionCode, f.EstimateType, f.FinYear,EstimatedCost, f.FundApprovalId ");
+			query.setParameter("member", committeeMember);
+			query.setParameter("EmpId", empId);
+			return (List<Object[]>) query.getResultList();
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO committeeMemberFundApprovalCount "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	@Override
 	public List<Object[]> getDemandDetails(String demandId) throws Exception {
 	 try {

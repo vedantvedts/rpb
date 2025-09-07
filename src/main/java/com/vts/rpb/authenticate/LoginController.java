@@ -1,6 +1,7 @@
 package com.vts.rpb.authenticate;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.login.service.LoginService;
 import com.vts.rpb.master.service.MasterService;
@@ -80,6 +83,9 @@ public class LoginController {
 		    System.out.println("----------------------------------------");
 			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId);
 			DivisionDetailsList.forEach(row -> System.out.println(Arrays.toString(row)));
+			
+			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+			ses.setAttribute("memberLoginType", memberLoginType);
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);
 		   req.setAttribute("amountFormat", amountFormat);
@@ -87,4 +93,22 @@ public class LoginController {
 		   req.setAttribute("toYear", ToYear);
 		   return "dashboard/homePage";
 	   }
+	   
+		@RequestMapping(value ="ApprovalCount.htm",method=RequestMethod.GET)
+		public @ResponseBody String ApprovalCount(HttpSession ses , HttpServletRequest req)throws Exception
+		{
+			 String Username = (String) ses.getAttribute("Username");
+			 String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		     logger.info(new Date() + "Inside ApprovalCount.htm " + Username);
+			Gson json = new Gson();
+			try {  
+				String committeeMember=fundApprovalService.getCommitteeMembersLinked(Long.valueOf(empId));
+				List<Object[]>  result = fundApprovalService.committeeMemberFundApprovalCount(committeeMember,empId);
+				 result.stream().forEach(a->System.err.println(Arrays.toString(a))); 
+				return json.toJson(result);   //return to Ajax Where You Call Hide.htm
+			    }catch (Exception e){
+				e.printStackTrace();
+			    }
+			    return null;
+		}
 }

@@ -64,6 +64,10 @@ public interface FundApprovalService
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth, FundApprovalBackButtonDto dto, String userName) throws Exception;
 
 	public String getCommitteeMemberType (long empId) throws Exception;
+	
+	public String getCommitteeMembersLinked (long empId) throws Exception;
+	
+	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception;
 
 	public List<Object[]> getProposedProjectDetails() throws Exception;
 	

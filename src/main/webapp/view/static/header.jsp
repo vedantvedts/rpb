@@ -145,7 +145,7 @@ background-repeat: no-repeat;
 }
 #notifications {
    /* Background pattern from Toptal Subtle Patterns */
-   background-image: url("view/images/not.jpg");
+   background-image: url("view/images/");
    background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -931,8 +931,11 @@ function rupeeFormat(amount) {
  	  List<Object[]> SubModuleList =(List<Object[]>)session.getAttribute("SubModuleList");
  	 int temp=-1;
  	String applicationType = "F";
+ 	String memberType=(String)session.getAttribute("memberLoginType");
     %>
+    
     <input type="hidden" id="hiddendeveloperToolsStatus" value="<%=developerToolsStatus%>">
+     <input type="hidden" id="hiddenMemberType" value="<%=memberType%>">
       <div id="custom-menu" class="custom-menu" style="z-index: 10000;">
 							    
 								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
@@ -1010,7 +1013,6 @@ function rupeeFormat(amount) {
 		   
 		   </ul>
 		       	
-			<%-- 	<%if(!logintype.equalsIgnoreCase("P")){ %>
 							 <div  class="btn-group HeaderNotifications">
 		                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
@@ -1018,12 +1020,11 @@ function rupeeFormat(amount) {
 							            <span id="NotificationCount" class="badge"></span><!-- <span>Notifications</span> -->
 							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
 						        </a>
-						        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width:200px;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
+						        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width: auto;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
 									<span class="dropdown-header" style="background-color: #faa51e;font-size: 16px;color: #145374; margin-top: -1px;border-top-left-radius: 3px;border-top-right-radius: 3px;font-weight: 700"><i class="fa-solid fa-bell"></i>&nbsp;&nbsp;&nbsp;&nbsp;All Notifications</span>
-							        <a class="dropdown-item text-center small text-gray-500 showall notification" href="DemandApprove.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">No Notifications</span><span id="badge" class="badge"></span></a>						        
-							        </div>
+<!-- 									  <a class="dropdown-item text-center small text-gray-500 showall notification" id="fundShow" href="FundApprovalList.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">Fund Approval</span><span id="FundBadge" class="badge"></span></a>
+ -->							        </div>
 							    </div>
-							    <%} %> --%>
 							    
 							    <div class="btn-group HeaderUserAction">
 							        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1196,7 +1197,92 @@ function toggleSubmoduleList(mainModuleValue) {
     }
 }
 </script>
+<script>
+$(document).ready(function(){
+    $.ajax({
+        type : "GET",
+        url : "ApprovalCount.htm",	 
+        dataType : 'json',  
+        success : function(result){
+            console.log("Raw result:", result);
 
+            // clear old notifications except the header
+            $("#notifications").find(".notif-list, #noNotif").remove();
+
+            if(result && result.length > 0){
+                var totalCount = result.length; // number of rows
+                $("#NotificationCount").html(totalCount).show();
+
+                // build <ul> list
+                var $ul = $('<ul class="notif-list list-unstyled mb-0" style="padding-top: 1%;"></ul>');
+
+                result.forEach(function(row){
+                    var count = row[0];          // totalcount
+                    var estimateType = row[1];   // EstimateType
+                    var finYear = row[2];        // FinYear
+                    var division = row[3];       // DivisionName
+                    var amount = row[4] != null ? row[4].toString() : "0";         // FundRequestAmount
+                    var fundApprovalId = row[5];
+                    var pending='';
+                    var memberType=$("#hiddenMemberType").val();
+                    if(estimateType=='R'){
+                    	estimateType='RE';
+                    }
+                    if(estimateType=='F'){
+                    	estimateType='FBE';
+                    }
+
+                    if(memberType=='CC' || memberType=='CS'){
+                    	pending='Approval Pending';
+                    }
+                    if(memberType=='CS'){
+                    	pending='Review Pending';
+                    }
+                    if(memberType=='CM' || memberType=='DH' || memberType=='SE'){
+                    	pending='Recommendation Pending';
+                    }
+                    var item = 
+                        '<li class="dropdown-item" style="font-size: 13px; text-align: left; cursor:pointer;">' +
+                            '<a href="FundApprovalPreview.htm?FundApprovalIdSubmit='+fundApprovalId+'" style="color:inherit; text-decoration:none; display:block;">' +
+                                '<div><strong>' + division + '</strong>' +
+                                ' with a Fund Request Amount of <strong style="color:blue">' +rupeeFormat(amount)+ '</strong> - <strong style="color: #e03e3e;">'+pending+' !</strong></div>' +
+                            '</a>' +
+                        '</li>' +
+                        '<div class="dropdown-divider"></div>';
+
+
+                    $ul.append(item);
+                });
+
+                // append the whole list after header
+                $("#notifications").append($ul);
+
+            } else {
+                // no data found
+                $("#fundShow").hide();
+                $("#FundBadge").hide();
+                $("#NotificationCount").hide();
+
+                if($("#noNotif").length === 0){
+                    $("#notifications").append(
+                        '<a class="dropdown-item text-center small text-gray-500 showall notification" ' +
+                        'id="noNotif" href="#" style="height: 30px;font-size: 13px;color: black; text-align: left;">' +
+                        '<span style="font-weight: 600;">No Notifications</span></a>'
+                    );
+                }
+            }
+        },
+        error: function(xhr, status, error){
+            console.error("Ajax error:", error);
+        }
+    });
+});
+</script>
+
+
+
+
+ 
 
     
         </body>
