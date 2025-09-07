@@ -921,13 +921,45 @@ function showFailureFlyMessage(message) {
 			
 								
 								 <% for (Object[] mainModule : MainModuleList) { %>
-    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")){%>
+								
+    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")||(mainModule[1].toString()).equalsIgnoreCase("CommitteeMaster")){%>
+		 
+		 <%if((!(mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
 		<!-- Emp Name -->					
 		<div style="margin-left: -0.9rem;">&nbsp;
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
+	<%} %>
 	
+	<% if (mainModule[1].toString().equalsIgnoreCase("CommitteeMaster")) { %>
+    <!-- Main Module -->
+    <li id="MainModuleId" value="<%= mainModule[0] %>" 
+        class="nav-link mb-2 shadow custom_width hovercolor dropdown-toggle" 
+        onclick="toggleSubmoduleList('<%= mainModule[0] %>')">
+        <span class="<%= mainModule[2] %>">&nbsp;&nbsp;</span>
+        <%= mainModule[1] %>
+    </li>
 
+    <!-- Submodules List -->
+    <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0] %>" style="display:none;">
+        <% for (Object[] subModule : SubModuleList) {
+               if (subModule[0].equals(mainModule[0])) { %>
+            <li style="margin-left:0.3rem;">
+                <a class="dropdown-item hovercolorsub text-nowrap bi-list" 
+                   href="<%= subModule[1] %>" 
+                   style="border-radius:3px; margin:4px 0; padding:3px; font-weight:700; font-size:15px; color:#0303b9;">
+                    <i class="fas fa-arrow-right" style="font-size:11px; font-weight:800;"></i>
+                    &nbsp;&nbsp;<%= subModule[2] %>
+                </a>
+            </li>
+        <%   } 
+             temp = Integer.parseInt(subModule[0].toString());
+           } %>
+    </ul>
+<% } %>
+
+	
+ <%if(((mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
 	    <ul class="navbar-nav ml-auto " style="margin-left: 20px;"> <!-- adds extra space from left -->
 	    <% for (Object[] subModule : SubModuleList) {
 	    if (subModule[0].equals(mainModule[0])) { %>
@@ -952,7 +984,7 @@ function showFailureFlyMessage(message) {
 	        
 	        <% } 
 	    temp = Integer.parseInt(subModule[0].toString());
-		} %>
+		}} %>
 	    </ul>
 	
 	   <%}else if(applicationType!=null && applicationType.equalsIgnoreCase("I")){ %>
@@ -1131,6 +1163,32 @@ function showFailureFlyMessage(message) {
  $("body").append('<div id="overlayer" class="overlayer"> <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
  
  </script>
+ 
+<script>
+function toggleSubmoduleList(mainModuleValue) {
+    var submoduleList = document.querySelector('#submodule-list-' + mainModuleValue);
+
+    // Hide all other submodule lists
+    var allSubmoduleLists = document.querySelectorAll('ul.list-unstyled.menu-elements');
+    allSubmoduleLists.forEach(function(ul) {
+        if (ul !== submoduleList) {
+            ul.style.display = 'none';
+            var li = document.querySelector('#MainModuleId[value="' + ul.id.split('-').pop() + '"]');
+            if (li) {
+                li.setAttribute('aria-expanded', 'false');
+            }
+        }
+    });
+
+    // Toggle the clicked submodule list
+    if (submoduleList.style.display === 'block') {
+        submoduleList.style.display = 'none';
+    } else {
+        submoduleList.style.display = 'block';
+    }
+}
+</script>
+
 
     
         </body>
