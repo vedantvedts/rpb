@@ -583,21 +583,19 @@ input[name="ItemNomenclature"]::placeholder {
 										}, function(result) {
 											$('#selbudgethead').find('option').remove();
 											var result = JSON.parse(result);
-											var html1='';
 											 if(result.length >1){
 												$("#selbudgethead").append("<option  value='0'>All</option>");
 											}  	
 											$.each(result, function(key, value) {
 												
-												 if(value.budgetHeadId== $budgetHeadId)
+												 if(value.budgetHeadId == $budgetHeadId)
 												 {
-													html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+													 $("#selbudgethead").append('<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>');
 												 }
-												 else
+												 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 													{
-														html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+														 $("#selbudgethead").append("<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>");
 													}
-												 $("#selbudgethead").append(html1);
 											});
 											var budgetItemId = $("#budgetItemIdHidden").val();
 										    SetBudgetItem(budgetItemId);

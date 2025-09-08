@@ -129,10 +129,11 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 	@Override
-	public List<Object[]> getOfficersList() throws Exception {
+	public List<Object[]> getOfficersList(String labCode) throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getOfficerList");
 		try {
-		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b, "+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId  ORDER BY a.SrNo=0,a.SrNo");
+		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b, "+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.labCode = :labCode ORDER BY a.SrNo=0,a.SrNo");
+		query.setParameter("labCode", labCode);
 		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
 		return OfficerList;
 		
@@ -144,10 +145,11 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 	@Override
-	public List<Object[]> getAllOfficersList() throws Exception {
+	public List<Object[]> getAllOfficersList(String labCode) throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getAllOfficersList");
 		try {
-		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.IsActive = '1' ORDER BY a.SrNo=0,a.SrNo ");
+		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.IsActive = '1' AND a.labCode = :labCode ORDER BY a.SrNo=0,a.SrNo ");
+		query.setParameter("labCode", labCode);
 		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
 		return OfficerList;
 		

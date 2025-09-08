@@ -378,7 +378,7 @@ tr:last-of-type th:last-of-type {
 </head>
 <body>
  <%DecimalFormat df = new DecimalFormat( "#####################");
- String action=(String)request.getAttribute("ActionType"); 
+ 	  String action=(String)request.getAttribute("ActionType"); 
       String logintype= (String)session.getAttribute("LoginType");
       String empId = ((Long) session.getAttribute("EmployeeId")).toString();
       String rpbMemberType= (String)request.getAttribute("rpbMemberType");
@@ -388,6 +388,11 @@ tr:last-of-type th:last-of-type {
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
      String filesize=  (String)request.getAttribute("filesize");
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
+     
+     if(action == null)
+     {
+    	 action = "NA";
+     }
 
       	String FinYear=(String)(dto.getFromYearBackBtn()+"-"+dto.getToYearBackBtn());
  %>
@@ -607,7 +612,7 @@ tr:last-of-type th:last-of-type {
 										<tr class="InsertRow-1">
 										    <td style="padding:7px;" colspan="4">
 										    <div class="form-inline COGDetails" style="justify-content:center;width: 95%;margin:auto;background-color: #ffefe3;border-radius: 5px;">
-								             <% if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>
+								             <% if((estimateType!=null && estimateType.equalsIgnoreCase("F")) || action.equalsIgnoreCase("Edit")){ %>
 								             <div class="inputBox"><input required type="number" id="AprilMonthAdd-1" name="AprilMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AprilMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[12]!=null && new BigDecimal(FundRequestObj[12].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[12]) %>" <%} %>><span>April</span></div>
 								             <div class="inputBox"><input required type="number" id="MayMonthAdd-1" name="MayMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','MayMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[13]!=null && new BigDecimal(FundRequestObj[13].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[13]) %>" <%} %>><span>May</span></div>
 								             <div class="inputBox"><input required type="number" id="JuneMonthAdd-1" name="JuneMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JuneMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[14]!=null && new BigDecimal(FundRequestObj[14].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[14]) %>" <%} %>><span>June</span></div>
@@ -705,16 +710,16 @@ tr:last-of-type th:last-of-type {
 				<!-- Cost Of Estimation Row -->
 				<tr class="file-row2">
 				    <td style="width: 54%;">
-				        <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Of Estimation">
+				        <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Estimation">
 				    </td>
 				    <td>
 				        <input type="file" class="form-control" id="attachment2" name="attachment" onchange="Filevalidation(this);">
 				        <% 
-				            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimation") : null;
+				            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Estimation") : null;
 				            if (costAttach != null) { 
 				        %>
 				            <input type="hidden" name="existingAttachmentId" value="<%= costAttach[0] %>">
-				            <input type="hidden" name="existingFileName" value="Cost Of Estimation">
+				            <input type="hidden" name="existingFileName" value="Cost Estimation">
 				        <% } %>
 				    </td>
 				    <% if (costAttach != null) { %>
@@ -734,16 +739,16 @@ tr:last-of-type th:last-of-type {
 				<!-- Budgetary quotes / LPO (Last Purchase Order) Row -->
 				<tr class="file-row1">
 				    <td style="width: 54%;">
-				        <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="Budgetary quotes / LPO (Last Purchase Order)">
+				        <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="BQs / LPO">
 				    </td>
 				    <td>
 				        <input type="file" class="form-control" id="attachment1" name="attachment" onchange="Filevalidation(this);">
 				        <% 
-				            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "Budgetary quotes / LPO (Last Purchase Order)") : null;
+				            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs / LPO") : null;
 				            if (bqsAttach != null) { 
 				        %>
 				            <input type="hidden" name="existingAttachmentId" value="<%= bqsAttach[0] %>">
-				            <input type="hidden" name="existingFileName" value="Budgetary quotes / LPO (Last Purchase Order)">
+				            <input type="hidden" name="existingFileName" value="BQs / LPO">
 				        <% } %>
 				    </td>
 				    <% if (bqsAttach != null) { %>

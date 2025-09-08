@@ -34,11 +34,12 @@ public class MasterController
 	@RequestMapping(value ="SelectAllemployeeAjax.htm")
 	public @ResponseBody String selectAllemployeeAjax(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception{
 		String UserName =(String)ses.getAttribute("Username");
+		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() +"Inside SelectAllemployeeAjax.htm "+UserName);	
 		List<Object[]> EmployeeList =null;
 		Gson json = new Gson();
 		try {            
-				EmployeeList = masterService.getAllOfficersList();
+				EmployeeList = masterService.getAllOfficersList(labCode);
 		}catch (Exception e){
 			logger.error(new Date() +"Inside SelectAllemployeeAjax.htm "+UserName ,e);
 			e.printStackTrace();
@@ -92,7 +93,7 @@ public class MasterController
 			List<Object[]>getAllOfficersList=null;
 			
 			try {
-				getAllOfficersList=masterService.getAllOfficersList();
+				getAllOfficersList=masterService.getAllOfficersList(labCode);
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

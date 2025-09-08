@@ -11,11 +11,11 @@ public interface MasterService
 	
 	public List<Object[]> GetLabInfo(String LabCode) throws Exception;
 
-	public List<Object[]> getOfficersList() throws Exception;
+	public List<Object[]> getOfficersList(String labCode) throws Exception;
 
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
 
-	public List<Object[]> getAllOfficersList() throws Exception;
+	public List<Object[]> getAllOfficersList(String labCode) throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
 

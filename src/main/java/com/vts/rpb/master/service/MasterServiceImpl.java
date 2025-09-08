@@ -33,8 +33,8 @@ public class MasterServiceImpl implements MasterService
 	}
 
 	@Override
-	public List<Object[]> getOfficersList() throws Exception {
-		return masterDao.getOfficersList();
+	public List<Object[]> getOfficersList(String labCode) throws Exception {
+		return masterDao.getOfficersList(labCode);
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class MasterServiceImpl implements MasterService
 	}
 
 	@Override
-	public List<Object[]> getAllOfficersList() throws Exception {
-		return masterDao.getAllOfficersList();
+	public List<Object[]> getAllOfficersList(String labCode) throws Exception {
+		return masterDao.getAllOfficersList(labCode);
 	}
 
 	@Override

@@ -25,8 +25,8 @@
   border-radius: 12px;
   padding: 15px;
   box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 300px;
+  max-width: 300px;
 }
 
 .status-card h6 {

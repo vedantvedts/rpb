@@ -686,6 +686,7 @@ public class FundApprovalController
 	public String AddFundRequest(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
+		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() + "Inside AddFundRequest.htm " + UserName);
 		Long empId = (Long) ses.getAttribute("EmployeeId");
 		try
@@ -693,7 +694,7 @@ public class FundApprovalController
 			req.setAttribute("rpbMemberType", fundApprovalService.getCommitteeMemberType(empId));
 			req.setAttribute("ActionType", "add");	
 			req.setAttribute("filesize", attach_file_size);
-			req.setAttribute("officerList", masterService.getOfficersList());
+			req.setAttribute("officerList", masterService.getOfficersList(labCode));
 		}
 		catch(Exception e)
 		{
