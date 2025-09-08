@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.vts.rpb.fundapproval.modal.CommitteeMembers;
 import com.vts.rpb.master.modal.AuditStamping;
 
 import jakarta.persistence.EntityManager;
@@ -170,6 +171,56 @@ public class MasterDaoImpl implements MasterDao {
 			logger.error(new Date() +"Inside MaterDaoImpl getAllEmployeeDetailsByDivisionId");
 			e.printStackTrace();
 			return null; 
+		}
+	}
+
+	@Override
+	public List<Object[]> getCommitteeMasterList() throws Exception {
+		logger.info(new Date() +"Inside MaterDaoImpl getCommitteeMasterList");
+		try {
+		Query query= manager.createNativeQuery("SELECT  cm.MemberType ,cm. EmpId  , cm.FromDate ,cm.ToDate, e.EmpName,  d.DesigCode,cm.CommitteeMemberId    FROM      ibas_committee_members cm INNER JOIN "+mdmdb+".employee e  ON e.EmpId=cm. EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId and cm.IsActive='1'");
+		List<Object[]> getCommitteeMasterList=(List<Object[]>)query.getResultList();
+		return getCommitteeMasterList;
+		
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside MaterDaoImpl getCommitteeMasterList");
+			e.printStackTrace();
+			return null; 
+		}
+	}
+
+	@Override
+	public long saveCommitteeMembers(CommitteeMembers cm) throws Exception {
+		logger.info(new Date() +"Inside MaterDaoImpl saveCommitteeMembers");
+		try {
+			manager.persist(cm);
+			manager.flush();
+			
+			return cm.getCommitteeMemberId();
+		}catch(Exception e) {
+			logger.error(new Date() +"Inside MaterDaoImpl saveCommitteeMembers");
+			e.printStackTrace();
+			return 0; 
+		}
+	}
+
+	@Override
+	public CommitteeMembers getCommitteeMemberDetails(long committeeMemberId) throws Exception {
+		
+		return  manager.find(CommitteeMembers.class, committeeMemberId);
+	}
+
+	@Override
+	public long EditCommitteMemberDetails(CommitteeMembers comMember) throws Exception {
+		try {
+			manager.merge(comMember);
+			manager.flush();
+			return comMember.getCommitteeMemberId();
+
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside DAO updateFundRequest() "+ e);
+			e.printStackTrace();
+			return 0;
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.vts.rpb.master.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vts.rpb.fundapproval.modal.CommitteeMembers;
 import com.vts.rpb.master.dao.MasterDao;
 import com.vts.rpb.master.modal.AuditStamping;
 
@@ -48,6 +50,42 @@ public class MasterServiceImpl implements MasterService
 	@Override
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
 		return masterDao.getAllEmployeeDetailsByDivisionId(divisionId);
+	}
+
+	@Override
+	public List<Object[]> CommitteeMasterList() throws Exception {
+		
+		return masterDao.getCommitteeMasterList();
+	}
+
+	@Override
+	public long saveCommitteeMembers(CommitteeMembers cm) throws Exception {
+		
+		return masterDao.saveCommitteeMembers(cm);
+	}
+
+	@Override
+	public long EditCommitteeMembers(CommitteeMembers cm) throws Exception {
+		try {
+			CommitteeMembers comMember= masterDao.getCommitteeMemberDetails(cm.getCommitteeMemberId());
+			
+			//
+			comMember.setMemberType(cm.getMemberType());
+			comMember.setEmpId(cm.getEmpId());
+			comMember.setFromDate(cm.getFromDate());
+			comMember.setToDate(cm.getToDate());
+			comMember.setModifiedBy(cm.getModifiedBy());
+			comMember.setModifiedDate(LocalDateTime.now());
+			
+			
+			return masterDao.EditCommitteMemberDetails(comMember);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+		
 	}
 
 }

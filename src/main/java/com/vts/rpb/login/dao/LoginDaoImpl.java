@@ -46,6 +46,7 @@ public class LoginDaoImpl implements LoginDao
 		logger.info(new Date() +"Inside DAOImpl getSubModuleList()");
 		try {
 			Query query=manager.createNativeQuery("SELECT a.formmoduleId,a.FormUrl,a.FormDispName,m.SerialNo,a.FormSerialNo FROM form_detail a INNER JOIN form_module m ON m.FormModuleId=a.FormModuleId INNER JOIN form_role_access r ON r.FormDetailId=a.FormDetailId AND r.LoginType=:loginType AND r.isactive='1' ORDER BY m.SerialNo,a.FormSerialNo");
+			
 			query.setParameter("loginType", loginType);
 			List<Object[]> list=(List<Object[]>)query.getResultList();
 			
