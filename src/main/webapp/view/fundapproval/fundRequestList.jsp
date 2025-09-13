@@ -514,7 +514,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 					            	 <tr>
 				                   			<td align="center"><%=sn++ %>.</td>
-				                   			<td align="center"><%if(data[7]!=null){  if((data[28].toString()).equalsIgnoreCase("B")){%> General <%}else{ %> <%if(data[29]!=null){%><%=data[29] %><%}else{ %> - <%} %> <%} %> <%}else{ %> - <%} %></td>
+				                   			<td align="center"><%if(data[7]!=null){  if(data[28]!=null && (data[28].toString()).equalsIgnoreCase("B")){%> General <%}else{ %> <%if(data[29]!=null){%><%=data[29] %><%}else{ %> - <%} %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td align="left" id="budgetHead"><%if(data[7]!=null){ %> <%=data[7] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer"><%if(data[20]!=null){ %> <%=data[20] %><%if(data[21]!=null){ %>, <%=data[21] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item"><%if(data[16]!=null){ %> <%=data[16] %><%}else{ %> - <%} %></td>
@@ -577,7 +577,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
 												
-													<img onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9] %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>')" data-tooltip="<%if(data[24]!=null && (data[24].toString()).equalsIgnoreCase("N")){ %> Forward <%}else if(data[24]!=null && ((data[24].toString()).equalsIgnoreCase("R") || (data[24].toString()).equalsIgnoreCase("E"))){ %> Re-Forward <%} %> Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1;%> 
 					                       		
@@ -748,11 +748,10 @@ input[name="ItemNomenclature"]::placeholder {
 								       <form action="FundApprovalForward.htm" id="FundForwardForm">
 								       
 										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-										<input type="hidden" id="FundRequestStatus" name="FundRequestStatus">
+										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
 										<input type="hidden" id="FlowMasterIdForward" name="FlowMasterIdForward">
-										<input type="hidden" id="EstimatedCostForward" name="EstimatedCostForward">
-										
+										<input type="hidden" id="FundFlowDetailsIdForward" name="FundFlowDetailsIdForward">
 										
 				                            <div id="your-parent-element-id" style="gap: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;" data-select2-id="your-parent-element-id">
 				                              <div class="card ApprovalDetails table-responsive" style="width: 100%;padding:10px;"> 
@@ -962,6 +961,10 @@ function openFundDetails()
 	var allEmployeeList = null;
 	var committeeMemberList=null;
 	var masterFlowDetails=null;
+	var chairmanId = null;
+	const reccAttributeMap = new Map();
+	const reccAttributeSet = new Set();
+	var dropdownSelector = '';
 	var csrfToken = $('meta[name="_csrf"]').attr('content');
 	var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 	
@@ -974,6 +977,7 @@ function openFundDetails()
 	    success: function(response) {
 	        var data = JSON.parse(response);
 	        committeeMemberList = data;
+	        chairmanId = (committeeMemberList.find(item => item[1] === "CC") || [])[2];
 	    }
 	});
 	
@@ -989,8 +993,10 @@ function openFundDetails()
 	    }
 	});
 	
-function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
-		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails, fundStatus)
+	
+function openForwardModal(
+		fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
+		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails, fundStatus, divisionHeadId)
 {
 	refreshModal('.ItemForwardModal');
 	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
@@ -1000,7 +1006,7 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$(".BudgetDetails").html("GEN (General)");
 	$(".BudgetHeadDetails").html(budgetHeadDescription);
 	$(".budgetItemDetails").html(HeadOfAccounts+' ('+ CodeHead +')');
-	$(".EstimatedCostDetails").html(estimatedCost);
+	$(".EstimatedCostDetails").html(rupeeFormat(estimatedCost));
 	$(".ItemNomenclatureDetails").html(Itemnomenclature);
 	$(".JustificationDetails").html(justification);
 	$(".MainEstimateType").html(estimatedType!=null && estimatedType=='R' ? 'RE' : 'FBE');
@@ -1009,26 +1015,27 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	
 	$("#initiating_officer_display").val(empName +', '+designation);
 	$("#FundRequestIdForward").val(fundRequestId);
-	$("#EstimatedCostForward").val(estimatedCost);
-	
 	
 	// show and Hide Approval flow action
 	if(fundStatus == 'N')    // N - New Request
 	{
 		$(".forwardAction").show();
-		$("#FundRequestStatus").val('F');
+		$("#FundRequestAction").val('F');
 	}
 	else if(fundStatus == 'E')    // E - Revoked
 	{ 
 		$(".forwardAction").show();
-		$("#FundRequestStatus").val(fundStatus);
+		$("#FundRequestAction").val('RF');    // RF - Re-Forward
 		$(".forwardActionName").html("Re-Forward");
+		$("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+
 	}
 	else if(fundStatus == 'R')    // R - Returned
 	{
 		$(".statusHistory").show();
-		$("#FundRequestStatus").val(fundStatus);
+		$("#FundRequestAction").val('RF');   // RF - Re-Forward
 		$(".forwardActionName").html("Re-Forward");
+		$("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
 		
 		// getting fund history
 		$.ajax({
@@ -1056,269 +1063,208 @@ function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,bu
 	$.ajax({
         url: 'GetMasterFlowDetails.htm',  
         method: 'GET', 
-        data: { estimatedCost : estimatedCost , fundRequestId : fundRequestId },  
-        success: function(response) {
-           var data = JSON.parse(response);
-           masterFlowDetails=data;
-           if(masterFlowDetails!=null)
-	       	{
-	       		$.each(masterFlowDetails, function(key, value) 
-				{
-			    	var idAttribute='';
-			    	if(value[2]!=null)
-			   		{
-			    		if(value[2]=='DIVISION HEAD APPROVED')
-		    			{
-			        		idAttribute='#divisionHeadDetails';
-		    			}
-			    		else if(value[2]=='RO1 RECOMMENDED')
-			       		{
-			        		$(".RPBMember1").show();
-			        		idAttribute='#RPBMemberDetails1';
-			       		}
-			    		else if(value[2]=='RO2 RECOMMENDED')
-			       		{
-			        		$(".RPBMember2").show();
-			        		idAttribute='#RPBMemberDetails2';
-			       		}
-			    		else if(value[2]=='RO3 RECOMMENDED')
-			       		{
-			        		$(".RPBMember3").show();
-			        		idAttribute='#RPBMemberDetails3';
-			       		}
-			    		else if(value[2]=='SE RECOMMENDED')
-			       		{
-			        		$(".SubjectExpert").show();
-			        		idAttribute='#SubjectExpertDetails';
-			       		}
-			    		else if(value[2]=='RPB MEMBER SECRETARY APPROVED')
-			       		{
-			        		$(".RPBMemberSecretary").show();
-			        		idAttribute='#RPBMemberSecretaryDetails';
-			       		}
-			    		else if(value[2]=='CHAIRMAN APPROVED')
-			       		{
-			        		$(".chairman").show();
-			        		idAttribute='#chairmanDetails';
-			       		}
-			   		}
-			    	
-			    	var flowEmpId=value[4];
-			    	var flowEmpRole=value[5];
-			    	
-			    	//Employee Role
-			    	if(value[2] == 'DIVISION HEAD APPROVED')
-			    	 {
-			    		$("#DivisionHeadRole").val('DH'); // division Head
-			    	 }
-			    	if(value[2] == 'RO1 RECOMMENDED')
-			    	 {
-			    		$("#RPBMemberRole1").val('CM');  // Committee Member
-			    	 }
-			    	else if(value[2] == 'RO2 RECOMMENDED')
-			    	 {
-			    		$("#RPBMemberRole2").val('CM');  // Committee Member
-			    	 }
-			    	else if(value[2] == 'RO3 RECOMMENDED')
-			    	 {
-			    		$("#RPBMemberRole3").val('CM');  // Committee Member
-			    	 }
-			    	else if(value[2] == 'SE RECOMMENDED')
-			    	 {
-			    		$("#SubjectExpertRole").val('SE');  // Subject Expert
-			    	 }
-			    	else if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
-			    	 {
-			    		$("#RPBMemberSecretaryRole").val('CS');  // Committee Secretary
-			    	 }
-			    	else if(value[2] == 'CHAIRMAN APPROVED')
-			    	 {
-			    		$("#chairmanRole").val('CC');  // Committee Chairman
-			    	 }
-			    	
-			    	// employee details
-			    	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
-			    	
-			    	// Division Head
-			    	 if(value[2] == 'DIVISION HEAD APPROVED')
-			    	 {
-			    		 $.each(allEmployeeList, function(key, rowValue) 
-						 {
-			    			 if(flowEmpId!=null && flowEmpId == rowValue[0])
-	    					 {
-		    					 $(idAttribute).append('<option value="'+rowValue[0]+'" selected="selected">'+ rowValue[2] + ', '+ rowValue[3] +'</option>');
-	    					 }
-		    				 else
-	    					 {
-	    					 	$(idAttribute).append('<option value="'+rowValue[0]+'">'+ rowValue[2] + ', '+ rowValue[3] +'</option>');
-	    					 }
-						 });
-			    	 }
-			    	 
-			    	// RPB Member
-			    	 if(value[2] == 'RO1 RECOMMENDED' || value[2] == 'RO2 RECOMMENDED' || value[2] == 'RO3 RECOMMENDED' || value[2] == 'SE RECOMMENDED')
-			    	 {
-			    		 $.each(committeeMemberList, function(key, rowValue) 
-						 {
-			    			 if(rowValue[1]!=null && (rowValue[1] == 'CM' || rowValue[1] == 'SE'))   // CM-Committee Member
-			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
-		    					 {
-			    					 $(idAttribute).append('<option value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			    				 else
-		    					 {
-		    					 	$(idAttribute).append('<option value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			   				 }
-						 });
-			    	 }
-			    	 
-			    	// RPB Secratery 
-			    	 if(value[2] == 'RPB MEMBER SECRETARY APPROVED')
-			    	 {
-			    		 $.each(committeeMemberList, function(key, rowValue) 
-						 {
-			    			 if(rowValue[1]!=null && rowValue[1] == 'CS')   // CM-Committee Secretary
-			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
-		    					 {
-			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			    				 else
-		    					 {
-			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			   				 }
-						 });
-			    	 }
-			    	 
-			    	// RPB Chairman
-			    	 if(value[2] == 'CHAIRMAN APPROVED')
-			    	 {
-			    		 $.each(committeeMemberList, function(key, rowValue) 
-						 {
-			    			 if(rowValue[1]!=null && (rowValue[1] == 'CC' || rowValue[1] == 'SC'))   // CM-Committee Chairman  SC-Committee Standby Chairman
-			   				 {
-			    				 if(flowEmpId!=null && flowEmpId == rowValue[2])
-		    					 {
-			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'" selected="selected">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			    				 else
-		    					 {
-			    					 $(idAttribute).append('<option  value="'+rowValue[2]+'">'+ rowValue[3] + ', '+ rowValue[4] +'</option>');
-		    					 }
-			   				 }
-						 });
-			    	 }
-			    	
-			    	 $("#FlowMasterIdForward").val(value[0]);
-			          	
-				});
-	       	}
-	       	else
-	       		{
-	       			$("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
-	       		}
-        }
+        data: { fundRequestId : fundRequestId },  
+        success: function(responseJson) {
+        	   var data = JSON.parse(responseJson);
+        	   masterFlowDetails = data;
+        	   
+        	   if (masterFlowDetails && masterFlowDetails.length > 0) {
+        	       $("#fundApprovalForardTable").empty(); // clear old rows
+
+        	       let cmCount = 0;
+
+        	       $.each(masterFlowDetails, function(key, value) {
+        	           let memberType = value[1]; // DH, CM, CS, CC, SE
+        	           let empId = value[3];
+
+        	           if (memberType === "CM") {
+        	               cmCount++;
+        	               appendFlowRow(memberType, cmCount);
+        	           } else {
+        	               appendFlowRow(memberType, "");
+        	           }
+
+        	           // now fill select after append
+        	           let inputId;
+        	           if (memberType === "CM") inputId = "#RPBMemberDetails" + cmCount;
+        	           else if (memberType === "DH") inputId = "#divisionHeadDetails";
+        	           else if (memberType === "SE") inputId = "#SubjectExpertDetails";
+        	           else if (memberType === "CS") inputId = "#RPBMemberSecretaryDetails";
+        	           else if (memberType === "CC") inputId = "#chairmanDetails";
+
+        	           if (!inputId) return;
+
+        	           let sourceList = (memberType === "DH") ? allEmployeeList : committeeMemberList;
+
+        	           $.each(sourceList, function(key, value) {
+        	        	   
+        	        	   var listMemberType = value[1];
+        	        	   var empId = (memberType === "DH") ? value[0] : value[2];
+        	        	   var empName = (memberType === "DH") ? value[2] : value[3];
+        	        	   var empDesig = (memberType === "DH") ? value[3] : value[4];
+        	        	   
+        	        	   if((memberType === "DH"))
+       	        		   {
+        	        		   $(inputId).append("<option value="+ empId +" "+ (empId == divisionHeadId ? 'selected' : '') +" >"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
+       	        		   }
+        	        	   else if((memberType === "CM" || memberType === "SE") && listMemberType == 'CM')
+       	        		   {
+        	        		   $(inputId).append("<option value="+ empId +">"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
+       	        		   }
+        	        	   else if((memberType === "CC") && (listMemberType == 'CC' || listMemberType == 'SC'))
+       	        		   {
+        	        		   $(inputId).append("<option value="+ empId +" "+ (chairmanId == empId ? 'selected' : '') +" >"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
+       	        		   }
+        	        	   else if((memberType === "CS" && listMemberType == 'CS'))
+       	        		   {
+        	        		   $(inputId).append("<option value="+ empId +" selected>"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
+       	        		   }
+        					
+        				});
+        	           
+        	           if(inputId)
+       	        	   {
+        	        	   reccAttributeMap.set(inputId, $(inputId).val());
+        	        	   reccAttributeSet.add(inputId);
+       	        	   }
+        	           
+        	           
+        	       });
+        	       
+        	       console.log(Array.from(reccAttributeMap));
+        	       console.log(Array.from(reccAttributeSet));
+        	       dropdownSelector = [...reccAttributeSet].join(", ");
+
+        	   } else {
+        	       $("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
+        	   }
+        	}
+	    });
+	}
+	
+	
+function appendFlowRow(role, index) {
+    let config = roleConfig[role];
+    if (!config) return;
+
+    // Handle multiple members (like CM1, CM2, CM3)
+    let inputId = config.multiple ? config.inputIdPrefix + index : config.inputId;
+    let inputName = config.multiple ? config.inputNamePrefix : config.inputId;
+
+    let $tr = $("<tr>").addClass(role + index);
+
+    let $tdLabel = $("<td>").css({ padding: "8px", "text-align": "right", "font-weight": "600", "white-space": "nowrap", display: "flex", "align-items": "center" })
+        					.html(config.label + (config.required ? '&nbsp;<span class="mandatory" style="color:red;font-weight:normal;"> *</span>' : ''));
+
+    let $tdInput = $("<td>").css({ padding: "8px", width: "63%" });
+
+     let $select = $("<select>").attr({ id: inputId, name: inputName })
+						        .addClass("form-control select2")
+						        .css({ width: "100%", "font-size": "10px", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" })
+						        .append('<option value="">Select Employee</option>');
+
+    $tdInput.append($select);
+    $tr.append($tdLabel).append($tdInput);
+
+    $("#fundApprovalForardTable").append($tr);
+    
+    $(".select2").select2({
+        width: "100%"
     });
 }
 
-const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails";
+
+const roleConfig = {
+		  DH: { label: "Division Head", required: true, inputId: "divisionHeadDetails" },
+		  CM: { label: "RPB Member", required: true, multiple: true, inputIdPrefix: "RPBMemberDetails", inputNamePrefix: "RPBMemberDetails" },
+		  SE: { label: "Subject Expert", required: true, inputId: "SubjectExpertDetails" },
+		  CS: { label: "RPB Member Secretary", required: true, inputId: "RPBMemberSecretaryDetails" },
+		  CC: { label: "RPB Chairman / Stand by Chairman", required: true, inputId: "chairmanDetails" }
+		};
+
 
 $(document).on("change", dropdownSelector, function () {
-    
-	const selectedValues = [];
+    const selectedValues = [];
+
     $(dropdownSelector).each(function () {
         const val = $(this).val();
         if (val) {
             selectedValues.push(val);
+            reccAttributeMap.set("#"+$(this).attr("id"), val);
         }
     });
+
+    console.log("Map:", Array.from(reccAttributeMap));
+
+ 
+});
+
+/* var dropdownSelector = [...reccAttributeSet].join(", ");
+
+$(document).on("change", dropdownSelector, function () {
+    const selectedValues = [];
+
+    dropdownSelector = [...reccAttributeSet].join(", ");
+    $(dropdownSelector).each(function () {
+        const val = $(this).val();
+        if (val) {
+            selectedValues.push(val);
+            reccAttributeMap.set("#"+$(this).attr("id"), val);
+        }
+    });
+
+    console.log("Map:", Array.from(reccAttributeMap));
 
     $(dropdownSelector).each(function () {
         const currentDropdown = $(this);
         const currentVal = currentDropdown.val();
 
-        currentDropdown.find('option').each(function () {
-            const option = $(this);
-            const optionVal = option.val();
+        currentDropdown.find("option").each(function () {
+            const optionVal = $(this).val();
 
             if (optionVal === currentVal || optionVal === "") {
-                option.prop("disabled", false).show();
+                $(this).prop("disabled", false);
             } else if (selectedValues.includes(optionVal)) {
-                option.prop("disabled", true).hide();  // hide selected values in other dropdowns
+                $(this).prop("disabled", true);
             } else {
-                option.prop("disabled", false).show();
+                $(this).prop("disabled", false);
             }
         });
     });
-});
+}); */
 
+const labelMap = {
+  "#divisionHeadDetails": "Division Head",
+  "#SubjectExpertDetails": "Subject Expert",
+  "#RPBMemberSecretaryDetails": "RPB Member Secretary",
+  "#chairmanDetails": "RPB Chairman / Standby Chairman"
+};
 
 function ApprovalFlowForward() {
     let isValid = true;
 
-    if (masterFlowDetails != null) {
-        $.each(masterFlowDetails, function (key, value) {
-            var idAttribute = '';
-            var message = '';
+    for (let [selector, value] of reccAttributeMap.entries()) {
+        if (!value || value.trim() === "") {
+           
+            let message = labelMap[selector] 
+                          || (selector.startsWith("#RPBMemberDetails") ? "RPB Member" : "Unknown");
 
-            if (value[2] != null) {
-                switch (value[2]) {
-                    case 'DIVISION HEAD APPROVED':
-                        message="Division Head";
-                        break;
-                    case 'RO1 RECOMMENDED':
-                        idAttribute = '#RPBMemberDetails1';
-                        message="RPB Member";
-                        break;
-                    case 'RO2 RECOMMENDED':
-                        idAttribute = '#RPBMemberDetails2';
-                        message="RPB Member";
-                        break;
-                    case 'RO3 RECOMMENDED':
-                        idAttribute = '#RPBMemberDetails3';
-                        message="RPB Member";
-                        break;
-                    case 'SE RECOMMENDED':
-                        idAttribute = '#SubjectExpertDetails';
-                        message="Subject Expert";
-                        break;
-                    case 'RPB MEMBER SECRETARY APPROVED':
-                        idAttribute = '#RPBMemberSecretaryDetails';
-                        message="RPB Member Secretary";
-                        break;
-                    case 'CHAIRMAN APPROVED':
-                        idAttribute = '#chairmanDetails';
-                        message="RPB Chairman / Standby Chairman";
-                        break;
-                }
-                
-                // Validate dropdown
-                if ($(idAttribute).length && $(idAttribute).val().trim() === '') {
-                	showAlert('Please select an employee for ' + message + '..!');
-                    $(idAttribute).focus();
-                    isValid = false;
-                    return false; 
-                }
-            }
-        });
+            showAlert("Please select an employee for " + message + " ..!");
+            $(selector).focus();
+            isValid = false;
+            break;
+        }
     }
 
     if (isValid) {
-    	
-    	var form = $("#FundForwardForm");
-
-		if (form) {
-		    showConfirm('Are You Sure To Forward The Fund Request..?',
-		        function (confirmResponse) {
-		            if (confirmResponse) {
-		                form.submit();
-		            }
-		        }
-		    );
-		}
+        let form = $("#FundForwardForm");
+        if (form.length) {
+            showConfirm("Are You Sure To Forward The Fund Request..?", function (confirmResponse) {
+                if (confirmResponse) {
+                    form.submit();
+                }
+            });
+        }
     }
 }
 

@@ -49,6 +49,4 @@ public class AuditStamping implements Serializable{
 	@Column(name = "LogOutDateTime")
     private LocalDateTime logoutDateTime;
 
-
-
 }

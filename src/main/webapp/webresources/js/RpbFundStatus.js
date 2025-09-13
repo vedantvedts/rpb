@@ -45,48 +45,39 @@ function previewInformation(fundApprovalId) {
 			if(row[38] != 'N' && row[38] != 'E')
 			{
 				html += createCard("Division Head", row[51], row[48] === "Y" ? "Recommended" : "Pending", row[48] === "Y", "Recommendation Pending", row[48] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-			
-			// RC1 
-            if(parseInt(row[20]!= null ? row[20] : 0) > 0 && row[22]!=null && row[22] == 'CM')
-            {
-				var rc1Status=row[41];
-				html += createCard("RPB Member", row[21], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-            
-			// RC2 
-            if(parseInt(row[23]!= null ? row[23] : 0) > 0 && row[25]!=null && row[25] == 'CM')
-            {
-				var rc1Status=row[42];
-				html += createCard("RPB Member", row[24], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-            
-			// RC3 
-            if(parseInt(row[26]!= null ? row[26] : 0) > 0 && row[28]!=null && row[28] == 'CM')
-            {
-				var rc1Status=row[43];
-				html += createCard("RPB Member", row[27], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-			
-			// RC4
-            if(parseInt(row[29]!= null ? row[29] : 0) > 0 && row[31]!=null && row[31] == 'CM')
-            {
-				var rc1Status=row[44];
-				html += createCard("RPB Member", row[30], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-            
-			// RC5
-            if(parseInt(row[32]!= null ? row[32] : 0) > 0 && row[34]!=null && row[34] == 'CM')
-            {
-				var rc1Status=row[45];
-				html += createCard("RPB Member", row[33], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-            
-            if(row[38] != 'N' && row[38] != 'E')
-			{
-	            html += createCard("RPB Member Secretary", row[33], row[45] === "Y" ? "Reviewed" : "Pending", row[45] === "Y", "Review Pending", row[45] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+				// RC1 
+	            if(parseInt(row[20]!= null ? row[20] : 0) > 0 && row[22]!=null && row[22] == 'CM')
+	            {
+					var rc1Status=row[41];
+					html += createCard("RPB Member", row[21], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+				}
+	            
+				// RC2 
+	            if(parseInt(row[23]!= null ? row[23] : 0) > 0 && row[25]!=null && row[25] == 'CM')
+	            {
+					var rc1Status=row[42];
+					html += createCard("RPB Member", row[24], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+				}
+	            
+				// RC3 
+	            if(parseInt(row[26]!= null ? row[26] : 0) > 0 && row[28]!=null && row[28] == 'CM')
+	            {
+					var rc1Status=row[43];
+					html += createCard("RPB Member", row[27], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+				}
+				
+				// RC4
+	            if(parseInt(row[29]!= null ? row[29] : 0) > 0 && row[31]!=null && row[31] == 'SE')
+	            {
+					var rc1Status=row[44];
+					html += createCard("Subject Expert", row[30], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
+				}
+	            
+				html += createCard("RPB Member Secretary", row[33], row[45] === "Y" ? "Reviewed" : "Pending", row[45] === "Y", "Review Pending", row[45] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
 	            html += createCard("RPB Chairman", row[36], row[46] === "Y" ? "Approved" : "Pending", row[46] === "Y", "Approval Pending", row[46] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-	        }
+			}
+			
+			
 	        
 	        if(row[38] == 'N' || row[38] == 'E')
 	        {
@@ -135,7 +126,7 @@ function generateTableHTML(data) {
         timeline += `<td>${row[1] || '-'}, ${row[2] || '-'}</td>`;
         timeline += `<td>${row[5] || '-'}</td>`;
         timeline += `<td>${row[4] || '-'}</td>`;
-        timeline += `<td class="status-text">${toTitleCase(row[3]) || '-'}</td>`;
+        timeline += `<td class="status-text">${row[3] || '-'}</td>`;
         timeline += '</tr>';
     });
 
@@ -268,32 +259,40 @@ function generateTableHTML(data) {
  }
  
  
- function getAttachementDetailsInline(fundRequestId)
- {
-	 $.ajax({
-	    url: 'GetFundRequestAttachmentAjax.htm',  
-	    method: 'GET', 
-	    data: { fundApprovalId: fundRequestId },  
-	    success: function(data) {
-	        var contentDiv = $(".attachementLink").empty();
-	        if (data.length === 0) {
-	            contentDiv.append("<span style='text-align: center; color: red; font-weight:700'>No attachment found</span>");
-	        } else {
-	            var row = data.map(function(attach) {
-	                return '<a href="PreviewAttachment.htm?attachid='+ attach.fundApprovalAttachId +'" target="_blank" style="color: blue; text-decoration: underline; font-weight: 600; font-size: 14px" title="Click to preview/download">' 
-	                        + attach.fileName + 
-	                        '</a>';
-	            }).join(", "); 
+function getAttachementDetailsInline(fundRequestId) {
+    $.ajax({
+        url: 'GetFundRequestAttachmentAjax.htm',  
+        method: 'GET', 
+        data: { fundApprovalId: fundRequestId },  
+        success: function(data) {
+            var contentDiv = $(".attachementLink").empty();
+            if (data.length === 0) {
+                contentDiv.append("<span style='text-align: center; color: red; font-weight:700'>No attachment found</span>");
+            } else {
+                var list = $('<ul class="list-group d-flex flex-row" srtyle="list-style-type: disc !important; display: flex !important; gap: 20px !important;"></ul>');
 
-	            contentDiv.append(row);
-	        }
-	    }
-	});
+                data.forEach(function(attach) {
+                    var icon = '<i class="fa fa-paperclip text-primary"></i>'; // default icon
+                    // you can customize icon based on filename if you want:
+                    if (attach.fileName.toLowerCase().includes("cost")) {
+                        icon = '<i class="fa fa-calculator text-success"></i>';
+                    } else if (attach.fileName.toLowerCase().includes("bq")) {
+                        icon = '<i class="fa fa-list-alt text-warning"></i>';
+                    } else if (attach.fileName.toLowerCase().includes("justification")) {
+                        icon = '<i class="fa fa-file-text text-info"></i>';
+                    }
 
- }
- 
- 
- function toTitleCase(str) {
-  return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                    var item = $('<li class="list-group-item d-flex align-items-center"></li>');
+                    item.append(icon);
+                    item.append('&nbsp;<a href="PreviewAttachment.htm?attachid='+ attach.fundApprovalAttachId +'" target="_blank" style="font-weight:600; font-size:14px; text-decoration:none; color:#034189;" title="Click to preview/download">'+ attach.fileName +'</a>');
+                    
+                    list.append(item);
+                });
+
+                contentDiv.append(list);
+            }
+        }
+    });
 }
+
  

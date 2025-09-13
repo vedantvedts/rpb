@@ -490,7 +490,7 @@ $(window).resize(resizeCards);
 		
       <form action="FundRequestCarryForward.htm" id="fundForwardListForm" autocomplete="off">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	         <input type="hidden" name="Action" value="<%=action %>">
+	         
 				<div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 			           		<div class="form-inline" style="padding: 10px;">
 			           		
@@ -526,7 +526,7 @@ $(window).resize(resizeCards);
 								
 		<form action="CarryForwardDetails.htm" id="CFForm" autocomplete="off">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	        
+	        <input type="hidden" name="Action" value="<%=action %>">
 	         <div class="table-responsive" style="margin-top:0px !important;">
 	         
 	         <%if(action!=null){ %>

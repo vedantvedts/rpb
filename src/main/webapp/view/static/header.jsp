@@ -851,6 +851,54 @@ function showFailureFlyMessage(message) {
 
 </script>
 
+<script type="text/javascript">
+
+function rupeeFormat(amount) {
+    let result = "", minus = "", decimal = "";
+
+    if (amount !== null && amount !== "-") {
+        if (amount.indexOf('.') !== -1) { // Remove Decimal Value
+            let amountarray = amount.split(".");
+            if (amountarray !== null && amountarray.length > 0) {
+                let number = amountarray[0];
+                let paisa = amountarray[1];
+                decimal = "." + paisa;
+                amount = number;
+            }
+        }
+
+        amount = amount.replace(/,/g, ""); // if value has Comma(,) this function will remove
+        if (amount !== null && Number(amount) < 0) {
+            amount = amount.split("-")[1];
+            minus = "-";
+        }
+
+        let len = amount.length;
+
+        if (len === 1 || len === 2 || len === 3) {
+            result = amount;
+        } else {
+            let a = 0;
+            for (let i = len - 1; i >= 0; i--) {
+                a++;
+                if (a === 1 || a === 2 || a === 3 || a % 2 === 1) {
+                    result = result + amount.charAt(i);
+                } else if (a % 2 === 0) {
+                    result = result + "," + amount.charAt(i);
+                }
+            }
+            let reverse = result.split("").reverse().join("");
+            result = reverse; // reversing the Result
+        }
+    } else {
+        result = "0";
+    }
+
+    return minus + result + decimal;
+}
+
+</script>
+
 <body>
 
 

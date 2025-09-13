@@ -102,6 +102,21 @@
     max-width: 90% !important;
 }
 
+.list-group-item:first-child {
+    border-top-left-radius: .25rem !important;
+    border-bottom-left-radius: .25rem !important;
+    border-top-right-radius: 0rem !important;
+    border-bottom-right-radius: 0rem !important;
+}
+
+.list-group-item:last-child {
+    border-top-right-radius: .25rem !important;
+    border-bottom-right-radius: .25rem !important;
+    border-top-left-radius: 0rem !important;
+    border-bottom-left-radius: 0rem !important;
+}
+
+
 </style>
 
 </head>

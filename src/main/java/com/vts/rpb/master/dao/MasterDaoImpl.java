@@ -112,7 +112,7 @@ public class MasterDaoImpl implements MasterDao {
 		logger.info(new Date() +"Inside DaoImpl getDivisionList");
 		try
 		{
-			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype OR :committeeMember IN ('CS', 'CC')  THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
+			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype OR :committeeMember IN ('CS', 'CC')  THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1' ORDER BY d.DivisionId DESC");
 			query.setParameter("labCode", labCode);
 			query.setParameter("empId", empId);
 			query.setParameter("logintype", logintype);

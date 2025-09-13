@@ -22,7 +22,7 @@ public interface FundApprovalService
 	
 	public long RevisionFundRequestSubmit(FundApproval approved, FundApprovalAttachDto attachDto) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String estimatedCost,String fundRequestId) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String fundRequestId) throws Exception;
 	
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	
@@ -32,7 +32,7 @@ public interface FundApprovalService
 	
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception;
 
-	public long fundRequestForward(FundApproval fundApprovalData,String flowMasterId,String estimatedCost,long empId, String fundStatus) throws Exception;
+	public long fundRequestForward(FundApprovalDto fundDto, String flowMasterId, long empId, String fundAction,String fundFlowDetailsId) throws Exception;
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 
@@ -76,4 +76,6 @@ public interface FundApprovalService
 	public long actionForRevokeRequest(FundApprovalDto fundDto, long empId) throws Exception;
 
 	public long deleteFundRequest(FundApprovalDto fundDto) throws Exception;
+
+	public long revokeRecommendationDetails(FundApprovalDto fundDto, long empId) throws Exception;
 }

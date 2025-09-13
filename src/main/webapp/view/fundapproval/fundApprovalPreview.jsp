@@ -325,10 +325,22 @@ tr:last-of-type th:last-of-type {
         border: 1px solid white;
     }
     
+    .remarksDetails
+    {
+    	color: #b502a5;
+    	font-size: 12px;
+    	font-weight: 600;
+    	font-family: "Times New Roman", Times, serif;
+    }
+    
 </style>
 </head>
 <body>
-<%Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
+<%
+Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
+List<Object[]> masterFlowDetails=(List<Object[]>)request.getAttribute("MasterFlowDetails");
+List<Object[]> committeeMasterList=(List<Object[]>)request.getAttribute("AllCommitteeMasterDetails");
+committeeMasterList.forEach(row-> System.out.println(Arrays.toString(row)));
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
@@ -349,9 +361,12 @@ String rc5Details=null;
 String rc6Details=null;
 String approvingOfficerDetails=null;
 String approvingOfficerRole=null;
+String memberStatus=null,flowDetailsId = null;
 String rcStatusCodeNext=null,budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
 String rc1Status=null,rc2Status=null,rc3Status=null,rc4Status=null,rc5Status=null,apprOffStatus=null,rc6Status=null;
+String rc1Remarks=null,rc2Remarks=null,rc3Remarks=null,rc4Remarks=null,rc5Remarks=null,apprOffRemarks=null,rc6Remarks=null;
 long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0,rc6EmpId=0;
+
 if(fundDetails!=null && fundDetails.length > 0)
 {
 	fundApprovalId=fundDetails[0]!=null  ? fundDetails[0].toString() : "0";
@@ -398,8 +413,91 @@ if(fundDetails!=null && fundDetails.length > 0)
 	rc4Status=fundDetails[44]!=null  ? fundDetails[44].toString() : null;
 	rc5Status=fundDetails[45]!=null  ? fundDetails[45].toString() : null;
 	rc6Status=fundDetails[48]!=null  ? fundDetails[48].toString() : null;
-	apprOffStatus=fundDetails[46]!=null  ? fundDetails[46].toString() : null;
+	apprOffStatus=fundDetails[46]!=null ? fundDetails[46].toString() : null;
+	
+	if(masterFlowDetails!=null && masterFlowDetails.size() > 0)
+	{
+		for(Object[] row : masterFlowDetails)
+		{
+			if(row!=null && row.length > 0)
+			{
+				if(row[3]!=null && (row[3].toString()).equalsIgnoreCase("A"))
+				{
+					if(row[2]!=null)
+					{
+						if((row[2].toString()).equalsIgnoreCase("RC1") && row[4] != null && rc1EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc1Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc1EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("RC2") && row[4] != null && rc2EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc2Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc2EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("RC3") && row[4] != null && rc3EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc3Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc3EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("RC4") && row[4] != null && rc4EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc4Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc4EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("RC5") && row[4] != null && rc5EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc5Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc5EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("RC6") && row[4] != null && rc6EmpId == Long.parseLong(row[4].toString()))
+						{
+							rc6Remarks = row[7] != null ? row[7].toString() : null;
+							if(rc6EmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+						else if((row[2].toString()).equalsIgnoreCase("APR") && row[4] != null && appOffEmpId == Long.parseLong(row[4].toString()))
+						{
+							apprOffRemarks = row[7] != null ? row[7].toString() : null;
+							if(appOffEmpId == empId)
+							{
+								memberStatus = row[2].toString();
+								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
+							}
+						}
+					}
+				}
+			}
+		};
+	}
+	
+	
+	
 } %>
+
 
 	<% String budgetYear = null,budgetYearType = null;
 	if(dto.getEstimatedTypeBackBtn()!=null)
@@ -439,26 +537,9 @@ if(fundDetails!=null && fundDetails.length > 0)
            </div>
          </div>
        </div> 
-       
-		 
-		
 
-   <% 
-     String success=(String)request.getParameter("Status");
-     String fail=(String)request.getParameter("Failure");	
-     %>   
-	           <% if(success!=null){%>
-	                <div align="center">
-		            <div  class="text-center alert alert-success col-md-8 col-md-offset-2" style="margin-top: 1rem" role="alert">
-        	        <%=success %>
-                    </div>
-   	                </div>
-	         <%}else if(fail!=null){%>
-	                <div align="center">
-	                <div class="text-center alert alert-danger col-md-8 col-md-offset-2" style="margin-top: 1rem;" role="alert" >
-					<%=fail %>
-			        </div>
-			</div><%} %>
+  <%String success=(String)request.getParameter("resultSuccess"); 
+   String failure=(String)request.getParameter("resultFailure");%>  
 			
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
@@ -516,7 +597,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                 <div class="row">
                     <!-- Left Division -->
                     <div class="col-md-6">
-                        <table class="table recommendation-table" border="1" style="width:100%; border-collapse: collapse;">
+                        <table class="table recommendation-table" border="1" style="width:100%; border-collapse: collapse;margin-bottom:0px !important;">
 					    <% if (initiatingOfficer != null) { %>
 					        <tr>
 					            <td style="width:40%;"><b>Initiated By</b></td>
@@ -528,7 +609,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 					
 					    <% if(rc6EmpId > 0){ %>
 					        <tr <%if(empId == rc6EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>Division Head</b></td>
+					            <td style="width:40%;"><b>Division Head</b>
+					            <% if(rc6Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -540,13 +623,18 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                
+					                <% if(rc6Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc6Remarks %></span> <%} %>
+					                
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(rc1EmpId > 0){ %>
 					        <tr <%if(empId == rc1EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:40%;"><b>RPB Member</b>
+					            <% if(rc1Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -558,13 +646,17 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                
+					                <% if(rc1Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc1Remarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(rc2EmpId > 0){ %>
 					        <tr <%if(empId == rc2EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:40%;"><b>RPB Member</b>
+					            <% if(rc2Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -576,13 +668,17 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                
+					                <% if(rc2Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc2Remarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(rc3EmpId > 0){ %>
 					        <tr <%if(empId == rc3EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b></td>
+					            <td style="width:40%;"><b>RPB Member</b>
+					            <% if(rc3Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -594,13 +690,16 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                <% if(rc3Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc3Remarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(rc4EmpId > 0){ %>
 					        <tr <%if(empId == rc4EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>Subject Expert</b></td>
+					            <td style="width:40%;"><b>Subject Expert</b>
+					            <% if(rc4Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -612,13 +711,16 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                <% if(rc4Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc4Remarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(rc5EmpId > 0){ %>
 					        <tr <%if(empId == rc5EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member Secretary</b></td>
+					            <td style="width:40%;"><b>RPB Member Secretary</b>
+					            <% if(rc5Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -630,13 +732,16 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                <% if(rc5Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc5Remarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
 					
 					    <% if(appOffEmpId > 0){ %>
 					        <tr <%if(empId == appOffEmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Chairman</b></td>
+					            <td style="width:40%;"><b>RPB Chairman</b>
+					            <% if(apprOffRemarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					            </td>
 					            <td style="width:60%;" class="recommendation-value">
 					                <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
@@ -648,6 +753,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
+					                <% if(apprOffRemarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=apprOffRemarks %></span> <%} %>
 					            </td>
 					        </tr>
 					    <%} %>
@@ -696,8 +802,12 @@ if(fundDetails!=null && fundDetails.length > 0)
                     
                         <div class="inner-box">
                             <div align="center">
-                                <form id="fbeForm" action="FundApprovalSubmit.htm">
+                                <form id="fbeForm" action="CommitteeMemberAction.htm">
 								    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+								    
+								    <input type="hidden" name="memberStatus" value="<%=memberStatus %>">
+								    <input type="hidden" name="flowDetailsId" value="<%=flowDetailsId %>">
+								    
 								    <div class="row" style="margin-bottom: 35px; margin-top: 20px;">
 								        <b>Remarks :</b><br>
 								        <textarea rows="3" cols="65" maxlength="1000" class="form-control" name="remarks" id="remarksarea"></textarea>
@@ -726,13 +836,173 @@ if(fundDetails!=null && fundDetails.length > 0)
                         
                        <% }else { %>
                        
-                       <div style="text-align: center; height: 100%; display: grid;place-items: center; ">
-                       <span style="color:#783d00; border-radius:10px; padding:10px 9px; background:#ffe8cc; font-size:13px; font-weight:800;"> Recommendation Pending </span>
+                       <div class="RCPendingDiv" style="text-align: center; height: 100%; display: grid;place-items: center;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;">
+                       <span style="color:#4a036c; border-radius:10px; padding:10px 9px; background:#ffe8cc; font-size:13px; font-weight:800;"> Recommendation Pending </span>
+                        <% // Edit the Recommending Officer %>
+                        <div >
+	                         <span style="font-weight:600;color:#000048;">Click Edit Button To Change Recommending Officer(s)</span><br>
+	                         <button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding:6px;border: 1px solid #895912;background: #ffe0c4;margin: 10px;" onclick="EditRecommendingDetailsAction('O')"> Edit &nbsp;&#10097;&#10097; </button>
+                        </div>
                        </div>
+                       
+                        <div class="EditRCDetails" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
+                        	<div class="card ApprovalDetails table-responsive" style="width: 100%;height:100%;"> 
+                              	<table style="width: 100%;" id="fundApprovalForardTable">
+                              		
+                              		<%if(rc6Status!=null){ %>
+                              		 <%if(!rc6Status.equalsIgnoreCase("NA")){ %>
+	                              		<tr class="DivisionHead">
+	                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head</td>
+	                              			<td style="padding: 8px; width: 55%;">
+	                              			<% if(rc6Status.equalsIgnoreCase("N")){ %>
+	                              			<select id="divisionHeadDetails" name="divisionHeadDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+	                              			<option value="">Select Employee</option>
+	                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+	                              				<%for(Object[] masterList: committeeMasterList){ %>
+	                              					<%if(masterList[3]!=null){ %>
+	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc6EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+	                              					<%} %>
+	                              				<%} %>
+	                              			<%} %>
+	                              			</select>
+	                              			<%}else{ %>
+	                              			
+	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc6Details != null ? rc6Details : "-" %>">
+	                              			
+	                              			<%} %>
+	                              			</td>
+	                              		</tr>
+                              		 <%} %>
+                              		<%} %>
+                              		
+                              		<%if(rc1Status!=null){ %>
+                              		<%if(!rc1Status.equalsIgnoreCase("NA")){ %>
+	                              		<tr class="RPBMember1">
+	                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
+	                              			<td style="padding: 8px; width: 55%;">
+	                              			<% if(rc1Status.equalsIgnoreCase("N")){ %>
+	                              			<select id="RPBMemberDetails1" name="RPBMemberDetails1" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+	                              			<option value="">Select Employee</option>
+	                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+		                              				<%for(Object[] masterList: committeeMasterList){ %>
+		                              					<%if(masterList[3]!=null){ %>
+		                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc1EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+		                              					<%} %>
+		                              				<%} %>
+		                              			<%} %>
+	                              			</select>
+	                              			<%}else{ %>
+	                              			
+	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc1Details != null ? rc1Details : "-" %>">
+	                              			
+	                              			<%} %>
+	                              			</td>
+	                              		</tr>
+	                              	   <%} %>
+                              		  <%} %>
+                              		
+                              		<%if(rc2Status!=null){ %>
+                              		<%if(!rc2Status.equalsIgnoreCase("NA")){ %>
+                              		<tr class="RPBMember2">
+                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
+                              			<td style="padding: 8px; width: 55%;">
+                              			<% if(rc2Status.equalsIgnoreCase("N")){ %>
+                              			<select id="RPBMemberDetails2" name="RPBMemberDetails2" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                              			<option value="">Select Employee</option>
+                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+	                              				<%for(Object[] masterList: committeeMasterList){ %>
+	                              					<%if(masterList[3]!=null){ %>
+	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc2EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+	                              					<%} %>
+	                              				<%} %>
+	                              			<%} %>
+                              			</select>
+                              			<%}else{ %>
+	                              			
+	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc2Details != null ? rc2Details : "-" %>">
+	                              			
+	                              			<%} %>
+                              			</td>
+                              		  </tr>
+	                              	 <%} %>
+	                              	<%} %>
+                              		
+                              		<%if(rc3Status!=null){ %>
+                              		<%if(!rc3Status.equalsIgnoreCase("NA")){ %>
+                              		<tr class="RPBMember3">
+                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
+                              			<td style="padding: 8px; width: 55%;">
+                              			<% if(rc3Status.equalsIgnoreCase("N")){ %>
+                              			<select id="RPBMemberDetails3" name="RPBMemberDetails3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                              			<option value="">Select Employee</option>
+                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+	                              				<%for(Object[] masterList: committeeMasterList){ %>
+	                              					<%if(masterList[3]!=null){ %>
+	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc3EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+	                              					<%} %>
+	                              				<%} %>
+	                              			<%} %>
+                              			</select>
+                              			<%}else{ %>
+	                              			
+	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc3Details != null ? rc3Details : "-" %>">
+	                              			
+	                              			<%} %>
+                              			</td>
+                              		</tr>
+                              		 <%} %>
+	                              	<%} %>
+                              		
+                              		<tr class="SubjectExpert">
+                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Subject Expert</td>
+                              			<td style="padding: 8px; width: 55%;">
+                              			<select id="SubjectExpertDetails" name="SubjectExpertDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                              			<option value="">Select Employee</option>
+                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+	                              				<%for(Object[] masterList: committeeMasterList){ %>
+	                              					<%if(masterList[3]!=null){ %>
+	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc4EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+	                              					<%} %>
+	                              				<%} %>
+	                              			<%} %>
+                              			</select></td>
+                              		</tr>
+                              		
+                              		<tr class="RPBMemberSecretary">
+                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member Secretary</td>
+                              			<td style="padding: 8px; width: 55%;">
+                              			<input type="text" class="form-control" readonly="readonly" value="<%= rc5Details != null ? rc5Details : "-" %>"></td>
+                              		</tr>
+                              		
+                              		<tr class="chairman">
+                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Chairman / Stand by Chairman</td>
+                              			<td style="padding: 8px; width: 55%;">
+                              			<select id="chairmanDetails" name="chairmanDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                              			<option value="">Select Employee</option>
+                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+	                              				<%for(Object[] masterList: committeeMasterList){ %>
+	                              					<%if(masterList[3]!=null){ %>
+	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == appOffEmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+	                              					<%} %>
+	                              				<%} %>
+	                              			<%} %>
+                              			</select></td>
+                              		</tr>
+                              		
+                              		<tr>
+                              			<td colspan="2">
+                              				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="validateFormFieldsEdit()"> &nbsp;
+                              				<input type="button" class="btn btn-sm back-btn" value="Back" onclick="EditRecommendingDetailsAction('C')">
+                              			</td>
+                              		</tr>
+                              		
+                              	</table>
+                              </div>
+                        </div>
                        
                        <%} %>
                         
-                        
+                          
                     </div>
                 </div>
             </div>
@@ -744,6 +1014,37 @@ if(fundDetails!=null && fundDetails.length > 0)
 </div>			
 
 </body>
+
+<script type="text/javascript">
+
+function EditRecommendingDetailsAction(actionType)
+{
+	if(actionType == 'O')
+	{
+		$(".EditRCDetails").show();
+		$(".RCPendingDiv").hide();
+	}
+	else if(actionType == 'C')
+	{
+		$(".EditRCDetails").hide();
+		$(".RCPendingDiv").show();
+	}
+}
+
+</script>
+
+<script type="text/javascript">
+
+<%if(success!=null){%>
+
+	showSuccessFlyMessage('<%=success %>');
+
+<%}else if(failure!=null){%>
+
+	showFailureFlyMessage('<%=failure %>');
+
+<%}%>
+</script>
 
 <script>
 
@@ -770,6 +1071,7 @@ function confirmAction(action,value) {
 <script type="text/javascript">
 
 $(document).ready(function(){
+	
 	getAttachementDetailsInline('<%=fundApprovalId %>');
 });
 

@@ -12,24 +12,24 @@ import lombok.Data;
 
 
 @Data
-@Entity(name ="ibas_committee_member_linked")
-public class LinkedCommitteeMembers {
+@Entity(name ="ibas_fund_members_linked")
+public class FundLinkedMembers {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CommitteeMemberLinkedId")
+	@Column(name = "MemberLinkedId")
 	private long committeeMemberLinkedId;
 	
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
 	
-	//CC-Chairman, SC-Standby Chairman, CM-Committee Member, CS-Committee Secretary, SE-Subject Expert
-	@Column(name = "MemberType", length = 2)
-	private String memberType;
-	
 	@Column(name = "EmpId")
 	private long empId;
 	
+	// CC - Chairman, SC - Standby Chairman, CM - Committee Member, CS - Committee Secretary, SE - Subject Expert, DH - Division Head
+	@Column(name = "MemberType", length = 2)
+	private String memberType;
+
 	@Column(name = "IsApproved", length = 1)
 	private String isApproved;
 	
