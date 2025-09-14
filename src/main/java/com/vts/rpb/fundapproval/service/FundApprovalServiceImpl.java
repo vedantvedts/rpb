@@ -68,7 +68,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	@Transactional
-	public long AddFundRequestSubmit(FundApproval fundApproval, FundApprovalAttachDto attachDto) throws Exception
+	public long AddFundRequestSubmit(FundApproval fundApproval, FundApprovalAttachDto attachDto, Long userId) throws Exception
 	{	
 		long status = 0;
 		
@@ -127,8 +127,9 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 				FundApprovalTrans transModal=new FundApprovalTrans();
 				transModal.setFundApprovalId(fundApproval.getFundApprovalId());
+				transModal.setFlowDetailsId(getFundFlowDetailsId("INI","N"));
 				transModal.setRemarks(fundApproval.getRemarks());
-				transModal.setActionBy(fundApproval.getInitiatingOfficer());
+				transModal.setActionBy(userId);
 				transModal.setActionDate(LocalDateTime.now());
 				
 				status = fundApprovalDao.AddFundApprovalTrans(transModal);
@@ -357,7 +358,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	@Override
 	@Transactional
-	public long fundRequestForward(FundApprovalDto fundDto, String flowMasterId, long empId, String fundAction, String fundFlowDetailsId) throws Exception {
+	public long fundRequestForward(FundApprovalDto fundDto, long empId) throws Exception {
 		
 		long status = 0;
 		
@@ -398,7 +399,17 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,"FWD","F",empId);
+			String transAction = "";
+			if(fundDto.getAction()!=null && (fundDto.getAction().equalsIgnoreCase("RF") || fundDto.getAction().equalsIgnoreCase("R"))) 
+			{
+				transAction = "R-FWD";
+			}
+			else
+			{
+				transAction = "FWD";
+			}
+			
+			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
 			fundApprovalDao.insertFundApprovalTransaction(transModal);
 			
 			fundDetails.setStatus("F");
@@ -425,15 +436,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	private FundApprovalTrans buildFundTransactonDetails(FundApprovalDto fundDto,String action, String actionType, Long empId) throws Exception {
 		
-		long flowDetailsId = 0;
-		List<Object[]> getStatus = fundApprovalDao.getTransactionStatusDetails(action,actionType);
-		if(getStatus != null && getStatus.size() > 0)
-		{
-			if(getStatus.get(0) != null && getStatus.get(0).length > 0)
-			{
-				flowDetailsId = getStatus.get(0)[0] !=null ? Long.parseLong(getStatus.get(0)[0].toString()): 0;
-			}
-		}
+		long flowDetailsId = getFundFlowDetailsId(action,actionType);
 		
 		FundApprovalTrans transaction = new FundApprovalTrans();
 		
@@ -452,6 +455,20 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	    	throw new RuntimeException("Failed to insert committee member: " + linkedMembers, e);
 	    }
 	}
+	
+	private long getFundFlowDetailsId(String action, String actionType) throws Exception
+	{
+		long flowDetailsId = 0;
+		List<Object[]> getStatus = fundApprovalDao.getTransactionStatusDetails(action,actionType);
+		if(getStatus != null && getStatus.size() > 0)
+		{
+			if(getStatus.get(0) != null && getStatus.get(0).length > 0)
+			{
+				flowDetailsId = getStatus.get(0)[0] !=null ? Long.parseLong(getStatus.get(0)[0].toString()): 0;
+			}
+		}
+		return flowDetailsId;
+	}
 
 	
 	@Override
@@ -462,34 +479,24 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		FundApproval fundDetails = fundApprovalDao.getFundRequestDetails(fundDto.getFundApprovalId());
 		
+		if(fundDetails == null)
+		{
+			throw new RuntimeException("Failed to delete committee member: " + fundDetails);
+		}
+		
+		fundDetails.setStatus("E");  // E - Revoked
+		fundApprovalDao.updateFundRequest(fundDetails);
+		
+		deleteLinkedMembers(fundDetails);
+		
 		FundApprovalTrans transaction=new FundApprovalTrans();
+		
 		transaction.setFundApprovalId(fundDto.getFundApprovalId());
+		transaction.setFlowDetailsId(getFundFlowDetailsId(fundDto.getAction(),"N"));   // fundDto.getAction() - RVK;
 		transaction.setActionBy(empId);
 		transaction.setActionDate(LocalDateTime.now());
-		fundApprovalDao.insertFundApprovalTransaction(transaction);
 		
-		deleteLinkedCommitteeMembersRevoke(fundDetails);
-		
-		if(fundDetails != null)
-		{
-			fundDetails.setStatus("E");  // E - Revoked
-//			fundDetails.setRc1(0);
-//			fundDetails.setRc1Role(null);
-//			fundDetails.setRc2(0);
-//			fundDetails.setRc2Role(null);
-//			fundDetails.setRc3(0);
-//			fundDetails.setRc3Role(null);
-//			fundDetails.setRc4(0);
-//			fundDetails.setRc4Role(null);
-//			fundDetails.setRc5(0);
-//			fundDetails.setRc5Role(null);
-//			fundDetails.setRc6(0);
-//			fundDetails.setRc6Role(null);
-//			fundDetails.setApprovingOfficer(0);
-//			fundDetails.setApprovingOfficerRole(null);
-		}
-			
-		status = fundApprovalDao.updateFundRequest(fundDetails);
+		status = fundApprovalDao.insertFundApprovalTransaction(transaction);
 		
 		return status;
 	}
@@ -620,7 +627,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	private void updateLinkedCommitteeMembersReturn(FundApproval fundApproval) throws Exception
 	{
-		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getCommitteeMemberLinkedDetails(fundApproval.getFundApprovalId());
+		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getLinkedMemberDetails(fundApproval.getFundApprovalId());
 		if(cmmtMemberLinkedList!=null && cmmtMemberLinkedList.size()>0)
 		{
 			cmmtMemberLinkedList.forEach(row -> {
@@ -644,12 +651,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 	}
 	
-	private void deleteLinkedCommitteeMembersRevoke(FundApproval fundApproval) throws Exception
+	private void deleteLinkedMembers(FundApproval fundApproval) throws Exception
 	{
-		List<Object[]> cmmtMemberLinkedList = fundApprovalDao.getCommitteeMemberLinkedDetails(fundApproval.getFundApprovalId());
-		if(cmmtMemberLinkedList!=null && cmmtMemberLinkedList.size()>0)
+		List<Object[]> linkedMemberList = fundApprovalDao.getLinkedMemberDetails(fundApproval.getFundApprovalId());
+		if(linkedMemberList!=null && linkedMemberList.size()>0)
 		{
-			cmmtMemberLinkedList.forEach(row -> {
+			linkedMemberList.forEach(row -> {
 				if(row[0]!=null) 
 				{
 					try {
@@ -657,7 +664,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 						
 					} catch (Exception e) {
 						
-						e.printStackTrace();
+						throw new RuntimeException("Failed to delete committee member: " + row[0], e);
+						
 					}
 				}
 			});

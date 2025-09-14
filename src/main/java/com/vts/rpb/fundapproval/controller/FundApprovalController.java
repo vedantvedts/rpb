@@ -370,6 +370,7 @@ public class FundApprovalController
 			
 			FundApprovalDto fundDto=new FundApprovalDto();
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setAction("RVK");  // Revoke
 			fundDto.setCreatedBy(UserName);
 			
 			long status = fundApprovalService.revokeRecommendationDetails(fundDto,empId); 
@@ -724,6 +725,7 @@ public class FundApprovalController
 	public String AddFundRequestSubmit(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir,@RequestPart("attachment") MultipartFile[] FileAttach) throws Exception
 	{
 		String UserName = (String) ses.getAttribute("Username");
+		Long userId = (Long) ses.getAttribute("EmployeeId");
 		logger.info(new Date() + "Inside AddFundRequestSubmit.htm " + UserName);
 		try
 		{
@@ -743,7 +745,7 @@ public class FundApprovalController
 			String reYear=req.getParameter("reYear");
 			
 			String itemNomenclature=req.getParameter("ItemFor");
-			String justification=req.getParameter("fileno");
+			String justification=req.getParameter("justification");
 			String fundRequestAmount=req.getParameter("TotalFundReguestAmount");
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
@@ -807,7 +809,7 @@ public class FundApprovalController
 				attachDto.setCreatedBy(UserName);
 				attachDto.setCreatedDate(LocalDateTime.now());
 				
-				 long status = fundApprovalService.AddFundRequestSubmit(fundApproval,attachDto); 
+				 long status = fundApprovalService.AddFundRequestSubmit(fundApproval,attachDto,userId); 
 				
 				 
 				if(status > 0) {
@@ -1217,16 +1219,15 @@ public class FundApprovalController
 			try
 			{
 				String fundRequestId=req.getParameter("FundRequestIdForward");
-				String flowMasterId=req.getParameter("FlowMasterIdForward");
 				String fundFlowDetailsId=req.getParameter("FundFlowDetailsIdForward");
 				String fundAction=req.getParameter("FundRequestAction");
+				String remarks=req.getParameter("forwardRemark");
 				
 				String divisionHead=req.getParameter("divisionHeadDetails");
 				String[] rpbMember=req.getParameterValues("RPBMemberDetails");
 				String[] subjectExpert=req.getParameterValues("SubjectExpertDetails");
 				String rpbSecretary=req.getParameter("RPBMemberSecretaryDetails");
 				String chairman=req.getParameter("chairmanDetails");
-				System.out.println("fundAction********"+fundAction);
 				
 				if(fundRequestId==null || fundAction == null || fundFlowDetailsId == null ||
 						divisionHead == null || rpbSecretary ==null || chairman == null)
@@ -1243,6 +1244,9 @@ public class FundApprovalController
 				fundDto.setSubjectExpertsId(subjectExpert);
 				fundDto.setSecretaryId(rpbSecretary != "" ? Long.parseLong(rpbSecretary) : 0);
 				fundDto.setChairmanId(chairman != "" ? Long.parseLong(chairman) : 0);
+				fundDto.setRemarks(remarks);
+				fundDto.setAction(fundAction);
+				fundDto.setFlowDetailsId(fundFlowDetailsId);
 				fundDto.setModifiedBy(UserName);
 				fundDto.setModifiedDate(LocalDateTime.now());
 				
@@ -1267,7 +1271,7 @@ public class FundApprovalController
 //				fundApprovalData.setApprovingOfficer(chairman!=null && chairman!="" ? Long.parseLong(chairman) : 0);
 //				fundApprovalData.setApprovingOfficerRole(chairmanRole!=null && chairmanRole!="" ? chairmanRole : null);
 				
-				long status = fundApprovalService.fundRequestForward(fundDto,flowMasterId,empId,fundAction,fundFlowDetailsId); 
+				long status = fundApprovalService.fundRequestForward(fundDto,empId); 
 				
 				String message = "";
 				if(fundAction.equalsIgnoreCase("F"))

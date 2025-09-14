@@ -361,6 +361,11 @@ input[name="ItemNomenclature"]::placeholder {
 	font-weight:600 !important;
 }
 
+#forwardRemark {
+  width: 600px;  
+  max-width: 100%; 
+}
+
 
 </style>
 
@@ -577,7 +582,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
 												
-													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1;%> 
 					                       		
@@ -750,7 +755,6 @@ input[name="ItemNomenclature"]::placeholder {
 										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
-										<input type="hidden" id="FlowMasterIdForward" name="FlowMasterIdForward">
 										<input type="hidden" id="FundFlowDetailsIdForward" name="FundFlowDetailsIdForward">
 										
 				                            <div id="your-parent-element-id" style="gap: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;" data-select2-id="your-parent-element-id">
@@ -826,6 +830,11 @@ input[name="ItemNomenclature"]::placeholder {
 				                              		
 				                              	</table>
 				                              </div>
+				                             </div>
+				                              
+				                             <div class="row" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
+				                             <span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span>
+				                             <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>
 				                             </div>
 								             
 				                       </form>

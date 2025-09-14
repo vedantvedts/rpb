@@ -98,7 +98,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception;
 
-	public List<Object[]> getCommitteeMemberLinkedDetails(long fundApprovalId) throws Exception;
+	public List<Object[]> getLinkedMemberDetails(long fundApprovalId) throws Exception;
 
 	public FundLinkedMembers getCommitteeMemberLinkedDetails(String committeMemberLinkedId) throws Exception;
 

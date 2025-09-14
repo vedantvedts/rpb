@@ -16,7 +16,7 @@ public interface FundApprovalService
 {
 	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId,String committeeMember) throws Exception;
 
-	public long AddFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
+	public long AddFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto, Long userId) throws Exception;
 	
 	public long EditFundRequestSubmit(FundApproval approval, FundApprovalAttachDto attachDto) throws Exception;
 	
@@ -32,7 +32,7 @@ public interface FundApprovalService
 	
 	public int FundRequestAttachDelete(long fundApprovalAttachId) throws Exception;
 
-	public long fundRequestForward(FundApprovalDto fundDto, String flowMasterId, long empId, String fundAction,String fundFlowDetailsId) throws Exception;
+	public long fundRequestForward(FundApprovalDto fundDto, long empId) throws Exception;
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 
