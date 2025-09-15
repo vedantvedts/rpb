@@ -1,3 +1,5 @@
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="java.util.stream.IntStream"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
@@ -310,7 +312,6 @@ tr:last-of-type th:last-of-type {
     border: 2px solid #1890ff; /* Blue border */
     padding: 10px;
     border-radius: 5px;
-    margin-top: 8px;
 }
 
 .container {
@@ -333,6 +334,42 @@ tr:last-of-type th:last-of-type {
     	font-family: "Times New Roman", Times, serif;
     }
     
+    .editRCDetails
+    {
+    	padding: 8px; 
+    	text-align: right; 
+    	font-weight: 600; white-space: nowrap; 
+    	display: flex; 
+    	align-items: center;
+    	width: 30% !important;
+    }
+    
+    .editRCDropDown
+    {
+    	padding: 8px; 
+    	width: 55%;
+    }
+    
+    .editRcDropDownSelect
+    {
+    	font-size: 10px; 
+    	white-space: nowrap; 
+    	overflow: hidden; 
+    	text-overflow: ellipsis;
+    }
+    
+    .ApprovalDetails
+    {
+    	padding: 11px;
+    	width: 100%;
+    	height:100%;
+    }
+    
+    .rowProperties
+    {
+     	height:4rem;
+    }
+    
 </style>
 </head>
 <body>
@@ -340,6 +377,8 @@ tr:last-of-type th:last-of-type {
 Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 List<Object[]> masterFlowDetails=(List<Object[]>)request.getAttribute("MasterFlowDetails");
 List<Object[]> committeeMasterList=(List<Object[]>)request.getAttribute("AllCommitteeMasterDetails");
+masterFlowDetails.forEach(row-> System.out.println(Arrays.toString(row)));
+System.out.println("--------------------------");
 committeeMasterList.forEach(row-> System.out.println(Arrays.toString(row)));
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
@@ -353,19 +392,10 @@ String estimateType=null;
 String finYear=null;
 String initiatingOfficerId=null;
 String initiatingOfficer=null;
-String rc1Details=null;
-String rc2Details=null;
-String rc3Details=null;
-String rc4Details=null;
-String rc5Details=null;
-String rc6Details=null;
-String approvingOfficerDetails=null;
-String approvingOfficerRole=null;
 String memberStatus=null,flowDetailsId = null;
-String rcStatusCodeNext=null,budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
-String rc1Status=null,rc2Status=null,rc3Status=null,rc4Status=null,rc5Status=null,apprOffStatus=null,rc6Status=null;
-String rc1Remarks=null,rc2Remarks=null,rc3Remarks=null,rc4Remarks=null,rc5Remarks=null,apprOffRemarks=null,rc6Remarks=null;
-long rc1EmpId=0,rc2EmpId=0,rc3EmpId=0,rc4EmpId=0,rc5EmpId=0,appOffEmpId=0,rc6EmpId=0;
+String budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
+String rolesStr = null;
+String approvalsStr = null;
 
 if(fundDetails!=null && fundDetails.length > 0)
 {
@@ -376,125 +406,14 @@ if(fundDetails!=null && fundDetails.length > 0)
 	initiatingOfficerId=fundDetails[18]!=null  ? fundDetails[18].toString() : "0";
 	initiatingOfficer=fundDetails[19]!=null  ? fundDetails[19].toString() : null;
 	
-	rc1EmpId=fundDetails[20]!=null  ? Long.parseLong(fundDetails[20].toString()) : 0;
-	rc1Details=fundDetails[21]!=null  ? fundDetails[21].toString() : null;
-	
-	rc2EmpId=fundDetails[23]!=null  ? Long.parseLong(fundDetails[23].toString()) : 0;
-	rc2Details=fundDetails[24]!=null  ? fundDetails[24].toString() : null;
-	
-	rc3EmpId=fundDetails[26]!=null  ? Long.parseLong(fundDetails[26].toString()) : 0;
-	rc3Details=fundDetails[27]!=null  ? fundDetails[27].toString() : null;
-	
-	rc4EmpId=fundDetails[29]!=null  ? Long.parseLong(fundDetails[29].toString()) : 0;
-	rc4Details=fundDetails[30]!=null  ? fundDetails[30].toString() : null;
-	
-	rc5EmpId=fundDetails[32]!=null  ? Long.parseLong(fundDetails[32].toString()) : 0;
-	rc5Details=fundDetails[33]!=null  ? fundDetails[33].toString() : null;
-	
-	rc6EmpId=fundDetails[50]!=null  ? Long.parseLong(fundDetails[50].toString()) : 0;
-	rc6Details=fundDetails[51]!=null  ? fundDetails[51].toString() : null;
-	
-	appOffEmpId=fundDetails[35]!=null  ? Long.parseLong(fundDetails[35].toString()) : 0;
-	approvingOfficerDetails=fundDetails[36]!=null  ? fundDetails[36].toString() : null;
-	approvingOfficerRole=fundDetails[37]!=null  ? fundDetails[37].toString() : null;
-	
-	rcStatusCodeNext=fundDetails[40]!=null  ? fundDetails[40].toString() : null;
-	
 	budgetHead=fundDetails[8]!=null  ? fundDetails[8].toString() : null;
 	budgetItem=fundDetails[9]!=null  ? fundDetails[9].toString() : null;
 	codeHead=fundDetails[10]!=null  ? fundDetails[10].toString() : null;
 	estimatedCost=fundDetails[17]!=null  ? fundDetails[17].toString() : null;
 	itemNomenclature=fundDetails[14]!=null  ? fundDetails[14].toString() : null;
 	justification=fundDetails[15]!=null  ? fundDetails[15].toString() : null;
-	
-	rc1Status=fundDetails[41]!=null  ? fundDetails[41].toString() : null;
-	rc2Status=fundDetails[42]!=null  ? fundDetails[42].toString() : null;
-	rc3Status=fundDetails[43]!=null  ? fundDetails[43].toString() : null;
-	rc4Status=fundDetails[44]!=null  ? fundDetails[44].toString() : null;
-	rc5Status=fundDetails[45]!=null  ? fundDetails[45].toString() : null;
-	rc6Status=fundDetails[48]!=null  ? fundDetails[48].toString() : null;
-	apprOffStatus=fundDetails[46]!=null ? fundDetails[46].toString() : null;
-	
-	if(masterFlowDetails!=null && masterFlowDetails.size() > 0)
-	{
-		for(Object[] row : masterFlowDetails)
-		{
-			if(row!=null && row.length > 0)
-			{
-				if(row[3]!=null && (row[3].toString()).equalsIgnoreCase("A"))
-				{
-					if(row[2]!=null)
-					{
-						if((row[2].toString()).equalsIgnoreCase("RC1") && row[4] != null && rc1EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc1Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc1EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("RC2") && row[4] != null && rc2EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc2Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc2EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("RC3") && row[4] != null && rc3EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc3Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc3EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("RC4") && row[4] != null && rc4EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc4Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc4EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("RC5") && row[4] != null && rc5EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc5Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc5EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("RC6") && row[4] != null && rc6EmpId == Long.parseLong(row[4].toString()))
-						{
-							rc6Remarks = row[7] != null ? row[7].toString() : null;
-							if(rc6EmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-						else if((row[2].toString()).equalsIgnoreCase("APR") && row[4] != null && appOffEmpId == Long.parseLong(row[4].toString()))
-						{
-							apprOffRemarks = row[7] != null ? row[7].toString() : null;
-							if(appOffEmpId == empId)
-							{
-								memberStatus = row[2].toString();
-								flowDetailsId =row[0]!=null ? row[0].toString() : "0";
-							}
-						}
-					}
-				}
-			}
-		};
-	}
-	
-	
+	rolesStr = fundDetails[21]!=null ? fundDetails[21].toString() : null;
+	approvalsStr = fundDetails[23]!=null ? fundDetails[23].toString() : null;
 	
 } %>
 
@@ -562,7 +481,7 @@ if(fundDetails!=null && fundDetails.length > 0)
             <div class="big-box">
             	<div class="row">
             		<div class="table-responsive">
-		          <table class="table table-bordered" style="font-weight: 600;width: 91.5% !important;margin:auto !important;" id="ApprovalDetails">
+		          <table class="table table-bordered" style="font-weight: 600;width: 91.5% !important;margin:auto !important;" id="ApprovalDetailsTable">
 		            <tr>
 		              <td style="color:#034189;">Budget</td>
 		              <td class="BudgetDetails">GEN (General)</td>
@@ -606,157 +525,40 @@ if(fundDetails!=null && fundDetails.length > 0)
 					            </td>
 					        </tr>
 					    <% } %>
-					
-					    <% if(rc6EmpId > 0){ %>
-					        <tr <%if(empId == rc6EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>Division Head</b>
-					            <% if(rc6Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
+					    
+					    <%if(masterFlowDetails != null){ %>
+					    
+						    <% for(Object[] masterList : masterFlowDetails){ 
+						    
+						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
+						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
+						    %>
+						    
+						    	<tr <%if(isCurrentEmp){ %> class="highlight-box" <%} %>>
+					            <td style="width:40%;"><b><%=masterList[2] %></b>
+					            <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
 					            </td>
 					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc6EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                <span <%if(isCurrentEmp){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
-					                <%= rc6Details != null ? rc6Details : "-" %>
-					                <%if(empId == rc6EmpId){ %>
-					                    <span class="badge badge-info">For Recommendation</span>
+					                <%=masterList[6]!=null ? masterList[6] : "-" %><%= masterList[7] != null ? ", "+masterList[7] : "" %>
+					                <%if(isCurrentEmp){ %>
+					                    <%if(!isApproved){ %><span class="badge badge-info"><%=masterList[9] != null ? masterList[9] : "" %></span><%} %>
 					                <%} %>
-					                <%if(rc6Status!=null && rc6Status.equalsIgnoreCase("Y")){ %>
+					                <%if(masterList[4]!=null && (masterList[4].toString()).equalsIgnoreCase("Y")){ %>
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
 					                
-					                <% if(rc6Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc6Remarks %></span> <%} %>
+					                <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">&nbsp;<%=masterList[8] %></span> <%} %>
 					                
 					            </td>
 					        </tr>
+						    
+						    <%} %>
+					    
 					    <%} %>
 					
-					    <% if(rc1EmpId > 0){ %>
-					        <tr <%if(empId == rc1EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b>
-					            <% if(rc1Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc1EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= rc1Details != null ? rc1Details : "-" %>
-					                <%if(empId == rc1EmpId){ %>
-					                    <span class="badge badge-info">For Recommendation</span>
-					                <%} %>
-					                <%if(rc1Status!=null && rc1Status.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                
-					                <% if(rc1Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc1Remarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
-					
-					    <% if(rc2EmpId > 0){ %>
-					        <tr <%if(empId == rc2EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b>
-					            <% if(rc2Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc2EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= rc2Details != null ? rc2Details : "-" %>
-					                <%if(empId == rc2EmpId){ %>
-					                    <span class="badge badge-info">For Recommendation</span>
-					                <%} %>
-					                <%if(rc2Status!=null && rc2Status.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                
-					                <% if(rc2Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc2Remarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
-					
-					    <% if(rc3EmpId > 0){ %>
-					        <tr <%if(empId == rc3EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member</b>
-					            <% if(rc3Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc3EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= rc3Details != null ? rc3Details : "-" %>
-					                <%if(empId == rc3EmpId){ %>
-					                    <span class="badge badge-info">For Recommendation</span>
-					                <%} %>
-					                <%if(rc3Status!=null && rc3Status.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                <% if(rc3Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc3Remarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
-					
-					    <% if(rc4EmpId > 0){ %>
-					        <tr <%if(empId == rc4EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>Subject Expert</b>
-					            <% if(rc4Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc4EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= rc4Details != null ? rc4Details : "-" %>
-					                <%if(empId == rc4EmpId){ %>
-					                    <span class="badge badge-info">For Recommendation</span>
-					                <%} %>
-					                <%if(rc4Status!=null && rc4Status.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                <% if(rc4Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc4Remarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
-					
-					    <% if(rc5EmpId > 0){ %>
-					        <tr <%if(empId == rc5EmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Member Secretary</b>
-					            <% if(rc5Remarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == rc5EmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= rc5Details != null ? rc5Details : "-" %>
-					                <%if(empId == rc5EmpId){ %>
-					                    <span class="badge badge-info">For Noting</span>
-					                <%} %>
-					                <%if(rc5Status!=null && rc5Status.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                <% if(rc5Remarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=rc5Remarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
-					
-					    <% if(appOffEmpId > 0){ %>
-					        <tr <%if(empId == appOffEmpId){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b>RPB Chairman</b>
-					            <% if(apprOffRemarks!=null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
-					            </td>
-					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(empId == appOffEmpId){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
-					                </span>
-					                <%= approvingOfficerDetails != null ? approvingOfficerDetails : "-" %>
-					                <%if(empId == appOffEmpId){ %>
-					                    <span class="badge badge-info">For Approval</span>
-					                <%} %>
-					                <%if(apprOffStatus!=null && apprOffStatus.equalsIgnoreCase("Y")){ %>
-					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
-					                         style="background: transparent;padding: 1px;margin-top: -5px;">
-					                <%} %>
-					                <% if(apprOffRemarks!=null){ %> <br> <span class="remarksDetails">&nbsp;<%=apprOffRemarks %></span> <%} %>
-					            </td>
-					        </tr>
-					    <%} %>
 					</table>
                         
                     </div>
@@ -764,35 +566,45 @@ if(fundDetails!=null && fundDetails.length > 0)
                     <!-- Right Division -->
                     <div class="col-md-6">
                     
-						<% boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
-						  boolean hasN = rc1Status.equalsIgnoreCase("N") || rc2Status.equalsIgnoreCase("N") || rc3Status.equalsIgnoreCase("N") || rc4Status.equalsIgnoreCase("N");
-						  
-						  boolean isDHApproved = rc6Status.equalsIgnoreCase("Y");
-						  boolean isCSApproved = rc5Status.equalsIgnoreCase("Y");
-						  boolean isCCApproved = apprOffStatus.equalsIgnoreCase("Y");
-						  
-						  System.out.println("rc1Status****"+rc1Status);
-						  System.out.println("rc2Status****"+rc2Status);
-						  System.out.println("rc3Status****"+rc3Status);
-						  System.out.println("rc4Status****"+rc4Status);
-						  System.out.println("allNA****"+allNA);
-						  System.out.println("hasN****"+hasN);
-						  System.out.println("isDHApproved****"+isDHApproved);
-						  System.out.println("isCSApproved****"+isCSApproved);
-						  System.out.println("isCCApproved****"+isCCApproved);
-						  
-						   %>
+                     <% String memberType = null;
+                       String dhDetails = null,csDetails = null,ccDetails = null;
+                       boolean dhStatus=false,csStatus=false,ccStatus = false,rcStatus =false;
+                       if(rolesStr != null && approvalsStr != null)
+                       {
+                       	dhDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse("NA");
+                       	csDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse("NA");
+                       	ccDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse("NA");
+                       	
+                            String input = "RC"; 
+                            Set<String> rcFilter = Set.of("CM", "SE");
+
+                            String[] roles = rolesStr.split(",");
+                            String[] approvals = approvalsStr.split(",");
+
+                            List<String[]> filtered = IntStream.range(0, roles.length)
+                                    .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
+                                    .mapToObj(i -> new String[]{roles[i], approvals[i]})
+                                    .collect(Collectors.toList());
+
+                            String rcApprovalDetails = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
+                            
+                            dhStatus = dhDetails.equalsIgnoreCase("Y");
+                            csStatus = csDetails.equalsIgnoreCase("Y");
+                            ccStatus = ccDetails.equalsIgnoreCase("Y");
+                            rcStatus = rcApprovalDetails.contains("N");
+                       }
+                       %>
 						  
 						<%String tooltip = "";
 						boolean showPending = false;
 						
 						switch(currentEmpStatus.toUpperCase()) {
 						    case "CS":
-						        showPending = !(isDHApproved && !hasN);
+						        showPending = !(dhStatus && rcStatus);
 						        tooltip = "Preview & Note";
 						        break;
 						    case "CC":
-						        showPending = !(isDHApproved && isCSApproved);
+						        showPending = !(dhStatus && rcStatus && ccStatus);
 						        tooltip = "Preview & Approve";
 						        break;
 						}
@@ -837,7 +649,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                        <% }else { %>
                        
                        <div class="RCPendingDiv" style="text-align: center; height: 100%; display: grid;place-items: center;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;">
-                       <span style="color:#4a036c; border-radius:10px; padding:10px 9px; background:#ffe8cc; font-size:13px; font-weight:800;"> Recommendation Pending </span>
+                       <span style="color:#4a036c; border-radius:10px; padding:10px 9px; background:#eadcff; font-size:13px; font-weight:800;"> Recommendation Pending </span>
                         <% // Edit the Recommending Officer %>
                         <div >
 	                         <span style="font-weight:600;color:#000048;">Click Edit Button To Change Recommending Officer(s)</span><br>
@@ -846,169 +658,68 @@ if(fundDetails!=null && fundDetails.length > 0)
                        </div>
                        
                         <div class="EditRCDetails" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
-                        	<div class="card ApprovalDetails table-responsive" style="width: 100%;height:100%;"> 
+                        	<div class="card ApprovalDetails table-responsive"> 
                               	<table style="width: 100%;" id="fundApprovalForardTable">
                               		
-                              		<%if(rc6Status!=null){ %>
-                              		 <%if(!rc6Status.equalsIgnoreCase("NA")){ %>
-	                              		<tr class="DivisionHead">
-	                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head</td>
-	                              			<td style="padding: 8px; width: 55%;">
-	                              			<% if(rc6Status.equalsIgnoreCase("N")){ %>
-	                              			<select id="divisionHeadDetails" name="divisionHeadDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-	                              			<option value="">Select Employee</option>
-	                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-	                              				<%for(Object[] masterList: committeeMasterList){ %>
-	                              					<%if(masterList[3]!=null){ %>
-	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc6EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-	                              					<%} %>
-	                              				<%} %>
-	                              			<%} %>
-	                              			</select>
-	                              			<%}else{ %>
-	                              			
-	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc6Details != null ? rc6Details : "-" %>">
-	                              			
-	                              			<%} %>
-	                              			</td>
-	                              		</tr>
-                              		 <%} %>
-                              		<%} %>
-                              		
-                              		<%if(rc1Status!=null){ %>
-                              		<%if(!rc1Status.equalsIgnoreCase("NA")){ %>
-	                              		<tr class="RPBMember1">
-	                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
-	                              			<td style="padding: 8px; width: 55%;">
-	                              			<% if(rc1Status.equalsIgnoreCase("N")){ %>
-	                              			<select id="RPBMemberDetails1" name="RPBMemberDetails1" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-	                              			<option value="">Select Employee</option>
-	                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+                              		  <%if(masterFlowDetails != null){ %>
+					    
+									    <% for(Object[] masterFlowList : masterFlowDetails){ 
+									    
+									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
+									    boolean isApproved = masterFlowList[4] != null && (masterFlowList[4].toString().equalsIgnoreCase("Y"));
+									    
+									    %>
+									    
+									    	<tr>
+									    	<td class="editRCDetails"><%=masterFlowList[2] %></td>
+								            <td class="recommendation-value editRCDropDown">
+									              
+									            <% if(!isApproved){ %>
+		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="divisionHeadDetails" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+		                              			<option value="">Select Employee</option>
+		                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
 		                              				<%for(Object[] masterList: committeeMasterList){ %>
 		                              					<%if(masterList[3]!=null){ %>
-		                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc1EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+		                              						<option value="<%=masterList[2] %>" <%if(isCurrentEmp){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
 		                              					<%} %>
 		                              				<%} %>
 		                              			<%} %>
-	                              			</select>
-	                              			<%}else{ %>
-	                              			
-	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc1Details != null ? rc1Details : "-" %>">
-	                              			
-	                              			<%} %>
-	                              			</td>
-	                              		</tr>
-	                              	   <%} %>
-                              		  <%} %>
-                              		
-                              		<%if(rc2Status!=null){ %>
-                              		<%if(!rc2Status.equalsIgnoreCase("NA")){ %>
-                              		<tr class="RPBMember2">
-                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
-                              			<td style="padding: 8px; width: 55%;">
-                              			<% if(rc2Status.equalsIgnoreCase("N")){ %>
-                              			<select id="RPBMemberDetails2" name="RPBMemberDetails2" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              			<option value="">Select Employee</option>
-                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-	                              				<%for(Object[] masterList: committeeMasterList){ %>
-	                              					<%if(masterList[3]!=null){ %>
-	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc2EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-	                              					<%} %>
-	                              				<%} %>
-	                              			<%} %>
-                              			</select>
-                              			<%}else{ %>
-	                              			
-	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc2Details != null ? rc2Details : "-" %>">
-	                              			
-	                              			<%} %>
-                              			</td>
-                              		  </tr>
-	                              	 <%} %>
-	                              	<%} %>
-                              		
-                              		<%if(rc3Status!=null){ %>
-                              		<%if(!rc3Status.equalsIgnoreCase("NA")){ %>
-                              		<tr class="RPBMember3">
-                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member</td>
-                              			<td style="padding: 8px; width: 55%;">
-                              			<% if(rc3Status.equalsIgnoreCase("N")){ %>
-                              			<select id="RPBMemberDetails3" name="RPBMemberDetails3" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              			<option value="">Select Employee</option>
-                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-	                              				<%for(Object[] masterList: committeeMasterList){ %>
-	                              					<%if(masterList[3]!=null){ %>
-	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc3EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-	                              					<%} %>
-	                              				<%} %>
-	                              			<%} %>
-                              			</select>
-                              			<%}else{ %>
-	                              			
-	                              				<input type="text" class="form-control" readonly="readonly" value="<%= rc3Details != null ? rc3Details : "-" %>">
-	                              			
-	                              			<%} %>
-                              			</td>
-                              		</tr>
-                              		 <%} %>
-	                              	<%} %>
-                              		
-                              		<tr class="SubjectExpert">
-                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Subject Expert</td>
-                              			<td style="padding: 8px; width: 55%;">
-                              			<select id="SubjectExpertDetails" name="SubjectExpertDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              			<option value="">Select Employee</option>
-                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-	                              				<%for(Object[] masterList: committeeMasterList){ %>
-	                              					<%if(masterList[3]!=null){ %>
-	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == rc4EmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-	                              					<%} %>
-	                              				<%} %>
-	                              			<%} %>
-                              			</select></td>
-                              		</tr>
-                              		
-                              		<tr class="RPBMemberSecretary">
-                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Member Secretary</td>
-                              			<td style="padding: 8px; width: 55%;">
-                              			<input type="text" class="form-control" readonly="readonly" value="<%= rc5Details != null ? rc5Details : "-" %>"></td>
-                              		</tr>
-                              		
-                              		<tr class="chairman">
-                              			<td style="padding: 8px; text-align: right; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">RPB Chairman / Stand by Chairman</td>
-                              			<td style="padding: 8px; width: 55%;">
-                              			<select id="chairmanDetails" name="chairmanDetails" class="form-control select2" style="width: 100%; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              			<option value="">Select Employee</option>
-                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-	                              				<%for(Object[] masterList: committeeMasterList){ %>
-	                              					<%if(masterList[3]!=null){ %>
-	                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && (Long.parseLong(masterList[2].toString()) == appOffEmpId)){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-	                              					<%} %>
-	                              				<%} %>
-	                              			<%} %>
-                              			</select></td>
-                              		</tr>
-                              		
-                              		<tr>
-                              			<td colspan="2">
+		                              			</select>
+		                              			<%}else{ %>
+		                              			
+		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
+		                              			
+		                              			<%} %>
+								                
+								            </td>
+								        </tr>
+									    
+									    <%} %>
+									    
+									   <tr>
+                              			<td colspan="2" class="rowProperties">
                               				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="validateFormFieldsEdit()"> &nbsp;
                               				<input type="button" class="btn btn-sm back-btn" value="Back" onclick="EditRecommendingDetailsAction('C')">
                               			</td>
+                              			
                               		</tr>
+								    
+								    <%} %>
                               		
                               	</table>
+                              	
                               </div>
-                        </div>
-                       
-                       <%} %>
-                        
-                          
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                              
+	                        </div>
+	                       
+	                       <%} %>
+	                          
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
 				
 </div>			

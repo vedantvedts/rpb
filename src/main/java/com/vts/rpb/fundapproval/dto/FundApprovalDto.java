@@ -50,6 +50,7 @@ public class FundApprovalDto {
 	private LocalDateTime ModifiedDate;
 	private String memberStatus;
 	private String flowDetailsId;
+	private String flowMasterId;
 	
 	
 }

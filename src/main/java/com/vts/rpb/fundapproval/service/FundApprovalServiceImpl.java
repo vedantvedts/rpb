@@ -425,6 +425,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	private FundLinkedMembers buildLinkedMember(FundApprovalDto fundDto, String memberType, Long empId) {
 	    FundLinkedMembers linkedMembers = new FundLinkedMembers();
 	    linkedMembers.setFundApprovalId(fundDto.getFundApprovalId());
+	    linkedMembers.setFlowMasterId(fundDto.getFlowMasterId()!=null ? Long.parseLong(fundDto.getFlowMasterId()) : 0);
 	    linkedMembers.setMemberType(memberType);
 	    linkedMembers.setEmpId(empId);
 	    linkedMembers.setIsApproved("N");

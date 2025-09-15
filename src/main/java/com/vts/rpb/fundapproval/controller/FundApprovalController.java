@@ -1219,7 +1219,7 @@ public class FundApprovalController
 			try
 			{
 				String fundRequestId=req.getParameter("FundRequestIdForward");
-				String fundFlowDetailsId=req.getParameter("FundFlowDetailsIdForward");
+				String fundFlowMasterId=req.getParameter("FundFlowMasterIdForward");
 				String fundAction=req.getParameter("FundRequestAction");
 				String remarks=req.getParameter("forwardRemark");
 				
@@ -1229,7 +1229,7 @@ public class FundApprovalController
 				String rpbSecretary=req.getParameter("RPBMemberSecretaryDetails");
 				String chairman=req.getParameter("chairmanDetails");
 				
-				if(fundRequestId==null || fundAction == null || fundFlowDetailsId == null ||
+				if(fundRequestId==null || fundAction == null || fundFlowMasterId == null ||
 						divisionHead == null || rpbSecretary ==null || chairman == null)
 				{
 					redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
@@ -1246,7 +1246,7 @@ public class FundApprovalController
 				fundDto.setChairmanId(chairman != "" ? Long.parseLong(chairman) : 0);
 				fundDto.setRemarks(remarks);
 				fundDto.setAction(fundAction);
-				fundDto.setFlowDetailsId(fundFlowDetailsId);
+				fundDto.setFlowMasterId(fundFlowMasterId);
 				fundDto.setModifiedBy(UserName);
 				fundDto.setModifiedDate(LocalDateTime.now());
 				

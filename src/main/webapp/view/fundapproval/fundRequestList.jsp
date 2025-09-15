@@ -755,7 +755,7 @@ input[name="ItemNomenclature"]::placeholder {
 										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
-										<input type="hidden" id="FundFlowDetailsIdForward" name="FundFlowDetailsIdForward">
+										<input type="hidden" id="FundFlowMasterIdForward" name="FundFlowMasterIdForward">
 										
 				                            <div id="your-parent-element-id" style="gap: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;" data-select2-id="your-parent-element-id">
 				                              <div class="card ApprovalDetails table-responsive" style="width: 100%;padding:10px;"> 
@@ -1022,7 +1022,6 @@ function openForwardModal(
 	$(".reFbeYearForward").html(ReFbeYear);
 	$(".divisionDetailsForward").html(divisionDetails);
 	
-	$("#initiating_officer_display").val(empName +', '+designation);
 	$("#FundRequestIdForward").val(fundRequestId);
 	
 	// show and Hide Approval flow action
@@ -1079,10 +1078,17 @@ function openForwardModal(
         	   
         	   if (masterFlowDetails && masterFlowDetails.length > 0) {
         	       $("#fundApprovalForardTable").empty(); // clear old rows
+        	       
+        	       $("#fundApprovalForardTable").append('<tr><td style="padding: 8px; text-align: right; color: #00087a; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>' +
+                 			'<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="'+empName +', '+designation+'"></td>' +
+                 		'</tr>');
 
         	       let cmCount = 0;
 
         	       $.each(masterFlowDetails, function(key, value) {
+        	    	   
+        	    	   $("#FundFlowMasterIdForward").val(value[0]);
+        	    	   
         	           let memberType = value[1]; // DH, CM, CS, CC, SE
         	           let empId = value[3];
 
@@ -1137,11 +1143,8 @@ function openForwardModal(
         	        	   reccAttributeSet.add(inputId);
        	        	   }
         	           
-        	           
         	       });
         	       
-        	       console.log(Array.from(reccAttributeMap));
-        	       console.log(Array.from(reccAttributeSet));
         	       dropdownSelector = [...reccAttributeSet].join(", ");
 
         	   } else {

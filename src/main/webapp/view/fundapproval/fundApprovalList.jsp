@@ -1,3 +1,5 @@
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="java.util.stream.IntStream"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
@@ -294,7 +296,33 @@ String failure=(String)request.getParameter("resultFailure");%>
 											    </button>
 											</td>
 			                     
-			                     <%String fundStatus=obj[31]==null ? "NaN" : obj[31].toString(); %>
+			                     <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
+			                     
+			                      <% String memberType = null;
+			                        String dhStatus = null,csStatus = null,ccStatus = null;
+			                        if(obj[20] != null && obj[22] != null)
+			                        {
+			                        	 String rolesStr = obj[20].toString();
+			                             String approvalsStr = obj[22].toString();
+			                             
+			                        	dhStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
+			                        	csStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
+			                        	ccStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
+			                        	
+			                             String input = "RC"; 
+			                             Set<String> rcFilter = Set.of("CM", "SE");
+
+			                             String[] roles = rolesStr.split(",");
+			                             String[] approvals = approvalsStr.split(",");
+
+			                             List<String[]> filtered = IntStream.range(0, roles.length)
+			                                     .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
+			                                     .mapToObj(i -> new String[]{roles[i], approvals[i]})
+			                                     .collect(Collectors.toList());
+
+			                             String rcStatus = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
+			                        }
+			                        %>
 									       
 									       <td style="width: 185px;" align="center">
 				                   			 
@@ -309,7 +337,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 											               } else if("N".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "#8c2303";
 											                   message = "Pending";
-											               } else if("F".equalsIgnoreCase(fundStatus) &&(obj[40]!=null && (obj[40].toString()).equalsIgnoreCase("N"))) {
+											               } else if("F".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "blue";
 											                   message = "Forwarded";
 				            							   } else if("R".equalsIgnoreCase(fundStatus)) {
@@ -318,13 +346,13 @@ String failure=(String)request.getParameter("resultFailure");%>
 				            							   } else if("E".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "#007e68";
 											                   message = "Revoked";
-				            							   } else if(obj[38]!=null && (obj[38].toString()).equalsIgnoreCase("N")){
+				            							   } else if(csStatus.equalsIgnoreCase("N")){
 				            								   message = "Reco Pending";
 											            	   statusColor = "#8c2303";
-				            							   } else if(obj[38]!=null && (obj[38].toString()).equalsIgnoreCase("Y")){
+				            							   } else if(csStatus.equalsIgnoreCase("Y")){
 				            								   message = "Approval Pending";
 											            	   statusColor = "#bd0707";
-											               }
+											               } 
 				            							 }
 										               %>
 										               
@@ -340,8 +368,57 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     
 			                     <td align="center">
 			                     
+			                        <%
+									   String action = "";
+									   String tooltip = "";
+									   boolean showPending = false;
+									   
+									   switch(currentEmpStatus.toUpperCase()) {
+									       case "DH":
+									    	   showPending = (dhStatus.equalsIgnoreCase("Y"));
+									           action = "Recommend";
+									           tooltip = "Preview & Recommend";
+									           break;
+									       case "CM":
+									       case "SE":
+									           showPending = !dhStatus.equalsIgnoreCase("Y");
+									           action = "Recommend";
+									           tooltip = "Preview & Recommend";
+									           break;
+									       case "CS":
+									           showPending = false;
+									           action = "Noting";
+									           tooltip = "Preview & Note";
+									           break;
+									       case "CC":
+									           showPending = false;
+									           action = "Approval";
+									           tooltip = "Preview & Approve";
+									           break;
+									   }
+									%>
+			                        
+			                        <% if(showPending) { %>
+									   <span style="color:#783d00; border-radius:10px; padding:2px 9px; background:#ffe8cc; font-size:11px; font-weight:800;">
+									       Recommendation Pending
+									   </span>
+									<% } else if(!action.isEmpty()) { %>
+									   <form action="#" method="POST" style="display:inline">
+									       <button type="submit"
+									               data-tooltip="<%= tooltip %>"
+									               data-position="top"
+									               class="btn btn-sm icon-btn tooltip-container"
+									               style="padding:6px;border:1px solid #05814d;background:#d3ffe5;"
+									               formaction="FundApprovalPreview.htm">
+									           <%= action %> &nbsp;&#10097;&#10097;
+									       </button>
+									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
+									   </form>
+									<% } %>
+			                     
 			                           
-			                           <% String rc1Status = obj[34] != null ? obj[34].toString().toUpperCase() : "NA";
+			                         <%--   <% String rc1Status = obj[34] != null ? obj[34].toString().toUpperCase() : "NA";
 			                           String rc2Status = obj[35] != null ? obj[35].toString().toUpperCase() : "NA";
 			                           String rc3Status = obj[36] != null ? obj[36].toString().toUpperCase() : "NA";
 			                           String rc4Status = obj[37] != null ? obj[37].toString().toUpperCase() : "NA";
@@ -414,7 +491,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
 									   </form>
-									<% } %>
+									<% } %> --%>
 												                 		
 			                          
 			                     </td>  
@@ -477,38 +554,64 @@ String failure=(String)request.getParameter("resultFailure");%>
 											    </button>
 											</td>
 			                     
-			                    <%String fundStatus=obj[31]==null ? "NaN" : obj[31].toString(); %>
+			                      <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
 			                     
-			                     <td style="width: 100px;" align="center">
+			                      <% String memberType = null;
+			                        String dhStatus = null,csStatus = null,ccStatus = null;
+			                        if(obj[20] != null && obj[22] != null)
+			                        {
+			                        	 String rolesStr = obj[20].toString();
+			                             String approvalsStr = obj[22].toString();
+			                             
+			                        	dhStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
+			                        	csStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
+			                        	ccStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
+			                        	
+			                             String input = "RC"; 
+			                             Set<String> rcFilter = Set.of("CM", "SE");
+
+			                             String[] roles = rolesStr.split(",");
+			                             String[] approvals = approvalsStr.split(",");
+
+			                             List<String[]> filtered = IntStream.range(0, roles.length)
+			                                     .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
+			                                     .mapToObj(i -> new String[]{roles[i], approvals[i]})
+			                                     .collect(Collectors.toList());
+
+			                             String rcStatus = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
+			                        }
+			                        %>
+									       
+									       <td style="width: 185px;" align="center">
 				                   			 
 		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
 										            
 										            <% String statusColor="",message="NA";
 										            if(fundStatus!=null) { 
-										               if("A".equalsIgnoreCase(fundStatus)) {
-										            	   statusColor = "green";
-										            	   message = "Approved";
-										               } else if("N".equalsIgnoreCase(fundStatus)) {
-										            	   statusColor = "#8c2303";
-										                   message = "Pending";
-										               } else if("F".equalsIgnoreCase(fundStatus) &&(obj[40]!=null && (obj[40].toString()).equalsIgnoreCase("N"))) {
-										            	   statusColor = "blue";
-										                   message = "Forwarded";
-			            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-										            	   statusColor = "red";
-										                   message = "Returned";
-			            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-										            	   statusColor = "#007e68";
-										                   message = "Revoked";
-			            							   } else if(obj[38]!=null && (obj[38].toString()).equalsIgnoreCase("N")){
-			            								   message = "Reco Pending";
-										            	   statusColor = "#8c2303";
-			            							   } else if(obj[38]!=null && (obj[38].toString()).equalsIgnoreCase("Y")){
-			            								   message = "Approval Pending";
-										            	   statusColor = "#bd0707";
-										               }
-			            							 }
+											               if("A".equalsIgnoreCase(fundStatus)) {
+											            	   statusColor = "green";
+											            	   message = "Approved";
+											               } else if("N".equalsIgnoreCase(fundStatus)) {
+											            	   statusColor = "#8c2303";
+											                   message = "Pending";
+											               } else if("F".equalsIgnoreCase(fundStatus)) {
+											            	   statusColor = "blue";
+											                   message = "Forwarded";
+				            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+											            	   statusColor = "red";
+											                   message = "Returned";
+				            							   } else if("E".equalsIgnoreCase(fundStatus)) {
+											            	   statusColor = "#007e68";
+											                   message = "Revoked";
+				            							   } else if(csStatus.equalsIgnoreCase("N")){
+				            								   message = "Reco Pending";
+											            	   statusColor = "#8c2303";
+				            							   } else if(csStatus.equalsIgnoreCase("Y")){
+				            								   message = "Approval Pending";
+											            	   statusColor = "#bd0707";
+											               } 
+				            							 }
 										               %>
 										               
 										           		<div class="form-inline">

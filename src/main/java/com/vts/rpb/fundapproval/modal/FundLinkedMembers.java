@@ -23,6 +23,9 @@ public class FundLinkedMembers {
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
 	
+	@Column(name = "FlowMasterId")
+	private long flowMasterId;
+	
 	@Column(name = "EmpId")
 	private long empId;
 	
