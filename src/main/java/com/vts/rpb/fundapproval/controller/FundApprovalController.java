@@ -230,6 +230,7 @@ public class FundApprovalController
 	{
 		String UserName = (String) ses.getAttribute("Username");
 		long empId = (Long) ses.getAttribute("EmployeeId");
+		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() + "Inside FundApprovalPreview.htm " + UserName);
 		try {
 			
@@ -268,6 +269,7 @@ public class FundApprovalController
 				req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId)));
 				req.setAttribute("MasterFlowDetails",fundApprovalService.getMasterFlowDetails(fundApprovalId));
 				req.setAttribute("AllCommitteeMasterDetails",fundApprovalService.getAllCommitteeMemberDetails(LocalDate.now()));
+				req.setAttribute("AllEmployeeDetails",masterService.getAllOfficersList(labCode));
 			}
 			
 			return "fundapproval/fundApprovalPreview";
@@ -393,6 +395,59 @@ public class FundApprovalController
 		return url;
 		
 	}
+	@RequestMapping(value="EditCommitteeMemberDetails.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String editCommitteeMemberDetails(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		long empId = (Long) ses.getAttribute("EmployeeId");
+		logger.info(new Date() + "Inside EditCommitteeMemberDetails.htm " + UserName);
+		String url=null;
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalIdEdit");
+			
+			String divisionHead=req.getParameter("divisionHeadDetails");
+			String[] rpbMember=req.getParameterValues("RPBMemberDetails");
+			String[] subjectExpert=req.getParameterValues("SubjectExpertDetails");
+			String rpbSecretary=req.getParameter("MemberSecretaryDetails");
+			String chairman=req.getParameter("chairmanDetails");
+			
+			if(fundApprovalId == null)
+			{
+				return "static/error";
+			}
+			
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setDivisionHeadId(divisionHead != "" ? Long.parseLong(divisionHead) : 0);
+			fundDto.setMembersId(rpbMember);
+			fundDto.setSubjectExpertsId(subjectExpert);
+			fundDto.setSecretaryId(rpbSecretary != "" ? Long.parseLong(rpbSecretary) : 0);
+			fundDto.setChairmanId(chairman != "" ? Long.parseLong(chairman) : 0);
+			fundDto.setCreatedBy(UserName);
+			
+			long status = fundApprovalService.editRecommendationDetails(fundDto,empId); 
+			
+			if(status > 0) {
+				redir.addAttribute("resultSuccess", "Fund Request Revoked Successfully..&#128077;");
+			}else {
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			}
+			
+			redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+			url="redirect:/FundApprovalPreview.htm";
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside EditCommitteeMemberDetails.htm " + UserName, e);
+			return "static/error";
+		}
+		return url;
+		
+	}
+
 	// Delete Fund Request
 	@RequestMapping(value="DeleteFundRequest.htm", method = {RequestMethod.GET,RequestMethod.POST})
 	public String deleteFundRequest(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
@@ -746,7 +801,8 @@ public class FundApprovalController
 			
 			String itemNomenclature=req.getParameter("ItemFor");
 			String justification=req.getParameter("justification");
-			String fundRequestAmount=req.getParameter("TotalFundReguestAmount");
+			String fundRequestAmount=req.getParameter("TotalFundRequestAmount");
+			System.out.println("*****fundRequestAmount****"+fundRequestAmount);
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
 			String jun=req.getParameter("JuneMonth");

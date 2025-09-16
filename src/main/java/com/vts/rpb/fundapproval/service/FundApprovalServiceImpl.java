@@ -1163,4 +1163,50 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return status;
 	}
 
+	@Override
+	@Transactional
+	public long editRecommendationDetails(FundApprovalDto fundDto, long empId) throws Exception {
+
+		long status = 0;
+		
+		if(fundDto != null)
+		{
+			// update Division Head
+			FundLinkedMembers dhMember = getLinkedMemberDetails(fundDto, "DH", fundDto.getDivisionHeadId());
+			insertSafe(dhMember);
+
+			// Insert Committee Member
+			if (fundDto.getMembersId() != null) {
+			    Arrays.stream(fundDto.getMembersId())
+			          .map(Long::parseLong)
+			          .map(employeeId -> getLinkedMemberDetails(fundDto, "CM", employeeId)) 
+			          .forEach(this::insertSafe);
+			}
+			
+			// Insert Subject Expert
+			if (fundDto.getSubjectExpertsId() != null) {
+				Arrays.stream(fundDto.getSubjectExpertsId())
+				.map(Long::parseLong)
+				.map(employeeId -> getLinkedMemberDetails(fundDto, "SE", employeeId)) 
+				.forEach(this::insertSafe);
+			}
+			
+			// Insert Committee Secretary
+			FundLinkedMembers secretaryMember = getLinkedMemberDetails(fundDto, "CS", fundDto.getSecretaryId());
+			insertSafe(secretaryMember);
+			
+			// Insert Committee Chairman
+			FundLinkedMembers chairMember = getLinkedMemberDetails(fundDto, "CC", fundDto.getChairmanId());
+			insertSafe(chairMember);
+				
+		}
+		
+		return status;
+	}
+	
+	private FundLinkedMembers getLinkedMemberDetails(FundApprovalDto dto, String memberType, long empId)
+	{
+		return null;
+	}
+
 }

@@ -77,7 +77,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			manager.persist(fundApprovalTrans);
 			manager.flush();
 			
-			return fundApprovalTrans.getFundApprovalId();
+			return fundApprovalTrans.getFundApprovalTransId();
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO AddFundApprovalTrans() "+ e);
@@ -321,6 +321,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			fundApproval.setItemNomenclature(modal.getItemNomenclature());
 			fundApproval.setJustification(modal.getJustification());
 			fundApproval.setRequisitionDate(modal.getRequisitionDate());
+			fundApproval.setFundRequestAmount(modal.getFundRequestAmount());
 			fundApproval.setApril(modal.getApril());
 			fundApproval.setMay(modal.getMay());
 			fundApproval.setJune(modal.getJune());

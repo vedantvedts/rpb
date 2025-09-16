@@ -606,7 +606,7 @@ tr:last-of-type th:last-of-type {
 	                    <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Justification<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                         <td><textarea placeholder="Enter Justification" id="justification" maxlength="500" name="justification" required="required" class="form-control"><%if(FundRequestObj!=null && FundRequestObj[11]!=null){ %> <%=FundRequestObj[11] %> <%} %></textarea></td>
 	                  <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Estimated Cost<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
-					<td style="padding:7px;"><input class="form-control input-sm FBEAmountAdd" style="width:100%;font-weight: 600;" id="FBEamountAdd-1" name="TotalFundReguestAmount" type="text" <%if(FundRequestObj!=null && FundRequestObj[24]!=null){ %> value="<%=df.format(FundRequestObj[24]) %>" <%} %> onkeydown="preventInvalidInput(event)" readonly="readonly"/></td> 
+					<td style="padding:7px;"><input class="form-control input-sm FBEAmountAdd" style="width:100%;font-weight: 600;" id="FBEamountAdd-1" name="TotalFundRequestAmount" type="text" <%if(FundRequestObj!=null && FundRequestObj[24]!=null){ %> value="<%=df.format(FundRequestObj[24]) %>" <%} %> onkeydown="preventInvalidInput(event)" readonly="readonly"/></td> 
                      </tr>
 										
 										<tr class="InsertRow-1">
