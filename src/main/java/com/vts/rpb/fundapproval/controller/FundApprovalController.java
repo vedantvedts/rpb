@@ -405,31 +405,30 @@ public class FundApprovalController
 		try
 		{
 			String fundApprovalId=req.getParameter("fundApprovalIdEdit");
-			
-			String divisionHead=req.getParameter("divisionHeadDetails");
-			String[] rpbMember=req.getParameterValues("RPBMemberDetails");
-			String[] subjectExpert=req.getParameterValues("SubjectExpertDetails");
-			String rpbSecretary=req.getParameter("MemberSecretaryDetails");
-			String chairman=req.getParameter("chairmanDetails");
+			String[] memberLinkedId=req.getParameterValues("MemberLinkedIdEdit");
+			String[] reccEmpId=req.getParameterValues("EditReccEmpId");
 			
 			if(fundApprovalId == null)
 			{
 				return "static/error";
 			}
 			
+			if(memberLinkedId == null || reccEmpId == null)
+			{
+				redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+				return "redirect:/FundApprovalPreview.htm";
+			}
+			
 			FundApprovalDto fundDto=new FundApprovalDto();
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
-			fundDto.setDivisionHeadId(divisionHead != "" ? Long.parseLong(divisionHead) : 0);
-			fundDto.setMembersId(rpbMember);
-			fundDto.setSubjectExpertsId(subjectExpert);
-			fundDto.setSecretaryId(rpbSecretary != "" ? Long.parseLong(rpbSecretary) : 0);
-			fundDto.setChairmanId(chairman != "" ? Long.parseLong(chairman) : 0);
+			fundDto.setMemberLinkedId(memberLinkedId);
+			fundDto.setReccEmpId(reccEmpId);
 			fundDto.setCreatedBy(UserName);
 			
 			long status = fundApprovalService.editRecommendationDetails(fundDto,empId); 
 			
 			if(status > 0) {
-				redir.addAttribute("resultSuccess", "Fund Request Revoked Successfully..&#128077;");
+				redir.addAttribute("resultSuccess", "Recommending Officer(s) Updated Successfully..&#128077;");
 			}else {
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 			}

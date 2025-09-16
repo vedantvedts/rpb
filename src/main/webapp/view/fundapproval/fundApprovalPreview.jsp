@@ -677,11 +677,13 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    %>
 									    
 									    	<tr>
-									    	<td class="editRCDetails"><%=masterFlowList[2] %></td>
+									    	<td class="editRCDetails"><%=masterFlowList[2] %>
+									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
+									    	</td>
 								            <td class="recommendation-value editRCDropDown">
 									              
 									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
-		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="<%=masterFlowList[11]!=null ? masterFlowList[11] : ""  %>" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
 		                              			
 		                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
 		                              			
@@ -713,6 +715,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 		                              			</select>
 		                              			<%}else{ %>
 		                              			
+		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
 		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
 		                              			
 		                              			<%} %>
@@ -861,11 +864,15 @@ function updateReccDetailsFunction()
 {
   let form = $("#editRcDetailsForm");
      if (form.length) {
-         showConfirm("Are You Sure To Update The Recommending Officer(s)..?", function (confirmResponse) {
+       /*   showConfirm("Are You Sure To Update The Recommending Officer(s)..?", function (confirmResponse) {
              if (confirmResponse) {
                  form.submit();
              }
-         });
+         }); */
+         if(confirm("Are You Sure To Update The Recommending Officer(s)..?"))
+       	 {
+        	 form.submit();
+       	 }
      }
 	
 }

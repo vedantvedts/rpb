@@ -36,6 +36,8 @@ public class FundApprovalDto {
 	private BigDecimal Mar;
 	private long InitiatingOfficer;
 	private long divisionHeadId;
+	private String[] memberLinkedId;
+	private String[] reccEmpId;
 	private String[] membersId;
 	private String[] subjectExpertsId;
 	private long secretaryId;
