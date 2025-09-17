@@ -109,4 +109,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public long deleteFundRequestDetails(long fundApprovalId) throws Exception;
 
 	public List<Object[]> getTransactionStatusDetails(String action, String actionType) throws Exception;
+
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId);
 }

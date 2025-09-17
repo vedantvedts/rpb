@@ -866,5 +866,21 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
+	@Override
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId) {
+		 try {
+		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId";
+		        return manager.createQuery(jpql, FundLinkedMembers.class)
+		                      .setParameter("empId", empId)
+		                      .setParameter("fundApprovalId", fundApprovalId)
+		                      .getSingleResult();
+		        
+		    } catch (Exception e) {
+		        logger.error(new Date() + " Inside DAO getLinkedMemberDetailsByEmpId() " + e);
+		        e.printStackTrace();
+		        return null;
+		    }
+	}
+
 
 }

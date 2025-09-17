@@ -160,6 +160,7 @@ List<Object[]> approvalPendingList=(List<Object[]>)request.getAttribute("Approva
 List<Object[]> approvedList=(List<Object[]>)request.getAttribute("ApprovalList");
 String fromYear=(String)request.getAttribute("FromYear");
 String toYear=(String)request.getAttribute("ToYear");
+String fundListApprovedOrNot=(String)request.getAttribute("FundListApprovedOrNot");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
@@ -305,9 +306,9 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                        	 String rolesStr = obj[20].toString();
 			                             String approvalsStr = obj[22].toString();
 			                             
-			                        	dhStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
-			                        	csStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
-			                        	ccStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
+			                        	dhStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
+			                        	csStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
+			                        	ccStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
 			                        	
 			                             String input = "RC"; 
 			                             Set<String> rcFilter = Set.of("CM", "SE");
@@ -321,6 +322,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                                     .collect(Collectors.toList());
 
 			                             String rcStatus = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
+			                             
 			                        }
 			                        %>
 									       
@@ -661,6 +663,19 @@ showSuccessFlyMessage('<%=success %>');
 showFailureFlyMessage('<%=failure %>');
 
 <%}%>
+
+$(document).ready(function(){
+	
+	var listStatus = '<%=fundListApprovedOrNot %>';
+	if(listStatus!=null && listStatus!='')
+	{
+		if(listStatus == 'A')
+		{
+			$("#tab-approved").click();
+		}
+	}
+	
+});
 
 </script>
 
