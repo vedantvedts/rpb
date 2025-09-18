@@ -24,7 +24,7 @@
   background: #fff;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+ box-shadow: 0px 2px 8px rgb(215 170 123);
   min-width: 300px;
   max-width: 300px;
 }
@@ -116,6 +116,21 @@
     border-bottom-left-radius: 0rem !important;
 }
 
+ .RcRemarks
+    {
+     font-weight: 600;
+     color:#e17400 !important;
+     font-size: 14px;
+    }
+    
+    .statusHeader
+    {
+    	text-decoration: underline;
+    	font-weight: 600;
+    	color: #054691;
+    	margin:10px;
+    	font-family: math;
+    }
 
 </style>
 
@@ -180,9 +195,9 @@
 			      </div>
 			      <div class="modal-body">
 			        <!-- Employee Modal Table -->
-			        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">CURRENT STATUS:</div>
+			        <div class="statusHeader">CURRENT STATUS:</div>
 			        <div id="ApprovalStatusDiv" class="mt-2" style="width: 95% !important;margin:auto;"></div>
-			        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">STATUS HISTORY:</div>
+			        <div class="statusHeader">STATUS HISTORY:</div>
 			        <div id="EmployeeModalTable" class="mt-2" style="width: 95% !important;margin:auto;"></div>
 			        
 			      </div>

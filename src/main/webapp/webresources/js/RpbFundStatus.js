@@ -40,64 +40,77 @@ function previewInformation(fundApprovalId) {
             var row = data[0];
             var html = '<div class="status-card-container">';
 
-			html += createCard("Initiated By", row[19], "Initiated", true, "Initiated", "fa-solid fa-circle-check","left");  // last parameter text-alight : left
-			
-			if(row[38] != 'N' && row[38] != 'E')
-			{
-				html += createCard("Division Head", row[51], row[48] === "Y" ? "Recommended" : "Pending", row[48] === "Y", "Recommendation Pending", row[48] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-				// RC1 
-	            if(parseInt(row[20]!= null ? row[20] : 0) > 0 && row[22]!=null && row[22] == 'CM')
-	            {
-					var rc1Status=row[41];
-					html += createCard("RPB Member", row[21], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-				}
-	            
-				// RC2 
-	            if(parseInt(row[23]!= null ? row[23] : 0) > 0 && row[25]!=null && row[25] == 'CM')
-	            {
-					var rc1Status=row[42];
-					html += createCard("RPB Member", row[24], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-				}
-	            
-				// RC3 
-	            if(parseInt(row[26]!= null ? row[26] : 0) > 0 && row[28]!=null && row[28] == 'CM')
-	            {
-					var rc1Status=row[43];
-					html += createCard("RPB Member", row[27], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-				}
-				
-				// RC4
-	            if(parseInt(row[29]!= null ? row[29] : 0) > 0 && row[31]!=null && row[31] == 'SE')
-	            {
-					var rc1Status=row[44];
-					html += createCard("Subject Expert", row[30], rc1Status === "Y" ? "Recommended" : "Pending", rc1Status === "Y", "Recommendation Pending", rc1Status === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-				}
-	            
-				html += createCard("RPB Member Secretary", row[33], row[45] === "Y" ? "Reviewed" : "Pending", row[45] === "Y", "Review Pending", row[45] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-	            html += createCard("RPB Chairman", row[36], row[46] === "Y" ? "Approved" : "Pending", row[46] === "Y", "Approval Pending", row[46] === "Y" ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half","left");
-			}
-			
-			
-	        
-	        if(row[38] == 'N' || row[38] == 'E')
-	        {
-				html += createCard("", "","",false,"Forward Pending","fa-solid fa-hourglass-half","center");
-			}
-	            
-            html += '</div>';
+            // Always show Initiator
+            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left");
+
             
-              // Utility to render a card
-            function createCard(title, officer, status, isApproved, pendingText, iconClass, align) {
+            // Split roles, officers, and statuses
+            var roles = row[21] ? row[21].split(",") : [];
+            var officers = row[24] ? row[24].split("###").map(e => e.trim()) : [];
+            var officerRemarks = row[25] ? row[25].split("###").map(e => e.trim()) : [];
+            var statuses = row[23] ? row[23].split(",") : [];
+            
+             if(roles == null || typeof(roles) == 'undefined')
+            {
+				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center");
+				$('#ApprovalStatusDiv').html(html);
+				$(".forwardPendingclass").empty();
+				$(".forwardPendingclass").css({
+				    "display": "grid",
+				    "text-align": "center"
+				});
+				var forwardPending= `<div class="status warning" style="width: 100% !important;">
+                        						<i class="fa-solid fa-circle-check"></i> Forward Pending
+                   								 </div>`;
+				$(".forwardPendingclass").html(forwardPending);
+				
+				return;
+			}
+
+            roles.forEach(function(role, idx) {
+                var officer = officers[idx] || "-";
+                var officerRemark = officerRemarks[idx] || "";
+                var status = statuses[idx] || "N";
+
+                var isApproved = status === "Y";
+                var pendingText = (role === "CC") ? "Approval Pending" : "Recommendation Pending";
+
+                // Map role codes to readable titles
+                var titleMap = {
+                    "DH": "Division Head",
+                    "CM": "RPB Member",
+                    "SE": "Subject Expert",
+                    "CS": "RPB Member Secretary",
+                    "CC": "RPB Chairman"
+                };
+
+                html += createCard(role+'class',
+                    titleMap[role] || role,
+                    officer,
+                    officerRemark,
+                    isApproved ? (role === "CC" ? "Approved" : (role === "CS" ? "Reviewed" : "Recommended")) : "Pending",
+                    isApproved,
+                    pendingText,
+                    isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
+                    "left"
+                );
+            });
+
+            html += '</div>';
+
+            // Utility to render a card
+            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align) {
                 let statusClass = isApproved ? "success" : "warning";
                 let statusText = isApproved ? status : pendingText;
 
                 return `
-                <div class="status-card" style="text-align:${align} !important;">
+                <div class="status-card ${classAttribute}" style="text-align:${align} !important;">
                     <h6>${title}</h6>
                     <p><b>${officer}</b></p>
                     <div class="status ${statusClass}">
                         <i class="${iconClass}"></i> ${statusText}
                     </div>
+                     ${remark && remark!='NA' ? `<p class="RcRemarks">Remarks : ${remark}</p>` : ''}
                 </div>`;
             }
 
@@ -109,6 +122,7 @@ function previewInformation(fundApprovalId) {
         }
     });
 }
+
 
 function generateTableHTML(data) {
     if (!data || data.length === 0) {

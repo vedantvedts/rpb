@@ -486,6 +486,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		
 		fundDetails.setStatus("E");  // E - Revoked
+		fundDetails.setRevokedBy(empId);
+		fundDetails.setRevokedDate(LocalDateTime.now());
 		fundApprovalDao.updateFundRequest(fundDetails);
 		
 		deleteLinkedMembers(fundDetails);
@@ -538,6 +540,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				else if(fundDto.getAction().equalsIgnoreCase("R"))
 				{
 					fundApproval.setStatus("R");
+					fundApproval.setReturnedBy(empId);
+					fundApproval.setReturnedDate(LocalDateTime.now());
 				}
 				
 				if(fundDto.getMemberStatus()!=null)

@@ -377,6 +377,12 @@ tr:last-of-type th:last-of-type {
     	margin-top : 10px;
     }
     
+    .RcRemarks
+    {
+     font-weight: 600;
+     color:red;
+    }
+    
 </style>
 </head>
 <body>
