@@ -914,7 +914,6 @@ public class FundApprovalController
 				fundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
 				fundApproval.setModifiedBy(UserName);
 				fundApproval.setModifiedDate(LocalDateTime.now());
-				fundApproval.setStatus("N");
 				
 				FundApprovalAttachDto attachDto=new FundApprovalAttachDto();
 				attachDto.setFileName(filenames);

@@ -391,12 +391,6 @@ Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 List<Object[]> masterFlowDetails=(List<Object[]>)request.getAttribute("MasterFlowDetails");
 List<Object[]> committeeMasterList=(List<Object[]>)request.getAttribute("AllCommitteeMasterDetails");
 List<Object[]> employeeList=(List<Object[]>)request.getAttribute("AllEmployeeDetails");
-System.out.println("----------masterFlowDetails----------------");
-masterFlowDetails.forEach(row-> System.out.println(Arrays.toString(row)));
-System.out.println("----------committeeMasterList----------------");
-committeeMasterList.forEach(row-> System.out.println(Arrays.toString(row)));
-System.out.println("----------employeeList----------------");
-employeeList.forEach(row-> System.out.println(Arrays.toString(row)));
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
@@ -681,10 +675,12 @@ if(fundDetails!=null && fundDetails.length > 0)
 									        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmActionFromMember('<%=actionName %>','<%=currentEmpStatus %>','<%=action %>')">
 									        <%=actionName %>
 									        </button>
-									        
-									    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=currentEmpStatus %>','R')">
-										        Return
-										</button>
+									    
+									    <% if(currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("SC")){ %>
+										    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=currentEmpStatus %>','R')">
+											        Return
+											</button>
+										<%} %>
 									    
 									</form>
                                </div>
@@ -694,7 +690,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                               	
                               	<form id="editRcDetailsForm" action="#">
 	                               
-								<input type="hidden" name`="${_csrf.parameterName}" value="${_csrf.token}"/>
+								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
                               	
                               	<table style="width: 100%;" id="fundApprovalForardTable">

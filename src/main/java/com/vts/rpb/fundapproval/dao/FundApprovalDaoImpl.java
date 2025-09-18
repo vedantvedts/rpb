@@ -336,7 +336,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			fundApproval.setMarch(modal.getMarch());
 			fundApproval.setModifiedBy(modal.getModifiedBy());
 			fundApproval.setModifiedDate(modal.getModifiedDate());
-			fundApproval.setStatus(modal.getStatus());
 			manager.flush();
 			return fundApproval.getFundApprovalId();
 			

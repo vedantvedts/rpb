@@ -41,18 +41,21 @@ function previewInformation(fundApprovalId) {
             var html = '<div class="status-card-container">';
 
             // Always show Initiator
-            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left");
+            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
 
             
             // Split roles, officers, and statuses
             var roles = row[21] ? row[21].split(",") : [];
+            var empIds = row[22] ? row[22].split(",") : [];
             var officers = row[24] ? row[24].split("###").map(e => e.trim()) : [];
             var officerRemarks = row[25] ? row[25].split("###").map(e => e.trim()) : [];
             var statuses = row[23] ? row[23].split(",") : [];
+            var returnedBy = row[26] || 0;
+            var returedDate = row[27] || 0;
             
              if(roles == null || typeof(roles) == 'undefined')
             {
-				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center");
+				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center", "", "");
 				$('#ApprovalStatusDiv').html(html);
 				$(".forwardPendingclass").empty();
 				$(".forwardPendingclass").css({
@@ -69,6 +72,7 @@ function previewInformation(fundApprovalId) {
 
             roles.forEach(function(role, idx) {
                 var officer = officers[idx] || "-";
+                var empId = empIds[idx] || "-";
                 var officerRemark = officerRemarks[idx] || "";
                 var status = statuses[idx] || "N";
 
@@ -92,25 +96,29 @@ function previewInformation(fundApprovalId) {
                     isApproved,
                     pendingText,
                     isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
-                    "left"
+                    "left",
+                     returnedBy == empId ? 'Returned on ' : '',
+                     returedDate
                 );
             });
 
             html += '</div>';
 
             // Utility to render a card
-            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align) {
+            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
                 let statusClass = isApproved ? "success" : "warning";
                 let statusText = isApproved ? status : pendingText;
 
                 return `
-                <div class="status-card ${classAttribute}" style="text-align:${align} !important;">
+                <div class="status-card ${classAttribute} ${returnedTxt ? `returnBg` : ''}" style="text-align:${align} !important;">
+                
+                    ${returnedTxt ? `<h6 class="returnedTxt">${returnedTxt} ${returnedDate ? `${returnedDate}` : ''}</h6>` : ''}
                     <h6>${title}</h6>
                     <p><b>${officer}</b></p>
                     <div class="status ${statusClass}">
                         <i class="${iconClass}"></i> ${statusText}
                     </div>
-                     ${remark && remark!='NA' ? `<p class="RcRemarks">Remarks : ${remark}</p>` : ''}
+                     ${remark && remark!='NA' ? `<p class="RcRemarks"><span class="RcRemarkTitle">Remarks : </span> ${remark}</p>` : ''}
                 </div>`;
             }
 

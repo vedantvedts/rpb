@@ -131,6 +131,24 @@
     	margin:10px;
     	font-family: math;
     }
+    
+    .RcRemarkTitle
+    {
+    	color: #002e85;
+    	font-size: 13px;
+    }
+    
+    .returnedTxt
+    {
+    	text-align: center;
+    	color:#0015b9;
+    }
+    
+    .returnBg
+    {
+        box-shadow: 0px 1px 15px rgb(157 7 7) !important;
+        background: #fff2f2 !important;
+    }
 
 </style>
 
@@ -184,7 +202,7 @@
 		</div>
 		
 		<!-- Status Modal -->
-			<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" onselectstart="return false;" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			 <div class="modal-dialog  custom-width-modal" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header" style="background-color: white !important;color:black;">
