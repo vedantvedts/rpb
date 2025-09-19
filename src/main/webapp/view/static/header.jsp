@@ -740,6 +740,12 @@ input[type=number] {
 	color: black !important;
 }
 
+/* Target all submodule dropdowns */
+.dropdown-menu {
+    min-width: 13rem;   /* reduce from default 10rem */
+    width: auto;       /* shrink to fit content */
+    padding: 0.25rem 0;
+}
 
 	
 
@@ -920,9 +926,11 @@ function showFailureFlyMessage(message) {
 		<span style="font-family: Lato, sans-serif;font-size: 16px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: white;margin-left: -0.3rem;font-weight: 600;"><%=LocalDate.now().getMonth() %> &nbsp;<%=LocalDate.now().getYear() %> </span></div>
 			
 								
-								 <% for (Object[] mainModule : MainModuleList) { %>
+								 <% for (Object[] mainModule : MainModuleList) { 
+									
+								 %>
 								
-    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")||(mainModule[1].toString()).equalsIgnoreCase("CommitteeMaster")){%>
+    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")||(mainModule[1].toString()).equalsIgnoreCase("Committee Master")){%>
 		 
 		 <%if((!(mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
 		<!-- Emp Name -->					
@@ -931,41 +939,41 @@ function showFailureFlyMessage(message) {
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
 	<%} %>
 	
-	<% if (mainModule[1].toString().equalsIgnoreCase("CommitteeMaster")) { %>
-    <!-- Main Module -->
-    <li id="MainModuleId" value="<%= mainModule[0] %>" 
-        class="nav-link mb-2 shadow custom_width hovercolor dropdown-toggle" 
-        onclick="toggleSubmoduleList('<%= mainModule[0] %>')">
-        <span class="<%= mainModule[2] %>">&nbsp;&nbsp;</span>
-        <%= mainModule[1] %>
-    </li>
+<% if (mainModule[1].toString().equalsIgnoreCase("Committee Master")) { %>
+  <li class="nav-item dropdown">
+    <!-- Main module as dropdown toggle -->
+    <a class="nav-link dropdown-toggle" 
+       href="#" 
+       id="dropdown-<%= mainModule[0] %>" 
+       role="button" 
+       data-toggle="dropdown" 
+       aria-haspopup="true" 
+       aria-expanded="false" style="color: white; font-weight: 600;">
+      
+       <%= mainModule[1] %>
+    </a>
 
-    <!-- Submodules List -->
-    <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0] %>" style="display:none;">
-        <% for (Object[] subModule : SubModuleList) {
-               if (subModule[0].equals(mainModule[0])) { %>
-            <li style="margin-left:0.3rem;">
-                <a class="dropdown-item hovercolorsub text-nowrap bi-list" 
-                   href="<%= subModule[1] %>" 
-                   style="border-radius:3px; margin:4px 0; padding:3px; font-weight:700; font-size:15px; color:#0303b9;">
-                    <i class="fas fa-arrow-right" style="font-size:11px; font-weight:800;"></i>
-                    &nbsp;&nbsp;<%= subModule[2] %>
-                </a>
-            </li>
-        <%   } 
-             temp = Integer.parseInt(subModule[0].toString());
-           } %>
-    </ul>
-<% } %>
-
-	
+    <!-- Submodules -->
+    <div class="dropdown-menu" aria-labelledby="dropdown-<%= mainModule[0] %>">
+      <% for (Object[] subModule : SubModuleList) { 
+           if (subModule[0].equals(mainModule[0])) { %>
+            <a class="dropdown-item  hovercolorsub" 
+               href="<%= subModule[1] %>">
+               <i class="fas fa-arrow-right" style="font-size:12px; font-weight:800;"></i>
+               &nbsp;&nbsp;<%= subModule[2] %>
+            </a>
+      <%   } 
+         } %>
+    </div>
+  </li>
+<% } %>	
  <%if(((mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
-	    <ul class="navbar-nav ml-auto " style="margin-left: 20px;"> <!-- adds extra space from left -->
+	    <ul class="navbar-nav  " > <!-- adds extra space from left -->
 	    <% for (Object[] subModule : SubModuleList) {
 	    if (subModule[0].equals(mainModule[0])) { %>
 	        <li class="nav-item active" style=" margin: 2px 4px;">
 	            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
-	               style="width: 95%;
+	               style="width: 80%;
 	                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
 	                      border-radius: 3px;
 	                      margin-top: 0.1rem;
@@ -1003,7 +1011,7 @@ function showFailureFlyMessage(message) {
 	       <% }} %>
 	       	
 			<%if(!logintype.equalsIgnoreCase("P")){ %>
-						 <div  class="btn-group HeaderNotifications">
+						 <div  class="btn-group HeaderNotifications" style="margin-left: 13%;">
 	                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
 						           <!--  <span id="NotificationCount" class="badge" style="font-weight: 700;color: white;">Notifications</span> -->
@@ -1170,6 +1178,7 @@ function toggleSubmoduleList(mainModuleValue) {
 
     // Hide all other submodule lists
     var allSubmoduleLists = document.querySelectorAll('ul.list-unstyled.menu-elements');
+    console.log("allSubmoduleLists----"+allSubmoduleLists)
     allSubmoduleLists.forEach(function(ul) {
         if (ul !== submoduleList) {
             ul.style.display = 'none';
@@ -1184,6 +1193,7 @@ function toggleSubmoduleList(mainModuleValue) {
     if (submoduleList.style.display === 'block') {
         submoduleList.style.display = 'none';
     } else {
+    	
         submoduleList.style.display = 'block';
     }
 }

@@ -64,11 +64,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	    	      ses.setAttribute("EmployeeDivisionName", EmpDetails[6]); 
 	    	      ses.setAttribute("client_name", labcode);
 	    			
-	    		validUrl="/rpb/MainDashBoard.htm";
+	    		validUrl=req.getContextPath() + "/MainDashBoard.htm";
 			}
 			else
 			{
-				validUrl="/rpb/login";
+				validUrl=req.getContextPath() + "/login";
 			}
       
      }catch (Exception e) {

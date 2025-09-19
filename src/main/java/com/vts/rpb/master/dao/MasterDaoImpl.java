@@ -112,7 +112,7 @@ public class MasterDaoImpl implements MasterDao {
 		logger.info(new Date() +"Inside DaoImpl getDivisionList");
 		try
 		{
-			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype OR :committeeMember IN ('CS', 'CC')  THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1'");
+			Query query=manager.createNativeQuery("SELECT DISTINCT d.DivisionId, d.DivisionCode, d.LabCode, d.DivisionName, d.IsActive FROM "+mdmdb+".division_master d INNER JOIN "+mdmdb+".employee e ON e.DivisionId=d.DivisionId AND e.LabCode=:labCode AND e.IsActive='1' AND (CASE WHEN 'A' =:logintype OR :committeeMember IN ('CS', 'CC')  THEN 1=1 ELSE e.EmpId =:empId END) WHERE d.LabCode =:labCode AND d.IsActive='1' ORDER BY d.DivisionId DESC");
 			query.setParameter("labCode", labCode);
 			query.setParameter("empId", empId);
 			query.setParameter("logintype", logintype);
@@ -129,10 +129,11 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 	@Override
-	public List<Object[]> getOfficersList() throws Exception {
+	public List<Object[]> getOfficersList(String labCode) throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getOfficerList");
 		try {
-		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b, "+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId  ORDER BY a.SrNo=0,a.SrNo");
+		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b, "+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.labCode = :labCode ORDER BY a.SrNo=0,a.SrNo");
+		query.setParameter("labCode", labCode);
 		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
 		return OfficerList;
 		
@@ -144,10 +145,11 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 	@Override
-	public List<Object[]> getAllOfficersList() throws Exception {
+	public List<Object[]> getAllOfficersList(String labCode) throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getAllOfficersList");
 		try {
-		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId  ORDER BY a.SrNo=0,a.SrNo ");
+		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.IsActive = '1' AND a.labCode = :labCode ORDER BY a.SrNo=0,a.SrNo ");
+		query.setParameter("labCode", labCode);
 		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
 		return OfficerList;
 		
@@ -178,7 +180,7 @@ public class MasterDaoImpl implements MasterDao {
 	public List<Object[]> getCommitteeMasterList() throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getCommitteeMasterList");
 		try {
-		Query query= manager.createNativeQuery("SELECT  cm.MemberType ,cm. EmpId  , cm.FromDate ,cm.ToDate, e.EmpName,  d.DesigCode,cm.CommitteeMemberId    FROM      ibas_committee_members cm INNER JOIN "+mdmdb+".employee e  ON e.EmpId=cm. EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId and cm.IsActive='1'");
+		Query query= manager.createNativeQuery("SELECT cm.MemberType, cm.EmpId, cm.FromDate, cm.ToDate, e.EmpName, d.DesigCode, cm.CommitteeMemberId FROM ibas_committee_members cm INNER JOIN "+mdmdb+".employee e ON e.EmpId=cm.EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId WHERE cm.IsActive='1'");
 		List<Object[]> getCommitteeMasterList=(List<Object[]>)query.getResultList();
 		return getCommitteeMasterList;
 		

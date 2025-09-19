@@ -8,7 +8,7 @@ import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
-import com.vts.rpb.fundapproval.modal.LinkedCommitteeMembers;
+import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
 
 public interface FundApprovalDao 
 {
@@ -22,9 +22,9 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public long AddFundRequestAttachSubmit(FundApprovalAttach Attach) throws Exception;
 
-	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId) throws Exception;
+	public List<Object[]> getFundApprovalList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId,String committeeMember) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String estimatedCost,long fundRequestId) throws Exception;
+	public List<Object[]> getMasterFlowDetails(long fundRequestId) throws Exception;
 
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	
@@ -54,7 +54,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public long insertFundApprovalTransaction(FundApprovalTrans transaction) throws Exception;
 
-	public long insertLinkedCommitteeMembers(LinkedCommitteeMembers linkedMembers) throws Exception;
+	public long insertLinkedCommitteeMembers(FundLinkedMembers linkedMembers) throws Exception;
 	
 	public List<Object[]> getProjectBudgetHeadList(String projectId) throws Exception;
 	
@@ -88,7 +88,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getCommitmmentDetails(String commitmentId) throws Exception;
 
-	public List<Object[]> getProposedProjectDetails(String divisionId) throws Exception;
+	public List<Object[]> getProposedProjectDetails() throws Exception;
 	
 	public List<Object[]> getAttachmentDetails(String fundApprovalId) throws Exception;
 	
@@ -97,4 +97,18 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public long getRevisionCount(String fundApprovalId) throws Exception;
 	
 	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception;
+
+	public List<Object[]> getLinkedMemberDetails(long fundApprovalId) throws Exception;
+
+	public FundLinkedMembers getCommitteeMemberLinkedDetails(String committeMemberLinkedId) throws Exception;
+
+	public long updateLinkedCommitteeMembers(FundLinkedMembers linkedMembers) throws Exception;
+
+	public void deleteLinkedCommitteeMembers(String committeeMemberLinkedId) throws Exception;
+
+	public long deleteFundRequestDetails(long fundApprovalId) throws Exception;
+
+	public List<Object[]> getTransactionStatusDetails(String action, String actionType) throws Exception;
+
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId);
 }

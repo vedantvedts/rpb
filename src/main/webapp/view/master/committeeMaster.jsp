@@ -57,16 +57,16 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 	<%} %>
 
 				     <div class="page card dashboard-card">	
- <div class="table-responsive" style="width: 70%;margin:auto;margin-top: 2%;">					
+ 						<div class="table-responsive" style="width: 70%;margin:auto;margin-top: 2%;">					
 					   			<table class="table table-bordered table-hover table-striped table-condensed" id="TableCommitteMaster">
 				                   <thead>
 				                       <tr>
 				                       <th>SN</th>
 				                       
 				                       <th class="text-nowrap">MemberType</th>
-				                       <th class="text-nowrap">Employee Name</th>
-				                       <th class="text-nowrap">Date</th>
-				                       <th >Valid Date</th>
+				                       <th class="text-nowrap">Employee Details</th>
+				                       <th class="text-nowrap">Valid From</th>
+				                       <th >Valid To</th>
 				                       <th >Action</th>
 				                       </tr>
 				                   </thead>
@@ -81,27 +81,25 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                  
 				                  <td class="no-wrap" style="text-align: center;"><%=a++ %>.</td>
 				                  <td class="no-wrap" style="text-align: center;"><%if(obj[0]!=null){ 
-				                  if(obj[0].toString().equalsIgnoreCase("CC")){
-				                  %>Chair Person
+				                	  
+				                  if(obj[0].toString().equalsIgnoreCase("CC")){%>
+				                  Chair Person
 				                  <%}else if(obj[0].toString().equalsIgnoreCase("CS")){%>
-				                 Commitee Seceratory  
-				                 <%}else if(obj[0].toString().equalsIgnoreCase("CM")){ %>
-				                 Commitee Member
-				                 <%}else if(obj[0].toString().equalsIgnoreCase("SC")){ %>
-				                    StandBy Chair Person
-				                 <%} %>
+				                  Secretary  
+				                  <%}else if(obj[0].toString().equalsIgnoreCase("CM")){ %>
+				                  Member
+				                  <%}else if(obj[0].toString().equalsIgnoreCase("SC")){ %>
+				                  Standby Chair Person
+				                  <%} %>
+				                 
 				                 <%}else{ %>--<%} %></td>
-				                  <td class="no-wrap" style="text-align: center;"><%=obj[4] %><%=','%> <%=obj[5] %></td>
+				                  <td class="no-wrap"><%=obj[4] %><%=','%> <%=obj[5] %></td>
 				                  <td class="no-wrap"style="text-align: center;"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
 				                  <td class="no-wrap" style="text-align: center;"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
 				                  <td align="center">
 				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
-
 				                  
 				                  </td>
-				                  
-				                  
-				                  
 				                  
 				                  <%}}else{ %>
 				                  <tr><td colspan="6" align="center" style="font-weight: 600;color:red;">No Record Found</td></tr>
@@ -142,18 +140,14 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 			            <td style="padding: 10px;">
 			     
 			            <select id="MemberType" name="MemberType" class="form-control select2" style="width:100% !important" required="required">
+			             <option value="CM" >Member</option>
+			             <option value="CS" >Secretary</option>
 			             <option value="CC" >Chair Person</option>
-			             <option value="CS" >Committee Secretary</option>
-			             <option value="CM" >Committee Member</option>
-			             <option value="SC" >Stand By Chair Person</option>
+			             <option value="SC" >Standby Chair Person</option>
 			            
 			           </select>
 			           
 			            </td></tr>
-				       
-				       
-				       
-				       
 				       
 			           <tr>  
 			            <td style="width: 30%;padding: 10px;"><label style="font-weight: 600;">Employee <span class="mandatory" style="color: red;font-weight: normal;">*</span>&nbsp;</label></td>
@@ -161,11 +155,6 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 			     
 			            <select id="AllOfficersList" name="Employee" class="form-control select2" style="width:100% !important" required="required">
 			            
-			           <%--  <%
-			        if(ScheduleList!=null && ScheduleList.size() > 0 ){
-			            for(Object[] obj: ScheduleList){%>
-			            <option value="<%= obj[0] %>" ><%=obj[1] %> </option>
-			            <%}} %> --%>  
 			           </select>
 			           
 			            </td></tr>
@@ -188,31 +177,21 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				       </div>
 				   
                       
-				     <!--  <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
-				        <button type="submit" class="btn btn-sm btn-secondary"  style="background-color: rgb(30 163 23);color:white;" onclick="CommitteeMasterValidation('Add')" >Submit</button>
-				      </div> -->
-				      
-				      <div class="modal-footer">
-    <button type="button" class="btn btn-success" id="addBtn"
-            onclick="CommitteeMasterValidation('Add')">Add Committee</button>
-
-    <button type="button" class="btn btn-warning" id="editBtn"
-            onclick="CommitteeMasterValidation('Edit')">Update Committee</button>
-</div>
+			<div class="modal-footer" style="justify-content: center;">
+			    <button type="button" class="btn btn-success" id="addBtn"
+			            onclick="CommitteeMasterValidation('Add')">Add Committee</button>
+			
+			    <button type="button" class="btn btn-warning" id="editBtn"
+			            onclick="CommitteeMasterValidation('Edit')">Update Committee</button>
+			</div>
 				      
 				   
-				       </form>
-				      </div>
-				    </div>
-				  </div>
-				</div>
+	       </form>
+	      </div>
+	    </div>
+	  </div>
+	</div>
        
-      
-
-
-
-
-
 </body>
 <script type="text/javascript">
 function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,CommitteMasterId) {
@@ -290,18 +269,6 @@ function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,Commi
 	}
 	$("#Action").val(Action);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 function EmployeeList(OfficerId)
 {
@@ -535,7 +502,7 @@ $("#FromDate").change(function() {
 
 $(document).ready(function () {
     $('#TableCommitteMaster').DataTable({
-    	"lengthMenu": [[5, 10, 25, 50, 75, 100,'-1'],[5, 10, 25, 50, 75, 100,"All"]],
+    	"lengthMenu": [[ 10, 25, 50, 75, 100,'-1'],[ 10, 25, 50, 75, 100,"All"]],
         paging: true,
         "searching": true,
    	    "ordering": true,

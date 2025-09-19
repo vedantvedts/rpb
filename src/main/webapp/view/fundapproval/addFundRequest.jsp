@@ -350,26 +350,25 @@ tr:last-of-type th:last-of-type {
   100% { box-shadow: 0 0 5px rgba(255, 152, 0, 0.7); }
 }
 
+/* Hand pointer with zoom in/out effect */
 .hand-pointer {
   position: absolute;
+  top: 404.625px !important;
+  left: 102.062px !important;
   bottom: 100px;       /* adjust as per your UI */
   right: 40px;         /* adjust as needed */
   width: 80px;
   height: 80px;
   background: url("view/images/pointingHand.png") no-repeat center/contain;
-  z-index: 2000;
-  animation: moveHandUpDown 1.5s infinite ease-in-out;
+  animation: zoomHand 3s infinite ease-in-out;
 }
 
-/* Smooth up-down bounce */
-@keyframes moveHandUpDown {
-  0%   { transform: translateY(0) rotate(270deg); }
-  25%  { transform: translateY(-15px) rotate(267deg); }
-  50%  { transform: translateY(0) rotate(270deg); }
-  75%  { transform: translateY(15px) rotate(273deg); }
-  100% { transform: translateY(0) rotate(270deg); }
+/* Zoom in-out effect */
+@keyframes zoomHand {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }  /* zoom in */
+  100% { transform: scale(1); }    /* zoom out */
 }
-
 
 
 
@@ -379,7 +378,7 @@ tr:last-of-type th:last-of-type {
 </head>
 <body>
  <%DecimalFormat df = new DecimalFormat( "#####################");
- String action=(String)request.getAttribute("ActionType"); 
+ 	  String action=(String)request.getAttribute("ActionType"); 
       String logintype= (String)session.getAttribute("LoginType");
       String empId = ((Long) session.getAttribute("EmployeeId")).toString();
       String rpbMemberType= (String)request.getAttribute("rpbMemberType");
@@ -389,6 +388,11 @@ tr:last-of-type th:last-of-type {
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
      String filesize=  (String)request.getAttribute("filesize");
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
+     
+     if(action == null)
+     {
+    	 action = "NA";
+     }
 
       	String FinYear=(String)(dto.getFromYearBackBtn()+"-"+dto.getToYearBackBtn());
  %>
@@ -561,7 +565,7 @@ tr:last-of-type th:last-of-type {
 					 		   </select>              
 			         </div>
 			          <div class="form-inline" style="display: flex; flex-direction: column;">
-					    <label style="font-weight: bold;padding-right: 35px;">Date of Demand Initiation&nbsp;<span class="text-danger">*</span></label>
+					    <label style="font-weight: bold;padding-right: 35px;">Probable Date of Initiation&nbsp;<span class="text-danger">*</span></label>
 					    <input style="background-color:white;width: 100%" type="text" readonly id="InitiationDate" name="InitiationDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
 					</div>
 			         
@@ -593,22 +597,22 @@ tr:last-of-type th:last-of-type {
 						     
 						    </td> 
 						    
-						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Item Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
+						     <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Nomenclature<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
                      <td><input type="text" placeholder="Enter Item Detail" maxlength="4000" id="ItemFor" name="ItemFor" class="form-control" <%if(FundRequestObj!=null && FundRequestObj[10]!=null){ %> value="<%=FundRequestObj[10] %>" <%} %>></td>
 						    
 						</tr>
 						
 						 <tr>
 	                    <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Justification<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
-                        <td><textarea placeholder="Enter Justification" id="fileNo" maxlength="500" name="fileno" required="required" class="form-control"><%if(FundRequestObj!=null && FundRequestObj[11]!=null){ %> <%=FundRequestObj[11] %> <%} %></textarea></td>
+                        <td><textarea placeholder="Enter Justification" id="justification" maxlength="500" name="justification" required="required" class="form-control"><%if(FundRequestObj!=null && FundRequestObj[11]!=null){ %> <%=FundRequestObj[11] %> <%} %></textarea></td>
 	                  <th style="width: 15%;"><label class="col-sm-4 control-label text-nowrap">Estimated Cost<span class="mandatory" style="color: red;font-weight: normal;">&nbsp;*</span></label></th>
-					<td style="padding:7px;"><input class="form-control input-sm FBEAmountAdd" style="width:100%;font-weight: 600;" id="FBEamountAdd-1" name="TotalFundReguestAmount" type="text" <%if(FundRequestObj!=null && FundRequestObj[24]!=null){ %> value="<%=df.format(FundRequestObj[24]) %>" <%} %> onkeydown="preventInvalidInput(event)" readonly="readonly"/></td> 
+					<td style="padding:7px;"><input class="form-control input-sm FBEAmountAdd" style="width:100%;font-weight: 600;" id="FBEamountAdd-1" name="TotalFundRequestAmount" type="text" <%if(FundRequestObj!=null && FundRequestObj[24]!=null){ %> value="<%=df.format(FundRequestObj[24]) %>" <%} %> onkeydown="preventInvalidInput(event)" readonly="readonly"/></td> 
                      </tr>
 										
 										<tr class="InsertRow-1">
 										    <td style="padding:7px;" colspan="4">
 										    <div class="form-inline COGDetails" style="justify-content:center;width: 95%;margin:auto;background-color: #ffefe3;border-radius: 5px;">
-								             <% if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>
+								             <% if((estimateType!=null && estimateType.equalsIgnoreCase("F")) || action.equalsIgnoreCase("Edit")){ %>
 								             <div class="inputBox"><input required type="number" id="AprilMonthAdd-1" name="AprilMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','AprilMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[12]!=null && new BigDecimal(FundRequestObj[12].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[12]) %>" <%} %>><span>April</span></div>
 								             <div class="inputBox"><input required type="number" id="MayMonthAdd-1" name="MayMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','MayMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[13]!=null && new BigDecimal(FundRequestObj[13].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[13]) %>" <%} %>><span>May</span></div>
 								             <div class="inputBox"><input required type="number" id="JuneMonthAdd-1" name="JuneMonth" class="form-control custom-placeholder FBEamountAdd-1" onkeydown="preventInvalidInput(event)" onkeyup="calculateFBEAmountAdd('1','JuneMonthAdd')" oninput="limitDigits(this, 15)" <%if(FundRequestObj!=null && FundRequestObj[14]!=null && new BigDecimal(FundRequestObj[14].toString()).compareTo(java.math.BigDecimal.ZERO) != 0){ %> value="<%=df.format(FundRequestObj[14]) %>" <%} %>><span>June</span></div>
@@ -639,174 +643,175 @@ tr:last-of-type th:last-of-type {
                  <td colspan="4" style="padding-top:25px !important;padding-bottom: 25px !important;">
                  
 					<table style="width: 60%; text-align: center;margin:auto;box-shadow: 6px 6px 8px #d1d1d1;" id="attachmentTable">
-    <thead>
-    <% if (AttachList != null && !AttachList.isEmpty()) { %>
-        <tr>
-            <th style="font-weight: 600;">File Name</th>
-            <th style="font-weight: 600;">
-                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
-            </th>
-            <th style="font-weight: 600;">Actions</th>
-           
-            
-        </tr>
-        <%}else { %>
-        <tr>
-            <th style="font-weight: 600;">File Name</th>
-            <th style="font-weight: 600;">
-                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
-            </th>
-            
-        </tr>
-        <%} %>
-    </thead>
-    <tbody id="attachmentBody">
-  
-
-<%!public Object[] findAttachmentByName(List attachList, String name) {
-        if (attachList == null || name == null) return null;
-        for (int i = 0; i < attachList.size(); i++) {
-            Object[] obj = (Object[]) attachList.get(i);
-            if (obj[1] != null && obj[1].toString().equalsIgnoreCase(name)) {
-                return obj;
-            }
-        }
-        return null;
-    }%>
-        <!-- BQs Row -->
-<tr class="file-row1">
-    <td>
-        <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="BQs">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment1" name="attachment" onchange="Filevalidation(this);">
-        <% 
-            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs") : null;
-            if (bqsAttach != null) { 
-        %>
-            <input type="hidden" name="existingAttachmentId" value="<%= bqsAttach[0] %>">
-            <input type="hidden" name="existingFileName" value="BQs">
-        <% } %>
-    </td>
-    <% if (bqsAttach != null) { %>
-    <td>
-        <button type="button" class="btn" onclick="downloadFile('<%= bqsAttach[0] %>')" title="<%= bqsAttach[2] %>">
-            <i class="fa fa-download" style="color: green;"></i>
-        </button>
-        <button type="button" class="btn" onclick="deleteFile('<%= bqsAttach[0] %>')" title="Delete File">
-            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-        </button>
-    </td>
-    <% } else { %>
-    
-    <% } %>
-</tr>
-
-<!-- Cost Of Estimate Row -->
-<tr class="file-row2">
-    <td>
-        <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Of Estimate">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment2" name="attachment" onchange="Filevalidation(this);">
-        <% 
-            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Of Estimate") : null;
-            if (costAttach != null) { 
-        %>
-            <input type="hidden" name="existingAttachmentId" value="<%= costAttach[0] %>">
-            <input type="hidden" name="existingFileName" value="Cost Of Estimate">
-        <% } %>
-    </td>
-    <% if (costAttach != null) { %>
-    <td>
-        <button type="button" class="btn" onclick="downloadFile('<%= costAttach[0] %>')" title="<%= costAttach[2] %>">
-            <i class="fa fa-download" style="color: green;"></i>
-        </button>
-        <button type="button" class="btn" onclick="deleteFile('<%= costAttach[0] %>')" title="Delete File">
-            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-        </button>
-    </td>
-    <% } else { %>
-    
-    <% } %>
-</tr>
-
-<!-- Justification Row -->
-<tr class="file-row3">
-    <td>
-        <input type="text" class="form-control" id="file3" name="filename" readonly="readonly" maxlength="255" value="Justification">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment3" name="attachment" onchange="Filevalidation(this);">
-        <% 
-            Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
-            if (justAttach != null) { 
-        %>
-            <input type="hidden" name="existingAttachmentId" value="<%= justAttach[0] %>">
-            <input type="hidden" name="existingFileName" value="Justification">
-        <% } %>
-    </td>
-    <% if (justAttach != null) { %>
-    <td>
-        <button type="button" class="btn" onclick="downloadFile('<%= justAttach[0] %>')" title="<%= justAttach[2] %>">
-            <i class="fa fa-download" style="color: green;"></i>
-        </button>
-        <button type="button" class="btn" onclick="deleteFile('<%= justAttach[0] %>')" title="Delete File">
-            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-        </button>
-    </td>
-    <% } else { %>
-    
-    <% } %>
-</tr>
-
-<!-- Dynamic Attachment Row -->
-<tr class="file-row4">
-    <% 
-        List<String> staticNames = Arrays.asList("BQs", "Cost Of Estimate", "Justification");
-        Object[] dynamicAttach = null;
-        
-        if (AttachList != null) {
-            for (Object[] attach : AttachList) {
-                String attachName = (attach[1] != null) ? attach[1].toString() : "";
-                if (!staticNames.contains(attachName)) {
-                    dynamicAttach = attach;
-                    break;
-                }
-            }
-        }
-        
-        if (dynamicAttach != null) { 
-    %>
-    <td>
-        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
-    </td>
-    <td>
-        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
-        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
-        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
-    </td>
-    <td>
-        <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
-            <i class="fa fa-download" style="color: green;"></i>
-        </button>
-        <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
-            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-        </button>
-    </td>
-    <% } else { %>
-    <td>
-        <input type="text" class="form-control" name="filename" value="">
-    </td>
-    <td>
-        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-    </td>
-    
-    <% } %>
-</tr>
-
-    </tbody>
-</table>
+				    <thead>
+				    <% if (AttachList != null && !AttachList.isEmpty()) { %>
+				        <tr>
+				            <th style="font-weight: 600;">File Name</th>
+				            <th style="font-weight: 600;">
+				                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
+				            </th>
+				            <th style="font-weight: 600;">Actions</th>
+				           
+				            
+				        </tr>
+				        <%}else { %>
+				        <tr>
+				            <th style="font-weight: 600;">File Name</th>
+				            <th style="font-weight: 600;">
+				                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
+				            </th>
+				            
+				        </tr>
+				        <%} %>
+				    </thead>
+				    <tbody id="attachmentBody">
+				  
+				
+				<%!public Object[] findAttachmentByName(List attachList, String name) {
+				        if (attachList == null || name == null) return null;
+				        for (int i = 0; i < attachList.size(); i++) {
+				            Object[] obj = (Object[]) attachList.get(i);
+				            if (obj[1] != null && obj[1].toString().equalsIgnoreCase(name)) {
+				                return obj;
+				            }
+				        }
+				        return null;
+				    }%>
+				
+				<!-- Justification Row -->
+				<tr class="file-row3">
+				    <td style="width: 54%;">
+				        <input type="text" class="form-control" id="file3" name="filename" readonly="readonly" maxlength="255" value="Justification">
+				    </td>
+				    <td>
+				        <input type="file" class="form-control" id="attachment3" name="attachment" onchange="Filevalidation(this);">
+				        <% 
+				            Object[] justAttach = AttachList != null ? findAttachmentByName(AttachList, "Justification") : null;
+				            if (justAttach != null) { 
+				        %>
+				            <input type="hidden" name="existingAttachmentId" value="<%= justAttach[0] %>">
+				            <input type="hidden" name="existingFileName" value="Justification">
+				        <% } %>
+				    </td>
+				    <% if (justAttach != null) { %>
+				    <td>
+				        <button type="button" class="btn" onclick="downloadFile('<%= justAttach[0] %>')" title="<%= justAttach[2] %>">
+				            <i class="fa fa-download" style="color: green;"></i>
+				        </button>
+				        <button type="button" class="btn" onclick="deleteFile('<%= justAttach[0] %>')" title="Delete File">
+				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+				        </button>
+				    </td>
+				    <% } else { %>
+				    
+				    <% } %>
+				</tr>
+				
+				<!-- Cost Of Estimation Row -->
+				<tr class="file-row2">
+				    <td style="width: 54%;">
+				        <input type="text" class="form-control" id="file2" name="filename" readonly="readonly" maxlength="255" value="Cost Estimation">
+				    </td>
+				    <td>
+				        <input type="file" class="form-control" id="attachment2" name="attachment" onchange="Filevalidation(this);">
+				        <% 
+				            Object[] costAttach = AttachList != null ? findAttachmentByName(AttachList, "Cost Estimation") : null;
+				            if (costAttach != null) { 
+				        %>
+				            <input type="hidden" name="existingAttachmentId" value="<%= costAttach[0] %>">
+				            <input type="hidden" name="existingFileName" value="Cost Estimation">
+				        <% } %>
+				    </td>
+				    <% if (costAttach != null) { %>
+				    <td>
+				        <button type="button" class="btn" onclick="downloadFile('<%= costAttach[0] %>')" title="<%= costAttach[2] %>">
+				            <i class="fa fa-download" style="color: green;"></i>
+				        </button>
+				        <button type="button" class="btn" onclick="deleteFile('<%= costAttach[0] %>')" title="Delete File">
+				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+				        </button>
+				    </td>
+				    <% } else { %>
+				    
+				    <% } %>
+				</tr>
+				
+				<!-- Budgetary quotes / LPO (Last Purchase Order) Row -->
+				<tr class="file-row1">
+				    <td style="width: 54%;">
+				        <input type="text" class="form-control" id="file1" name="filename" readonly="readonly" maxlength="255" value="BQs / LPO">
+				    </td>
+				    <td>
+				        <input type="file" class="form-control" id="attachment1" name="attachment" onchange="Filevalidation(this);">
+				        <% 
+				            Object[] bqsAttach = AttachList != null ? findAttachmentByName(AttachList, "BQs / LPO") : null;
+				            if (bqsAttach != null) { 
+				        %>
+				            <input type="hidden" name="existingAttachmentId" value="<%= bqsAttach[0] %>">
+				            <input type="hidden" name="existingFileName" value="BQs / LPO">
+				        <% } %>
+				    </td>
+				    <% if (bqsAttach != null) { %>
+				    <td>
+				        <button type="button" class="btn" onclick="downloadFile('<%= bqsAttach[0] %>')" title="<%= bqsAttach[2] %>">
+				            <i class="fa fa-download" style="color: green;"></i>
+				        </button>
+				        <button type="button" class="btn" onclick="deleteFile('<%= bqsAttach[0] %>')" title="Delete File">
+				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+				        </button>
+				    </td>
+				    <% } else { %>
+				    
+				    <% } %>
+				</tr>
+				
+				<!-- Dynamic Attachment Row -->
+				<tr class="file-row4">
+				    <% 
+				        List<String> staticNames = Arrays.asList("Budgetary quotes / LPO (Last Purchase Order)", "Cost Of Estimation", "Justification");
+				        Object[] dynamicAttach = null;
+				        
+				        if (AttachList != null) {
+				            for (Object[] attach : AttachList) {
+				                String attachName = (attach[1] != null) ? attach[1].toString() : "";
+				                if (!staticNames.contains(attachName)) {
+				                    dynamicAttach = attach;
+				                    break;
+				                }
+				            }
+				        }
+				        
+				        if (dynamicAttach != null) { 
+				    %>
+				    <td style="width: 54%;">
+				        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
+				    </td>
+				    <td>
+				        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+				        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
+				        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
+				    </td>
+				    <td>
+				        <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
+				            <i class="fa fa-download" style="color: green;"></i>
+				        </button>
+				        <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
+				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+				        </button>
+				    </td>
+				    <% } else { %>
+				    <td>
+				        <input type="text" class="form-control" name="filename" value="Others">
+				    </td>
+				    <td>
+				        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+				    </td>
+				    
+				    <% } %>
+				</tr>
+				
+				    </tbody>
+				</table>
 
                  </td>
 		       </tr>
@@ -1002,9 +1007,8 @@ $("#AllOfficers").click(function(){
 
 	function getProposedProjectDetails(proposedProjectId)
 	{
-		var divisionId = $("#divisionIdHidden").val();
 		$.get('getProposedProjectDetails.htm', {
-			divisionId : divisionId
+			
 		}, function(responseJson) {
 			$('#selProposedProject').find('option').remove();
 			$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
@@ -1071,7 +1075,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 									{
 										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
@@ -1103,14 +1107,15 @@ $("#AllOfficers").click(function(){
 										$.each(result, function(key, value) {
 											 if(value.budgetHeadId== budgetHeadId)
 											 {
-												html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+												html1+='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
 											 }
-											 else
-												{
-													html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
-												}
-											 $("#selbudgethead").append(html1);
+											 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+											{
+												html1+="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+											}
 										});
+										
+										$("#selbudgethead").append(html1);
 										
 									var budgetItemId = $("#budgetItemIdHidden").val();
 								    SetBudgetItem(budgetItemId);
@@ -1226,7 +1231,7 @@ $("#AllOfficers").click(function(){
 									{
 										$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 									}
-									else
+									else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 										{
 											$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
 										}
@@ -1320,7 +1325,7 @@ function validateFormFields() {
         return false;
     }
 
-    const justification = document.getElementById("fileNo");
+    const justification = document.getElementById("justification");
     if (!justification || justification.value.trim() === "") {
         alert('Please enter a Justification');
         return false;
@@ -1389,7 +1394,7 @@ function validateFormFieldsEdit() {
         return false;
     }
 
-    const justification = document.getElementById("fileNo");
+    const justification = document.getElementById("justification");
     if (!justification || justification.value.trim() === "") {
         alert('Please enter a Justification');
         return false;
@@ -1452,7 +1457,7 @@ function validateFormFieldsRevise() {
         return false;
     }
 
-    const justification = document.getElementById("fileNo");
+    const justification = document.getElementById("justification");
     if (!justification || justification.value.trim() === "") {
         alert('Please enter a Justification');
         return false;
@@ -1630,14 +1635,31 @@ function limitDigits(input, maxDigits) {
 </script>
 
 <script type="text/javascript">
+
 $(document).ready(function () {
-	  // When Estimated Cost is focused
+	  
 	  $("#FBEamountAdd-1").on("focus", function () {
-	    // Highlight Oct–Mar fields
-	    $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+
+		  if (
+			      ($("#AprilMonthAdd-1").length && $("#AprilMonthAdd-1").val().trim() !== "") ||
+			      ($("#MayMonthAdd-1").length && $("#MayMonthAdd-1").val().trim() !== "") ||
+			      ($("#JuneMonthAdd-1").length && $("#JuneMonthAdd-1").val().trim() !== "") ||
+			      ($("#JulyMonthAdd-1").length && $("#JulyMonthAdd-1").val().trim() !== "") ||
+			      ($("#AugustMonthAdd-1").length && $("#AugustMonthAdd-1").val().trim() !== "") ||
+			      ($("#SeptemberMonthAdd-1").length && $("#SeptemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#OctoberMonthAdd-1").length && $("#OctoberMonthAdd-1").val().trim() !== "") ||
+			      ($("#NovemberMonthAdd-1").length && $("#NovemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#DecemberMonthAdd-1").length && $("#DecemberMonthAdd-1").val().trim() !== "") ||
+			      ($("#JanuaryMonthAdd-1").length && $("#JanuaryMonthAdd-1").val().trim() !== "") ||
+			      ($("#FebruaryMonthAdd-1").length && $("#FebruaryMonthAdd-1").val().trim() !== "") ||
+			      ($("#MarchMonthAdd-1").length && $("#MarchMonthAdd-1").val().trim() !== "")
+			    ) {
+			      return; 
+			    }
+
+	    $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	      .addClass("highlight");
 
-	    // Show hand pointer near October field
 	    let target = $("#OctoberMonthAdd-1").offset();
 	    $("#hand").css({
 	      top: target.top + 40 + "px",
@@ -1645,17 +1667,14 @@ $(document).ready(function () {
 	    }).fadeIn();
 	  });
 
-	  // When user focuses any month field
-	  $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	  $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	    .on("focus input", function () {
-	      // Remove highlight and hide hand
-	      $("#OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
+	      $("#AprilMonthAdd-1, #MayMonthAdd-1, #JuneMonthAdd-1, #JulyMonthAdd-1, #AugustMonthAdd-1, #SeptemberMonthAdd-1, #OctoberMonthAdd-1, #NovemberMonthAdd-1, #DecemberMonthAdd-1, #JanuaryMonthAdd-1, #FebruaryMonthAdd-1, #MarchMonthAdd-1")
 	        .removeClass("highlight");
 	      $("#hand").fadeOut();
 	    });
 	});
-
-
 </script>
+
  
 </html>

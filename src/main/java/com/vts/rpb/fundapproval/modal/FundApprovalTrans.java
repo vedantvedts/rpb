@@ -24,8 +24,8 @@ public class FundApprovalTrans {
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
 	
-	@Column(name = "RCStausCode", length = 50)
-	private String rcStausCode;
+	@Column(name = "FlowDetailsId")
+	private long flowDetailsId;
 	
 	@Column(name = "Remarks", length = 255)
 	private String remarks;

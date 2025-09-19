@@ -35,20 +35,13 @@ public class FundApprovalDto {
 	private BigDecimal Feb;
 	private BigDecimal Mar;
 	private long InitiatingOfficer;
-	private long RC1;
-	private String RC1Role;
-	private long RC2;
-	private String RC2Role;
-	private long RC3;
-	private String RC3Role;
-	private long RC4;
-	private String RC4Role;
-	private long RC5;
-	private String RC5Role;
-	private long ApprovingOfficer;
-	private String ApprovingOfficerRole;
-	private String RCStatusCode;
-	private String RCStatusCodeNext;
+	private long divisionHeadId;
+	private String[] memberLinkedId;
+	private String[] reccEmpId;
+	private String[] membersId;
+	private String[] subjectExpertsId;
+	private long secretaryId;
+	private long chairmanId;
 	private String Status;
 	private String Remarks;
 	private String action;
@@ -57,6 +50,9 @@ public class FundApprovalDto {
 	private LocalDateTime CreatedDate;
 	private String ModifiedBy;
 	private LocalDateTime ModifiedDate;
+	private String memberStatus;
+	private String flowDetailsId;
+	private String flowMasterId;
 	
 	
 }

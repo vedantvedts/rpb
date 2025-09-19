@@ -16,6 +16,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <jsp:include page="../static/header.jsp"></jsp:include>
+<jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
 <title>Fund Requisition List</title>
 <style>
 
@@ -275,11 +276,6 @@ input[name="ItemNomenclature"]::placeholder {
 <body>
 		<%
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList"); 
-		if(requisitionList!=null){
-			requisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
-			System.err.print("size-"+requisitionList.size());
-		}
-		System.err.print("requisitionList JSP-"+requisitionList.size());
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
@@ -566,107 +562,11 @@ input[name="ItemNomenclature"]::placeholder {
 					  </form>
 
 				
-				<!-- Attachment Modal -->
-<!-- Fullscreen Attachment Modal -->
-<div class="modal fade AttachmentModal" tabindex="-1" role="dialog" style="padding: 0;">
-  <div class="modal-dialog modal-lg Exp" role="document">
-    <div class="modal-content">
 
-      <!-- Modal Header -->
-      <div class="modal-header bg-dark text-white">
-        <h4 class="modal-title" style="font-family:'Times New Roman'; font-weight: 600;">Attachment Details</h4>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;">&times;</span>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-<div class="modal-body">
-  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-  <input type="hidden" name="TaDaIdAjax" id="TaDaIdAjax" value="">
-
-<div class="AttachmentDetails"></div>
-  <div class="row">
-    <!-- Left: Attachments Table -->
-    <div class="col-md-6">
-      <h5 class="text-secondary" style="font-weight: 600;">Attachments</h5>
-      <table class="table table-bordered table-striped mt-2" id="AttachmentModalTable">
-        <thead class="thead-dark">
-          <tr>
-            <th>SN</th>
-            <th style="width: 60%;">Attachment Name</th>
-            <th style="width: 40%; text-align: center;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="eAttachmentModalBody" style="font-weight: 400;"></tbody>
-      </table>
-    </div>
-
-    <!-- Right: File Preview Section -->
-    <div class="col-md-6" id="previewSection" style="display: none;">
-      <h5 class="text-primary" style="font-weight: 600;">Preview:&nbsp;&nbsp;<span  style="color:black;">(</span><span id="previewFileName" style="color:black;"></span><span  style="color:black;">)</span></h5>
-      <iframe id="filePreviewIframe" style="width: 100%; height: 440px; border: 1px solid #ccc;"></iframe>
-    </div>
-  </div>
-</div>
-</div>
-
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg custom-width-modal" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="font-family:'Times New Roman';font-weight: 600;">Approval Status</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Employee Modal Table -->
-       <div style="text-decoration: underline;font-weight: 600;color: #245997;">STATUS HISTORY:</div>
-        <div id="EmployeeModalTable" class="mt-2"></div>
-        <div style="text-decoration: underline;font-weight: 600;color: #245997;">CURRENT STATUS:</div>
-         <div id="ApprovalStatusDiv" ></div>
-         
-      </div>
-      
-    </div>
-  </div>
-</div>	
 </body>
 <script src="webresources/js/RpbFundStatus.js"></script>
 <script>
 
-/*  $('#selProject').change(function(event) {
-	 
-						var project= $("select#selProject").val();  
-						
-						$(".SanctionDetails,.GeneralDetails,#SanctionandFBEDetails").hide();
-						<!------------------Project Id not Equal to Zero [Project]-------------------->
-						
-						if(project!=null  && project!='Select Project')
-						{
-							$.get('GetBudgetHeadList.htm', {
-								ProjectDetails : project
-							}, function(responseJson) 
-							{
-								$('#selbudgethead').find('option').remove();
-								$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
-									$("#selbudgethead").append("<option  value='0'>All</option>");
-									var result = JSON.parse(responseJson);
-									
-									$.each(result, function(key, value) {
-										$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
-									});
-									SetBudgetItem(''); 
-							});
-                       }
-						
-					}); */
-					
 					$(document).ready(function(event) {
 						
 								var $project= $("#projectIdHidden").val();
@@ -683,21 +583,19 @@ input[name="ItemNomenclature"]::placeholder {
 										}, function(result) {
 											$('#selbudgethead').find('option').remove();
 											var result = JSON.parse(result);
-											var html1='';
 											 if(result.length >1){
 												$("#selbudgethead").append("<option  value='0'>All</option>");
 											}  	
 											$.each(result, function(key, value) {
 												
-												 if(value.budgetHeadId== $budgetHeadId)
+												 if(value.budgetHeadId == $budgetHeadId)
 												 {
-													html1='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+													 $("#selbudgethead").append('<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>');
 												 }
-												 else
+												 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
 													{
-														html1="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+														 $("#selbudgethead").append("<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>");
 													}
-												 $("#selbudgethead").append(html1);
 											});
 											var budgetItemId = $("#budgetItemIdHidden").val();
 										    SetBudgetItem(budgetItemId);

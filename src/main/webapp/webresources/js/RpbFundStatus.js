@@ -1,183 +1,320 @@
+
+// Fund Status Details
+
 function openApprovalStatusAjax(fundApprovalId) {
-	$.ajax({
-		url: 'getRPBApprovalHistoryAjax.htm',
-		type: 'GET',
-		data: { fundApprovalId: fundApprovalId },
-		success: function(response) {
-			var data = JSON.parse(response);
-			if (!Array.isArray(data[0])) {
-				data = [data]; // handle single-row case
-			}
+    $.ajax({
+        url: 'getRPBApprovalHistoryAjax.htm',
+        type: 'GET',
+        data: { fundApprovalId: fundApprovalId },
+        success: function(response) {
+            var data = JSON.parse(response);
+            if (!Array.isArray(data[0])) {
+                data = [data]; // handle single-row case
+            }
 
-			var tableHTML = generateTableHTML(data);
-			$('#ApprovalStatusModal').modal('show');
-			$('#EmployeeModalTable').html(tableHTML);
+            var tableHTML = generateTableHTML(data);
+            $('#ApprovalStatusModal').modal('show');
+            $('#EmployeeModalTable').html(tableHTML);
 
-			previewInformation(fundApprovalId);
-		},
-		error: function(xhr, status, error) {
-			console.error('AJAX Error: ' + status + error);
-		}
-	});
-}
-
-function generateTableHTML(data) {
-
-	if (!data || data.length === 0) {
-		return '<p>No Status available.</p>';
-	}
-
-	var table = '<table class="table table-bordered" style="width: 95%;font-weight: 600;margin:auto;">';
-	table += '<thead><tr style="background-color: #edab33;color:#034189;"><th>Officer Name</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead>';
-	table += '<tbody>';
-
-	data.forEach(function(row) {
-		table += '<tr>';
-		table += '<td>' + (row[1] || '--') + ', ' + (row[2] || '--') + '</td>';
-		table += '<td align="center">' + (row[5] || '--') + '</td>';
-		table += '<td>' + (row[4] || '--') + '</td>';
-		table += '<td style="color: #00008B;">' + (row[3] || '--') + '</td>';
-		table += '</tr>';
-	});
-
-	table += '</tbody></table>';
-	return table;
+            previewInformation(fundApprovalId);
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error: ' + status + error);
+        }
+    });
 }
 
 function previewInformation(fundApprovalId) {
-	$.ajax({
-		url: 'getRPBApprovalStatusAjax.htm',
-		type: 'GET',
-		data: { fundApprovalId: fundApprovalId },
-		success: function(response) {
-			var data = JSON.parse(response);
+    $.ajax({
+        url: 'getRPBApprovalStatusAjax.htm',
+        type: 'GET',
+        data: { fundApprovalId: fundApprovalId },
+        success: function(response) {
+            var data = JSON.parse(response);
 
-			if (!Array.isArray(data) || data.length === 0) {
-				$('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+            if (!Array.isArray(data) || data.length === 0) {
+                $('#ApprovalStatusDiv').html('<p>No approval status data available.</p>');
+                return;
+            }
+
+            var row = data[0];
+            var html = '<div class="status-card-container">';
+
+            // Always show Initiator
+            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
+
+            
+            // Split roles, officers, and statuses
+            var roles = row[21] ? row[21].split(",") : [];
+            var empIds = row[22] ? row[22].split(",") : [];
+            var officers = row[24] ? row[24].split("###").map(e => e.trim()) : [];
+            var officerRemarks = row[25] ? row[25].split("###").map(e => e.trim()) : [];
+            var statuses = row[23] ? row[23].split(",") : [];
+            var returnedBy = row[26] || 0;
+            var returedDate = row[27] || 0;
+            
+             if(roles == null || typeof(roles) == 'undefined')
+            {
+				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center", "", "");
+				$('#ApprovalStatusDiv').html(html);
+				$(".forwardPendingclass").empty();
+				$(".forwardPendingclass").css({
+				    "display": "grid",
+				    "text-align": "center"
+				});
+				var forwardPending= `<div class="status warning" style="width: 100% !important;">
+                        						<i class="fa-solid fa-circle-check"></i> Forward Pending
+                   								 </div>`;
+				$(".forwardPendingclass").html(forwardPending);
+				
 				return;
 			}
 
-			var row = data[0];
-			var html = '';
+            roles.forEach(function(role, idx) {
+                var officer = officers[idx] || "-";
+                var empId = empIds[idx] || "-";
+                var officerRemark = officerRemarks[idx] || "";
+                var status = statuses[idx] || "N";
 
-			// Create table structure
-			html += '<div class="table-responsive" style="width:95%;margin:auto;">';
-			html += '<table class="table table-bordered" style="box-shadow: 5px 0px 5px rgba(0, 0, 5, 5);">';
-			html += '<thead style="background-color: #f7f4e9;">';
-			html += '<tr>';
-			html += '<th style="width: 30%;">Flow</th>';
-			html += '<th style="width: 40%;">Officer</th>';
-			html += '<th style="width: 30%;">Status</th>';
-			html += '</tr>';
-			html += '</thead>';
-			html += '<tbody>';
+                var isApproved = status === "Y";
+                var pendingText = (role === "CC") ? "Approval Pending" : "Recommendation Pending";
 
+                // Map role codes to readable titles
+                var titleMap = {
+                    "DH": "Division Head",
+                    "CM": "RPB Member",
+                    "SE": "Subject Expert",
+                    "CS": "RPB Member Secretary",
+                    "CC": "RPB Chairman"
+                };
 
-			html += '<tr>';
-			html += '<td><b>Initiated By</b></td>';
-			html += '<td style="color: #370088;"><b>' + row[19] + '</b></td>';
-			html += '<td style="font-weight:600;">Initiated</td>';
-			html += '</tr>';
+                html += createCard(role+'class',
+                    titleMap[role] || role,
+                    officer,
+                    officerRemark,
+                    isApproved ? (role === "CC" ? "Approved" : (role === "CS" ? "Reviewed" : "Recommended")) : "Pending",
+                    isApproved,
+                    pendingText,
+                    isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
+                    "left",
+                     returnedBy == empId ? 'Returned on ' : '',
+                     returedDate
+                );
+            });
 
-			var rcStatusCodeNext = row[40];
-			var rc1Status = row[41];
-			var rc2Status = row[42];
-			var rc3Status = row[43];
-			var rc4Status = row[44];
-			var rc5Status = row[45];
-			var apprOffStatus = row[46];
+            html += '</div>';
 
-			var labels = [
-				{ title: 'RPB Member', field: row[21], role: row[22], batch: row[41] },
-				{ title: 'RPB Member', field: row[24], role: row[25], batch: row[42] },
-				{ title: 'RPB Member', field: row[27], role: row[28], batch: row[43] },
-				{ title: 'Subject Expert', field: row[30], role: row[31], batch: row[44] }
-			];
+            // Utility to render a card
+            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
+                let statusClass = isApproved ? "success" : "warning";
+                let statusText = isApproved ? status : pendingText;
 
+                return `
+                <div class="status-card ${classAttribute} ${returnedTxt ? `returnBg` : ''}" style="text-align:${align} !important;">
+                
+                    ${returnedTxt ? `<h6 class="returnedTxt">${returnedTxt} ${returnedDate ? `${returnedDate}` : ''}</h6>` : ''}
+                    <h6>${title}</h6>
+                    <p><b>${officer}</b></p>
+                    <div class="status ${statusClass}">
+                        <i class="${iconClass}"></i> ${statusText}
+                    </div>
+                     ${remark && remark!='NA' ? `<p class="RcRemarks"><span class="RcRemarkTitle">Remarks : </span> ${remark}</p>` : ''}
+                </div>`;
+            }
 
-			for (var i = 0; i < labels.length; i++) {
-				var item = labels[i];
-				if (item.field != null && String(item.field).trim() !== '') {
-					html += '<tr>';
-					html += '<td><b>' + item.title + '</b></td>';
-					html += '<td>';
-
-					if (item.role) {
-						html += '<span style="color:#034cb9"><b>' + item.role + '</b></span><br>';
-					}
-					html += '<span style="color: #370088"><b>' + item.field + '</b></span>';
-					html += '</td>';
-					html += '<td>';
-
-					if (item.batch === 'Y') {
-						html += '<span style="color: green;font-weight:600;">Recommended</span>';
-						html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
-					} else {
-						html += '<span style="color: #bd0707;font-weight:600;">Recommendation Pending</span>';
-					}
-
-					html += '</td>';
-					html += '</tr>';
-				}
-			}
-
-			// RPB Member Secretary
-			if (row[33] != null && String(row[33]).trim() !== '') {
-				html += '<tr>';
-				html += '<td><b>RPB Member Secretary</b></td>';
-				html += '<td>';
-
-				if (row[34]) {
-					html += '<span style="color:#034cb9"><b>' + row[34] + '</b></span><br>';
-				}
-				html += '<span style="color: #370088"><b>' + row[33] + '</b></span>';
-				html += '</td>';
-				html += '<td>';
-
-				if (row[45] === 'Y') {
-					html += '<span style="color: green;font-weight:600;">Reviewed</span>';
-					html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
-				} else {
-					html += '<span style="color: #bd0707;font-weight:600;">Review Pending</span>';
-				}
-
-				html += '</td>';
-				html += '</tr>';
-			}
-
-			// RPB Chairman
-			if (row[36] != null && String(row[36]).trim() !== '') {
-				html += '<tr>';
-				html += '<td><b>RPB Chairman</b></td>';
-				html += '<td>';
-
-				if (row[37]) {
-					html += '<span style="color:#034cb9"><b>' + row[37] + '</b></span><br>';
-				}
-				html += '<span style="color: #370088"><b>' + row[36] + '</b></span>';
-				html += '</td>';
-				html += '<td>';
-
-				if (row[46] === 'Y') {
-					html += '<span style="color: green;font-weight:600;">Approved</span>';
-					html += ' <img src="view/images/verifiedIcon.png" width="16" height="16">';
-				} else {
-					html += '<span style="color: #bd0707;font-weight:600;">Approval Pending</span>';
-				}
-
-				html += '</td>';
-				html += '</tr>';
-			}
-
-			html += '</tbody>';
-			html += '</table>';
-			html += '</div>';
-
-			$('#ApprovalStatusDiv').html(html);
-		},
-		error: function(xhr, status, error) {
-			console.error('AJAX Error: ' + status + " " + error);
-			$('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
-		}
-	});
+            $('#ApprovalStatusDiv').html(html);
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error: ' + status + " " + error);
+            $('#ApprovalStatusDiv').html('<div class="alert alert-danger">Error loading approval status</div>');
+        }
+    });
 }
+
+
+function generateTableHTML(data) {
+    if (!data || data.length === 0) {
+        return '<p>No Status available.</p>';
+    }
+
+    let timeline = '';
+
+    // Officer details table under timeline
+    timeline += '<div class="table-responsive"><table class="table table-bordered dataTable" style="width: 95%;margin: auto; border: 1px solid #cfcfcf;">';
+    timeline += '<thead><tr><th>Officer</th><th>Action Date</th><th>Remarks</th><th>Status</th></tr></thead><tbody>';
+
+    data.forEach(function(row) {
+        timeline += '<tr>';
+        timeline += `<td>${row[1] || '-'}, ${row[2] || '-'}</td>`;
+        timeline += `<td>${row[5] || '-'}</td>`;
+        timeline += `<td>${row[4] || '-'}</td>`;
+        timeline += `<td class="status-text">${row[3] || '-'}</td>`;
+        timeline += '</tr>';
+    });
+
+    timeline += '</tbody></table></div></div>';
+
+    return timeline;
+}
+
+
+//  ******************************************* Fund Details View ************************************************************************
+ 
+ function openFundDetailsModal(fundApprovalId, ec) {
+
+     var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
+
+     // First AJAX call (Details)
+     $.ajax({
+         url: 'GetAttachmentDetailsAjax.htm',
+         method: 'GET',
+         data: { fundApprovalId: fundApprovalId },
+         success: function(data) {
+
+             var detailsDiv = $(".AttachmentDetails");
+             detailsDiv.empty(); // clear previous
+
+             if (data && data.length > 0) {
+                 var attach = data[0];
+                 var statusColor = '';
+                 if (attach.Status === 'Approved') statusColor = 'green';
+                 else if (attach.Status === 'Pending') statusColor = '#8c2303';
+                 else if (attach.Status === 'Forwarded') statusColor = 'blue';
+                 else if (attach.Status === 'Returned') statusColor = 'red';
+                 
+                 var serialNo="";
+                 serialNo = attach.SerialNo != null && attach.SerialNo !=0 ? '(' + attach.SerialNo + ')' : "";
+
+                 var html = '<table class="table table-bordered table-striped">'
+                     + '<tbody>'
+                     + '<tr>'
+                     + '<th style="color:#0080b3; font-size:16px;">Budget Head</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetHead || '') + '</td>'
+                     + '<th style="color:#0080b3; font-size:16px;">Budget Type</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetType || '') + '</td>'
+                     + '</tr>'
+                     + '<tr>'
+                     + '<th style="color:#0080b3; font-size:16px;">Estimate Type</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.EstimateType || '') + ' (' + (attach.REFBEYear || '') + ')</td>'
+                     + '<th style="color:#0080b3; font-size:16px;">Initiating Officer</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.InitiatingOfficer || '') + ', ' + (attach.Designation || '') + '</td>'
+                     + '</tr>'
+                     + '<tr>'
+                     + '<th style="color:#0080b3; font-size:16px;">Nomenclature</th>'
+                     + '<td colspan="3" style="font-weight:600; font-size:16px;">' + (attach.ItemNomenculature || '') + '</td>'
+                     + '</tr>'
+                     + '<tr>'
+                     + '<th style="color:#0080b3; font-size:16px;">Justification</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.Justification || '') + '</td>'
+                     + '<th style="color:#0080b3; font-size:16px;">Estimated Cost</th>'
+                     + '<td style="color:#00008B;font-weight:600; font-size:16px;">' + (estimatedCost || '-') + '</td>'
+                     + '</tr>'
+                     + '<tr>'
+                     + '<th style="color:#0080b3; font-size:16px;">Division</th>'
+                     + '<td style="font-weight:600; font-size:16px;">' + (attach.Division || '') + ' (' + (attach.DivisionShortName || '') + ')</td>'
+                     + '<th style="color:#0080b3; font-size:16px;">Status</th>'
+                     + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '&nbsp;&nbsp;<span style="color:#00008B;">'+(serialNo || '')+'</span></td>'
+                     + '</tr>'
+                     + '</tbody>'
+                     + '</table>';
+
+                 detailsDiv.append(html);
+             } else {
+                 detailsDiv.append("<div class='text-danger fw-bold'>No details found</div>");
+             }
+         },
+         error: function() {
+             console.error("AJAX call failed");
+             $(".AttachmentDetails").html("<div class='text-danger fw-bold'>Failed to load details</div>");
+         }
+     });
+
+     // Second AJAX call (Attachments list)
+     $.ajax({
+         url: 'GetFundRequestAttachmentAjax.htm',
+         method: 'GET',
+         data: { fundApprovalId: fundApprovalId },
+         success: function(data) {
+             var body = $("#eAttachmentModalBody");
+             body.empty();
+             var count=1;
+
+             if (data.length === 0) {
+                 body.append("<tr><td colspan='3' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
+                 $("#previewSection").hide();
+                 $("#filePreviewIframe").attr("src", "");
+                 $("#previewFileName").text(""); 
+             } else {
+                 $.each(data, function(index, attach) {
+                     var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
+                     var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
+
+                     var row = "<tr>" +
+                       "<td style='font-weight:700'>" + count++ + ".</td>" +
+                         "<td style='text-align: center; font-weight:700'>" + attach.fileName + "</td>" +
+                         "<td style='text-align: center;'>" +
+                         "<button class='btn fa fa-eye text-primary' title='Preview - " + attach.fileName + " Attachment' onclick=\"previewAttachment('" + viewUrl + "','" + attach.fileName + "')\"></button>" +
+                         "</td>" +
+                         "</tr>";
+                     body.append(row);
+
+                     // Auto-preview first attachment
+                     if (index === 0) {
+                         previewAttachment(viewUrl, attach.fileName);
+                     }
+                 });
+             }
+
+             $(".AttachmentModal").modal("show");
+         },
+         error: function() {
+             alert("Failed to load attachments.");
+         }
+     });
+ }
+ 
+  // Define previewAttachment globally
+ function previewAttachment(url, fileName) {
+     $("#filePreviewIframe").attr("src", url);
+     $("#previewSection").show();
+     $("#previewFileName").text(fileName || "");
+ }
+ 
+ 
+function getAttachementDetailsInline(fundRequestId) {
+    $.ajax({
+        url: 'GetFundRequestAttachmentAjax.htm',  
+        method: 'GET', 
+        data: { fundApprovalId: fundRequestId },  
+        success: function(data) {
+            var contentDiv = $(".attachementLink").empty();
+            if (data.length === 0) {
+                contentDiv.append("<span style='text-align: center; color: red; font-weight:700'>No attachment found</span>");
+            } else {
+                var list = $('<ul class="list-group d-flex flex-row" srtyle="list-style-type: disc !important; display: flex !important; gap: 20px !important;"></ul>');
+
+                data.forEach(function(attach) {
+                    var icon = '<i class="fa fa-paperclip text-primary"></i>'; // default icon
+                    // you can customize icon based on filename if you want:
+                    if (attach.fileName.toLowerCase().includes("cost")) {
+                        icon = '<i class="fa fa-calculator text-success"></i>';
+                    } else if (attach.fileName.toLowerCase().includes("bq")) {
+                        icon = '<i class="fa fa-list-alt text-warning"></i>';
+                    } else if (attach.fileName.toLowerCase().includes("justification")) {
+                        icon = '<i class="fa fa-file-text text-info"></i>';
+                    }
+
+                    var item = $('<li class="list-group-item d-flex align-items-center"></li>');
+                    item.append(icon);
+                    item.append('&nbsp;<a href="PreviewAttachment.htm?attachid='+ attach.fundApprovalAttachId +'" target="_blank" style="font-weight:600; font-size:14px; text-decoration:none; color:#034189;" title="Click to preview/download">'+ attach.fileName +'</a>');
+                    
+                    list.append(item);
+                });
+
+                contentDiv.append(list);
+            }
+        }
+    });
+}
+
+ 

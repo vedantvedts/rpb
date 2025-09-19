@@ -40,16 +40,9 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 %>
 <%
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList");
-		if(requisitionList!=null){
-			requisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
-		}
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
-		
-		if(requisitionList != null) {
-		    System.out.println("In JSP - requisitionList size: " + requisitionList.size());
-		}
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="";
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
@@ -73,6 +66,7 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		String EstimateTypeFromList = "";
 		String financialYear = "";
 		if (requisitionList != null && !requisitionList.isEmpty()) {
+			requisitionList.forEach(row -> System.out.println(Arrays.toString(row)));
 		    Object[] firstItem = requisitionList.get(0);
 		    DivName = firstItem[2] != null ? firstItem[2] : "";
 		    DivCode = firstItem[27] != null ? firstItem[27] : "";
@@ -329,17 +323,16 @@ border-collapse: collapse;
 					            BigDecimal subTotal = new BigDecimal(0);
 					           
 					            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
-					           
+					           <% requisitionList.forEach(row -> System.out.println(Arrays.toString(row))); %>
 					            <%for(Object[] data:requisitionList){
 					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
-					            	
-					            	System.err.println("!!!!!fundapproval ID->"+data[0]);
 					            %>
 					           
 					            	 <tr >
-					            	   <input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments">
-				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.</td>
+					            	   
+				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.
+				                   			<input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments"></td>
 				                   			<td align="center" id="budgetHead" style="font-weight: 400"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
 				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
 				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
