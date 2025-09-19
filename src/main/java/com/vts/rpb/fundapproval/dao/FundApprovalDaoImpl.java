@@ -77,7 +77,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			manager.persist(fundApprovalTrans);
 			manager.flush();
 			
-			return fundApprovalTrans.getFundApprovalId();
+			return fundApprovalTrans.getFundApprovalTransId();
 			
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO AddFundApprovalTrans() "+ e);
@@ -321,6 +321,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			fundApproval.setItemNomenclature(modal.getItemNomenclature());
 			fundApproval.setJustification(modal.getJustification());
 			fundApproval.setRequisitionDate(modal.getRequisitionDate());
+			fundApproval.setFundRequestAmount(modal.getFundRequestAmount());
 			fundApproval.setApril(modal.getApril());
 			fundApproval.setMay(modal.getMay());
 			fundApproval.setJune(modal.getJune());
@@ -335,7 +336,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			fundApproval.setMarch(modal.getMarch());
 			fundApproval.setModifiedBy(modal.getModifiedBy());
 			fundApproval.setModifiedDate(modal.getModifiedDate());
-			fundApproval.setStatus(modal.getStatus());
 			manager.flush();
 			return fundApproval.getFundApprovalId();
 			
@@ -896,6 +896,22 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId) {
+		 try {
+		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId";
+		        return manager.createQuery(jpql, FundLinkedMembers.class)
+		                      .setParameter("empId", empId)
+		                      .setParameter("fundApprovalId", fundApprovalId)
+		                      .getSingleResult();
+		        
+		    } catch (Exception e) {
+		        logger.error(new Date() + " Inside DAO getLinkedMemberDetailsByEmpId() " + e);
+		        e.printStackTrace();
+		        return null;
+		    }
 	}
 
 

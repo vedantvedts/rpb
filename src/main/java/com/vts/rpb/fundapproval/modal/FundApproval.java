@@ -130,14 +130,14 @@ public class FundApproval {
 	@Column(name = "RevisionCount")
 	private long revisionCount=0;
 	
-	@Column(name = "RevokedBy", length = 100)
-	private String  revokedBy;
+	@Column(name = "RevokedBy")
+	private long revokedBy;
 	
 	@Column(name = "RevokedDate")
 	private LocalDateTime revokedDate;
 	
-	@Column(name = "ReturnedBy", length = 100)
-	private String  returnedBy;
+	@Column(name = "ReturnedBy")
+	private long returnedBy;
 	
 	@Column(name = "ReturnedDate")
 	private LocalDateTime returnedDate;

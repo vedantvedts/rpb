@@ -24,7 +24,7 @@
   background: #fff;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+ box-shadow: 0px 2px 8px rgb(215 170 123);
   min-width: 300px;
   max-width: 300px;
 }
@@ -116,6 +116,39 @@
     border-bottom-left-radius: 0rem !important;
 }
 
+ .RcRemarks
+    {
+     font-weight: 600;
+     color:#e17400 !important;
+     font-size: 14px;
+    }
+    
+    .statusHeader
+    {
+    	text-decoration: underline;
+    	font-weight: 600;
+    	color: #054691;
+    	margin:10px;
+    	font-family: math;
+    }
+    
+    .RcRemarkTitle
+    {
+    	color: #002e85;
+    	font-size: 13px;
+    }
+    
+    .returnedTxt
+    {
+    	text-align: center;
+    	color:#0015b9;
+    }
+    
+    .returnBg
+    {
+        box-shadow: 0px 1px 15px rgb(157 7 7) !important;
+        background: #fff2f2 !important;
+    }
 
 </style>
 
@@ -169,7 +202,7 @@
 		</div>
 		
 		<!-- Status Modal -->
-			<div class="modal fade" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal fade" onselectstart="return false;" id="ApprovalStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			 <div class="modal-dialog  custom-width-modal" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header" style="background-color: white !important;color:black;">
@@ -180,9 +213,9 @@
 			      </div>
 			      <div class="modal-body">
 			        <!-- Employee Modal Table -->
-			        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">CURRENT STATUS:</div>
+			        <div class="statusHeader">CURRENT STATUS:</div>
 			        <div id="ApprovalStatusDiv" class="mt-2" style="width: 95% !important;margin:auto;"></div>
-			        <div style="text-decoration: underline;font-weight: 600;color: #054691;margin:5px;">STATUS HISTORY:</div>
+			        <div class="statusHeader">STATUS HISTORY:</div>
 			        <div id="EmployeeModalTable" class="mt-2" style="width: 95% !important;margin:auto;"></div>
 			        
 			      </div>

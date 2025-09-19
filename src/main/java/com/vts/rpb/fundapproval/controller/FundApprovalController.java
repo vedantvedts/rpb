@@ -215,6 +215,7 @@ public class FundApprovalController
 			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
+			req.setAttribute("FundListApprovedOrNot","F"); // pending 
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -230,6 +231,7 @@ public class FundApprovalController
 	{
 		String UserName = (String) ses.getAttribute("Username");
 		long empId = (Long) ses.getAttribute("EmployeeId");
+		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() + "Inside FundApprovalPreview.htm " + UserName);
 		try {
 			
@@ -268,6 +270,7 @@ public class FundApprovalController
 				req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId)));
 				req.setAttribute("MasterFlowDetails",fundApprovalService.getMasterFlowDetails(fundApprovalId));
 				req.setAttribute("AllCommitteeMasterDetails",fundApprovalService.getAllCommitteeMemberDetails(LocalDate.now()));
+				req.setAttribute("AllEmployeeDetails",masterService.getAllOfficersList(labCode));
 			}
 			
 			return "fundapproval/fundApprovalPreview";
@@ -292,14 +295,15 @@ public class FundApprovalController
 		String action=req.getParameter("Action");
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
-		String flowDetailsId=req.getParameter("flowDetailsId");
 		
 		try
 		{
-			System.out.println("fundApprovalId*****"+fundApprovalId);
-			System.out.println("action*****"+action);
-			System.out.println("remarks*****"+remarks);
-			if(fundApprovalId==null || action==null || memberStatus == null || flowDetailsId == null)
+			if(fundApprovalId==null)
+			{
+				return "static/error";
+			}
+			
+			if(action==null || memberStatus == null)
 			{
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 				return "redirect:/FundApprovalPreview.htm";
@@ -309,7 +313,6 @@ public class FundApprovalController
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
 			fundDto.setRemarks(remarks!=null ? remarks.trim() : null);
 			fundDto.setMemberStatus(memberStatus);
-			fundDto.setFlowDetailsId(flowDetailsId);
 			fundDto.setAction(action);
 			fundDto.setCreatedBy(UserName);
 			
@@ -331,13 +334,20 @@ public class FundApprovalController
 				actionMssg = "Recommended";
 			}
 			
-			if(status > 0) {
+			if(status > 0) 
+			{
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully..&#128077;");
-			}else {
+				redir.addAttribute("FundListApprovedOrNot", "A");
+				url="redirect:/FundApprovalList.htm";
+			}
+			else 
+			{
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+				redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+				url="redirect:/FundApprovalPreview.htm";
 			}
 			
-			url="redirect:/FundApprovalList.htm";
+			
 					
 		}
 		catch(Exception e)
@@ -393,6 +403,59 @@ public class FundApprovalController
 		return url;
 		
 	}
+	@RequestMapping(value="EditCommitteeMemberDetails.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String editCommitteeMemberDetails(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		long empId = (Long) ses.getAttribute("EmployeeId");
+		logger.info(new Date() + "Inside EditCommitteeMemberDetails.htm " + UserName);
+		String url=null;
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalIdEdit");
+			String[] memberLinkedId=req.getParameterValues("MemberLinkedIdEdit");
+			String[] reccEmpId=req.getParameterValues("EditReccEmpId");
+			
+			if(fundApprovalId == null)
+			{
+				return "static/error";
+			}
+			
+			if(memberLinkedId == null || reccEmpId == null)
+			{
+				redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+				return "redirect:/FundApprovalPreview.htm";
+			}
+			
+			FundApprovalDto fundDto=new FundApprovalDto();
+			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setMemberLinkedId(memberLinkedId);
+			fundDto.setReccEmpId(reccEmpId);
+			fundDto.setCreatedBy(UserName);
+			
+			long status = fundApprovalService.editRecommendationDetails(fundDto,empId); 
+			
+			if(status > 0) {
+				redir.addAttribute("resultSuccess", "Recommending Officer(s) Updated Successfully..&#128077;");
+			}else {
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			}
+			
+			redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+			url="redirect:/FundApprovalPreview.htm";
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside EditCommitteeMemberDetails.htm " + UserName, e);
+			return "static/error";
+		}
+		return url;
+		
+	}
+
 	// Delete Fund Request
 	@RequestMapping(value="DeleteFundRequest.htm", method = {RequestMethod.GET,RequestMethod.POST})
 	public String deleteFundRequest(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
@@ -746,7 +809,8 @@ public class FundApprovalController
 			
 			String itemNomenclature=req.getParameter("ItemFor");
 			String justification=req.getParameter("justification");
-			String fundRequestAmount=req.getParameter("TotalFundReguestAmount");
+			String fundRequestAmount=req.getParameter("TotalFundRequestAmount");
+			System.out.println("*****fundRequestAmount****"+fundRequestAmount);
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
 			String jun=req.getParameter("JuneMonth");
@@ -850,7 +914,6 @@ public class FundApprovalController
 				fundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
 				fundApproval.setModifiedBy(UserName);
 				fundApproval.setModifiedDate(LocalDateTime.now());
-				fundApproval.setStatus("N");
 				
 				FundApprovalAttachDto attachDto=new FundApprovalAttachDto();
 				attachDto.setFileName(filenames);
@@ -1244,32 +1307,11 @@ public class FundApprovalController
 				fundDto.setSubjectExpertsId(subjectExpert);
 				fundDto.setSecretaryId(rpbSecretary != "" ? Long.parseLong(rpbSecretary) : 0);
 				fundDto.setChairmanId(chairman != "" ? Long.parseLong(chairman) : 0);
-				fundDto.setRemarks(remarks);
+				fundDto.setRemarks(remarks!=null ? remarks.trim() : null);
 				fundDto.setAction(fundAction);
 				fundDto.setFlowMasterId(fundFlowMasterId);
 				fundDto.setModifiedBy(UserName);
 				fundDto.setModifiedDate(LocalDateTime.now());
-				
-//				fundApprovalData.setRc6(divisionHead!=null && divisionHead!="" ? Long.parseLong(divisionHead) : 0);
-//				fundApprovalData.setRc6Role(divisionHeadRole!=null && divisionHeadRole!="" ? divisionHeadRole : null);
-//				
-//				fundApprovalData.setRc1(rpbMember1!=null && rpbMember1!="" ? Long.parseLong(rpbMember1) : 0);
-//				fundApprovalData.setRc1Role(rpbMemberRole1!=null && rpbMemberRole1!="" ? rpbMemberRole1 : null);
-//				
-//				fundApprovalData.setRc2(rpbMember2!=null && rpbMember2!="" ? Long.parseLong(rpbMember2) : 0);
-//				fundApprovalData.setRc2Role(rpbMemberRole2!=null && rpbMemberRole2!="" ? rpbMemberRole2 : null);
-//				
-//				fundApprovalData.setRc3(rpbMember3!=null && rpbMember3!="" ? Long.parseLong(rpbMember3) : 0);
-//				fundApprovalData.setRc3Role(rpbMemberRole3!=null && rpbMemberRole3!="" ? rpbMemberRole3 : null);
-//				
-//				fundApprovalData.setRc4(subjectExpert!=null && subjectExpert!="" ? Long.parseLong(subjectExpert) : 0);
-//				fundApprovalData.setRc4Role(subjectExpertRole!=null && subjectExpertRole!="" ? subjectExpertRole : null);
-//				
-//				fundApprovalData.setRc5(rpbSecretary!=null && rpbSecretary!="" ? Long.parseLong(rpbSecretary) : 0);
-//				fundApprovalData.setRc5Role(rpbMemberSecretaryRole!=null && rpbMemberSecretaryRole!="" ? rpbMemberSecretaryRole : null);
-//				
-//				fundApprovalData.setApprovingOfficer(chairman!=null && chairman!="" ? Long.parseLong(chairman) : 0);
-//				fundApprovalData.setApprovingOfficerRole(chairmanRole!=null && chairmanRole!="" ? chairmanRole : null);
 				
 				long status = fundApprovalService.fundRequestForward(fundDto,empId); 
 				
