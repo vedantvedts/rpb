@@ -144,7 +144,7 @@ background-repeat: no-repeat;
 }
 #notifications {
    /* Background pattern from Toptal Subtle Patterns */
-   background-image: url("view/images/not.jpg");
+   background-image: url("view/images/");
    background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -888,8 +888,11 @@ function showFailureFlyMessage(message) {
  	  List<Object[]> SubModuleList =(List<Object[]>)session.getAttribute("SubModuleList");
  	 int temp=-1;
  	String applicationType = "F";
+ 	String memberType=(String)session.getAttribute("memberLoginType");
     %>
+    
     <input type="hidden" id="hiddendeveloperToolsStatus" value="<%=developerToolsStatus%>">
+     <input type="hidden" id="hiddenMemberType" value="<%=memberType%>">
       <div id="custom-menu" class="custom-menu" style="z-index: 10000;">
 							    
 								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
@@ -937,6 +940,7 @@ function showFailureFlyMessage(message) {
 		<div style="margin-left: -0.9rem;">&nbsp;
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
+
 	<%} %>
 	
 <% if (mainModule[1].toString().equalsIgnoreCase("Committee Master")) { %>
@@ -1029,28 +1033,40 @@ function showFailureFlyMessage(message) {
 						        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
 							            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
+
 							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+
 							  	</button>
 							
-							    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
-							    	
-								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
-								    <div class="dropdown-divider logoutdivider"></div>
-								    
-									 <div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
-								  	<div class="dropdown-divider logoutdivider"></div> 
-									
-									<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
-								            
-								    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
-									        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-								                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
-								                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
-								                    &nbsp;&nbsp;Logout
-								                </button>
-								        </form>
-							        
-							    </div>
+    
+							    <div class="btn-group HeaderUserAction">
+							        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
+								            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
+								            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+								  	</button>
+								
+								    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
+								    	
+									    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
+									    <div class="dropdown-divider logoutdivider"></div>
+										<div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
+									  	<div class="dropdown-divider logoutdivider"></div> 
+										 <a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
+										<div class="dropdown-divider logoutdivider"></div>
+										<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
+									            
+									    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
+										        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+									                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
+									                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
+									                    &nbsp;&nbsp;Logout
+									                </button>
+									        </form>
+								        
+								    </div>
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -1198,7 +1214,92 @@ function toggleSubmoduleList(mainModuleValue) {
     }
 }
 </script>
+<script>
+$(document).ready(function(){
+    $.ajax({
+        type : "GET",
+        url : "ApprovalCount.htm",	 
+        dataType : 'json',  
+        success : function(result){
+            console.log("Raw result:", result);
 
+            // clear old notifications except the header
+            $("#notifications").find(".notif-list, #noNotif").remove();
+
+            if(result && result.length > 0){
+                var totalCount = result.length; // number of rows
+                $("#NotificationCount").html(totalCount).show();
+
+                // build <ul> list
+                var $ul = $('<ul class="notif-list list-unstyled mb-0" style="padding-top: 1%;"></ul>');
+
+                result.forEach(function(row){
+                    var count = row[0];          // totalcount
+                    var estimateType = row[1];   // EstimateType
+                    var finYear = row[2];        // FinYear
+                    var division = row[3];       // DivisionName
+                    var amount = row[4] != null ? row[4].toString() : "0";         // FundRequestAmount
+                    var fundApprovalId = row[5];
+                    var pending='';
+                    var memberType=$("#hiddenMemberType").val();
+                    if(estimateType=='R'){
+                    	estimateType='RE';
+                    }
+                    if(estimateType=='F'){
+                    	estimateType='FBE';
+                    }
+
+                    if(memberType=='CC' || memberType=='CS'){
+                    	pending='Approval Pending';
+                    }
+                    if(memberType=='CS'){
+                    	pending='Review Pending';
+                    }
+                    if(memberType=='CM' || memberType=='DH' || memberType=='SE'){
+                    	pending='Recommendation Pending';
+                    }
+                    var item = 
+                        '<li class="dropdown-item" style="font-size: 13px; text-align: left; cursor:pointer;">' +
+                            '<a href="FundApprovalPreview.htm?FundApprovalIdSubmit='+fundApprovalId+'" style="color:inherit; text-decoration:none; display:block;">' +
+                                '<div><strong>' + division + '</strong>' +
+                                ' with a Fund Request Amount of <strong style="color:blue">' +rupeeFormat(amount)+ '</strong> - <strong style="color: #e03e3e;">'+pending+' !</strong></div>' +
+                            '</a>' +
+                        '</li>' +
+                        '<div class="dropdown-divider"></div>';
+
+
+                    $ul.append(item);
+                });
+
+                // append the whole list after header
+                $("#notifications").append($ul);
+
+            } else {
+                // no data found
+                $("#fundShow").hide();
+                $("#FundBadge").hide();
+                $("#NotificationCount").hide();
+
+                if($("#noNotif").length === 0){
+                    $("#notifications").append(
+                        '<a class="dropdown-item text-center small text-gray-500 showall notification" ' +
+                        'id="noNotif" href="#" style="height: 30px;font-size: 13px;color: black; text-align: left;">' +
+                        '<span style="font-weight: 600;">No Notifications</span></a>'
+                    );
+                }
+            }
+        },
+        error: function(xhr, status, error){
+            console.error("Ajax error:", error);
+        }
+    });
+});
+</script>
+
+
+
+
+ 
 
     
         </body>

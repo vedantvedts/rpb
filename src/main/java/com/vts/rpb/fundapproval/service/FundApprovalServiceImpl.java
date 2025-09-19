@@ -967,6 +967,26 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		    }
 		    return null;
 	}
+	
+	@Override
+	public String getCommitteeMembersLinked (long empId) throws Exception{
+		List<Object[]> committeeType= fundApprovalDao.getCommitteeMembersLinked(empId);
+		 if (committeeType != null && !committeeType.isEmpty()) {
+		        Object[] firstRow = committeeType.get(0);
+		        return firstRow[0].toString();
+		    }
+		    return null;
+	}
+	
+	@Override
+	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception{
+		List<Object[]> totalCountFundApproval= fundApprovalDao.committeeMemberFundApprovalCount(committeeMember,empId);
+		if (totalCountFundApproval != null && !totalCountFundApproval.isEmpty()) {
+	        
+	        return totalCountFundApproval;
+	    }
+	    return null;
+	}
 
 	@Override
 	public List<Object[]> getProposedProjectDetails() throws Exception {
