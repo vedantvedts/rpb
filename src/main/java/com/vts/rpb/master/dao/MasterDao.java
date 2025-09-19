@@ -32,4 +32,6 @@ public interface MasterDao
 	public CommitteeMembers getCommitteeMemberDetails(long committeeMemberId)throws Exception;
 
 	public long EditCommitteMemberDetails(CommitteeMembers comMember)throws Exception;
+
+	public List<Object[]> getParticularDivisionDetails(String divisionId)throws Exception;
 }

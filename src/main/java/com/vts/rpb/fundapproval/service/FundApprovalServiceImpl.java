@@ -399,24 +399,36 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
+			System.out.println("fundDto.getAction()****"+fundDto.getAction());
+			
 			String transAction = "";
-			if(fundDto.getAction()!=null && (fundDto.getAction().equalsIgnoreCase("RF") || fundDto.getAction().equalsIgnoreCase("R"))) 
+			if(fundDto.getAction()!=null) 
 			{
-				transAction = "R-FWD";
+				if(fundDto.getAction().equalsIgnoreCase("F"))
+				{
+					fundDetails.setStatus("F");
+					transAction = "FWD";
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("RF")) 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("F");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R"))    // R - Return Re-Forward 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("C");  // C - returned re-forward
+				}
+				
+				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
+				fundApprovalDao.insertFundApprovalTransaction(transModal);
+				
+				fundDetails.setStatus("F");
+				fundDetails.setModifiedBy(fundDto.getModifiedBy());
+				fundDetails.setModifiedDate(fundDto.getModifiedDate());
+				
+				status = fundApprovalDao.updateFundRequest(fundDetails);
 			}
-			else
-			{
-				transAction = "FWD";
-			}
-			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
-			fundApprovalDao.insertFundApprovalTransaction(transModal);
-			
-			fundDetails.setStatus("F");
-			fundDetails.setModifiedBy(fundDto.getModifiedBy());
-			fundDetails.setModifiedDate(fundDto.getModifiedDate());
-			
-			status = fundApprovalDao.updateFundRequest(fundDetails);
 		}
 		
 		return status;
