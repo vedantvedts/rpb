@@ -900,7 +900,7 @@ function loadQueries(fundApprovalId) {
 
                             var msgDiv = document.createElement("div");
                             msgDiv.style.padding = "6px 8px";
-                            msgDiv.style.background = "rgb(91 90 129)";
+                            msgDiv.style.background = "#034189";
                             msgDiv.style.color = "#fff";
                             msgDiv.style.borderRadius = "8px";
                             msgDiv.style.display = "inline-block";
@@ -997,7 +997,7 @@ function sendQuery(fundApprovalId) {
 
                 var newMsg = document.createElement("div");
                 newMsg.style.padding = "6px 10px";
-                newMsg.style.background = "rgb(91 90 129)";
+                newMsg.style.background = "#034189";
                 newMsg.style.color = "#fff";
                 newMsg.style.borderRadius = "8px";
                 newMsg.style.display = "inline-block";

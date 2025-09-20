@@ -1694,7 +1694,7 @@ function getProposedProjectDetails(proposedProjectId)
                              msgDiv.style.background = "#034189";
                              msgDiv.style.color = "#fff";
                              msgDiv.innerHTML =
-                                 "<div style='text-align: left;'><b>You</b>: " + message + "</div>" +
+                                 "<div style='text-align: left;'><b></b> " + message + "</div>" +
                                  "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
                          } else {
                              wrapper.style.textAlign = "left"; 
@@ -1787,7 +1787,7 @@ function getProposedProjectDetails(proposedProjectId)
              newMsg.style.wordWrap = "break-word";
 
              newMsg.innerHTML =
-                 "<div style='text-align: left;'><b>You</b>: " + msg + "</div>" +
+                 "<div style='text-align: left;'><b></b> " + msg + "</div>" +
                  "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
 
              wrapper.appendChild(newMsg);
