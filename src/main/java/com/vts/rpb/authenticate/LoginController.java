@@ -104,7 +104,6 @@ public class LoginController {
 			try {  
 				String committeeMember=fundApprovalService.getCommitteeMembersLinked(Long.valueOf(empId));
 				List<Object[]>  result = fundApprovalService.committeeMemberFundApprovalCount(committeeMember,empId);
-				 result.stream().forEach(a->System.err.println(Arrays.toString(a))); 
 				return json.toJson(result);   //return to Ajax Where You Call Hide.htm
 			    }catch (Exception e){
 				e.printStackTrace();
