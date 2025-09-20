@@ -745,7 +745,7 @@ input[name="ItemNomenclature"]::placeholder {
 				      
 				  </div>
 				</div>
-				</div>
+				</div> 
 <!-- Chat Modal -->
 <div class="modal fade" id="chatBoxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered custom-modal-width">
