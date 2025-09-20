@@ -325,6 +325,8 @@ input[name="ItemNomenclature"]::placeholder {
               <input type="hidden" id="budgetTypeHidden" <%if(budgetType!=null){ %> value="<%=budgetType%>" <%} %>>
               <input type="hidden" id="proposedProjectHidden" <%if(proposedProject!=null){ %> value="<%=proposedProject%>" <%} %>>
               <input type="hidden" id="divisionIdHidden" <%if(divisionId!=null){ %> value="<%=divisionId%>" <%} %>>
+              <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
+              <input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <div class="card-header page-top">
 	 	<div class="row">
@@ -512,7 +514,9 @@ input[name="ItemNomenclature"]::placeholder {
 											        </button>
 					                       		
 					                       		<%} %>
-											    
+											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+													
+								    
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
@@ -742,9 +746,40 @@ input[name="ItemNomenclature"]::placeholder {
 				  </div>
 				</div>
 				</div>
+<!-- Chat Modal -->
+<div class="modal fade" id="chatBoxModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered custom-modal-width">
+    <div class="modal-content" style="border-radius:8px; font-size:13px;">
+      
+
+      <div class="modal-header" style="background:#034189; color:#fff;">
+        <h5 class="modal-title">Queries</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="font-size:19px; color:white;">&#10006;</span>
+        </button>
+      </div>
+
+
+      <div class="modal-body" style="padding:8px; background:#f9f9f9; height:400px; overflow-y:auto;" id="chatMessages">
+      </div>
+
+
+      <div class="modal-footer" style="border-top:1px solid #ddd;">
+        <input type="text" id="chatInput" placeholder="Type a message..."
+               style="width:84%; padding:5px; border:1px solid #ccc; border-radius:4px;">
+        <button type="button" class="btn btn-success" id="chatSendButton">
+          <i class="fas fa-paper-plane"></i> Send
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 				
 
-			
+
 </body>
 <script type="text/javascript">
 
@@ -1569,6 +1604,206 @@ function getProposedProjectDetails(proposedProjectId)
 
 </script>
   
+<script>
+ let currentFundApprovalId = null;
+ let refreshInterval = null;
+ let lastMessageCount = 0;
+
+ function openChatBox(fundApprovalId) {
+     currentFundApprovalId = fundApprovalId; // store current row's ID
+
+     // Clear previous chat messages
+     var chatMessages = document.getElementById("chatMessages");
+     chatMessages.innerHTML = "";
+
+     // Reset message counter
+     lastMessageCount = 0;
+
+     // Clear any existing interval to avoid multiple refreshes
+     if (refreshInterval) {
+         clearInterval(refreshInterval);
+         refreshInterval = null;
+     }
+
+     // Open modal
+     $('#chatBoxModal').modal('show');
+
+     // Load queries for this ID
+     loadQueries(fundApprovalId);
+
+     // Start auto-refresh
+     startAutoRefresh(fundApprovalId);
+ }
+
+ // Explicit close (if called manually)
+ function closeChatBox() {
+     $('#chatBoxModal').modal('hide');
+ }
+
+ // Ensure cleanup when modal is closed (by X, backdrop, or function)
+ $('#chatBoxModal').on('hidden.bs.modal', function () {
+     // Stop refresh
+     if (refreshInterval) {
+         clearInterval(refreshInterval);
+         refreshInterval = null;
+     }
+     // Reset all variables
+     currentFundApprovalId = null;
+     lastMessageCount = 0;
+     document.getElementById("chatMessages").innerHTML = "";
+     document.getElementById("chatInput").value = "";
+ });
+
+ // Load existing queries from DB using AJAX
+ function loadQueries(fundApprovalId) {
+     var chatMessages = document.getElementById("chatMessages");
+     var currentEmpId = document.getElementById("EmpId").value;
+
+     $.ajax({
+         url: "getFundApprovalQueries.htm",
+         type: "GET",
+         data: { fundApprovalId: fundApprovalId },
+         success: function(response) {
+             try {
+                 var data = JSON.parse(response);
+                 if (data && data.length > lastMessageCount) {
+                     // Append only new messages
+                     for (var i = lastMessageCount; i < data.length; i++) {
+                         var row = data[i];
+                         var empId = row[1];      
+                         var empName = row[2];
+                         var designation = row[3];
+                         var message = row[5];
+                         var actionDate = row[6];
+
+                         actionDate = actionDate.replace(/:\d{2}\s/, " ");
+
+                         var wrapper = document.createElement("div");
+                         wrapper.style.clear = "both";
+                         wrapper.style.marginBottom = "8px";
+
+                         var msgDiv = document.createElement("div");
+                         msgDiv.style.padding = "6px 8px";
+                         msgDiv.style.borderRadius = "8px";
+                         msgDiv.style.display = "inline-block";
+                         msgDiv.style.maxWidth = "60%";
+                         msgDiv.style.wordWrap = "break-word";
+
+                         if (empId == currentEmpId) {
+                             wrapper.style.textAlign = "right"; 
+                             msgDiv.style.background = "#034189";
+                             msgDiv.style.color = "#fff";
+                             msgDiv.innerHTML =
+                                 "<div style='text-align: left;'><b>You</b>: " + message + "</div>" +
+                                 "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                         } else {
+                             wrapper.style.textAlign = "left"; 
+                             msgDiv.style.background = "#e9ecef";
+                             msgDiv.style.color = "#000";
+                             msgDiv.innerHTML =
+                                 "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
+                                 "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                         }
+
+                         wrapper.appendChild(msgDiv);
+                         chatMessages.appendChild(wrapper);
+                     }
+
+                     lastMessageCount = data.length;
+                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                 }
+             } catch (e) {
+                 console.error("Invalid JSON:", e);
+             }
+         },
+         error: function(xhr, status, error) {
+             console.error("Error loading queries:", error);
+         }
+     });
+ }
+
+ // Auto-refresh every 3 seconds
+ function startAutoRefresh(fundApprovalId) {
+     if (refreshInterval) clearInterval(refreshInterval);
+     refreshInterval = setInterval(function() {
+         loadQueries(fundApprovalId);
+     }, 3000);
+ }
+
+ // Attach send button
+ document.getElementById('chatSendButton').addEventListener('click', function() {
+     if(currentFundApprovalId){
+         sendQuery(currentFundApprovalId);
+     }
+ });
+
+ // Attach enter key for sending message
+ document.addEventListener("DOMContentLoaded", function () {
+     var input = document.getElementById("chatInput");
+     input.addEventListener("keypress", function (e) {
+         if (e.key === "Enter") {
+             e.preventDefault(); 
+             sendQuery(currentFundApprovalId);
+         }
+     });
+ });
+
+ // Send new message
+ function sendQuery(fundApprovalId) {
+     var input = document.getElementById("chatInput");
+     var msg = input.value.trim();
+     if (msg === "") return;
+
+     var csrfParam = document.getElementById("csrfParam").name;
+     var csrfToken = document.getElementById("csrfParam").value;
+
+     var requestData = { fundApprovalId: fundApprovalId, Query: msg };
+     requestData[csrfParam] = csrfToken;
+
+     $.ajax({
+         url: "sendFundApprovalQuery.htm",
+         type: "POST",
+         data: requestData,
+         success: function(response) {
+             var chatMessages = document.getElementById("chatMessages");
+             var now = new Date();
+             var dateTime = now.toLocaleString("en-US", { 
+                 month: "short", day: "numeric", year: "numeric", 
+                 hour: "numeric", minute: "numeric", hour12: true 
+             });
+
+             var wrapper = document.createElement("div");
+             wrapper.style.clear = "both";
+             wrapper.style.textAlign = "right";
+             wrapper.style.marginBottom = "8px";
+
+             var newMsg = document.createElement("div");
+             newMsg.style.padding = "6px 10px";
+             newMsg.style.background = "#034189";
+             newMsg.style.color = "#fff";
+             newMsg.style.borderRadius = "8px";
+             newMsg.style.display = "inline-block";
+             newMsg.style.maxWidth = "70%";
+             newMsg.style.wordWrap = "break-word";
+
+             newMsg.innerHTML =
+                 "<div style='text-align: left;'><b>You</b>: " + msg + "</div>" +
+                 "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
+
+             wrapper.appendChild(newMsg);
+             chatMessages.appendChild(wrapper);
+
+             chatMessages.scrollTop = chatMessages.scrollHeight;
+             input.value = "";
+             lastMessageCount++;
+         },
+         error: function(xhr, status, error) {
+             console.error("Error sending query:", error);
+         }
+     });
+ }
+</script>
+
  
   
 </html>

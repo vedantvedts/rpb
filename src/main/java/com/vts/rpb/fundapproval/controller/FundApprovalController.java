@@ -44,6 +44,7 @@ import com.vts.rpb.utils.CharArrayWriterResponse;
 import com.vts.rpb.utils.DateTimeFormatUtil;
 import com.vts.rpb.utils.LabLogo;
 import com.vts.rpb.fundapproval.modal.FundApproval;
+import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -280,6 +281,52 @@ public class FundApprovalController
 			return "static/error";
 			
 		}
+	}
+	
+	@RequestMapping(value ="getFundApprovalQueries.htm",method=RequestMethod.GET)
+	public @ResponseBody String getFundApprovalQueries(HttpSession ses , HttpServletRequest req)throws Exception
+	{ 
+		 String Username = (String) ses.getAttribute("Username");
+		 String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		 String fundApprovalId=req.getParameter("fundApprovalId");
+	     logger.info(new Date() + "Inside ApprovalCount.htm " + Username);
+		 Gson json = new Gson();
+		try {  
+			
+			List<Object[]>  result = fundApprovalService.getFundApprovalQueryDetails(fundApprovalId);
+			
+			return json.toJson(result);   
+		    }catch (Exception e){
+			e.printStackTrace();
+			logger.error(new Date() + " Inside getFundApprovalQueries.htm " + Username, e);
+		    }
+		    return null;
+	}
+	
+	@RequestMapping(value ="sendFundApprovalQuery.htm",method=RequestMethod.POST)
+	public @ResponseBody String sendFundApprovalQuery(HttpSession ses , HttpServletRequest req)throws Exception
+	{ 
+		 String Username = (String) ses.getAttribute("Username");
+		 String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+	     logger.info(new Date() + "Inside ApprovalCount.htm " + Username);
+		 Gson json = new Gson();
+		try {  
+			String fundApprovalId=req.getParameter("fundApprovalId");
+			String query=req.getParameter("Query");
+			
+			fundApprovalQueries fundQueries=new fundApprovalQueries();
+			fundQueries.setEmpId(Long.valueOf(empId));
+			fundQueries.setFundApprovalId(Long.valueOf(fundApprovalId));
+			fundQueries.setQuery(query);
+			fundQueries.setActionDate(LocalDateTime.now());
+			
+			long  result = fundApprovalService.fundApprovalQuerySubmit(fundQueries);
+			System.err.println("result-"+result);
+		    }catch (Exception e){
+			e.printStackTrace();
+			logger.error(new Date() + " Inside getFundApprovalQueries.htm " + Username, e);
+		    }
+		    return null;
 	}
 	
 	// Recommendation, Return, Approval

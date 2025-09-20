@@ -9,6 +9,7 @@ import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
+import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 public interface FundApprovalDao 
 {
@@ -115,4 +116,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getTransactionStatusDetails(String action, String actionType) throws Exception;
 
 	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId);
+	
+	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries);
+	
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 }

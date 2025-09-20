@@ -16,6 +16,7 @@ import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
+import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -912,6 +913,36 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		        e.printStackTrace();
 		        return null;
 		    }
+	}
+	
+	@Override
+	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries) {
+	try {
+		manager.persist(FundApprovalQueries);
+		manager.flush();
+		
+		return FundApprovalQueries.getQueryId();
+		
+	} catch (Exception e) {
+		logger.error(new Date() +"Inside DAO fundApprovalQuerySubmit "+ e);
+		e.printStackTrace();
+		return 0L;
+	}	
+	}
+	
+	@Override
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT r.FundApprovalId, e.EmpId,e.EmpName, ed.Designation, dm.DivisionCode,r.Query , r.ActionDate FROM rpb_approval_queries r LEFT JOIN "+mdmdb+".employee e ON e.EmpId = r.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=e.DivisionId WHERE r.FundApprovalId=:fundApprovalId ORDER BY r.ActionDate ASC");
+			query.setParameter("fundApprovalId", fundApprovalId);  
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getFundApprovalQueryDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 

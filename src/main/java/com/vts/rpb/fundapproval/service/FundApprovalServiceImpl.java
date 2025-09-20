@@ -42,6 +42,7 @@ import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
+import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 @Service
 @Transactional
@@ -1126,6 +1127,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		
 		return status;
+	}
+	
+	@Override
+	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries) {
+		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
+	}
+	@Override
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
+		
+		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
 	}
 	
 }
