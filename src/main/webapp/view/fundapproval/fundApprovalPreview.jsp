@@ -867,7 +867,7 @@ function closeChatBox() {
     }
 }
 
-function loadQueries(fundApprovalId) {
+function loadQueries(fundApprovalId) { 
     var chatMessages = document.getElementById("chatMessages");
     var currentEmpId = document.getElementById("EmpId").value;
 
