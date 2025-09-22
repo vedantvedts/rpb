@@ -42,7 +42,6 @@ import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
-import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 @Service
 @Transactional
@@ -400,36 +399,24 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
-			System.out.println("fundDto.getAction()****"+fundDto.getAction());
-			
 			String transAction = "";
-			if(fundDto.getAction()!=null) 
+			if(fundDto.getAction()!=null && (fundDto.getAction().equalsIgnoreCase("RF") || fundDto.getAction().equalsIgnoreCase("R"))) 
 			{
-				if(fundDto.getAction().equalsIgnoreCase("F"))
-				{
-					fundDetails.setStatus("F");
-					transAction = "FWD";
-				}
-				else if(fundDto.getAction().equalsIgnoreCase("RF")) 
-				{
-					transAction = "R-FWD";
-					fundDetails.setStatus("F");
-				}
-				else if(fundDto.getAction().equalsIgnoreCase("R"))    // R - Return Re-Forward 
-				{
-					transAction = "R-FWD";
-					fundDetails.setStatus("C");  // C - returned re-forward
-				}
-				
-				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
-				fundApprovalDao.insertFundApprovalTransaction(transModal);
-				
-				fundDetails.setStatus("F");
-				fundDetails.setModifiedBy(fundDto.getModifiedBy());
-				fundDetails.setModifiedDate(fundDto.getModifiedDate());
-				
-				status = fundApprovalDao.updateFundRequest(fundDetails);
+				transAction = "R-FWD";
 			}
+			else
+			{
+				transAction = "FWD";
+			}
+			
+			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
+			fundApprovalDao.insertFundApprovalTransaction(transModal);
+			
+			fundDetails.setStatus("F");
+			fundDetails.setModifiedBy(fundDto.getModifiedBy());
+			fundDetails.setModifiedDate(fundDto.getModifiedDate());
+			
+			status = fundApprovalDao.updateFundRequest(fundDetails);
 		}
 		
 		return status;
@@ -1139,16 +1126,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		
 		return status;
-	}
-	
-	@Override
-	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries) {
-		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
-	}
-	@Override
-	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
-		
-		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
 	}
 	
 }

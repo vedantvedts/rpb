@@ -226,20 +226,4 @@ public class MasterDaoImpl implements MasterDao {
 		}
 	}
 
-	@Override
-	public List<Object[]> getParticularDivisionDetails(String divisionId) throws Exception {
-		logger.info(new Date() +"Inside MaterDaoImpl getAllEmployeeDetailsByDivisionId");
-		try {
-		Query query= manager.createNativeQuery("SELECT d.DivisionId, d.DivisionCode, d.DivisionName, d.DivisionShortName, d.DivisionHeadId, d.GroupId FROM "+mdmdb+".division_master d WHERE d.IsActive = 1 AND d.DivisionId = :divisionId");
-		query.setParameter("divisionId",divisionId);
-		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
-		return OfficerList;
-		
-		} catch (Exception e) {
-			logger.error(new Date() +"Inside MaterDaoImpl getParticularDivisionDetails");
-			e.printStackTrace();
-			return null; 
-		}
-	}
-
 }

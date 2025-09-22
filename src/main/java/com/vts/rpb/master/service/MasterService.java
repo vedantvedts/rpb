@@ -24,6 +24,4 @@ public interface MasterService
 	public long saveCommitteeMembers(CommitteeMembers cm)throws Exception;
 
 	public long EditCommitteeMembers(CommitteeMembers cm)throws Exception;
-
-	public Object[] getDivisionDetails(String divisionId) throws Exception;
 }
