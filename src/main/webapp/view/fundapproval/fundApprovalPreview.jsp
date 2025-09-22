@@ -722,45 +722,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 	                    </div>
 	                </div>
 	            </div>
-<div id="chatBoxContainer" style="
-    position: absolute;
-    bottom:-218px;
-    right: 15px;
-    width: 562px;
-    height: 554px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0px 0px 6px rgba(0,0,0,0.2);
-    display: none;
-    flex-direction: column;
-    font-size: 13px;
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-">
-    <!-- Header -->
-    <div style="background: #034189; color: white; padding: 8px; border-radius: 8px 8px 0 0; font-weight: bold; display:flex; justify-content:space-between; align-items:center;">
-        <span>Queries</span>
-              <button type="button" class="close" onclick="closeChatBox()" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size:19px; color:white;">&#10006;</span>
-        </button>
-    </div>
-
-    <!-- Messages -->
-    <div id="chatMessages" style="flex: 1; padding: 8px; overflow-y: auto; background: #f9f9f9;">
-    </div>
-
-    <!-- Input -->
-    <div style="padding: 6px; border-top: 1px solid #ddd; background: #fff;">
-        <input type="text" id="chatInput" placeholder="Type a message..." 
-               style="width: 84%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">&nbsp;
-        <button type="button" onclick="sendQuery(<%=fundApprovalId%>)" 
-                style="padding: 5px 10px; border: none; background: #048114; color: #fff; border-radius: 4px;">
-            <i class="fas fa-paper-plane"></i> Send
-        </button>
-    </div>
-</div>
 
 
 	        </div>
@@ -833,14 +794,6 @@ $(document).ready(function(){
 
 </script>
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 19ff296 (Merge branch 'main' into rpb_demo)
->>>>>>> 01cb322dd753fdf9121dc852418500b89c4f9f66
 <script>
 var refreshInterval = null;
 var lastMessageCount = 0;
@@ -1035,18 +988,5 @@ function sendQuery(fundApprovalId) {
 
 </script>
 
-
-
-<<<<<<< HEAD
-</html>
-=======
-<<<<<<< HEAD
 </html>
 
-=======
-</html>
->>>>>>> parent of 8048432 (Update fundApprovalPreview.jsp)
-=======
-</html>
->>>>>>> parent of 19ff296 (Merge branch 'main' into rpb_demo)
->>>>>>> 01cb322dd753fdf9121dc852418500b89c4f9f66

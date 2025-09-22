@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
+
 @Entity(name = "rpb_approval_queries")
 public class FundApprovalQueries {
 

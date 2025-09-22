@@ -849,7 +849,7 @@ function showFailureFlyMessage(message) {
 	  setTimeout(() => $msg.addClass('show'), 10);
 
 	  setTimeout(() => {
-	    $msg.removeClass('show');
+	    $msg.removeClass('show'); 
 	    setTimeout(() => $msg.remove(), 400);
 	  }, 5000);
 	}
