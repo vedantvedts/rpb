@@ -746,35 +746,7 @@ input[name="ItemNomenclature"]::placeholder {
 				  </div>
 				</div>
 				</div> 
-<!-- Chat Modal -->
-<div class="modal fade" id="chatBoxModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered custom-modal-width">
-    <div class="modal-content" style="border-radius:8px; font-size:13px;">
-      
-
-      <div class="modal-header" style="background:#034189; color:#fff;">
-        <h5 class="modal-title">Queries</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="font-size:19px; color:white;">&#10006;</span>
-        </button>
-      </div>
-
-
-      <div class="modal-body" style="padding:8px; background:#f9f9f9; height:400px; overflow-y:auto;" id="chatMessages">
-      </div>
-
-
-      <div class="modal-footer" style="border-top:1px solid #ddd;">
-        <input type="text" id="chatInput" placeholder="Type a message..."
-               style="width:84%; padding:5px; border:1px solid #ccc; border-radius:4px;">
-        <button type="button" class="btn btn-success" id="chatSendButton">
-          <i class="fas fa-paper-plane"></i> Send
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
+<!-- Chat Box -->
 
 
 				
@@ -1520,205 +1492,215 @@ function getProposedProjectDetails(proposedProjectId)
 
 </script>
   
+
 <script>
- let currentFundApprovalId = null;
- let refreshInterval = null;
- let lastMessageCount = 0;
+let currentFundApprovalId = null;
+let refreshInterval = null;
+let lastMessageCount = 0;
 
- function openChatBox(fundApprovalId) {
-     currentFundApprovalId = fundApprovalId; // store current row's ID
+// Open Chat with bounce animation
+function openChatBox(fundApprovalId) {
+    currentFundApprovalId = fundApprovalId;
 
-     // Clear previous chat messages
-     var chatMessages = document.getElementById("chatMessages");
-     chatMessages.innerHTML = "";
+    document.getElementById("chatMessages").innerHTML = "";
+    document.getElementById("chatInput").value = "";
+    lastMessageCount = 0;
 
-     // Reset message counter
-     lastMessageCount = 0;
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
 
-     // Clear any existing interval to avoid multiple refreshes
-     if (refreshInterval) {
-         clearInterval(refreshInterval);
-         refreshInterval = null;
-     }
+    const chatBox = document.getElementById("chatBoxContainer");
+    chatBox.style.opacity = "1";
+    chatBox.style.transform = "translateY(0) scale(1)";
+    chatBox.style.pointerEvents = "auto";
 
-     // Open modal
-     $('#chatBoxModal').modal('show');
+    // Bounce animation
+    chatBox.animate([
+        { transform: "translateY(80px) scale(0.8)", opacity: 0 },
+        { transform: "translateY(-10px) scale(1.05)", opacity: 1 },
+        { transform: "translateY(5px) scale(0.98)", opacity: 1 },
+        { transform: "translateY(0) scale(1)", opacity: 1 }
+    ], { duration: 400, easing: "ease-out" });
 
-     // Load queries for this ID
-     loadQueries(fundApprovalId);
+    loadQueries(fundApprovalId);
+    startAutoRefresh(fundApprovalId);
+}
 
-     // Start auto-refresh
-     startAutoRefresh(fundApprovalId);
- }
+// Close Chat with fade-out
+function closeChatBox() {
+    const chatBox = document.getElementById("chatBoxContainer");
 
- // Explicit close (if called manually)
- function closeChatBox() {
-     $('#chatBoxModal').modal('hide');
- }
+    chatBox.animate([
+        { transform: "translateY(0) scale(1)", opacity: 1 },
+        { transform: "translateY(30px) scale(0.95)", opacity: 0 }
+    ], { duration: 300, easing: "ease-in" });
 
- // Ensure cleanup when modal is closed (by X, backdrop, or function)
- $('#chatBoxModal').on('hidden.bs.modal', function () {
-     // Stop refresh
-     if (refreshInterval) {
-         clearInterval(refreshInterval);
-         refreshInterval = null;
-     }
-     // Reset all variables
-     currentFundApprovalId = null;
-     lastMessageCount = 0;
-     document.getElementById("chatMessages").innerHTML = "";
-     document.getElementById("chatInput").value = "";
- });
+    setTimeout(() => {
+        chatBox.style.opacity = "0";
+        chatBox.style.transform = "translateY(50px) scale(0.9)";
+        chatBox.style.pointerEvents = "none";
+    }, 280);
 
- // Load existing queries from DB using AJAX
- function loadQueries(fundApprovalId) {
-     var chatMessages = document.getElementById("chatMessages");
-     var currentEmpId = document.getElementById("EmpId").value;
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
 
-     $.ajax({
-         url: "getFundApprovalQueries.htm",
-         type: "GET",
-         data: { fundApprovalId: fundApprovalId },
-         success: function(response) {
-             try {
-                 var data = JSON.parse(response);
-                 if (data && data.length > lastMessageCount) {
-                     // Append only new messages
-                     for (var i = lastMessageCount; i < data.length; i++) {
-                         var row = data[i];
-                         var empId = row[1];      
-                         var empName = row[2];
-                         var designation = row[3];
-                         var message = row[5];
-                         var actionDate = row[6];
+    currentFundApprovalId = null;
+    lastMessageCount = 0;
+    document.getElementById("chatMessages").innerHTML = "";
+    document.getElementById("chatInput").value = "";
+}
 
-                         actionDate = actionDate.replace(/:\d{2}\s/, " ");
+// Auto refresh queries
+function loadQueries(fundApprovalId) {
+    var chatMessages = document.getElementById("chatMessages");
+    var currentEmpId = document.getElementById("EmpId") ? document.getElementById("EmpId").value : "";
 
-                         var wrapper = document.createElement("div");
-                         wrapper.style.clear = "both";
-                         wrapper.style.marginBottom = "8px";
+    $.ajax({
+        url: "getFundApprovalQueries.htm",
+        type: "GET",
+        data: { fundApprovalId: fundApprovalId },
+        success: function(response) {
+            try {
+                var data = JSON.parse(response);
+                if (data && data.length > lastMessageCount) {
+                    for (var i = lastMessageCount; i < data.length; i++) {
+                        var row = data[i];
+                        var empId = row[1];      
+                        var empName = row[2];
+                        var designation = row[3];
+                        var message = row[5];
+                        var actionDate = row[6];
+                        actionDate = actionDate.replace(/:\d{2}\s/, " ");
 
-                         var msgDiv = document.createElement("div");
-                         msgDiv.style.padding = "6px 8px";
-                         msgDiv.style.borderRadius = "8px";
-                         msgDiv.style.display = "inline-block";
-                         msgDiv.style.maxWidth = "60%";
-                         msgDiv.style.wordWrap = "break-word";
+                        var wrapper = document.createElement("div");
+                        wrapper.style.clear = "both";
+                        wrapper.style.marginBottom = "8px";
 
-                         if (empId == currentEmpId) {
-                             wrapper.style.textAlign = "right"; 
-                             msgDiv.style.background = "#034189";
-                             msgDiv.style.color = "#fff";
-                             msgDiv.innerHTML =
-                                 "<div style='text-align: left;'><b></b> " + message + "</div>" +
-                                 "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
-                         } else {
-                             wrapper.style.textAlign = "left"; 
-                             msgDiv.style.background = "#e9ecef";
-                             msgDiv.style.color = "#000";
-                             msgDiv.innerHTML =
-                                 "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
-                                 "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
-                         }
+                        var msgDiv = document.createElement("div");
+                        msgDiv.style.padding = "6px 8px";
+                        msgDiv.style.borderRadius = "8px";
+                        msgDiv.style.display = "inline-block";
+                        msgDiv.style.maxWidth = "60%";
+                        msgDiv.style.wordWrap = "break-word";
 
-                         wrapper.appendChild(msgDiv);
-                         chatMessages.appendChild(wrapper);
-                     }
+                        if (empId == currentEmpId) {
+                            wrapper.style.textAlign = "right"; 
+                            msgDiv.style.background = "rgb(6 122 26)";
+                            msgDiv.style.color = "#fff";
+                            msgDiv.style.fontWeight="600";
+                            msgDiv.innerHTML =
+                                "<div style='text-align: left;'>" + message + "</div>" +
+                                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                        } else {
+                            wrapper.style.textAlign = "left"; 
+                            msgDiv.style.background = "#e9ecef";
+                            msgDiv.style.color = "#000";
+                            msgDiv.innerHTML =
+                                "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
+                                "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                        }
 
-                     lastMessageCount = data.length;
-                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                 }
-             } catch (e) {
-                 console.error("Invalid JSON:", e);
-             }
-         },
-         error: function(xhr, status, error) {
-             console.error("Error loading queries:", error);
-         }
-     });
- }
+                        wrapper.appendChild(msgDiv);
+                        chatMessages.appendChild(wrapper);
+                    }
 
- // Auto-refresh every 3 seconds
- function startAutoRefresh(fundApprovalId) {
-     if (refreshInterval) clearInterval(refreshInterval);
-     refreshInterval = setInterval(function() {
-         loadQueries(fundApprovalId);
-     }, 3000);
- }
+                    lastMessageCount = data.length;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Invalid JSON:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading queries:", error);
+        }
+    });
+}
 
- // Attach send button
- document.getElementById('chatSendButton').addEventListener('click', function() {
-     if(currentFundApprovalId){
-         sendQuery(currentFundApprovalId);
-     }
- });
+function startAutoRefresh(fundApprovalId) {
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(function() {
+        loadQueries(fundApprovalId);
+    }, 3000);
+}
 
- // Attach enter key for sending message
- document.addEventListener("DOMContentLoaded", function () {
-     var input = document.getElementById("chatInput");
-     input.addEventListener("keypress", function (e) {
-         if (e.key === "Enter") {
-             e.preventDefault(); 
-             sendQuery(currentFundApprovalId);
-         }
-     });
- });
+document.getElementById('chatSendButton').addEventListener('click', function() {
+    if(currentFundApprovalId){
+        sendQuery(currentFundApprovalId);
+    }
+});
 
- // Send new message
- function sendQuery(fundApprovalId) {
-     var input = document.getElementById("chatInput");
-     var msg = input.value.trim();
-     if (msg === "") return;
+document.addEventListener("DOMContentLoaded", function () {
+    var input = document.getElementById("chatInput");
+    input.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); 
+            sendQuery(currentFundApprovalId);
+        }
+    });
+});
 
-     var csrfParam = document.getElementById("csrfParam").name;
-     var csrfToken = document.getElementById("csrfParam").value;
+function sendQuery(fundApprovalId) {
+    var input = document.getElementById("chatInput");
+    var msg = input.value.trim();
+    if (msg === "") return;
 
-     var requestData = { fundApprovalId: fundApprovalId, Query: msg };
-     requestData[csrfParam] = csrfToken;
+    var csrfParamEl = document.getElementById("csrfParam");
+    var csrfParam = csrfParamEl ? csrfParamEl.name : "_csrf";
+    var csrfToken = csrfParamEl ? csrfParamEl.value : "";
 
-     $.ajax({
-         url: "sendFundApprovalQuery.htm",
-         type: "POST",
-         data: requestData,
-         success: function(response) {
-             var chatMessages = document.getElementById("chatMessages");
-             var now = new Date();
-             var dateTime = now.toLocaleString("en-US", { 
-                 month: "short", day: "numeric", year: "numeric", 
-                 hour: "numeric", minute: "numeric", hour12: true 
-             });
+    var requestData = { fundApprovalId: fundApprovalId, Query: msg };
+    requestData[csrfParam] = csrfToken;
 
-             var wrapper = document.createElement("div");
-             wrapper.style.clear = "both";
-             wrapper.style.textAlign = "right";
-             wrapper.style.marginBottom = "8px";
+    $.ajax({
+        url: "sendFundApprovalQuery.htm",
+        type: "POST",
+        data: requestData,
+        success: function(response) {
+            var chatMessages = document.getElementById("chatMessages");
+            var now = new Date();
+            var dateTime = now.toLocaleString("en-US", { 
+                month: "short", day: "numeric", year: "numeric", 
+                hour: "numeric", minute: "numeric", hour12: true 
+            });
 
-             var newMsg = document.createElement("div");
-             newMsg.style.padding = "6px 10px";
-             newMsg.style.background = "#034189";
-             newMsg.style.color = "#fff";
-             newMsg.style.borderRadius = "8px";
-             newMsg.style.display = "inline-block";
-             newMsg.style.maxWidth = "70%";
-             newMsg.style.wordWrap = "break-word";
+            var wrapper = document.createElement("div");
+            wrapper.style.clear = "both";
+            wrapper.style.textAlign = "right";
+            wrapper.style.marginBottom = "8px";
 
-             newMsg.innerHTML =
-                 "<div style='text-align: left;'><b></b> " + msg + "</div>" +
-                 "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
+            var newMsg = document.createElement("div");
+            newMsg.style.padding = "6px 10px";
+            newMsg.style.background = "rgb(6 122 26)";
+            newMsg.style.color = "#fff";
+            newMsg.style.borderRadius = "8px";
+            newMsg.style.display = "inline-block";
+            newMsg.style.maxWidth = "70%";
+            newMsg.style.wordWrap = "break-word";
 
-             wrapper.appendChild(newMsg);
-             chatMessages.appendChild(wrapper);
+            newMsg.innerHTML =
+                "<div style='text-align: left;'>" + msg + "</div>" +
+                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
 
-             chatMessages.scrollTop = chatMessages.scrollHeight;
-             input.value = "";
-             lastMessageCount++;
-         },
-         error: function(xhr, status, error) {
-             console.error("Error sending query:", error);
-         }
-     });
- }
+            wrapper.appendChild(newMsg);
+            chatMessages.appendChild(wrapper);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.value = "";
+            lastMessageCount++;
+        },
+        error: function(xhr, status, error) {
+            console.error("Error sending query:", error);
+        }
+    });
+}
 </script>
+
+
 
  
   
