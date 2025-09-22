@@ -35,3 +35,4 @@ public interface MasterDao
 
 	public List<Object[]> getParticularDivisionDetails(String divisionId)throws Exception;
 }
+
