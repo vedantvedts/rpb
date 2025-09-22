@@ -1144,6 +1144,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
 		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
 	}
+	
+	@Override
+	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception{
+		return fundApprovalDao.getParticularFundQueryHeader(fundApprovalId);
+	}
+	
 	@Override
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
 		

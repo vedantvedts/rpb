@@ -119,6 +119,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries);
 	
+	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception;
+	
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 }
 

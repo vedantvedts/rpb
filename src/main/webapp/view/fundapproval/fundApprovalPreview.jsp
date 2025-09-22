@@ -645,7 +645,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 									<%-- <button type="button" class="btn btn-sm" style="background-color: #ffb256;" onclick="openChatBox(<%=fundApprovalId%>)">
 									        Query
 									</button> --%>
-								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+								    <img id="ForwardButton_<%=fundApprovalId%>" onclick="openChatBox(<%=fundApprovalId%>,'ForwardButton_<%=fundApprovalId%>')" data-tooltip="Send / Receive Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 								</form>
 
                             </div>
