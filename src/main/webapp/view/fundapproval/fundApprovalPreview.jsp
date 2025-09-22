@@ -836,7 +836,10 @@ $(document).ready(function(){
 </script>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 19ff296 (Merge branch 'main' into rpb_demo)
 <script>
 var refreshInterval = null;
 var lastMessageCount = 0;
@@ -1033,8 +1036,12 @@ function sendQuery(fundApprovalId) {
 
 
 
+<<<<<<< HEAD
 </html>
 
 =======
 </html>
 >>>>>>> parent of 8048432 (Update fundApprovalPreview.jsp)
+=======
+</html>
+>>>>>>> parent of 19ff296 (Merge branch 'main' into rpb_demo)
