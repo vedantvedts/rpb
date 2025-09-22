@@ -43,6 +43,12 @@ function previewInformation(fundApprovalId) {
             // Always show Initiator
             html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
 
+			var fundStatus = row[20];
+			
+			if(fundStatus == null)
+			{
+				fundStatus = 'NA';
+			}
             
             // Split roles, officers, and statuses
             var roles = row[21] ? row[21].split(",") : [];
@@ -53,9 +59,11 @@ function previewInformation(fundApprovalId) {
             var returnedBy = row[26] || 0;
             var returedDate = row[27] || 0;
             
-             if(roles == null || typeof(roles) == 'undefined')
+             if(roles == null || typeof(roles) == 'undefined' || roles.length == 0)
             {
-				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center", "", "");
+				var statusText = fundStatus == 'E' ? 'Re-Forward Pending' : 'Forward Pending';
+				
+				html += createCard("forwardPendingclass", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
 				$('#ApprovalStatusDiv').html(html);
 				$(".forwardPendingclass").empty();
 				$(".forwardPendingclass").css({
@@ -63,7 +71,7 @@ function previewInformation(fundApprovalId) {
 				    "text-align": "center"
 				});
 				var forwardPending= `<div class="status warning" style="width: 100% !important;">
-                        						<i class="fa-solid fa-circle-check"></i> Forward Pending
+                        						<i class="fa-solid fa-circle-check"></i> ${statusText}
                    								 </div>`;
 				$(".forwardPendingclass").html(forwardPending);
 				
@@ -97,9 +105,10 @@ function previewInformation(fundApprovalId) {
                     pendingText,
                     isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
                     "left",
-                     returnedBy == empId ? 'Returned on ' : '',
+                     returnedBy == empId && fundStatus=='R' ? 'Returned on ' : '',
                      returedDate
                 );
+                console.log('fundStatus****',fundStatus);
             });
 
             html += '</div>';

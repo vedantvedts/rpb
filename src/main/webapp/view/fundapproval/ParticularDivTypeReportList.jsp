@@ -1,3 +1,4 @@
+<%@page import="com.vts.rpb.utils.DateTimeFormatUtil"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -255,11 +256,6 @@ input[name="ItemNomenclature"]::placeholder {
 					    margin-top: 8px;
 					}
 					
-.filterCard {
-            min-height: 141px !important;
-            max-height: 141px !important;
-
-        }
     </style>
     
     
@@ -270,39 +266,80 @@ input[name="ItemNomenclature"]::placeholder {
   padding: 5px !important;
 }
 
+.flex-container
+{
+	margin: 0px !important;
+}
+
+#RequistionFormAction
+{
+	width: 98% !important;
+	margin: 0px;
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+.approvalstatus
+{
+	border: solid 0.1px;
+    padding: 4px 11px;
+    border-radius: 6px;
+    border-color: darkgray;
+    background-color: white;
+}
+
 </style>
 
 </head>
 <body>
 		<%
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("attachList"); 
+		Object[] divisionDetails=(Object[])request.getAttribute("divisionDetails"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
 		
 		String fromYear=(String)request.getAttribute("FromYear");
 		String toYear=(String)request.getAttribute("ToYear");
+		String existingbudget=(String)request.getAttribute("Existingbudget");
+		String existingProposedProject=(String)request.getAttribute("ExistingProposedProject");
 		String ExistingbudgetHeadId=(String)request.getAttribute("ExistingbudgetHeadId");
 		String ExistingbudgetItemId=(String)request.getAttribute("ExistingbudgetItemId");
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
-		Long divisionId=(Long)request.getAttribute("divisionId");
+		String divisionId=(String)request.getAttribute("divisionId");
 		String estimateType=(String)request.getAttribute("estimateType");
 		String AmtFormat =(String)request.getAttribute("amountFormat");
 		String MemberType =(String)request.getAttribute("MemberType");
+		
+		System.out.println("fromYear*****"+fromYear);
+		System.out.println("toYear*****"+toYear);
+		System.out.println("estimateType*****"+estimateType);
 
 		Object DivName = "", DivCode = "";
-		String EstimateTypeFromList = "";
+		String estimateTypeName = "";
 		String financialYear = "";
-
-		if (requisitionList != null && !requisitionList.isEmpty()) {
-		    Object[] firstItem = requisitionList.get(0);
-		    DivName = firstItem[2] != null ? firstItem[2] : "";
-		    DivCode = firstItem[27] != null ? firstItem[27] : "";
-		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
-		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
+		if(divisionDetails!=null)
+		{
+			DivCode = divisionDetails[1] != null ? divisionDetails[1] : "";
+			DivName = divisionDetails[2] != null ? divisionDetails[2] : "";
 		}
+		if(estimateType != null){
+			if(estimateType.equalsIgnoreCase("R")){
+				estimateTypeName = "RE";
+				if(fromYear != null && toYear !=null){
+					financialYear= fromYear + "-" + toYear;
+				}
+			}else if(estimateType.equalsIgnoreCase("F"))
+			{
+				estimateTypeName = "FBE";
+				if(fromYear != null && toYear !=null){
+					financialYear= (Long.parseLong(fromYear) + 1) + "-" + (Long.parseLong(toYear) + 1);
+				}
+			}
+		}
+	
 		%>
 			
 
@@ -321,35 +358,34 @@ input[name="ItemNomenclature"]::placeholder {
   	    
   	    
  <div class="page card dashboard-card">
-      <div class="filterCard">
+    
+    <div class="flex-container" style="width: 100%;">
     <form action="estimateTypeParticularDivList.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
+        <input id="proposedProjectHidden" type="hidden" <%if(existingProposedProject != null ){ %>value="<%=existingProposedProject%>" <%} %>>
+        <input id="budgetHidden" type="hidden" <%if(existingbudget != null ){ %>value="<%=existingbudget%>" <%} %>>
         <input type="hidden" name="divisionId" value="<%= divisionId %>">
         <input type="hidden" name="estimateType" value="<%= estimateType %>">
         <input type="hidden" name="fromYear" value="<%= fromYear %>">
         <input type="hidden" name="toYear" value="<%= toYear %>">
         
-        <div class="flex-container" style="width: 100%;">
             <!-- First Row: Approved, Budget, Budget Head, Budget Item -->
             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
                 <!-- Approved Dropdown -->
                 <div style="align-items: center;align-content: space-evenly;">
                     <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
-                    <span style="border: solid 0.1px;padding: 2px 4px;border-radius: 6px;border-color: darkgray;background-color: white;">
-                        <input type="radio" id="approvalStatus"
-                            <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                    <span class="approvalstatus">
+                        <input type="radio" id="approvalStatus" <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
                             name="approvalStatus" value="A" onchange="this.form.submit();" />
                         &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     
-                        <input type="radio" id="approvalStatus"
-                            <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                        <input type="radio" id="approvalStatus" <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
                             name="approvalStatus" value="N" onchange="this.form.submit();" />
                         &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="radio" id="approvalStatus"
-                            <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                        <input type="radio" id="approvalStatus" <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
                             name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
                         &nbsp;<span style="font-weight: 600">Both</span>
                     </span>
@@ -358,18 +394,24 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget -->
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
-                    <select class="form-control select2" id="selProject" name="selProject"
-                        data-live-search="true" onchange="this.form.submit();" required
-                        style="font-size: 12px; min-width: 200px;">
-                        <option value="0#GEN#General" hidden>GEN (General)</option>
+                    <select class="form-control select2" id="selBudget" name="selBudget" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                        <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
+						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
+                    </select>
+                </div>
+                
+                <!-- Proposed Project -->
+	               <div style="display: flex; align-items: center;" class="ProposedProject">
+                    <label style="font-weight: bold; margin-right: 8px;">Proposed Project:</label>
+                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                        <option  value="" disabled="disabled">Select Proposed Project</option>
                     </select>
                 </div>
 
                 <!-- Budget Head -->
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
-                    <select id="selbudgethead" name="budgetHeadId" class="form-control select2"
-                        data-live-search="true" onchange="this.form.submit();" required style="font-size: 12px; min-width: 200px;">
+                    <select id="selbudgethead" name="budgetHeadId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
                         <option value="">Select BudgetHead</option>
                     </select>
                 </div>
@@ -378,9 +420,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget Item -->
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
-                    <select id="selbudgetitem" name="budgetItemId" class="form-control select2"
-                        data-live-search="true" onchange="this.form.submit();" required
-                        style="font-size: 12px; min-width: 200px;">
+                    <select id="selbudgetitem" name="budgetItemId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 400px;">
                         <option value="">Select BudgetItem</option>
                     </select>
                 </div>
@@ -395,7 +435,7 @@ input[name="ItemNomenclature"]::placeholder {
                     <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %><%=ExistingfromCost.trim()%><%} else {%>0<%} %>"  required
                         class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                         onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                    <span style="margin: 0 10px; font-weight: bold;">--</span>
+                    <span style="margin: 0 10px; font-weight: bold;">-</span>
                     <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %><%=ExistingtoCost.trim()%><%} else {%>1000000<%} %>" required
                         class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                         onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
@@ -405,7 +445,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
                 <div style="display: flex; align-items: center;">
                     <label for="CostFormat" style="font-weight: bold; margin-right: 8px;">Cost:</label>
-                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat" onchange="this.form.submit()">
+                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat">
                         <option value="R" <%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Rupees</option>
                         <option value="L" <%if((AmtFormat==null) || "L".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Lakhs</option>
                         <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
@@ -413,12 +453,9 @@ input[name="ItemNomenclature"]::placeholder {
                 </div>
                 <%} %>
             </div>
-        </div>
         
-        <input type="hidden" id="projectIdHidden" value="0#GEN#General" />
     </form>
 </div>
-
 
 				 
 
@@ -429,16 +466,12 @@ input[name="ItemNomenclature"]::placeholder {
   <span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#160ab7;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span>
 &nbsp;&nbsp;&nbsp;
     &nbsp;&nbsp; <span style="font-weight: 600;color:#6a1616;">
-      <% if("R".equalsIgnoreCase(EstimateTypeFromList)) { %>
-         RE Year :
-      <% } else if("F".equalsIgnoreCase(EstimateTypeFromList)) { %>
-         FBE Year :
-      <% } else {%>--
-      <%} %>
+         <%=estimateTypeName %> Year :
     </span>
     <span style="font-weight: 600;color:#160ab7;"><%=financialYear%> </span>
   </div>
 
+  <% if(requisitionList!=null && requisitionList.size() > 0){ %>
   <!-- Right-aligned buttons -->
   <div style="flex-shrink: 0;">
     <button class="bg-transparent" type="button"
@@ -455,425 +488,309 @@ input[name="ItemNomenclature"]::placeholder {
         <i class="fas fa-file-excel" style="color: green; font-size: 1.73em;" aria-hidden="true" id="Excel"></i>
     </button>
   </div>
+  <%} %>
 
 </div>
 
 
 				 	
-					<form action="#" id="RequistionFormAction" autocomplete="off"> 
-				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				        <!-- <input type="hidden" name="RedirectVal" value="RequisitionList"/> -->
-				        <input type="hidden" name="RedirectVal" value="B"/>   <!-- B- Redirect from Budget List -->
-						   
-						
-						<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">
-					        <table class="table table-bordered table-hover table-striped table-condensed" id="RequisitionList">
-					            <thead>
-					                <tr>
-					                    <th>SN</th>
-					                    <th>Budget Head</th>
-					                    <th>Initiating Officer</th>
-					                    <th>Item Nomenclature</th>
-					                    <th class="text-nowrap">Estimated Cost</th>
-					                    <th>Justification</th>
-					                    <th>View</th>
-					                    <th>Status</th>
-					                    <th>Remarks</th>
-					                </tr>
-					            </thead>
-					            <tbody>
-					            
-					            <% int sn=1; 
-					            BigDecimal grandTotal = new BigDecimal(0);
-					            BigDecimal subTotal = new BigDecimal(0);
-					            
-					            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
-					            
-					            <%for(Object[] data:requisitionList){ 
-					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
-					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
-					            %>
-					            
-					            	 <tr>
-				                   			<td align="center"><%=sn++ %></td>
-				                   			<td align="center" id="budgetHead"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
-				                   			<td align="left" id="Officer"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
-				                   			<td id="Item"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
-				                   			<td class='tableEstimatedCost' align="right"><%if(data[20]!=null){ %><%= AmountConversion.amountConvertion(data[20], AmtFormat) %><%}else{ %> - <%} %></td>
-				                   			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-<%-- 				                   			<td align="center"><button class='btn fa fa-eye text-primary' onclick="openAttachmentModal('<%=data[0] %>', this)" data-tooltip="Attachment" data-position="top" data-toggle="tooltip"></button><img onclick="openAttachmentModal('<%=data[0] %>', this)" data-tooltip="Attachment" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/attached-file.png" width="45" height="43" style="cursor:pointer; background: transparent;padding: 1px;"></td>
- --%>				                   			
- <td align="center">
-    <button type="button" 
-            class="btn btn-sm btn-outline-primary" 
-            onclick="openAttachmentModal('<%=data[0] %>', this)" 
-            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
-        <i class="fa fa-eye"></i>
-    </button>
-</td>
- <td>
-				                   			
-				                   			 
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
-												            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
-												            </span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
-											       </button>
-											       
-									       </td>
-				                   			<td align="center"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
-			                      	 
-					           		  </tr>
-					            <%} %>
-					            
-					            <%-- <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="6" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
-							            <td colspan="2"></td>
-						   		     </tr> --%>
-					            <%}else{ %>
-					            
-					             <tr style="height: 9rem;">
-					                        <td colspan="9" style="vertical-align: middle;">
-					                            <div class="text-danger" style="text-align:center">
-					                                <h6 style="font-weight: 600;">No Requisition Found</h6>
-					                            </div>
-					                        </td>
-					                    </tr>
-					            
-					            <%} %>
-				                  
-					            </tbody>
-					           <%if(requisitionList!=null && requisitionList.size()!=0){ %>
-					               <tfoot>
-					            	
-			                        <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="4" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, AmtFormat) %></td>
-							            <td colspan="4"></td>
-						   		     </tr>
-					            </tfoot> 
-					            <%} %>
-					        </table>
-					    </div>
-						
-					  </form>
-
+	<form action="#" id="RequistionFormAction" autocomplete="off"> 
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <!-- <input type="hidden" name="RedirectVal" value="RequisitionList"/> -->
+        <input type="hidden" name="RedirectVal" value="B"/>   <!-- B- Redirect from Budget List -->
+		   
+		
+		<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">
+	        <table class="table table-bordered table-hover table-striped table-condensed" id="RequisitionList">
+	            <thead>
+	                <tr>
+	                    <th>SN</th>
+	                    <th>Budget Head</th>
+	                    <th>Initiating Officer</th>
+	                    <th>Item Nomenclature</th>
+	                    <th class="text-nowrap">Estimated Cost</th>
+	                    <th>Justification</th>
+	                    <th>View</th>
+	                    <th>Status</th>
+	                    <th>Remarks</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	            
+	            <% int sn=1; 
+	            BigDecimal grandTotal = new BigDecimal(0);
+	            BigDecimal subTotal = new BigDecimal(0);
+	            
+	            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
+	            
+	            <%for(Object[] data:requisitionList){ 
+	            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
+	            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
+	            %>
+	            
+	            	 <tr>
+                   			<td align="center"><%=sn++ %>.</td>
+                   			<td align="center" id="budgetHead"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
+                   			<td align="left" id="Officer"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
+                   			<td id="Item"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
+                   			<td class='tableEstimatedCost' align="right"><%if(data[20]!=null){ %><%= AmountConversion.amountConvertion(data[20], AmtFormat) %><%}else{ %> - <%} %></td>
+                   			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
+                  			
+							 <td align="center">
+							    <button type="button" 
+							            class="btn btn-sm btn-outline-primary" 
+							            onclick="openFundDetailsModal('<%=data[0] %>', this)" 
+							            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
+							        <i class="fa fa-eye"></i>
+							    </button>
+							</td>
+							 <td>
+                   			 
+                 					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
+						            onclick="openApprovalStatusAjax('<%=data[0]%>')">
+						            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
+						            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
+						            </span> 
+						            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
+					       </button>
+							       
+					       </td>
+                   			<td align="center"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
+                     	 
+	           		  </tr>
+	            <%} %>
+	            
+	            <%}else{ %>
+	            
+	             <tr style="height: 9rem;">
+	                        <td colspan="9" style="vertical-align: middle;">
+	                            <div class="text-danger" style="text-align:center">
+	                                <h6 style="font-weight: 600;">No Requisition Found</h6>
+	                            </div>
+	                        </td>
+	                    </tr>
+	            
+	            <%} %>
+                  
+	            </tbody>
+	            
+	           <%if(requisitionList!=null && requisitionList.size()!=0){ %>
+               <tfoot>
+            	
+                      <tr style="font-weight:bold; background-color: #ffd589;">
+		            <td colspan="4" align="right">Grand Total</td>
+		            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, AmtFormat) %></td>
+		            <td colspan="4"></td>
+	   		     </tr>
+               </tfoot> 
+	            <%} %>
+	            
+	        </table>
+	    </div>
+		
+	  </form>
+	</div>
 				
 
 </body>
 <script src="webresources/js/RpbFundStatus.js"></script>
-<script>
 
-					$(document).ready(function(event) {
-						
-								var $project= $("#projectIdHidden").val();
-								//projectIDHiden
-								
-								var $budgetHeadId = $("#budgetHeadIdHidden").val();
-								<!------------------Project Id not Equal to Zero [Project]-------------------->
-								//alert($budgetHeadId)
-								if($project!=null)
-									{
-										var $projectId=$project!=null && $project.split("#")!=null && $project.split("#").length>0 ? $project.split("#")[0] : '0';
-										$.get('GetBudgetHeadList.htm', {
-											ProjectDetails : $project
-										}, function(result) {
-											$('#selbudgethead').find('option').remove();
-											var result = JSON.parse(result);
-											 if(result.length >1){
-												$("#selbudgethead").append("<option  value='0'>All</option>");
-											}  	
-											$.each(result, function(key, value) {
-												
-												 if(value.budgetHeadId == $budgetHeadId)
-												 {
-													 $("#selbudgethead").append('<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>');
-												 }
-												 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
-													{
-														 $("#selbudgethead").append("<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>");
-													}
-											});
-											var budgetItemId = $("#budgetItemIdHidden").val();
-										    SetBudgetItem(budgetItemId);
-										    
-										    if($projectId!=0)
-										    {
-												$("#SanctionBalance").show();
-											}
-										    else if($projectId==0)
-											{
-												$("#SanctionBalance").hide();
-											}
-										});
-									}
-									});
-				
-<!------------------Select Budget Item using Ajax-------------------->
-
-        $('#selbudgethead').change( function(event) {
-			SetBudgetItem('');  //1st Parameter BudgetItemId(FBE), N - No FBE serila No Type
-		});
-
-        function SetBudgetItem(budgetItemId) {
-            // Set BudgetItem
-            var project = $("select#selProject").val(); 
-            var budgetHeadId = $("select#selbudgethead").val();
-            var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
-            
-            //calling controller using ajax for project Drop Down based on projectId
-            $.get('SelectbudgetItem.htm', {
-                projectid: project,
-                budgetHeadId: budgetHeadId
-            }, function(responseJson) {
-                $('#selbudgetitem').find('option').remove();
-                $("#selbudgetitem").append("<option disabled value=''>Select Budget Item</option>");
-                
-                var result = JSON.parse(responseJson);
-                
-                // Add "All" option if HiddenbudgetHeadId is 0 or if there are multiple items
-                if (HiddenbudgetHeadId == 0 || result.length > 1) {
-                    $("#selbudgetitem").append("<option value='0'>All</option>");
-                }
-                
-                $.each(result, function(key, value) {
-                    if (budgetItemId != null && budgetItemId == value.budgetItemId) {
-                        $("#selbudgetitem").append("<option selected value=" + value.budgetItemId + ">" + 
-                            value.headOfAccounts + " [" + value.subHead + "]</option>");
-                    } else {
-                        $("#selbudgetitem").append("<option value=" + value.budgetItemId + ">" + 
-                            value.headOfAccounts + " [" + value.subHead + "]</option>");
-                    }
-                });
-            });
-        }
-		
-		
-</script>
 <script type="text/javascript">
 
-function masterFlowDetails(StatusCode)
-{
-	var idAttribute="";
-	if(StatusCode!=null)
-		{
-			if(StatusCode=='RO1 RECOMMENDED')
-	   		{
-	    		$(".RPBMember1").show();
-	    		idAttribute='#RPBMemberDetails1';
-	   		}
-			if(StatusCode=='RO2 RECOMMENDED')
-	   		{
-	    		$(".RPBMember2").show();
-	    		idAttribute='#RPBMemberDetails2';
-	   		}
-			if(StatusCode=='RO3 RECOMMENDED')
-	   		{
-	    		$(".RPBMember3").show();
-	    		idAttribute='#RPBMemberDetails3';
-	   		}
-			if(StatusCode=='SE RECOMMENDED')
-	   		{
-	    		$(".SubjectExpert").show();
-	    		idAttribute='#SubjectExpertDetails';
-	   		}
-			if(StatusCode=='RPB MEMBER SECRETARY APPROVED')
-	   		{
-	    		$(".RPBMemberSecretary").show();
-	    		idAttribute='#RPBMemberSecretaryDetails';
-	   		}
-			if(StatusCode=='CHAIRMAN APPROVED')
-	   		{
-	    		$(".chairman").show();
-	    		idAttribute='#chairmanDetails';
-	   		}
-		}
-	return idAttribute;
-}
-
-function ApprovalFlowForward()
-{
-	var estimatedCost=$(".EstimatedCostDetails").text();
-	$.ajax({
-        url: 'GetMasterFlowDetails.htm',  
-        method: 'GET', 
-        data: { estimatedCost: estimatedCost },  
-        success: function(response) {
-            var data = JSON.parse(response);
-            $.each(data, function(key, value) 
-			{
-            	 var idAttribute=masterFlowDetails(value[2]);
-            	
-            	 $(idAttribute).empty().append('<option value="0">Select Employee</option>');
-            	 $.each(allEmployeeList, function(key, value) 
-   				 {
-            		 $(idAttribute).append('<option value="'+value[0]+'">'+ value[3] + ', '+ value[5] +'</option>');
-   				 });
-            	
-			});
-            
-        }
-    }); 
+$("#CostFormat,#selbudgetitem").change(function(){
 	
-	var form=$("#FundForwardForm");
+	var form=$("#RequistionForm");
 	if(form)
 	{
 		form.submit();
 	}
-}
+	
+});
 
 </script>
 
-
-
 <script type="text/javascript">
 
-	var allEmployeeList = null;
-	$.ajax({
-	    url: 'GetEmployeeDetails.htm',  
-	    method: 'GET', 
-	    success: function(response) {
-	        var data = JSON.parse(response);
-	        allEmployeeList = data;
-	    }
-	});
-
-function openForwardModal(fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
-		CodeHead,Itemnomenclature,justification,empName,designation)
-{
-	refreshModal('.ItemForwardModal');
-	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
-	$(".ItemForwardModal").modal('show');
+$('#selBudget,#selProposedProject').change(function(event) {
+	 
+	var budget = '0#General';
 	
-	$(".BudgetDetails").html("GEN (General)");
-	$(".BudgetHeadDetails").html(budgetHeadDescription);
-	$(".budgetItemDetails").html(HeadOfAccounts+' ('+ CodeHead +')');
-	$(".EstimatedCostDetails").html(estimatedCost);
-	$(".ItemNomenclatureDetails").html(Itemnomenclature);
-	$(".JustificationDetails").html(justification);
-	$(".MainEstimateType").html(estimatedType!=null && estimatedType=='R' ? 'RE' : 'FBE');
-	$(".ReFbeYearModal").html('(' +ReFbeYear+ ')');
-	
-	$("#initiating_officer_display").val(empName +', '+designation);
-	$("#FundRequestIdForward").val(fundRequestId);
-	$("#EstimatedCostForward").val(estimatedCost);
-	
-	$.ajax({
-        url: 'GetMasterFlowDetails.htm',  
-        method: 'GET', 
-        data: { estimatedCost: estimatedCost },  
-        success: function(response) {
-            var data = JSON.parse(response);
-            console.log('data****'+data);
-            $.each(data, function(key, value) 
-			{
-            	var idAttribute='';
-            	if(value[2]!=null)
-           		{
-            		if(value[2]=='RO1 RECOMMENDED')
-               		{
-                		$(".RPBMember1").show();
-                		idAttribute='#RPBMemberDetails1';
-               		}
-            		if(value[2]=='RO2 RECOMMENDED')
-               		{
-                		$(".RPBMember2").show();
-                		idAttribute='#RPBMemberDetails2';
-               		}
-            		if(value[2]=='RO3 RECOMMENDED')
-               		{
-                		$(".RPBMember3").show();
-                		idAttribute='#RPBMemberDetails3';
-               		}
-            		if(value[2]=='SE RECOMMENDED')
-               		{
-                		$(".SubjectExpert").show();
-                		idAttribute='#SubjectExpertDetails';
-               		}
-            		if(value[2]=='RPB MEMBER SECRETARY APPROVED')
-               		{
-                		$(".RPBMemberSecretary").show();
-                		idAttribute='#RPBMemberSecretaryDetails';
-               		}
-            		if(value[2]=='CHAIRMAN APPROVED')
-               		{
-                		$(".chairman").show();
-                		idAttribute='#chairmanDetails';
-               		}
-           		}
-            	
-            	 $(idAttribute).empty().append('<option value="">Select Employee</option>');
-            	 $.each(allEmployeeList, function(key, value) 
-   				 {
-            		 $(idAttribute).append('<option value="'+value[0]+'">'+ value[3] + ', '+ value[5] +'</option>');
-   				 });
-            	 $("#FlowMasterIdForward").val(value[0]);
-            	
+	$.get('GetBudgetHeadList.htm', {
+		ProjectDetails : budget
+	}, function(responseJson) 
+	{
+		$('#selbudgethead').find('option').remove();
+		$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
+			var result = JSON.parse(responseJson);
+			var budgetHeadId = $("#budgetHeadIdHidden").val();
+			$.each(result, function(key, value) {
+				if(budgetHeadId != null && budgetHeadId == value.budgetHeadId)
+				{
+					$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+				}
+				else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+				{
+					$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+				}
 			});
-            
-        }
-    }); 
+			
+			var budgetItemId = $("#budgetItemIdHidden").val();
+			onChangeSetBudgetItem(budgetItemId); 
+	});
 	
+});
+
+$(document).ready(function(event) {
+	
+	var budgetDetails = $("select#selBudget").val();
+	var budget = '0#General';
+	
+	if(budgetDetails!=null && budgetDetails!="")
+	{
+		if(budgetDetails == 'B')
+		{
+			$("#selProposedProject").prop("disabled", false);
+			$(".ProposedProject").hide();
+		}
+		else if(budgetDetails == 'N')
+		{
+			$(".ProposedProject").show();
+			var proposedProjectId=$("#proposedProjectHidden").val();
+			getProposedProjectDetails(proposedProjectId);
+		}
+	}
+	
+	var budgetHeadId = $("#budgetHeadIdHidden").val();
+	
+		$.get('GetBudgetHeadList.htm', {
+				ProjectDetails : budget
+			}, function(result) {
+				$('#selbudgethead').find('option').remove();
+				var result = JSON.parse(result);
+				
+				 if(result.length >1){
+						$("#selbudgethead").append("<option  value='0'>All</option>");
+					}  
+				 
+				var html1='';
+				$.each(result, function(key, value) {
+					 if(value.budgetHeadId== budgetHeadId)
+					 {
+						html1+='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+					 }
+					 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+					{
+						html1+="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+					}
+				});
+				
+				$("#selbudgethead").append(html1);
+				
+			var budgetItemId = $("#budgetItemIdHidden").val();
+			onloadSetBudgetItem(budgetItemId);
+			    
+		});
+		
+});
+
+function getProposedProjectDetails(proposedProjectId)
+{
+	$.get('getProposedProjectDetails.htm', {
+		
+	}, function(responseJson) {
+		$('#selProposedProject').find('option').remove();
+		$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
+			var result = JSON.parse(responseJson);
+			$.each(result, function(key, value) {
+				if(proposedProjectId!=null && proposedProjectId==value[0])
+				{
+					$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+				}
+				else
+				{
+					$("#selProposedProject").append("<option value="+value[0]+" >"+ value[3]+"</option>");
+				}
+				
+			});
+	});	
 }
 
-const dropdownSelector = "#RPBMemberDetails1, #RPBMemberDetails2, #RPBMemberDetails3, #SubjectExpertDetails, #RPBMemberSecretaryDetails, #chairmanDetails";
-
-$(document).on("change", dropdownSelector, function () {
-    
-	const selectedValues = [];
-    $(dropdownSelector).each(function () {
-        const val = $(this).val();
-        if (val) {
-            selectedValues.push(val);
-        }
-    });
-
-    $(dropdownSelector).each(function () {
-        const currentDropdown = $(this);
-        const currentVal = currentDropdown.val();
-
-        currentDropdown.find('option').each(function () {
-            const option = $(this);
-            const optionVal = option.val();
-
-            if (optionVal === currentVal || optionVal === "") {
-                option.prop("disabled", false).show();
-            } else if (selectedValues.includes(optionVal)) {
-                option.prop("disabled", true).hide();  // hide selected values in other dropdowns
-            } else {
-                option.prop("disabled", false).show();
-            }
-        });
-    });
+$('#selbudgethead').change( function(event) {
+	onChangeSetBudgetItem('');  
 });
 
 
+function onChangeSetBudgetItem(budgetItemId) {
+	    
+	    var budget = '0#General';
+	    var budgetHeadId = $("select#selbudgethead").val();
+	    var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
+	    
+	    //calling controller using ajax for project Drop Down based on projectId
+	    $.get('SelectbudgetItem.htm', {
+	        projectid: budget,
+	        budgetHeadId: budgetHeadId
+	    }, function(responseJson) {
+	        $('#selbudgetitem').find('option').remove();
+	        $("#selbudgetitem").append("<option disabled value=''>Select Budget Item</option>");
+	        
+	        var result = JSON.parse(responseJson);
+	        
+	        // Add "All" option if HiddenbudgetHeadId is 0 or if there are multiple items
+	        if (HiddenbudgetHeadId == 0 || result.length > 1) {
+	            $("#selbudgetitem").append("<option value='0'>All</option>");
+	        }
+	        
+	        $.each(result, function(key, value) {
+	            if (budgetItemId != null && budgetItemId == value.budgetItemId) 
+	            {
+	                $("#selbudgetitem").append("<option selected value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+	            } else {
+	                $("#selbudgetitem").append("<option value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+	            }
+	        });
+	        
+	         var form=$("#RequistionForm");
+			if(form)
+			{
+				form.submit();
+			} 
+	    });
+	}
+function onloadSetBudgetItem(budgetItemId) {
+	    
+	    var budget = '0#General';
+	    var budgetHeadId = $("select#selbudgethead").val();
+	    var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
+	    
+	    //calling controller using ajax for project Drop Down based on projectId
+	    $.get('SelectbudgetItem.htm', {
+	        projectid: budget,
+	        budgetHeadId: budgetHeadId
+	    }, function(responseJson) {
+	        $('#selbudgetitem').find('option').remove();
+	        $("#selbudgetitem").append("<option disabled value=''>Select Budget Item</option>");
+	        
+	        var result = JSON.parse(responseJson);
+	        
+	        // Add "All" option if HiddenbudgetHeadId is 0 or if there are multiple items
+	        if (HiddenbudgetHeadId == 0 || result.length > 1) {
+	            $("#selbudgetitem").append("<option value='0'>All</option>");
+	        }
+	        
+	        $.each(result, function(key, value) {
+	            if (budgetItemId != null && budgetItemId == value.budgetItemId) 
+	            {
+	                $("#selbudgetitem").append("<option selected value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+	            } else {
+	                $("#selbudgetitem").append("<option value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+	            }
+	        });
+	        
+	    });
+	}
+
 </script>
-
-<script type="text/javascript">
-function refreshModal(modalId) {
-    const $modal = $(modalId);
-
-    // Reset form(s) inside the modal
-    $modal.find('form').each(function () {
-        this.reset();
-    });
-
-    // Reset Bootstrap carousel if present
-    $modal.find('.carousel').each(function () {
-        $(this).carousel(0);
-    });
-
-    // Reset Select2 dropdowns if used
-    $modal.find('.select2').val('').trigger('change');
-}
-
-
-</script>
-
 
 <script>
    $("#FromYear").datepicker({
@@ -931,118 +848,6 @@ function refreshModal(modalId) {
   });
   </script>
  <script type="text/javascript">
-// Define function in global scope
-function openAttachmentModal(fundApprovalId, ec) {
-    console.log('Opening attachment modal for ID: ' + fundApprovalId);
-
-    var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
-
-    // First AJAX call (Details)
-    $.ajax({
-        url: 'GetAttachmentDetailsAjax.htm',
-        method: 'GET',
-        data: { fundApprovalId: fundApprovalId },
-        success: function(data) {
-            console.log('AJAX success', data);
-
-            var detailsDiv = $(".AttachmentDetails");
-            detailsDiv.empty(); // clear previous
-
-            if (data && data.length > 0) {
-                var attach = data[0];
-                var statusColor = '';
-                if (attach.Status === 'Approved') statusColor = 'green';
-                else if (attach.Status === 'Pending') statusColor = '#8c2303';
-                else if (attach.Status === 'Forwarded') statusColor = 'blue';
-                else if (attach.Status === 'Returned') statusColor = 'red';
-
-                var html = '<table class="table table-bordered table-striped">'
-                    + '<tbody>'
-                    + '<tr>'
-                    + '<th style="color:#0080b3; font-size:16px;">Budget Head</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetHead || '') + '</td>'
-                    + '<th style="color:#0080b3; font-size:16px;">Budget Type</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.BudgetType || '') + '</td>'
-                    + '</tr>'
-                    + '<tr>'
-                    + '<th style="color:#0080b3; font-size:16px;">Estimate Type</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.EstimateType || '') + ' (' + (attach.REFBEYear || '') + ')</td>'
-                    + '<th style="color:#0080b3; font-size:16px;">Initiating Officer</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.InitiatingOfficer || '') + ', ' + (attach.Designation || '') + '</td>'
-                    + '</tr>'
-                    + '<tr>'
-                    + '<th style="color:#0080b3; font-size:16px;">Item Nomenclature</th>'
-                    + '<td colspan="3" style="font-weight:600; font-size:16px;">' + (attach.ItemNomenculature || '') + '</td>'
-                    + '</tr>'
-                    + '<tr>'
-                    + '<th style="color:#0080b3; font-size:16px;">Justification</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.Justification || '') + '</td>'
-                    + '<th style="color:#0080b3; font-size:16px;">Estimated Cost</th>'
-                    + '<td style="color:#00008B;font-weight:600; font-size:16px;">' + (estimatedCost || '-') + '</td>'
-                    + '</tr>'
-                    + '<tr>'
-                    + '<th style="color:#0080b3; font-size:16px;">Division</th>'
-                    + '<td style="font-weight:600; font-size:16px;">' + (attach.Division || '') + ' (' + (attach.DivisionShortName || '') + ')</td>'
-                    + '<th style="color:#0080b3; font-size:16px;">Status</th>'
-                    + '<td style="font-weight:600; font-size:16px; color:' + statusColor + '">' + (attach.Status || '') + '</td>'
-                    + '</tr>'
-                    + '</tbody>'
-                    + '</table>';
-
-                detailsDiv.append(html);
-            } else {
-                detailsDiv.append("<div class='text-danger fw-bold'>No details found</div>");
-            }
-        },
-        error: function() {
-            console.error("AJAX call failed");
-            $(".AttachmentDetails").html("<div class='text-danger fw-bold'>Failed to load details</div>");
-        }
-    });
-
-    // Second AJAX call (Attachments list)
-    $.ajax({
-        url: 'GetFundRequestAttachmentAjax.htm',
-        method: 'GET',
-        data: { fundApprovalId: fundApprovalId },
-        success: function(data) {
-            var body = $("#eAttachmentModalBody");
-            body.empty();
-            var count=1;
-
-            if (data.length === 0) {
-                body.append("<tr><td colspan='3' style='text-align: center; color: red;font-weight:700'>No attachment found</td></tr>");
-                $("#previewSection").hide();
-                $("#filePreviewIframe").attr("src", "");
-                $("#previewFileName").text(""); 
-            } else {
-                $.each(data, function(index, attach) {
-                    var viewUrl = "PreviewAttachment.htm?attachid=" + attach.fundApprovalAttachId;
-                    var downloadUrl = "FundRequestAttachDownload.htm?attachid=" + attach.fundApprovalAttachId;
-
-                    var row = "<tr>" +
-                      "<td style='font-weight:700'>" + count++ + ".</td>" +
-                        "<td style='text-align: center; font-weight:700'>" + attach.fileName + "</td>" +
-                        "<td style='text-align: center;'>" +
-                        "<button class='btn fa fa-eye text-primary' title='Preview - " + attach.fileName + " Attachment' onclick=\"previewAttachment('" + viewUrl + "','" + attach.fileName + "')\"></button>" +
-                        "</td>" +
-                        "</tr>";
-                    body.append(row);
-
-                    // Auto-preview first attachment
-                    if (index === 0) {
-                        previewAttachment(viewUrl, attach.fileName);
-                    }
-                });
-            }
-
-            $(".AttachmentModal").modal("show");
-        },
-        error: function() {
-            alert("Failed to load attachments.");
-        }
-    });
-}
 
 // Define previewAttachment globally
 function previewAttachment(url, fileName) {
@@ -1051,17 +856,7 @@ function previewAttachment(url, fileName) {
     $("#previewFileName").text(fileName || "");
 }
 
-// Document ready logic
-$(document).ready(function() {
-    var estimateType = $("#estimateType").val();
-    if (estimateType === 'F') {
-        $("#FBEstimateType").prop("checked", true);
-    } else if (estimateType === 'R') {
-        $("#REstimateType").prop("checked", true);
-    }
-});
 </script>
-
   
   <script>
   function validateCost() {

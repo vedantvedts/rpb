@@ -448,7 +448,7 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 157px;" align="center">
+				                   			<td style="width: 200px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
@@ -460,7 +460,7 @@ input[name="ItemNomenclature"]::placeholder {
 												            	   message = "Approved";
 												               } else if("N".equalsIgnoreCase(fundStatus)) {
 												            	   statusColor = "#8c2303";
-												                   message = "Pending";
+												                   message = "Forward Pending";
 												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
 												            	   statusColor = "blue";
 												                   message = "Forwarded";
@@ -486,9 +486,8 @@ input[name="ItemNomenclature"]::placeholder {
 											       
 									       </td>
 				                   			<td align="center">
-				                   			    <% int buttonStatus=0; %>
 													      
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus)) || "E".equalsIgnoreCase(fundStatus)){ buttonStatus = 1;%>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus)) || "E".equalsIgnoreCase(fundStatus)){ %>
 													
 													<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container"
 											               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
@@ -499,13 +498,13 @@ input[name="ItemNomenclature"]::placeholder {
 												
 													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
-					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1;%> 
+					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { %> 
 					                       		
 						                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 											        Revision</button>
 					                       		
-					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { buttonStatus = 1;%> 
+					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { %> 
 					                       		
 						                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalIdRevoke" style="padding-top: 2px; padding-bottom: 2px;" onclick="revokeConfirm('<%=data[0]%>')">
@@ -516,16 +515,10 @@ input[name="ItemNomenclature"]::placeholder {
 
 											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ %>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
 						                       		 onclick="confirmDelete('<%=data[0]%>')" class="btn btn-sm tooltip-container"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>
-					                       		
-					                       		<%} %>
-					                       		
-					                       		<% if(buttonStatus == 0){ %>
-					                       		
-					                       			<span style="font-weight: 600;">***</span>
 					                       		
 					                       		<%} %>
 					                       		
@@ -655,6 +648,10 @@ input[name="ItemNomenclature"]::placeholder {
 							            </tr>
 							          </table>
 							          
+						<form action="FundApprovalForward.htm" id="FundForwardForm">
+					       
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							          
 							          <div style="font-weight: 600;color:black;"> Attachments: 
 							          <span class="attachementLink">
 				                            
@@ -663,13 +660,15 @@ input[name="ItemNomenclature"]::placeholder {
 				                      <div class="statusHistory">
 				                      
 				                      </div>
+				                      
+				                       <div class="row returnRemarks" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
+				                             
+				                       </div>
 							          
 							          </div>
 							          
 								      <div class="card-body forwardAction">
-								       <form action="FundApprovalForward.htm" id="FundForwardForm">
 								       
-										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
 										<input type="hidden" id="FundFlowMasterIdForward" name="FundFlowMasterIdForward">
@@ -683,13 +682,15 @@ input[name="ItemNomenclature"]::placeholder {
 				                              </div>
 				                             </div>
 				                              
-				                             <div class="row" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
+				                             <div class="row revokeRemarks" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
 				                             <span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span>
 				                             <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>
 				                             </div>
 								             
-				                       </form>
+				                      
 				                       </div>
+				                       
+				                        </form>
 							        </div>
 							      </div>
 							
@@ -1113,11 +1114,13 @@ function openForwardModal(
         $("#FundRequestAction").val('RF');
         $(".forwardActionName").html("Re-Forward");
         $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+        $(".revokeRemarks").append('<span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span> <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>');
     } else if (fundStatus == 'R') {
         $(".statusHistory").show();
-        $("#FundRequestAction").val('RF');
+        $("#FundRequestAction").val('R'); // R - Return Re-Forward
         $(".forwardActionName").html("Re-Forward");
         $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+        $(".returnRemarks").append('<span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span> <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>');
 
         $.ajax({
             url: 'getRPBApprovalHistoryAjax.htm',

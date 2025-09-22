@@ -417,13 +417,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				else if(fundDto.getAction().equalsIgnoreCase("R"))    // R - Return Re-Forward 
 				{
 					transAction = "R-FWD";
-					fundDetails.setStatus("C");  // C - returned re-forward
+					fundDetails.setStatus("B");  // C - returned re-forward
 				}
 				
 				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
 				fundApprovalDao.insertFundApprovalTransaction(transModal);
 				
-				fundDetails.setStatus("F");
 				fundDetails.setModifiedBy(fundDto.getModifiedBy());
 				fundDetails.setModifiedDate(fundDto.getModifiedDate());
 				
@@ -548,6 +547,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				if(fundDto.getAction().equalsIgnoreCase("A"))  // A - Approve or recommend
 				{
 					updateParticularLinkedMemberDetails(fundDto,empId,fundApproval.getFundApprovalId());
+					
+					if(fundDto.getMemberStatus()!=null && fundDto.getMemberStatus().equalsIgnoreCase("CC")) {
+						fundApproval.setStatus("A");
+						fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
+					}
+					
 				}
 				else if(fundDto.getAction().equalsIgnoreCase("R"))
 				{
@@ -556,20 +561,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					fundApproval.setReturnedDate(LocalDateTime.now());
 				}
 				
-				if(fundDto.getMemberStatus()!=null)
-				{
-					if(fundDto.getMemberStatus().equalsIgnoreCase("CC"))  // Committee Chairman
-					{
-						fundApproval.setStatus("A");
-						fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
-					}
-				}
+				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,fundDto.getMemberStatus(),fundDto.getAction(),empId);
+				fundApprovalDao.insertFundApprovalTransaction(transModal);
+				
+				status = fundApprovalDao.updateFundRequest(fundApproval);
 			}
-			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,fundDto.getMemberStatus(),fundDto.getAction(),empId);
-			fundApprovalDao.insertFundApprovalTransaction(transModal);
-			
-			status = fundApprovalDao.updateFundRequest(fundApproval);
 		
 		return status;
 	}

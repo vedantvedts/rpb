@@ -343,6 +343,8 @@ public class FundApprovalController
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
 		
+		System.out.println("action****"+action);
+		
 		try
 		{
 			if(fundApprovalId==null)
