@@ -513,13 +513,9 @@ input[name="ItemNomenclature"]::placeholder {
 											        </button>
 					                       		
 					                       		<%} %>
-<<<<<<< HEAD
+
 											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
-													
-								    
-=======
-											    
->>>>>>> 01cb322dd753fdf9121dc852418500b89c4f9f66
+
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
