@@ -1275,7 +1275,7 @@ $(document).ready(function(){
                     }
                     var item = 
                         '<li class="dropdown-item" style="font-size: 13px; text-align: left; cursor:pointer;">' +
-                            '<a href="FundApprovalPreview.htm?FundApprovalIdSubmit='+fundApprovalId+'" style="color:inherit; text-decoration:none; display:block;">' +
+                             '<a href="FundApprovalPreview.htm?FundApprovalIdSubmit='+fundApprovalId+'" style="color:inherit; text-decoration:none; display:block;">' +
                                 '<div><strong>' + division + '</strong>' +
                                 ' with a Fund Request Amount of <strong style="color:blue">' +rupeeFormat(amount)+ '</strong> - <strong style="color: #e03e3e;">'+pending+' !</strong></div>' +
                             '</a>' +
