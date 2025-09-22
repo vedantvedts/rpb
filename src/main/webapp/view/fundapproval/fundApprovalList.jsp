@@ -326,7 +326,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                        }
 			                        %>
 									       
-									       <td style="width: 185px;" align="center">
+									       <td style="width: 200px;" align="center">
 				                   			 
 		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
@@ -338,7 +338,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 											            	   message = "Approved";
 											               } else if("N".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "#8c2303";
-											                   message = "Pending";
+											                   message = "Forward Pending";
 											               } else if("F".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "blue";
 											                   message = "Forwarded";
@@ -418,83 +418,6 @@ String failure=(String)request.getParameter("resultFailure");%>
 									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
 									   </form>
 									<% } %>
-			                     
-			                           
-			                         <%--   <% String rc1Status = obj[34] != null ? obj[34].toString().toUpperCase() : "NA";
-			                           String rc2Status = obj[35] != null ? obj[35].toString().toUpperCase() : "NA";
-			                           String rc3Status = obj[36] != null ? obj[36].toString().toUpperCase() : "NA";
-			                           String rc4Status = obj[37] != null ? obj[37].toString().toUpperCase() : "NA";
-			                           String rc5Status = obj[38] != null ? obj[38].toString().toUpperCase() : "NA";
-			                           String rc6Status = obj[40] != null ? obj[40].toString().toUpperCase() : "NA";
-			                           String apprStatus = obj[39] != null ? obj[39].toString().toUpperCase() : "NA";
-			                           
-			                           boolean allNA = rc1Status.equals("NA") && rc2Status.equals("NA") && rc3Status.equals("NA") && rc4Status.equals("NA");
-			                           boolean hasN = rc1Status.equalsIgnoreCase("N") || rc2Status.equalsIgnoreCase("N") || rc3Status.equalsIgnoreCase("N") || rc4Status.equalsIgnoreCase("N");
-			                           
-			                           boolean isDHApproved = rc6Status.equalsIgnoreCase("Y");
-			                           boolean isCSApproved = rc5Status.equalsIgnoreCase("Y");
-			                           boolean isCCApproved = apprStatus.equalsIgnoreCase("Y");
-			                           
-			                           System.out.println("allNA****"+allNA);
-			                           System.out.println("hasN****"+hasN);
-			                           System.out.println("isDHApproved****"+isDHApproved);
-			                           System.out.println("isCSApproved****"+isCSApproved);
-			                           System.out.println("isCCApproved****"+isCCApproved);
-			                           
-			                            %>
-			                           
-			                 		<%
-									   String action = "";
-									   String tooltip = "";
-									   boolean showPending = false;
-									   
-									   switch(currentEmpStatus.toUpperCase()) {
-									       case "DH":
-									    	   showPending = isDHApproved;
-									           action = "Recommend";
-									           tooltip = "Preview & Recommend";
-									           break;
-									       case "CM":
-									       case "SE":
-									           showPending = !isDHApproved;
-									           action = "Recommend";
-									           tooltip = "Preview & Recommend";
-									           break;
-									       case "CS":
-									           showPending = false;
-									           action = "Noting";
-									           tooltip = "Preview & Note";
-									           break;
-									       case "CC":
-									           showPending = false;
-									           action = "Approval";
-									           tooltip = "Preview & Approve";
-									           break;
-									   }
-									%>
-									
-									<%System.out.println("showPending****"+showPending); %>
-									<%System.out.println("currentEmpStatus****"+currentEmpStatus); %>
-									
-									<% if(showPending) { %>
-									   <span style="color:#783d00; border-radius:10px; padding:2px 9px; background:#ffe8cc; font-size:11px; font-weight:800;">
-									       Recommendation Pending
-									   </span>
-									<% } else if(!action.isEmpty()) { %>
-									   <form action="#" method="POST" style="display:inline">
-									       <button type="submit"
-									               data-tooltip="<%= tooltip %>"
-									               data-position="top"
-									               class="btn btn-sm icon-btn tooltip-container"
-									               style="padding:6px;border:1px solid #05814d;background:#d3ffe5;"
-									               formaction="FundApprovalPreview.htm">
-									           <%= action %> &nbsp;&#10097;&#10097;
-									       </button>
-									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
-									   </form>
-									<% } %> --%>
-												                 		
 			                          
 			                     </td>  
 			                 </tr>
@@ -584,7 +507,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                        }
 			                        %>
 									       
-									       <td style="width: 185px;" align="center">
+									       <td style="width: 200px;" align="center">
 				                   			 
 		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
@@ -596,7 +519,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 											            	   message = "Approved";
 											               } else if("N".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "#8c2303";
-											                   message = "Pending";
+											                   message = "Forward Pending";
 											               } else if("F".equalsIgnoreCase(fundStatus)) {
 											            	   statusColor = "blue";
 											                   message = "Forwarded";

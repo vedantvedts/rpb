@@ -637,15 +637,17 @@ if(fundDetails!=null && fundDetails.length > 0)
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %>
 								        </button>
-								        
-								    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
-									        Return
-									</button>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								     
+								     <% if (currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("CS")) { %>
+									    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
+										        Return
+										</button>
+									<%} %>
+									&nbsp;
 									<%-- <button type="button" class="btn btn-sm" style="background-color: #ffb256;" onclick="openChatBox(<%=fundApprovalId%>)">
 									        Query
 									</button> --%>
-								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 								</form>
 
                             </div>
