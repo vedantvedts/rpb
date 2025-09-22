@@ -929,21 +929,36 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}	
 	}
 	
+	
+	@Override
+	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT CASE WHEN f.BudgetType='B' THEN 'General' WHEN f.BudgetType='N' THEN 'Proposed Project' ELSE NULL END AS BudgetType,pi.ProjectShortName, bh.BudgetHeadDescription,\n"
+					+ "e.EmpName AS Initiator_name,ed.Designation, f.ItemNomenclature, \n"
+					+ "(IFNULL(f.Apr,0) + IFNULL(f.May,0) + IFNULL(f.Jun,0) + IFNULL(f.Jul,0) + IFNULL(f.Aug,0) + IFNULL(f.Sep,0) + IFNULL(f.OCT,0) + IFNULL(f.Nov,0) + IFNULL(f.December,0) + \n"
+					+ "IFNULL(f.Jan,0) + IFNULL(f.Feb,0) + IFNULL(f.Mar,0)) AS ItemCost FROM fund_approval f\n"
+					+ "LEFT JOIN tblbudgethead bh ON bh.BudgetHeadId = f.BudgetHeadId \n"
+					+ "LEFT JOIN tblbudgetitem bi ON bi.BudgetItemId=f.BudgetItemId\n"
+					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.InitiatingOfficer \n"
+					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId\n"
+					+ "LEFT JOIN "+mdmdb+".pfms_initiation PI ON pi.InitiationId = f.InitiationId\n"
+					+ " WHERE f.FundApprovalId=:fundApprovalId ");
+
+			query.setParameter("fundApprovalId", fundApprovalId);  
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getParticularFundQueryHeader "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	@Override
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
 		try {
-			Query query= manager.createNativeQuery("SELECT r.FundApprovalId, e.EmpId,e.EmpName, ed.Designation, dm.DivisionCode,r.Query , r.ActionDate,CASE WHEN f.BudgetType='B' THEN 'General' WHEN f.BudgetType='N' THEN 'Proposed Project' ELSE NULL END AS BudgetType,pi.ProjectShortName, bh.BudgetHeadDescription,\n"
-					+ "e2.EmpName AS Initiator_name,ed2.Designation, f.ItemNomenclature, \n"
-					+ "(IFNULL(f.Apr,0) + IFNULL(f.May,0) + IFNULL(f.Jun,0) + IFNULL(f.Jul,0) + IFNULL(f.Aug,0) + IFNULL(f.Sep,0) + IFNULL(f.OCT,0) + IFNULL(f.Nov,0) + IFNULL(f.December,0) + \n"
-					+ "IFNULL(f.Jan,0) + IFNULL(f.Feb,0) + IFNULL(f.Mar,0)) AS ItemCost FROM fund_approval_queries r \n"
-					+ "LEFT JOIN fund_approval f  ON f.FundApprovalId = r.FundApprovalId\n"
-					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId = r.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId \n"
-					+ "LEFT JOIN tblbudgethead bh ON bh.BudgetHeadId = f.BudgetHeadId \n"
-					+ "LEFT JOIN tblbudgetitem bi ON bi.BudgetItemId=f.BudgetItemId\n"
-					+ "LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=e.DivisionId\n"
-					+ "LEFT JOIN "+mdmdb+".employee e2 ON e2.EmpId = f.InitiatingOfficer \n"
-					+ "LEFT JOIN "+mdmdb+".employee_desig ed2 ON ed2.DesigId = e2.DesigId LEFT JOIN "+mdmdb+".pfms_initiation PI ON pi.InitiationId = f.InitiationId\n"
-					+ " WHERE r.FundApprovalId=:fundApprovalId ORDER BY r.ActionDate ASC");
+			Query query= manager.createNativeQuery("SELECT r.FundApprovalId, e.EmpId,e.EmpName, ed.Designation, dm.DivisionCode,r.Query , r.ActionDate FROM fund_approval_queries r LEFT JOIN "+mdmdb+".employee e ON e.EmpId = r.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=e.DivisionId WHERE r.FundApprovalId=:fundApprovalId ORDER BY r.ActionDate ASC");
 
 			query.setParameter("fundApprovalId", fundApprovalId);  
 			List<Object[]> result = (List<Object[]>)query.getResultList();

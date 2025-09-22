@@ -283,6 +283,26 @@ public class FundApprovalController
 		}
 	}
 	
+	@RequestMapping(value ="getParticularFundQueryHeader.htm",method=RequestMethod.GET)
+	public @ResponseBody String getParticularFundQueryHeader(HttpSession ses , HttpServletRequest req)throws Exception
+	{ 
+		 String Username = (String) ses.getAttribute("Username");
+		 String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		 String fundApprovalId=req.getParameter("fundApprovalId");
+	     logger.info(new Date() + "Inside ApprovalCount.htm " + Username);
+		 Gson json = new Gson();
+		try {  
+			
+			List<Object[]>  result = fundApprovalService.getParticularFundQueryHeader(fundApprovalId);
+			
+			return json.toJson(result);   
+		    }catch (Exception e){
+			e.printStackTrace();
+			logger.error(new Date() + " Inside getParticularFundQueryHeader.htm " + Username, e);
+		    }
+		    return null;
+	}
+	
 	@RequestMapping(value ="getFundApprovalQueries.htm",method=RequestMethod.GET)
 	public @ResponseBody String getFundApprovalQueries(HttpSession ses , HttpServletRequest req)throws Exception
 	{ 

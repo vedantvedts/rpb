@@ -322,6 +322,8 @@ input[name="ItemNomenclature"]::placeholder {
 			<%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
               
+              <input type="hidden" id="EmpId" value="<%=empId%>">
+              <input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" id="estimateType" value="<%=estimateType%>">
               <input type="hidden" id="budgetTypeHidden" <%if(budgetType!=null){ %> value="<%=budgetType%>" <%} %>>
               <input type="hidden" id="proposedProjectHidden" <%if(proposedProject!=null){ %> value="<%=proposedProject%>" <%} %>>
@@ -513,7 +515,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                       		
 					                       		<%} %>
 
-											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+											  	<img id="ForwardButton_<%=data[0]%>" onclick="openChatBox(<%=data[0]%>, 'ForwardButton_<%=data[0]%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ %>
 						                       		 

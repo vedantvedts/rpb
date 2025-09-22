@@ -639,6 +639,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 
                         <div class="inner-box">
                             <div align="center">
+
                                <div class="reccReturnDiv">
 	                               <form id="fbeForm" action="CommitteeMemberAction.htm">
 	                               
@@ -691,6 +692,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    
 									</form>
                                </div>
+
 
 							<div class="EditRCDetailsDH" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
                         	<div class="card ApprovalDetails table-responsive"> 

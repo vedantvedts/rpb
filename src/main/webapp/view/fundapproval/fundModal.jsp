@@ -240,6 +240,7 @@
     transform: translateY(50px) scale(0.9);
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    
 ">
   
   <!-- Header -->
@@ -249,7 +250,7 @@
   </div>
 
   <!-- Messages -->
-  <div id="chatMessages" style="flex:1; padding:8px; background:#f9f9f9; overflow-y:auto; height:calc(100% - 90px);">
+  <div id="chatMessages" style="flex:1; padding:8px; background:#f9f9f9; overflow-y:auto; height:calc(100% - 90px);background-image: url('view/images/ChatBg5.jpeg');">
   </div>
 
   <!-- Footer -->
@@ -318,10 +319,12 @@ function rupeeFormat(amount) {
 let currentFundApprovalId = null;
 let refreshInterval = null;
 let lastMessageCount = 0;
+let currentButtonId = null; 
 
 // Open Chat with bounce animation
-function openChatBox(fundApprovalId) {
+function openChatBox(fundApprovalId, buttonId) {
     currentFundApprovalId = fundApprovalId;
+    currentButtonId = buttonId;
 
     document.getElementById("chatMessages").innerHTML = "";
     document.getElementById("chatInput").value = "";
@@ -331,7 +334,9 @@ function openChatBox(fundApprovalId) {
         clearInterval(refreshInterval);
         refreshInterval = null;
     }
+    
 
+ 
     const chatBox = document.getElementById("chatBoxContainer");
     chatBox.style.opacity = "1";
     chatBox.style.transform = "translateY(0) scale(1)";
@@ -345,9 +350,14 @@ function openChatBox(fundApprovalId) {
     { duration: 200, easing: "ease-in-out" }
 );
 
-
-    loadQueries(fundApprovalId);
-    startAutoRefresh(fundApprovalId);
+  // Hide Forward Button when chat opens
+   const btn = document.getElementById(buttonId);
+    if (btn) btn.style.display = "none";
+  
+	// Show header once at the top
+	loadFundHeader(fundApprovalId); 
+  
+    
 }
 
 // Close Chat with fade-out
@@ -363,6 +373,11 @@ function closeChatBox() {
         chatBox.style.opacity = "0";
         chatBox.style.transform = "translateY(50px) scale(0.9)";
         chatBox.style.pointerEvents = "none";
+        
+        if (currentButtonId) {
+            const btn = document.getElementById(currentButtonId);
+            if (btn) btn.style.display = "inline-block";
+        }
     }, 280);
 
     if (refreshInterval) {
@@ -376,41 +391,7 @@ function closeChatBox() {
     document.getElementById("chatInput").value = "";
 }
 
-function renderChatHeader(details) {
-    var chatMessages = document.getElementById("chatMessages");
 
-    // Clear old header if any
-    var oldHeader = document.getElementById("chatHeaderMessage");
-    if (oldHeader) oldHeader.remove();
-
-    var header = document.createElement("div");
-    header.id = "chatHeaderMessage";
-    header.style.textAlign = "center";
-    header.style.margin = "10px auto";
-    header.style.maxWidth = "90%";
-    header.style.background = "rgb(255 252 220)"; //#f1f1f1
-    header.style.padding = "10px";
-    header.style.borderRadius = "8px";
-    header.style.fontSize = "14px";
-    header.style.color = "#333";
-    header.style.lineHeight = "1.4";
-
-    var BudgetType = null;
-    if(details.BudgetType =='General'){
-    	BudgetType="General";
-    }
-    else if(details.BudgetType =='Proposed Project') {
-    	BudgetType="Proposed Project -"+ details.ProjectShortName;
-    }
-    header.innerHTML =
-        "<b style='color: #034189;'>Budget Type:</b> " + BudgetType +
-        "&nbsp;&nbsp;&nbsp;<b style='color: #034189;'>Budget Head:</b> " + details.BudgetHeadDescription + "<br>" +
-        "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
-        "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
-        "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString());
-
-    chatMessages.appendChild(header);
-}
 
 
 // Auto refresh queries
@@ -418,6 +399,7 @@ function loadQueries(fundApprovalId) {
     var chatMessages = document.getElementById("chatMessages");
     var currentEmpId = document.getElementById("EmpId") ? document.getElementById("EmpId").value : "";
 
+    
     $.ajax({
         url: "getFundApprovalQueries.htm",
         type: "GET",
@@ -427,19 +409,6 @@ function loadQueries(fundApprovalId) {
                 var data = JSON.parse(response);
 
                 if (data && data.length > 0) {
-                    // Show header once at the top
-                    if (!document.getElementById("chatHeaderMessage")) {
-                        renderChatHeader({
-                            BudgetType: data[0][7],
-                            ProjectShortName: data[0][8],
-                            BudgetHeadDescription: data[0][9],
-                            Initiator_name: data[0][10],
-                            InitiatorDesignation: data[0][11],
-                            ItemNomenclature: data[0][12],
-                            ItemCost: data[0][13]
-                        });
-                    }
-
                     // Show only new messages
                     if (data.length > lastMessageCount) {
                         for (var i = lastMessageCount; i < data.length; i++) {
@@ -467,16 +436,17 @@ function loadQueries(fundApprovalId) {
                                 msgDiv.style.background = "rgb(6 122 26)";
                                 msgDiv.style.color = "#fff";
                                 msgDiv.style.fontWeight="600";
+                                msgDiv.style.fontSize="14px";
                                 msgDiv.innerHTML =
                                     "<div style='text-align: left;'>" + message + "</div>" +
                                     "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
                             } else {
                                 wrapper.style.textAlign = "left"; 
-                                msgDiv.style.background = "#e9ecef";
+                                msgDiv.style.background = "rgb(255 255 255)";
                                 msgDiv.style.color = "#000";
                                 msgDiv.innerHTML =
-                                    "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
-                                    "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                                    "<div><b style='color: #a43939;'>" + empName + ", " + designation + "</b><br></div><div style='font-weight: 600;font-size: 14px;'> " + message + "</div>" +
+                                    "<div style='font-size:11px; color:#ad821b; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
                             }
 
                             wrapper.appendChild(msgDiv);
@@ -495,6 +465,77 @@ function loadQueries(fundApprovalId) {
             console.error("Error loading queries:", error);
         }
     });
+}
+
+function loadFundHeader(fundApprovalId) {
+    $.ajax({
+        url: "getParticularFundQueryHeader.htm",
+        type: "GET",
+        data: { fundApprovalId: fundApprovalId },
+        success: function (response) {
+            try {
+                var data = JSON.parse(response);
+
+                if (data && data.length > 0) {
+                    var details = {
+                        BudgetType: data[0][0],
+                        ProjectShortName: data[0][1],
+                        BudgetHeadDescription: data[0][2],
+                        Initiator_name: data[0][3],
+                        InitiatorDesignation: data[0][4],
+                        ItemNomenclature: data[0][5],
+                        ItemCost: data[0][6]
+                    };
+
+                    renderChatHeader(details);
+                }
+            } catch (err) {
+                console.error("Error parsing header response:", err);
+            }
+            loadQueries(fundApprovalId);
+            startAutoRefresh(fundApprovalId);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error loading header:", status, error);
+        }
+    });
+}
+
+
+function renderChatHeader(details) {
+    var chatMessages = document.getElementById("chatMessages");
+
+    // Clear old header if any
+    var oldHeader = document.getElementById("chatHeaderMessage");
+    if (oldHeader) oldHeader.remove();
+
+    var header = document.createElement("div");
+    header.id = "chatHeaderMessage";
+    header.style.textAlign = "center";
+    header.style.margin = "10px auto";
+    header.style.maxWidth = "90%";
+    header.style.background = "rgb(255 252 220)"; //#f1f1f1
+    header.style.padding = "10px";
+    header.style.borderRadius = "8px";
+    header.style.fontSize = "14px";
+    header.style.color = "#333";
+    header.style.lineHeight = "1.7";
+
+    var BudgetType = null;
+    if(details.BudgetType =='General'){
+    	BudgetType="General";
+    }
+    else if(details.BudgetType =='Proposed Project') {
+    	BudgetType="Proposed Project - "+ details.ProjectShortName;
+    }
+    header.innerHTML =
+        "<div style=''><b style='color: #034189;'>Budget Type:</b> " + BudgetType +
+        "&nbsp;&nbsp;&nbsp;<b style='color: #034189;'>Budget Head:</b> " + details.BudgetHeadDescription + "<br>" +
+        "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
+        "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
+        "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString())+"</div>";
+
+    chatMessages.appendChild(header);
 }
 
 function startAutoRefresh(fundApprovalId) {
@@ -557,10 +598,11 @@ function sendQuery(fundApprovalId) {
             newMsg.style.display = "inline-block";
             newMsg.style.maxWidth = "70%";
             newMsg.style.wordWrap = "break-word";
+            newMsg.style.fontSize="14px";
 
             newMsg.innerHTML =
-                "<div style='text-align: left;'>" + msg + "</div>" +
-                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
+                "<div style='text-align: left;font-weight: 600;'>" + msg + "</div>" +
+                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;font-weight: 600;'>" + dateTime + "</div>";
 
             wrapper.appendChild(newMsg);
             chatMessages.appendChild(wrapper);
