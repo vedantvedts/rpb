@@ -11,6 +11,7 @@ import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 
 public interface FundApprovalService 
 {
@@ -82,4 +83,8 @@ public interface FundApprovalService
 	public long revokeRecommendationDetails(FundApprovalDto fundDto, long empId) throws Exception;
 
 	public long editRecommendationDetails(FundApprovalDto fundDto, long empId) throws Exception;
+	
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries);
+	
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 }

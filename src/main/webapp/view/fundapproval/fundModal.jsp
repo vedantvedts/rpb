@@ -224,11 +224,357 @@
 			  </div>
 			</div>
 		
+<div id="chatBoxContainer" style="
+    position: fixed;
+    bottom: 7px;
+    right: 7px;
+    width: 535px;
+    height: 616px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+    font-size: 13px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+">
+  
+  <!-- Header -->
+  <div style="background:#222a1a; color:#fff; padding:8px 10px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
+    <span><b>Queries</b></span>
+    <button onclick="closeChatBox()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">&#10006;</button>
+  </div>
+
+  <!-- Messages -->
+  <div id="chatMessages" style="flex:1; padding:8px; background:#f9f9f9; overflow-y:auto; height:calc(100% - 90px);">
+  </div>
+
+  <!-- Footer -->
+  <div style="border-top:1px solid #ddd; padding:6px; display:flex; gap:5px;">
+    <input type="text" id="chatInput" placeholder="Type a message..."
+           style="flex:1; padding:5px; border:1px solid #ccc; border-radius:4px;">
+    <button type="button" class="btn btn-success" id="chatSendButton" style="padding:5px 10px; border-radius:4px; background:#067a1a; border:none; color:#fff; cursor:pointer;">
+      <i class="fas fa-paper-plane"></i> Send
+    </button>
+  </div>
+</div>
 
 
 <script src="webresources/js/RpbFundStatus.js"></script>
 			
 </body>
+<script type="text/javascript">
+
+function rupeeFormat(amount) {
+    let result = "", minus = "", decimal = "";
+
+    if (amount !== null && amount !== "-") {
+        if (amount.indexOf('.') !== -1) { // Remove Decimal Value
+            let amountarray = amount.split(".");
+            if (amountarray !== null && amountarray.length > 0) {
+                let number = amountarray[0];
+                let paisa = amountarray[1];
+                decimal = "." + paisa;
+                amount = number;
+            }
+        }
+
+        amount = amount.replace(/,/g, ""); // if value has Comma(,) this function will remove
+        if (amount !== null && Number(amount) < 0) {
+            amount = amount.split("-")[1];
+            minus = "-";
+        }
+
+        let len = amount.length;
+
+        if (len === 1 || len === 2 || len === 3) {
+            result = amount;
+        } else {
+            let a = 0;
+            for (let i = len - 1; i >= 0; i--) {
+                a++;
+                if (a === 1 || a === 2 || a === 3 || a % 2 === 1) {
+                    result = result + amount.charAt(i);
+                } else if (a % 2 === 0) {
+                    result = result + "," + amount.charAt(i);
+                }
+            }
+            let reverse = result.split("").reverse().join("");
+            result = reverse; // reversing the Result
+        }
+    } else {
+        result = "0";
+    }
+
+    return minus + result + decimal;
+}
+
+</script>
+
+<script>
+let currentFundApprovalId = null;
+let refreshInterval = null;
+let lastMessageCount = 0;
+
+// Open Chat with bounce animation
+function openChatBox(fundApprovalId) {
+    currentFundApprovalId = fundApprovalId;
+
+    document.getElementById("chatMessages").innerHTML = "";
+    document.getElementById("chatInput").value = "";
+    lastMessageCount = 0;
+
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+
+    const chatBox = document.getElementById("chatBoxContainer");
+    chatBox.style.opacity = "1";
+    chatBox.style.transform = "translateY(0) scale(1)";
+    chatBox.style.pointerEvents = "auto";
+
+  chatBox.animate(
+    [
+        { transform: "scale(0.95)", opacity: 0 },
+        { transform: "scale(1)", opacity: 1 }
+    ],
+    { duration: 200, easing: "ease-in-out" }
+);
+
+
+    loadQueries(fundApprovalId);
+    startAutoRefresh(fundApprovalId);
+}
+
+// Close Chat with fade-out
+function closeChatBox() {
+    const chatBox = document.getElementById("chatBoxContainer");
+
+    chatBox.animate([
+        { transform: "translateY(0) scale(1)", opacity: 1 },
+        { transform: "translateY(30px) scale(0.95)", opacity: 0 }
+    ], { duration: 300, easing: "ease-in" });
+
+    setTimeout(() => {
+        chatBox.style.opacity = "0";
+        chatBox.style.transform = "translateY(50px) scale(0.9)";
+        chatBox.style.pointerEvents = "none";
+    }, 280);
+
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+
+    
+    lastMessageCount = 0;
+    document.getElementById("chatMessages").innerHTML = "";
+    document.getElementById("chatInput").value = "";
+}
+
+function renderChatHeader(details) {
+    var chatMessages = document.getElementById("chatMessages");
+
+    // Clear old header if any
+    var oldHeader = document.getElementById("chatHeaderMessage");
+    if (oldHeader) oldHeader.remove();
+
+    var header = document.createElement("div");
+    header.id = "chatHeaderMessage";
+    header.style.textAlign = "center";
+    header.style.margin = "10px auto";
+    header.style.maxWidth = "90%";
+    header.style.background = "rgb(255 252 220)"; //#f1f1f1
+    header.style.padding = "10px";
+    header.style.borderRadius = "8px";
+    header.style.fontSize = "14px";
+    header.style.color = "#333";
+    header.style.lineHeight = "1.4";
+
+    var BudgetType = null;
+    if(details.BudgetType =='General'){
+    	BudgetType="General";
+    }
+    else if(details.BudgetType =='Proposed Project') {
+    	BudgetType="Proposed Project -"+ details.ProjectShortName;
+    }
+    header.innerHTML =
+        "<b style='color: #034189;'>Budget Type:</b> " + BudgetType +
+        "&nbsp;&nbsp;&nbsp;<b style='color: #034189;'>Budget Head:</b> " + details.BudgetHeadDescription + "<br>" +
+        "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
+        "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
+        "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString());
+
+    chatMessages.appendChild(header);
+}
+
+
+// Auto refresh queries
+function loadQueries(fundApprovalId) {
+    var chatMessages = document.getElementById("chatMessages");
+    var currentEmpId = document.getElementById("EmpId") ? document.getElementById("EmpId").value : "";
+
+    $.ajax({
+        url: "getFundApprovalQueries.htm",
+        type: "GET",
+        data: { fundApprovalId: fundApprovalId },
+        success: function(response) {
+            try {
+                var data = JSON.parse(response);
+
+                if (data && data.length > 0) {
+                    // Show header once at the top
+                    if (!document.getElementById("chatHeaderMessage")) {
+                        renderChatHeader({
+                            BudgetType: data[0][7],
+                            ProjectShortName: data[0][8],
+                            BudgetHeadDescription: data[0][9],
+                            Initiator_name: data[0][10],
+                            InitiatorDesignation: data[0][11],
+                            ItemNomenclature: data[0][12],
+                            ItemCost: data[0][13]
+                        });
+                    }
+
+                    // Show only new messages
+                    if (data.length > lastMessageCount) {
+                        for (var i = lastMessageCount; i < data.length; i++) {
+                            var row = data[i];
+                            var empId = row[1];      
+                            var empName = row[2];
+                            var designation = row[3];
+                            var message = row[5];
+                            var actionDate = row[6];
+                            actionDate = actionDate.replace(/:\d{2}\s/, " ");
+
+                            var wrapper = document.createElement("div");
+                            wrapper.style.clear = "both";
+                            wrapper.style.marginBottom = "8px";
+
+                            var msgDiv = document.createElement("div");
+                            msgDiv.style.padding = "6px 8px";
+                            msgDiv.style.borderRadius = "8px";
+                            msgDiv.style.display = "inline-block";
+                            msgDiv.style.maxWidth = "60%";
+                            msgDiv.style.wordWrap = "break-word";
+
+                            if (empId == currentEmpId) {
+                                wrapper.style.textAlign = "right"; 
+                                msgDiv.style.background = "rgb(6 122 26)";
+                                msgDiv.style.color = "#fff";
+                                msgDiv.style.fontWeight="600";
+                                msgDiv.innerHTML =
+                                    "<div style='text-align: left;'>" + message + "</div>" +
+                                    "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                            } else {
+                                wrapper.style.textAlign = "left"; 
+                                msgDiv.style.background = "#e9ecef";
+                                msgDiv.style.color = "#000";
+                                msgDiv.innerHTML =
+                                    "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
+                                    "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+                            }
+
+                            wrapper.appendChild(msgDiv);
+                            chatMessages.appendChild(wrapper);
+                        }
+
+                        lastMessageCount = data.length;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+            } catch (e) {
+                console.error("Invalid JSON:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading queries:", error);
+        }
+    });
+}
+
+function startAutoRefresh(fundApprovalId) {
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(function() {
+        loadQueries(fundApprovalId);
+    }, 3000);
+}
+
+document.getElementById('chatSendButton').addEventListener('click', function() {
+    if(currentFundApprovalId){
+        sendQuery(currentFundApprovalId);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    var input = document.getElementById("chatInput");
+    input.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); 
+            sendQuery(currentFundApprovalId);
+        }
+    });
+});
+
+function sendQuery(fundApprovalId) {
+    var input = document.getElementById("chatInput");
+    var msg = input.value.trim();
+    if (msg === "") return;
+
+    var csrfParamEl = document.getElementById("csrfParam");
+    var csrfParam = csrfParamEl ? csrfParamEl.name : "_csrf";
+    var csrfToken = csrfParamEl ? csrfParamEl.value : "";
+
+    var requestData = { fundApprovalId: fundApprovalId, Query: msg };
+    requestData[csrfParam] = csrfToken;
+
+    $.ajax({
+        url: "sendFundApprovalQuery.htm",
+        type: "POST",
+        data: requestData,
+        success: function(response) {
+            var chatMessages = document.getElementById("chatMessages");
+            var now = new Date();
+            var dateTime = now.toLocaleString("en-US", { 
+                month: "short", day: "numeric", year: "numeric", 
+                hour: "numeric", minute: "numeric", hour12: true 
+            });
+
+            var wrapper = document.createElement("div");
+            wrapper.style.clear = "both";
+            wrapper.style.textAlign = "right";
+            wrapper.style.marginBottom = "8px";
+
+            var newMsg = document.createElement("div");
+            newMsg.style.padding = "6px 10px";
+            newMsg.style.background = "rgb(6 122 26)";
+            newMsg.style.color = "#fff";
+            newMsg.style.borderRadius = "8px";
+            newMsg.style.display = "inline-block";
+            newMsg.style.maxWidth = "70%";
+            newMsg.style.wordWrap = "break-word";
+
+            newMsg.innerHTML =
+                "<div style='text-align: left;'>" + msg + "</div>" +
+                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
+
+            wrapper.appendChild(newMsg);
+            chatMessages.appendChild(wrapper);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.value = "";
+            lastMessageCount++;
+        },
+        error: function(xhr, status, error) {
+            console.error("Error sending query:", error);
+        }
+    });
+}
+</script>
 
   
 

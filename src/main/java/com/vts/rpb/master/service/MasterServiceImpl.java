@@ -88,4 +88,15 @@ public class MasterServiceImpl implements MasterService
 		
 	}
 
+	@Override
+	public Object[] getDivisionDetails(String divisionId) throws Exception {
+		Object[] divisionDetails = null;
+		List<Object[]> list = masterDao.getParticularDivisionDetails(divisionId);
+		if(list!=null && list.size() > 0)
+		{
+			divisionDetails = list.get(0);
+		}
+		return divisionDetails;
+	}
+
 }

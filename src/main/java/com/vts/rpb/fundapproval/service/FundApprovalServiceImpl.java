@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
-import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -39,6 +38,7 @@ import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
@@ -399,24 +399,36 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
+			System.out.println("fundDto.getAction()****"+fundDto.getAction());
+			
 			String transAction = "";
-			if(fundDto.getAction()!=null && (fundDto.getAction().equalsIgnoreCase("RF") || fundDto.getAction().equalsIgnoreCase("R"))) 
+			if(fundDto.getAction()!=null) 
 			{
-				transAction = "R-FWD";
+				if(fundDto.getAction().equalsIgnoreCase("F"))
+				{
+					fundDetails.setStatus("F");
+					transAction = "FWD";
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("RF")) 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("F");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R"))    // R - Return Re-Forward 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("C");  // C - returned re-forward
+				}
+				
+				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
+				fundApprovalDao.insertFundApprovalTransaction(transModal);
+				
+				fundDetails.setStatus("F");
+				fundDetails.setModifiedBy(fundDto.getModifiedBy());
+				fundDetails.setModifiedDate(fundDto.getModifiedDate());
+				
+				status = fundApprovalDao.updateFundRequest(fundDetails);
 			}
-			else
-			{
-				transAction = "FWD";
-			}
-			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
-			fundApprovalDao.insertFundApprovalTransaction(transModal);
-			
-			fundDetails.setStatus("F");
-			fundDetails.setModifiedBy(fundDto.getModifiedBy());
-			fundDetails.setModifiedDate(fundDto.getModifiedDate());
-			
-			status = fundApprovalDao.updateFundRequest(fundDetails);
 		}
 		
 		return status;
@@ -1126,6 +1138,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		
 		return status;
+	}
+	
+	@Override
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
+		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
+	}
+	@Override
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
+		
+		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
 	}
 	
 }
