@@ -1298,7 +1298,7 @@ $(document).ready(function(){
                 if($("#noNotif").length === 0){
                     $("#notifications").append(
                         '<a class="dropdown-item text-center small text-gray-500 showall notification" ' +
-                        'id="noNotif" href="#" style="height: 30px;font-size: 13px;color: black; text-align: left;">' +
+                         'id="noNotif" href="#" style="height: 30px;font-size: 13px;color: black; text-align: left;">' +
                         '<span style="font-weight: 600;">No Notifications</span></a>'
                     );
                 }
