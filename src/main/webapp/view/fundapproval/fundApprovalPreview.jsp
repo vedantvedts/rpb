@@ -16,8 +16,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="_csrf" content="${_csrf.token}"/>
-<meta name="_csrf_header" content="${_csrf.headerName}"/>
 <jsp:include page="../static/header.jsp"></jsp:include>
 <jsp:include page="../fundapproval/fundModal.jsp"></jsp:include>
 <title>Fund Approval Preview</title>
@@ -372,17 +370,6 @@ tr:last-of-type th:last-of-type {
      	height:4rem;
     }
     
-    .secRcEditButton
-    {
-    	margin-top : 10px;
-    }
-    
-    .RcRemarks
-    {
-     font-weight: 600;
-     color:red;
-    }
-    
 </style>
 </head>
 <body>
@@ -390,7 +377,9 @@ tr:last-of-type th:last-of-type {
 Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 List<Object[]> masterFlowDetails=(List<Object[]>)request.getAttribute("MasterFlowDetails");
 List<Object[]> committeeMasterList=(List<Object[]>)request.getAttribute("AllCommitteeMasterDetails");
-List<Object[]> employeeList=(List<Object[]>)request.getAttribute("AllEmployeeDetails");
+masterFlowDetails.forEach(row-> System.out.println(Arrays.toString(row)));
+System.out.println("--------------------------");
+committeeMasterList.forEach(row-> System.out.println(Arrays.toString(row)));
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
@@ -403,7 +392,7 @@ String estimateType=null;
 String finYear=null;
 String initiatingOfficerId=null;
 String initiatingOfficer=null;
-String memberStatus=null;
+String memberStatus=null,flowDetailsId = null;
 String budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
 String rolesStr = null;
 String approvalsStr = null;
@@ -577,14 +566,14 @@ if(fundDetails!=null && fundDetails.length > 0)
                     <!-- Right Division -->
                     <div class="col-md-6">
                     
-                     <% String memberType = null, rcApprovalDetails = null;
+                     <% String memberType = null;
                        String dhDetails = null,csDetails = null,ccDetails = null;
                        boolean dhStatus=false,csStatus=false,ccStatus = false,rcStatus =false;
                        if(rolesStr != null && approvalsStr != null)
                        {
-                       	dhDetails = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse("NA");
-                       	csDetails = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse("NA");
-                       	ccDetails = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse("NA");
+                       	dhDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse("NA");
+                       	csDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse("NA");
+                       	ccDetails = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse("NA");
                        	
                             String input = "RC"; 
                             Set<String> rcFilter = Set.of("CM", "SE");
@@ -597,182 +586,69 @@ if(fundDetails!=null && fundDetails.length > 0)
                                     .mapToObj(i -> new String[]{roles[i], approvals[i]})
                                     .collect(Collectors.toList());
 
-                            rcApprovalDetails = filtered.stream() .map(a -> a[1]).collect(Collectors.collectingAndThen( Collectors.joining(","), s -> s.isEmpty() ? "NA" : s));
+                            String rcApprovalDetails = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
                             
-                            System.out.println("rcApprovalDetails---BEFORE---"+rcApprovalDetails);
-                            
-                            dhStatus = dhDetails.equalsIgnoreCase("N");
-                            csStatus = csDetails.equalsIgnoreCase("N");
-                            rcStatus = rcApprovalDetails!=null && rcApprovalDetails.equalsIgnoreCase("NA") ? true : rcApprovalDetails.contains("N");
-                            
-                            System.out.println("-----------itemNomenclature----------"+itemNomenclature);
-                            System.out.println("dhDetails------"+dhDetails);
-                            System.out.println("rcApprovalDetails---After---"+rcApprovalDetails);
-                            System.out.println("approvalsStr------"+approvalsStr);
-                            System.out.println("rolesStr------"+rolesStr);
-                            System.out.println("dhStatus------"+dhStatus);
-                            System.out.println("csStatus------"+csStatus);
-                            System.out.println("rcStatus------"+rcStatus);
+                            dhStatus = dhDetails.equalsIgnoreCase("Y");
+                            csStatus = csDetails.equalsIgnoreCase("Y");
+                            ccStatus = ccDetails.equalsIgnoreCase("Y");
+                            rcStatus = rcApprovalDetails.contains("N");
                        }
                        %>
 						  
-						<%boolean showPending = false;
+						<%String tooltip = "";
+						boolean showPending = false;
 						
 						switch(currentEmpStatus.toUpperCase()) {
 						    case "CS":
-						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus));
+						        showPending = !(dhStatus && rcStatus);
+						        tooltip = "Preview & Note";
 						        break;
 						    case "CC":
-						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus) || csStatus);
+						        showPending = !(dhStatus && rcStatus && ccStatus);
+						        tooltip = "Preview & Approve";
 						        break;
 						}
 						%>
-						
-						<%System.out.println("showPending------"+showPending); %>
 									
 						<%if(!showPending){ %>
                     
                         <div class="inner-box">
                             <div align="center">
-                               <div class="reccReturnDiv">
-	                               <form id="fbeForm" action="CommitteeMemberAction.htm">
-	                               
-									    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-									    
-									    <div class="row" style="margin-bottom: 35px; margin-top: 20px;">
-									        <b>Remarks :</b><br>
-									        <textarea rows="3" cols="65" maxlength="1000" class="form-control" name="remarks" id="remarksarea"></textarea>
-									    </div>
-									    
-									    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
-									    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
-									
-											<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
-											
-											<% if(currentEmpStatus.equalsIgnoreCase("DH")){ %>
-									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Edit</button>
-									    	<%} %>
-									    	
-									    	 <% String actionName = "", action= "A";
-									        if (currentEmpStatus.equalsIgnoreCase("CC")) 
-									        {
-									        	actionName = "Approve";
-									        }
-									        else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH"))
-									        {
-									        	actionName = "Recommend";
-									        }
-									        else if(currentEmpStatus.equalsIgnoreCase("CS"))
-									        {
-									        	actionName = "Noting";
-									        }
-									        else
-									        {
-									        	actionName = "Recommend";
-									        }
-									        %>
-									    
-									        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmActionFromMember('<%=actionName %>','<%=currentEmpStatus %>','<%=action %>')">
-									        <%=actionName %>
-									        </button>
-									    
-									    <% if(currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("SC")){ %>
-										    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=currentEmpStatus %>','R')">
-											        Return
-											</button>
-										<%} %>
-									    
-									</form>
-                               </div>
-								
-							<div class="EditRCDetailsDH" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
-                        	<div class="card ApprovalDetails table-responsive"> 
-                              	
-                              	<form id="editRcDetailsForm" action="#">
-	                               
-								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
-                              	
-                              	<table style="width: 100%;" id="fundApprovalForardTable">
-                              		
-                              		  <%if(masterFlowDetails != null){ %>
-					    
-									    <% for(Object[] masterFlowList : masterFlowDetails){ 
-									    
-									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
-									    boolean isApproved = masterFlowList[4] != null && (masterFlowList[4].toString().equalsIgnoreCase("Y"));
-									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
-									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
-									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
-									    boolean committeeAction = true;
-									    %>
-									    
-									    	<tr>
-									    	<td class="editRCDetails"><%=masterFlowList[2] %>
-									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
-									    	</td>
-								            <td class="recommendation-value editRCDropDown">
-									              
-									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
-		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
-		                              			
-		                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
-		                              			
-			                              			<%if(employeeList!=null && employeeList.size()>0){ %>
-				                              				<%for(Object[] empDetails: employeeList){ %>
-				                              					<%if(empDetails[3]!=null){ %>
-				                              						<option value="<%=empDetails[0] %>" <%if(empDetails[0]!=null && rcEmpId.equalsIgnoreCase(empDetails[0].toString())){ %> selected="selected" <%} %>><%=empDetails[2] %><%if(empDetails[3]!=null){ %>, <%=empDetails[3] %><%} %></option>
-				                              					<%} %>
-				                              				<%} %>
-			                              			    <%} %>
-		                              			
-		                              			<%}else{ %>
-		                              			
-		                              				<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-			                              				<%for(Object[] masterList: committeeMasterList){ %>
-			                              				
-			                              				<%if(masterList[1]!=null && masterList[3]!=null){ %>
-			                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")); // CM - Committee Member %>
-			                              				
-			                              					<%if(committeeAction){ %>
-			                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && rcEmpId.equalsIgnoreCase(masterList[2].toString())){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-			                              					<%} %>
-			                              				<%} %>
-			                              				<%} %>
-		                              			    <%} %>
-		                              			
-		                              			<%} %>
-		                              			
-		                              			</select>
-		                              			<%}else{ %>
-		                              			
-		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
-		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
-		                              			
-		                              			<%} %>
-								                
-								            </td>
-								        </tr>
-									    
-									    <%} %>
-									    
-									   <tr>
-                              			<td colspan="2" class="rowProperties">
-                              				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="updateReccDetailsFunction()"> &nbsp;
-                              				<input type="button" class="btn btn-sm back-btn" value="Back" onclick="EditRecommendingDetailsAction('C')">
-                              			</td>
-                              			
-                              		</tr>
+                                <form id="fbeForm" action="CommitteeMemberAction.htm">
+								    <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
+									<input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								    
-								    <%} %>
-                              		
-                              	</table>
-                              	
-                              	</form>
-                              	
-                              </div>
-                              
-	                        </div>
+								    <input type="hidden" name="memberStatus" value="<%=memberStatus %>">
+								    <input type="hidden" name="flowDetailsId" value="<%=flowDetailsId %>">
+								    
+								    <div class="row" style="margin-bottom: 35px; margin-top: 20px;">
+								        <b>Remarks :</b><br>
+								        <textarea rows="3" cols="65" maxlength="1000" class="form-control" name="remarks" id="remarksarea"></textarea>
+								    </div>
+								    
+								    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
+								    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
+								
+										<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
+								    
+								        <button type="button" class="btn btn-primary btn-sm submit" <% if (currentEmpStatus.equalsIgnoreCase("CC")) { %> onclick="confirmAction('Approve','A')" <%}else if(currentEmpStatus.equalsIgnoreCase("DH")) { %> onclick="confirmAction('Recommend','DA')" <%}else { %> onclick="confirmAction('Recommend','RE')" <%} %>>
+									         <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approve 
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM")  || currentEmpStatus.equalsIgnoreCase("DH")){ %> Recommend
+									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+									         <%}else{ %> Recommend<%} %>
+								        </button>
+								     
+								     <% if (currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("CS")) { %>
+									    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
+										        Return
+										</button>
+									<%} %>
+									&nbsp;
+									<%-- <button type="button" class="btn btn-sm" style="background-color: #ffb256;" onclick="openChatBox(<%=fundApprovalId%>)">
+									        Query
+									</button> --%>
+								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+								</form>
 
                             </div>
                         </div>
@@ -784,18 +660,12 @@ if(fundDetails!=null && fundDetails.length > 0)
                         <% // Edit the Recommending Officer %>
                         <div >
 	                         <span style="font-weight:600;color:#000048;">Click Edit Button To Change Recommending Officer(s)</span><br>
-	                         <button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container secRcEditButton" onclick="EditRecommendingDetailsAction('O')">Edit&nbsp;&#10097;&#10097;</button>
+	                         <button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top" class="btn btn-sm icon-btn tooltip-container" style="padding:6px;border: 1px solid #895912;background: #ffe0c4;margin: 10px;" onclick="EditRecommendingDetailsAction('O')"> Edit &nbsp;&#10097;&#10097; </button>
                         </div>
                        </div>
                        
                         <div class="EditRCDetails" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
-                        <div class="card ApprovalDetails table-responsive"> 
-                              	
-                              	<form id="editRcDetailsForm" action="#">
-	                               
-								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
-                              	
+                        	<div class="card ApprovalDetails table-responsive"> 
                               	<table style="width: 100%;" id="fundApprovalForardTable">
                               		
                               		  <%if(masterFlowDetails != null){ %>
@@ -804,52 +674,26 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    
 									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
 									    boolean isApproved = masterFlowList[4] != null && (masterFlowList[4].toString().equalsIgnoreCase("Y"));
-									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
-									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
-									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
-									    boolean committeeAction = true;
+									    
 									    %>
 									    
 									    	<tr>
-									    	<td class="editRCDetails"><%=masterFlowList[2] %>
-									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
-									    	</td>
+									    	<td class="editRCDetails"><%=masterFlowList[2] %></td>
 								            <td class="recommendation-value editRCDropDown">
 									              
-									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
-		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+									            <% if(!isApproved){ %>
+		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="divisionHeadDetails" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
 		                              			<option value="">Select Employee</option>
-		                              			
-		                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
-		                              			
-			                              			<%if(employeeList!=null && employeeList.size()>0){ %>
-				                              				<%for(Object[] empDetails: employeeList){ %>
-				                              					<%if(empDetails[3]!=null){ %>
-				                              						<option value="<%=empDetails[0] %>" <%if(empDetails[0]!=null && rcEmpId.equalsIgnoreCase(empDetails[0].toString())){ %> selected="selected" <%} %>><%=empDetails[2] %><%if(empDetails[3]!=null){ %>, <%=empDetails[3] %><%} %></option>
-				                              					<%} %>
-				                              				<%} %>
-			                              			    <%} %>
-		                              			
-		                              			<%}else{ %>
-		                              			
-		                              				<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-			                              				<%for(Object[] masterList: committeeMasterList){ %>
-			                              				
-			                              				<%if(masterList[1]!=null && masterList[3]!=null){ %>
-			                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")) || ((masterMemberType.equalsIgnoreCase("CC") || masterMemberType.equalsIgnoreCase("SC")) && ((masterList[1].toString()).equalsIgnoreCase("CC") || (masterList[1].toString()).equalsIgnoreCase("SC"))); // CM - Committee Member %>
-			                              				
-			                              					<%if(committeeAction){ %>
-			                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && rcEmpId.equalsIgnoreCase(masterList[2].toString())){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-			                              					<%} %>
-			                              				<%} %>
-			                              				<%} %>
-		                              			    <%} %>
-		                              			
+		                              			<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+		                              				<%for(Object[] masterList: committeeMasterList){ %>
+		                              					<%if(masterList[3]!=null){ %>
+		                              						<option value="<%=masterList[2] %>" <%if(isCurrentEmp){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+		                              					<%} %>
+		                              				<%} %>
 		                              			<%} %>
-		                              			
 		                              			</select>
 		                              			<%}else{ %>
-		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
+		                              			
 		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
 		                              			
 		                              			<%} %>
@@ -861,7 +705,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    
 									   <tr>
                               			<td colspan="2" class="rowProperties">
-                              				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="updateReccDetailsFunction()"> &nbsp;
+                              				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="validateFormFieldsEdit()"> &nbsp;
                               				<input type="button" class="btn btn-sm back-btn" value="Back" onclick="EditRecommendingDetailsAction('C')">
                               			</td>
                               			
@@ -870,8 +714,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 								    <%} %>
                               		
                               	</table>
-                              	
-                              	</form>
                               	
                               </div>
                               
@@ -882,58 +724,68 @@ if(fundDetails!=null && fundDetails.length > 0)
 	                    </div>
 	                </div>
 	            </div>
+<div id="chatBoxContainer" style="
+    position: absolute;
+    bottom:-218px;
+    right: 15px;
+    width: 562px;
+    height: 554px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+">
+    <!-- Header -->
+    <div style="background: #034189; color: white; padding: 8px; border-radius: 8px 8px 0 0; font-weight: bold; display:flex; justify-content:space-between; align-items:center;">
+        <span>Queries</span>
+              <button type="button" class="close" onclick="closeChatBox()" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="font-size:19px; color:white;">&#10006;</span>
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div id="chatMessages" style="flex: 1; padding: 8px; overflow-y: auto; background: #f9f9f9;">
+    </div>
+
+    <!-- Input -->
+    <div style="padding: 6px; border-top: 1px solid #ddd; background: #fff;">
+        <input type="text" id="chatInput" placeholder="Type a message..." 
+               style="width: 84%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">&nbsp;
+        <button type="button" onclick="sendQuery(<%=fundApprovalId%>)" 
+                style="padding: 5px 10px; border: none; background: #048114; color: #fff; border-radius: 4px;">
+            <i class="fas fa-paper-plane"></i> Send
+        </button>
+    </div>
+</div>
+
+
 	        </div>
 	    </div>
 	</div>
 
 				
 </div>			
-
 </body>
 
 <script type="text/javascript">
-
-function updateReccDetailsFunction()
-{
-	var rcMembers = $("select[name='EditReccEmpId'], input[name='EditReccEmpId']").map(function() {
-	        return $(this).val();  
-	    }).get(); 
-
-	if (new Set(rcMembers).size !== rcMembers.length) 
-	{
-		showAlert("The same Recommending Officer cannot be selected more than once. Please review your selection.");
-	} 
-	else 
-	{
-		var form = $("#editRcDetailsForm");
-		if (form) {
-		    showConfirm('Are You Sure To Update The Recommending Officer(s)..?',
-		        function (confirmResponse) {
-		            if (confirmResponse) {
-		            	form.attr("action","EditCommitteeMemberDetails.htm");
-		                form.submit();
-		            }
-		        }
-		    );
-		}
-	}
-
-
-	
-	
-}
 
 function EditRecommendingDetailsAction(actionType)
 {
 	if(actionType == 'O')
 	{
-		$(".EditRCDetails,.EditRCDetailsDH").show();
-		$(".RCPendingDiv,.reccReturnDiv").hide();
+		$(".EditRCDetails").show();
+		$(".RCPendingDiv").hide();
 	}
 	else if(actionType == 'C')
 	{
-		$(".EditRCDetails,.EditRCDetailsDH").hide();
-		$(".RCPendingDiv,.reccReturnDiv").show();
+		$(".EditRCDetails").hide();
+		$(".RCPendingDiv").show();
 	}
 }
 
@@ -954,32 +806,14 @@ function EditRecommendingDetailsAction(actionType)
 
 <script>
 
-function confirmActionFromMember(actionName, memberType, action) {  // A - Approver,Noting,Recommend
+function confirmAction(action,value) {
     const remarksarea = $('#remarksarea').val().trim();
     
-    if (action === 'R' && remarksarea === '') {
-    	showAlert('Please enter the remarks...!');
+    if (value === 'R' && remarksarea === '') {
+        alert('Please enter the remarks...!');
         $('#remarksarea').focus();
         return false;
-    }
-    else
-   	{
-    	var form = $("#fbeForm");
-
-    	if (form) {
-    	    showConfirm("Are you sure to "+actionName+"...?",
-    	        function (confirmResponse) {
-    	            if (confirmResponse) {
-    	            	form.append('<input type="hidden" name="Action" value="'+action+'">');
-    	            	form.append('<input type="hidden" name="memberStatus" value="'+memberType+'">');
-    	                form.submit();
-    	            }
-    	        }
-    	    );
-    	}
-   	}
-    
-  /*    if (confirm("Are you sure to "+action+"...?")) {
+    } else if (confirm("Are you sure to "+action+"...?")) {
         const form = $('#fbeForm');
         const actionInput = $('<input>', {
             type: 'hidden',
@@ -988,7 +822,7 @@ function confirmActionFromMember(actionName, memberType, action) {  // A - Appro
         });
         form.append(actionInput);
         form.submit();
-    } */
+    }
 }
 </script>
 
@@ -1001,4 +835,202 @@ $(document).ready(function(){
 
 </script>
 
+
+<script>
+var refreshInterval = null;
+var lastMessageCount = 0;
+
+function openChatBox(fundApprovalId) {
+    var box = document.getElementById("chatBoxContainer");
+    box.style.display = "flex";
+
+    // small delay for animation
+    setTimeout(() => {
+        box.style.opacity = "1";
+        box.style.transform = "translateY(0) scale(1)";
+    }, 10);
+
+    loadQueries(fundApprovalId);
+    startAutoRefresh(fundApprovalId);
+}
+
+function closeChatBox() {
+    var box = document.getElementById("chatBoxContainer");
+    box.style.opacity = "0";
+    box.style.transform = "translateY(30px) scale(0.95)";
+
+    // hide after animation
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 300);
+
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+}
+
+function loadQueries(fundApprovalId) { 
+    var chatMessages = document.getElementById("chatMessages");
+    var currentEmpId = document.getElementById("EmpId").value;
+
+    $.ajax({
+        url: "getFundApprovalQueries.htm",
+        type: "GET",
+        data: { fundApprovalId: fundApprovalId },
+        success: function(response) {
+            try {
+                var data = JSON.parse(response);
+
+                if (data && data.length > lastMessageCount) {
+                    for (var i = lastMessageCount; i < data.length; i++) {
+                        var row = data[i];
+                        var empId = row[1];      
+                        var empName = row[2];
+                        var designation = row[3];
+                        var message = row[5];
+                        var actionDate = row[6];
+
+                        // remove seconds
+                        actionDate = actionDate.replace(/:\d{2}\s/, " ");
+
+                        var wrapper = document.createElement("div");
+                        wrapper.style.clear = "both";
+                        wrapper.style.marginBottom = "8px";
+
+                        if (empId == currentEmpId) {
+                            wrapper.style.textAlign = "right"; 
+
+                            var msgDiv = document.createElement("div");
+                            msgDiv.style.padding = "6px 8px";
+                            msgDiv.style.background = "#034189";
+                            msgDiv.style.color = "#fff";
+                            msgDiv.style.borderRadius = "8px";
+                            msgDiv.style.display = "inline-block";
+                            msgDiv.style.maxWidth = "60%";
+                            msgDiv.style.wordWrap = "break-word";
+
+                            msgDiv.innerHTML =
+                                "<div style='text-align: left;'><b></b> " + message + "</div>" +
+                                "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+
+                            wrapper.appendChild(msgDiv);
+
+                        } else {
+                            wrapper.style.textAlign = "left"; 
+
+                            var msgDiv = document.createElement("div");
+                            msgDiv.style.padding = "6px 8px";
+                            msgDiv.style.background = "#e9ecef";
+                            msgDiv.style.color = "#000";
+                            msgDiv.style.borderRadius = "8px";
+                            msgDiv.style.display = "inline-block";
+                            msgDiv.style.maxWidth = "60%";
+                            msgDiv.style.wordWrap = "break-word";
+
+                            msgDiv.innerHTML =
+                                "<div><b>" + empName + ", " + designation + "</b>: " + message + "</div>" +
+                                "<div style='font-size:11px; color:#a78432; text-align:right; margin-top:2px;'>" + actionDate + "</div>";
+
+                            wrapper.appendChild(msgDiv);
+                        }
+
+                        chatMessages.appendChild(wrapper);
+                    }
+
+                    lastMessageCount = data.length;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Invalid JSON:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading queries:", error);
+        }
+    });
+}
+
+function startAutoRefresh(fundApprovalId) {
+    refreshInterval = setInterval(function() {
+        loadQueries(fundApprovalId);
+    }, 3000); 
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    var input = document.getElementById("chatInput");
+    input.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); 
+            sendQuery(<%=fundApprovalId%>);
+        }
+    });
+});
+
+function sendQuery(fundApprovalId) {
+    var input = document.getElementById("chatInput");
+    var msg = input.value.trim();
+    if (msg !== "") {
+        var csrfParam = document.getElementById("csrfParam").name;
+        var csrfToken = document.getElementById("csrfParam").value;
+
+        var requestData = {
+            fundApprovalId: fundApprovalId,
+            Query: msg
+        };
+        requestData[csrfParam] = csrfToken;
+
+        $.ajax({
+            url: "sendFundApprovalQuery.htm",
+            type: "POST",
+            data: requestData,
+            success: function(response) {
+                var chatMessages = document.getElementById("chatMessages");
+
+                var now = new Date();
+                var dateTime = now.toLocaleString("en-US", { 
+                    month: "short", day: "numeric", year: "numeric", 
+                    hour: "numeric", minute: "numeric", hour12: true 
+                });
+
+                var wrapper = document.createElement("div");
+                wrapper.style.clear = "both";
+                wrapper.style.textAlign = "right";
+                wrapper.style.marginBottom = "8px";
+
+                var newMsg = document.createElement("div");
+                newMsg.style.padding = "6px 10px";
+                newMsg.style.background = "#034189";
+                newMsg.style.color = "#fff";
+                newMsg.style.borderRadius = "8px";
+                newMsg.style.display = "inline-block";
+                newMsg.style.maxWidth = "70%";
+                newMsg.style.wordWrap = "break-word";
+
+                newMsg.innerHTML =
+                    "<div style='text-align: left;'><b></b> " + msg + "</div>" +
+                    "<div style='font-size:11px; color:#f0d890; text-align:right; margin-top:2px;'>" + dateTime + "</div>";
+
+                wrapper.appendChild(newMsg);
+                chatMessages.appendChild(wrapper);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = "";
+
+               
+                lastMessageCount++;
+            },
+            error: function(xhr, status, error) {
+                console.error("Error sending query:", error);
+            }
+        });
+    }
+}
+
+
+</script>
+
+
+
 </html>
+

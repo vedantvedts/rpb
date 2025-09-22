@@ -53,9 +53,11 @@ function previewInformation(fundApprovalId) {
             var returnedBy = row[26] || 0;
             var returedDate = row[27] || 0;
             
-             if(roles == null || typeof(roles) == 'undefined')
+             if(roles == null || typeof(roles) == 'undefined' || roles.length == 0)
             {
-				html += createCard("forwardPendingclass", "", "", "", "", false, "Forward Pending", "fa-solid fa-circle-check", "center", "", "");
+				var statusText = row[20] != null && row[20] == 'E' ? 'Re-Forward Pending' : 'Forward Pending';
+				
+				html += createCard("forwardPendingclass", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
 				$('#ApprovalStatusDiv').html(html);
 				$(".forwardPendingclass").empty();
 				$(".forwardPendingclass").css({
@@ -63,7 +65,7 @@ function previewInformation(fundApprovalId) {
 				    "text-align": "center"
 				});
 				var forwardPending= `<div class="status warning" style="width: 100% !important;">
-                        						<i class="fa-solid fa-circle-check"></i> Forward Pending
+                        						<i class="fa-solid fa-circle-check"></i> ${statusText}
                    								 </div>`;
 				$(".forwardPendingclass").html(forwardPending);
 				

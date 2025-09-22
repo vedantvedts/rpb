@@ -96,7 +96,7 @@ public class LoginController {
 	   
 		@RequestMapping(value ="ApprovalCount.htm",method=RequestMethod.GET)
 		public @ResponseBody String ApprovalCount(HttpSession ses , HttpServletRequest req)throws Exception
-		{
+		{ 
 			 String Username = (String) ses.getAttribute("Username");
 			 String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
 		     logger.info(new Date() + "Inside ApprovalCount.htm " + Username);
@@ -104,7 +104,6 @@ public class LoginController {
 			try {  
 				String committeeMember=fundApprovalService.getCommitteeMembersLinked(Long.valueOf(empId));
 				List<Object[]>  result = fundApprovalService.committeeMemberFundApprovalCount(committeeMember,empId);
-				 result.stream().forEach(a->System.err.println(Arrays.toString(a))); 
 				return json.toJson(result);   //return to Ajax Where You Call Hide.htm
 			    }catch (Exception e){
 				e.printStackTrace();
