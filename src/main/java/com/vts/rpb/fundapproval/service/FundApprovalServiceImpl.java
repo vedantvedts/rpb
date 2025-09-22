@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
-import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -39,10 +38,10 @@ import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
-import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 @Service
 @Transactional
@@ -1142,7 +1141,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries) {
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
 		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
 	}
 	@Override

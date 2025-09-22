@@ -243,3 +243,4 @@ public class MasterDaoImpl implements MasterDao {
 	}
 
 }
+
