@@ -439,7 +439,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 		budgetYearType="***";
 	}%>
 	
-<div class="card-header page-top"> 
+<div class="card-header page-top">
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>
 	      <div class="col-md-7">
@@ -637,17 +637,15 @@ if(fundDetails!=null && fundDetails.length > 0)
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %>
 								        </button>
-								     
-								     <% if (currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("CS")) { %>
-									    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
-										        Return
-										</button>
-									<%} %>
-									&nbsp;
+								        
+								    <button type="button" class="btn btn-sm btn-danger" onclick="confirmAction('Return','R')">
+									        Return
+									</button>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<%-- <button type="button" class="btn btn-sm" style="background-color: #ffb256;" onclick="openChatBox(<%=fundApprovalId%>)">
 									        Query
 									</button> --%>
-								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+								    <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 								</form>
 
                             </div>
@@ -835,7 +833,6 @@ $(document).ready(function(){
 
 </script>
 
-
 <script>
 var refreshInterval = null;
 var lastMessageCount = 0;
@@ -870,7 +867,7 @@ function closeChatBox() {
     }
 }
 
-function loadQueries(fundApprovalId) { 
+function loadQueries(fundApprovalId) {
     var chatMessages = document.getElementById("chatMessages");
     var currentEmpId = document.getElementById("EmpId").value;
 
@@ -1033,4 +1030,3 @@ function sendQuery(fundApprovalId) {
 
 
 </html>
-

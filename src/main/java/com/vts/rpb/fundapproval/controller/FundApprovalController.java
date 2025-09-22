@@ -252,7 +252,7 @@ public class FundApprovalController
 						
 						String fromYear =null,toYear = null,finYear = null;
 						finYear = particularFundDetails[2]!=null ? particularFundDetails[2].toString() : null;
-						fromYear = finYear != null ? finYear.split("-")[0] : null;						toYear = finYear != null ? finYear.split("-")[1] : null;
+						fromYear = finYear != null ? finYear.split("-")[0] : null;						toYear = finYear != null ? finYear.split("-")[1] : null;
 						
 					   FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
 		   			   backDto.setDivisionName(particularFundDetails[13]!=null ? particularFundDetails[13].toString() : "");

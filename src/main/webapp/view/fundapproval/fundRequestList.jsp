@@ -1,3 +1,4 @@
+
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -449,7 +450,7 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 200px;" align="center">
+				                   			<td style="width: 157px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
@@ -461,7 +462,7 @@ input[name="ItemNomenclature"]::placeholder {
 												            	   message = "Approved";
 												               } else if("N".equalsIgnoreCase(fundStatus)) {
 												            	   statusColor = "#8c2303";
-												                   message = "Forward Pending";
+												                   message = "Pending";
 												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
 												            	   statusColor = "blue";
 												                   message = "Forwarded";
@@ -515,7 +516,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                       		
 					                       		<%} %>
 											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
-											 		
+													
 								    
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
 						                       		 
