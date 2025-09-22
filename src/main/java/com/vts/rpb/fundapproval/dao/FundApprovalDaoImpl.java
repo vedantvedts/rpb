@@ -13,15 +13,14 @@ import org.springframework.stereotype.Repository;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
-import com.vts.rpb.fundapproval.modal.fundApprovalQueries;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 
 @Repository
 public class FundApprovalDaoImpl implements FundApprovalDao {
@@ -916,7 +915,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 	
 	@Override
-	public long fundApprovalQuerySubmit(fundApprovalQueries FundApprovalQueries) {
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
 	try {
 		manager.persist(FundApprovalQueries);
 		manager.flush();

@@ -69,6 +69,7 @@ public class MasterServiceImpl implements MasterService
 		try {
 			CommitteeMembers comMember= masterDao.getCommitteeMemberDetails(cm.getCommitteeMemberId());
 			
+			//
 			comMember.setMemberType(cm.getMemberType());
 			comMember.setEmpId(cm.getEmpId());
 			comMember.setFromDate(cm.getFromDate());

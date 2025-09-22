@@ -1,3 +1,4 @@
+
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -325,8 +326,6 @@ input[name="ItemNomenclature"]::placeholder {
               <input type="hidden" id="budgetTypeHidden" <%if(budgetType!=null){ %> value="<%=budgetType%>" <%} %>>
               <input type="hidden" id="proposedProjectHidden" <%if(proposedProject!=null){ %> value="<%=proposedProject%>" <%} %>>
               <input type="hidden" id="divisionIdHidden" <%if(divisionId!=null){ %> value="<%=divisionId%>" <%} %>>
-              <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
-              <input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <div class="card-header page-top">
 	 	<div class="row">
@@ -514,9 +513,10 @@ input[name="ItemNomenclature"]::placeholder {
 											        </button>
 					                       		
 					                       		<%} %>
+
 											  	<img id="ForwardButton" onclick="openChatBox(<%=data[0]%>)" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 													
-								    
+
 											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
@@ -745,13 +745,10 @@ input[name="ItemNomenclature"]::placeholder {
 				      
 				  </div>
 				</div>
-				</div> 
-<!-- Chat Box -->
+		</div> 
 
 
-				
-
-
+			
 </body>
 <script type="text/javascript">
 
@@ -844,10 +841,6 @@ var dropdownSelector = '';
 
 // keep current divisionHeadId (set by openForwardModal)
 var currentDivisionHeadId = "";
-
-const reccAttributeMap = new Map();
-const reccAttributeSet = new Set();
-var validateDropdownSelector = '';
 
 // CSRF tokens (if you use them)
 var csrfToken = $('meta[name="_csrf"]').attr('content');
@@ -1083,7 +1076,6 @@ function attachDropdownChangeHandler() {
 
         // rebuild UI in master order with updated selections
         rebuildAllDropdownsAfterSync();
-        reccAttributeMap.set(inputId, $(inputId).val());
     });
 }
 
@@ -1124,7 +1116,7 @@ function openForwardModal(
         $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
     } else if (fundStatus == 'R') {
         $(".statusHistory").show();
-        $("#FundRequestAction").val('R');  // R - Return Re-Forward
+        $("#FundRequestAction").val('RF');
         $(".forwardActionName").html("Re-Forward");
         $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
 
@@ -1199,14 +1191,8 @@ function openForwardModal(
                 var listCopy = (memberType === "DH") ? [...masterEmployeeList] : [...masterCommitteeList];
                 dropdownEmployeeMap.set(inputId, { memberType: memberType, list: listCopy });
 
-                
-                
                 // set the preselected value into the selectedMap
                 if (preSelectId) selectedMap.set(inputId, preSelectId);
-                
-                reccAttributeMap.set(inputId, $(inputId).val());
-                reccAttributeSet.add(inputId);
-                validateDropdownSelector = [...reccAttributeSet].join(", ");
             });
 
             // Rebuild every dropdown's list in master order excluding already selected
@@ -1262,28 +1248,119 @@ const labelMap = {
     "#chairmanDetails": "RPB Chairman / Standby Chairman"
 };
 
+/* // ---------------- SUBMIT / VALIDATE ----------------
+function ApprovalFlowForward() {
+    // 1) Build list of required dropdowns and check selectedMap
+    for (let [inputId, meta] of dropdownEmployeeMap.entries()) {
+        var memberType = meta.memberType;
+        var required = roleConfig[memberType] && roleConfig[memberType].required;
+        var val = selectedMap.get(inputId) || "";
+
+        if (required && (!val || val.trim() === "")) {
+            // user-friendly label
+            var label = labelMap[inputId] || (memberType === "CM" ? "RPB Member" : "Employee");
+            if (typeof showAlert === "function") {
+                showAlert("Please select an employee for " + label + " ..!");
+            } else if (typeof Swal !== "undefined") {
+                Swal.fire("Validation", "Please select an employee for " + label + " ..!", "warning");
+            } else {
+                alert("Please select an employee for " + label + " ..!");
+            }
+            // focus the dropdown if present
+            try { $(inputId).focus(); } catch(e) {}
+            return false;
+        }
+    }
+
+    // 2) Ensure DOM selects reflect selectedMap (important for select2 and form submission)
+    dropdownEmployeeMap.forEach(function(meta, inputId) {
+        var val = selectedMap.get(inputId) || "";
+        try {
+            $(inputId).val(val);
+            if ($(inputId).hasClass('select2')) $(inputId).trigger('change.select2');
+            else $(inputId).trigger('change');
+        } catch(e) {}
+    });
+
+    // 3) Confirm with user
+    function doSubmit() {
+        // prefer existing form with id #FundForwardForm
+        var form = $("#FundForwardForm");
+        if (form.length === 0) form = $("#approvalFlowForwardForm");
+        if (form.length === 0) {
+            // try to find form that contains the table
+            var candidate = $("#fundApprovalForardTable").closest("form");
+            if (candidate.length) form = candidate;
+        }
+
+        if (form.length) {
+            // submit native to keep server-handled selects intact
+            try {
+                form[0].submit();
+            } catch (e) {
+                // fallback to AJAX post: gather named fields from selects (best-effort)
+                var payload = {};
+                selectedMap.forEach(function(empId, selId) {
+                    var name = $(selId).attr('name') || selId.replace('#','');
+                    payload[name] = empId;
+                });
+                $.ajax({
+                    url: form.attr('action') || 'ForwardFundRequest.htm',
+                    type: form.attr('method') || 'POST',
+                    data: payload,
+                    success: function(resp) { location.reload(); },
+                    error: function(xhr, status, err) { console.error("Submit fallback error", status, err); alert("Submit failed."); }
+                });
+            }
+        } else {
+            // final fallback (no form found) - send data to ForwardFundRequest.htm
+            var payload = {};
+            selectedMap.forEach(function(empId, selId) {
+                var name = $(selId).attr('name') || selId.replace('#','');
+                payload[name] = empId;
+            });
+            $.ajax({
+                url: 'ForwardFundRequest.htm',
+                type: 'POST',
+                data: payload,
+                success: function(resp) { location.reload(); },
+                error: function(xhr, status, err) { console.error("Submit fallback error", status, err); alert("Submit failed."); }
+            });
+        }
+    }
+
+    if (typeof Swal !== "undefined") {
+        Swal.fire({
+            title: "Are You Sure?",
+            text: "Are You Sure To Forward The Fund Request..?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Forward",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) doSubmit();
+        });
+    } else {
+        if (confirm("Are You Sure To Forward The Fund Request..?")) doSubmit();
+    }
+
+    return false;
+} */
+
 function ApprovalFlowForward() {
     let isValid = true;
 
-    $(validateDropdownSelector).each(function () {
-        const val = $(this).val();
-        if (val) {
-            reccAttributeMap.set("#"+$(this).attr("id"), val);
-        }
-    });
-    
-    for (let [selector, value] of reccAttributeMap.entries()) {
+/*     for (let [selector, value] of selectedMap.entries()) {
         if (!value || value.trim() === "") {
-           
-            let message = labelMap[selector] || (selector.startsWith("#RPBMemberDetails") ? "RPB Member" : "Unknown");
-
+            let message = labelMap[selector] 
+                          || (selector.startsWith("#RPBMemberDetails") ? "RPB Member" : "Unknown");
             showAlert("Please select an employee for " + message + " ..!");
             $(selector).focus();
             isValid = false;
             break;
         }
     }
- 
+ */
     if (isValid) {
         let form = $("#FundForwardForm");
         if (form.length) {
@@ -1297,6 +1374,10 @@ function ApprovalFlowForward() {
 }
 
 </script>
+
+
+
+
 
 
 <script type="text/javascript">
@@ -1491,7 +1572,7 @@ function getProposedProjectDetails(proposedProjectId)
 }
 
 </script>
-  
+
 
 <script>
 let currentFundApprovalId = null;
@@ -1701,7 +1782,4 @@ function sendQuery(fundApprovalId) {
 </script>
 
 
-
- 
-  
 </html>

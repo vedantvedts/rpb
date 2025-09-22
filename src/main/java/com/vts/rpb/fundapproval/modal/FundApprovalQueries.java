@@ -10,8 +10,9 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity(name = "fund_approval_queries")
-public class fundApprovalQueries {
+
+@Entity(name = "rpb_approval_queries")
+public class FundApprovalQueries {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
