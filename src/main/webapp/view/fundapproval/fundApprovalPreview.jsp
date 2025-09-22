@@ -439,7 +439,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 		budgetYearType="***";
 	}%>
 	
-<div class="card-header page-top">
+<div class="card-header page-top"> 
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>
 	      <div class="col-md-7">
@@ -835,6 +835,7 @@ $(document).ready(function(){
 
 </script>
 
+
 <script>
 var refreshInterval = null;
 var lastMessageCount = 0;
@@ -1032,3 +1033,4 @@ function sendQuery(fundApprovalId) {
 
 
 </html>
+
