@@ -95,7 +95,7 @@ public class ReportController
 			}
 			
 			if(budget == null) {
-				budget = "B";  // B - General, N - Proposed Project
+				budget = "-1";  // B - General, N - Proposed Project
 			}
 			
 			if(budgetHeadId==null) {
@@ -107,7 +107,7 @@ public class ReportController
 			}
 			
 			if(fromCost==null) {
-				fromCost="0";
+				fromCost="1";
 			}
 			
 			if(toCost==null) {
