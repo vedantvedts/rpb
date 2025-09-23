@@ -1,3 +1,4 @@
+
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -321,6 +322,8 @@ input[name="ItemNomenclature"]::placeholder {
 			<%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
               
+              <input type="hidden" id="EmpId" value="<%=empId%>">
+              <input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" id="estimateType" value="<%=estimateType%>">
               <input type="hidden" id="budgetTypeHidden" <%if(budgetType!=null){ %> value="<%=budgetType%>" <%} %>>
               <input type="hidden" id="proposedProjectHidden" <%if(proposedProject!=null){ %> value="<%=proposedProject%>" <%} %>>
@@ -447,7 +450,7 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 157px;" align="center">
+				                   			<td style="width: 200px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
@@ -459,7 +462,7 @@ input[name="ItemNomenclature"]::placeholder {
 												            	   message = "Approved";
 												               } else if("N".equalsIgnoreCase(fundStatus)) {
 												            	   statusColor = "#8c2303";
-												                   message = "Pending";
+												                   message = "Forward Pending";
 												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
 												            	   statusColor = "blue";
 												                   message = "Forwarded";
@@ -485,9 +488,8 @@ input[name="ItemNomenclature"]::placeholder {
 											       
 									       </td>
 				                   			<td align="center">
-				                   			    <% int buttonStatus=0; %>
 													      
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus)) || "E".equalsIgnoreCase(fundStatus)){ buttonStatus = 1;%>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus)) || "E".equalsIgnoreCase(fundStatus)){ %>
 													
 													<button type="submit" data-tooltip="Edit Item Details(s)" data-position="left" class="btn btn-sm edit-icon tooltip-container"
 											               name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="EditFundRequest.htm">
@@ -498,13 +500,13 @@ input[name="ItemNomenclature"]::placeholder {
 												
 													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
-					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1;%> 
+					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { %> 
 					                       		
 						                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 											        Revision</button>
 					                       		
-					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { buttonStatus = 1;%> 
+					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { %> 
 					                       		
 						                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalIdRevoke" style="padding-top: 2px; padding-bottom: 2px;" onclick="revokeConfirm('<%=data[0]%>')">
@@ -512,17 +514,13 @@ input[name="ItemNomenclature"]::placeholder {
 											        </button>
 					                       		
 					                       		<%} %>
-											    
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "R".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1;%>
+
+											  	<img id="ForwardButton_<%=data[0]%>" onclick="openChatBox(<%=data[0]%>, 'ForwardButton_<%=data[0]%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ %>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
 						                       		 onclick="confirmDelete('<%=data[0]%>')" class="btn btn-sm tooltip-container"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>
-					                       		
-					                       		<%} %>
-					                       		
-					                       		<% if(buttonStatus == 0){ %>
-					                       		
-					                       			<span style="font-weight: 600;">***</span>
 					                       		
 					                       		<%} %>
 					                       		
@@ -652,6 +650,10 @@ input[name="ItemNomenclature"]::placeholder {
 							            </tr>
 							          </table>
 							          
+						<form action="FundApprovalForward.htm" id="FundForwardForm">
+					       
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							          
 							          <div style="font-weight: 600;color:black;"> Attachments: 
 							          <span class="attachementLink">
 				                            
@@ -660,13 +662,15 @@ input[name="ItemNomenclature"]::placeholder {
 				                      <div class="statusHistory">
 				                      
 				                      </div>
+				                      
+				                       <div class="row returnRemarks" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
+				                             
+				                       </div>
 							          
 							          </div>
 							          
 								      <div class="card-body forwardAction">
-								       <form action="FundApprovalForward.htm" id="FundForwardForm">
 								       
-										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
 										<input type="hidden" id="FundFlowMasterIdForward" name="FundFlowMasterIdForward">
@@ -680,13 +684,15 @@ input[name="ItemNomenclature"]::placeholder {
 				                              </div>
 				                             </div>
 				                              
-				                             <div class="row" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
+				                             <div class="row revokeRemarks" style="width: 90%;margin:auto;margin-left: 0px;margin-top:10px;">
 				                             <span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span>
 				                             <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>
 				                             </div>
 								             
-				                       </form>
+				                      
 				                       </div>
+				                       
+				                        </form>
 							        </div>
 							      </div>
 							
@@ -741,8 +747,8 @@ input[name="ItemNomenclature"]::placeholder {
 				      
 				  </div>
 				</div>
-				</div>
-				
+		</div> 
+
 
 			
 </body>
@@ -815,307 +821,550 @@ function openFundDetails()
 
 <script type="text/javascript">
 
-	var allEmployeeList = null;
-	var committeeMemberList=null;
-	var masterFlowDetails=null;
-	var chairmanId = null;
-	const reccAttributeMap = new Map();
-	const reccAttributeSet = new Set();
-	var dropdownSelector = '';
-	var csrfToken = $('meta[name="_csrf"]').attr('content');
-	var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-	
-	$.ajax({
-	    url: 'GetCommitteeMemberDetails.htm',  
-	    method: 'GET', 
-	    beforeSend: function(xhr) {
-	        xhr.setRequestHeader(csrfHeader, csrfToken);
-	    },
-	    success: function(response) {
-	        var data = JSON.parse(response);
-	        committeeMemberList = data;
-	        chairmanId = (committeeMemberList.find(item => item[1] === "CC") || [])[2];
-	    }
-	});
-	
-	$.ajax({
-	    url: 'SelectAllemployeeAjax.htm',
-	    method: 'GET',
-	    beforeSend: function(xhr) {
-	        xhr.setRequestHeader(csrfHeader, csrfToken);
-	    },
-	    success: function(responseJson) {
-	        var result = JSON.parse(responseJson);
-	        allEmployeeList = result;
-	    }
-	});
-	
-	
+
+var allEmployeeList = [];
+var committeeMemberList = [];
+var masterFlowDetails = null;
+var chairmanId = null;
+var SecretaryId = null;
+
+// Master copies 
+var masterEmployeeList = [];
+var masterCommitteeList = [];
+
+// Each dropdown will hold its own copy of employee list (value = { memberType, list })
+const dropdownEmployeeMap = new Map();   // key = inputId string (with leading '#'), value = { memberType, list }
+
+// Map to store selected values per dropdown
+const selectedMap = new Map();  // key=inputId (with '#'), value=empId
+
+// selector string for binding events
+var dropdownSelector = '';
+
+// keep current divisionHeadId (set by openForwardModal)
+var currentDivisionHeadId = "";
+
+// CSRF tokens (if you use them)
+var csrfToken = $('meta[name="_csrf"]').attr('content');
+var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+// ---------------- Helper functions ----------------
+function detectMemberType(inputId) {
+    if (inputId.indexOf("divisionHeadDetails") !== -1) return "DH";
+    if (inputId.indexOf("SubjectExpertDetails") !== -1) return "SE";
+    if (inputId.indexOf("RPBMemberSecretaryDetails") !== -1) return "CS";
+    if (inputId.indexOf("chairmanDetails") !== -1) return "CC";
+    if (inputId.indexOf("RPBMemberDetails") !== -1) return "CM";
+    return "";
+}
+
+function isAllowedFor(memberType, empId) {
+    if (!empId) return false;
+    if (memberType === "DH") return true;
+
+    var c = masterCommitteeList.find(e => (e[2] + "") === (empId + ""));
+    if (!c) return false;
+    var listType = (c[1] + "") || "";
+
+    if ((memberType === "CM" || memberType === "SE") && listType === "CM") return true;
+    if (memberType === "CC" && (listType === "CC" || listType === "SC")) return true;
+    if (memberType === "CS" && listType === "CS") return true;
+
+    return false;
+}
+
+function getMasterObjFor(memberType, empId) {
+    if (memberType === "DH") return masterEmployeeList.find(e => (e[0] + "") === (empId + ""));
+    return masterCommitteeList.find(e => (e[2] + "") === (empId + ""));
+}
+
+function getEmpIdFromObj(obj, memberType) {
+    if (!obj) return null;
+    return (memberType === "DH") ? obj[0] : obj[2];
+}
+
+function getMasterIndex(memberType, empId) {
+    if (memberType === "DH") {
+        return masterEmployeeList.findIndex(e => (e[0] + "") === (empId + ""));
+    }
+    return masterCommitteeList.findIndex(e => (e[2] + "") === (empId + ""));
+}
+
+// ---------------- Fetch Lists ----------------
+$.ajax({
+    url: 'GetCommitteeMemberDetails.htm',
+    method: 'GET',
+    beforeSend: function(xhr) { if (csrfHeader && csrfToken) xhr.setRequestHeader(csrfHeader, csrfToken); },
+    success: function(response) {
+        var data = JSON.parse(response || "[]");
+        committeeMemberList = [...data];
+        masterCommitteeList = [...data];
+        chairmanId = (committeeMemberList.find(item => item[1] === "CC") || [])[2];
+        SecretaryId = (committeeMemberList.find(item => item[1] === "CS") || [])[2];
+    },
+    error: function(xhr, status, err) {
+        console.error("GetCommitteeMemberDetails error", status, err);
+    }
+});
+
+$.ajax({
+    url: 'SelectAllemployeeAjax.htm',
+    method: 'GET',
+    beforeSend: function(xhr) { if (csrfHeader && csrfToken) xhr.setRequestHeader(csrfHeader, csrfToken); },
+    success: function(responseJson) {
+        var result = JSON.parse(responseJson || "[]");
+        allEmployeeList = [...result];
+        masterEmployeeList = [...result];
+    },
+    error: function(xhr, status, err) {
+        console.error("SelectAllemployeeAjax error", status, err);
+    }
+});
+
+// ---------------- Fill single dropdown ----------------
+function fillDropdown(inputId, memberType, sourceList, divisionHeadId, selectedVal) {
+    var $dropdown = $(inputId);
+    if ($dropdown.length === 0) return;
+
+    $dropdown.empty().append('<option value="">Select Employee</option>');
+
+    sourceList.forEach(function(value) {
+        var listMemberType = value[1];
+        var empId = (memberType === "DH") ? value[0] : value[2];
+        var empName = (memberType === "DH") ? value[2] : value[3];
+        var empDesig = (memberType === "DH") ? value[3] : value[4];
+
+        // role filter
+        if (memberType === "DH") {
+            // allow all
+        } else if ((memberType === "CM" || memberType === "SE") && listMemberType !== 'CM') {
+            return;
+        } else if (memberType === "CC" && (listMemberType !== 'CC' && listMemberType !== 'SC')) {
+            return;
+        } else if (memberType === "CS" && listMemberType !== 'CS') {
+            return;
+        }
+
+        var selAttr = (selectedVal && (empId + "") === (selectedVal + "")) ? " selected" : "";
+        $dropdown.append('<option value="' + empId + '"' + selAttr + '>' + (empName || '') + (empDesig ? ', ' + empDesig : '') + '</option>');
+    });
+
+    // If selectedVal not present (maybe it was removed earlier), append it from master so UI shows it
+    if (selectedVal) {
+        var exists = $dropdown.find('option[value="' + selectedVal + '"]').length > 0;
+        if (!exists) {
+            if (memberType === "DH") {
+                var mObj = masterEmployeeList.find(e => (e[0] + "") === (selectedVal + ""));
+                if (mObj) {
+                    $dropdown.append('<option value="' + mObj[0] + '" selected>' + (mObj[2] || '') + (mObj[3] ? ', ' + mObj[3] : '') + '</option>');
+                }
+            } else {
+                var cObj = masterCommitteeList.find(e => (e[2] + "") === (selectedVal + ""));
+                if (cObj && isAllowedFor(memberType, selectedVal)) {
+                    $dropdown.append('<option value="' + cObj[2] + '" selected>' + (cObj[3] || '') + (cObj[4] ? ', ' + cObj[4] : '') + '</option>');
+                }
+            }
+        }
+    }
+
+    // refresh select2 UI if present
+    if ($dropdown.hasClass('select2')) {
+        try { $dropdown.trigger('change.select2'); } catch(e) {}
+    }
+}
+
+// ---------------- Rebuild all dropdowns ----------------
+function rebuildAllDropdownsAfterSync() {
+    // build selector string
+    dropdownSelector = Array.from(dropdownEmployeeMap.keys()).join(", ");
+
+    // temporarily unbind change handlers while updating
+    $(document).off("change", dropdownSelector);
+
+    // build a set of selected IDs to exclude (except each dropdown's own selected)
+    let excludeIds = new Set();
+    selectedMap.forEach(function(id) { if (id) excludeIds.add(id + ""); });
+
+    // For each dropdown - rebuild its list in master order excluding selected ids (except itself)
+    dropdownEmployeeMap.forEach(function(meta, inputId) {
+        var memberType = meta.memberType;
+        var selectedVal = selectedMap.get(inputId) || "";
+
+        // create ordered list from master, keeping only allowed ones and excluding other selections
+        var masterList = (memberType === "DH") ? masterEmployeeList : masterCommitteeList;
+        var newList = [];
+
+        masterList.forEach(function(item) {
+            var empId = (memberType === "DH") ? item[0] : item[2];
+            // if emp is chosen elsewhere and it is not the current dropdown's selected, skip
+            if (excludeIds.has(empId + "") && (empId + "") !== (selectedVal + "")) return;
+            // ensure allowed for this memberType
+            if (isAllowedFor(memberType, empId)) newList.push(item);
+        });
+
+        // update map and UI
+        meta.list = newList;
+        dropdownEmployeeMap.set(inputId, meta);
+        fillDropdown(inputId, memberType, newList, currentDivisionHeadId, selectedVal);
+        $(inputId).val(selectedVal); // keep value (no change trigger)
+        if ($(inputId).hasClass('select2')) {
+            try { $(inputId).trigger('change.select2'); } catch(e) {}
+        }
+    });
+
+    // reattach change handler
+    attachDropdownChangeHandler();
+}
+
+// ---------------- Change handler ----------------
+function attachDropdownChangeHandler() {
+    dropdownSelector = Array.from(dropdownEmployeeMap.keys()).join(", ");
+    $(document).off("change", dropdownSelector);
+
+    $(document).on("change", dropdownSelector, function (e) {
+        var inputId = "#" + $(this).attr("id");
+        var newVal = $(this).val() || "";
+        var oldVal = selectedMap.get(inputId) || "";
+
+        if ((oldVal + "") === (newVal + "")) return;
+
+        // update selected map immediately
+        selectedMap.set(inputId, newVal);
+
+        // Remove newVal from other lists and restore oldVal into other lists at original position
+        dropdownEmployeeMap.forEach(function(meta, otherId) {
+            if (otherId === inputId) return;
+
+            var memberType = meta.memberType;
+            var list = meta.list || [];
+
+            // remove newVal occurrences
+            if (newVal) {
+                for (var i = list.length - 1; i >= 0; i--) {
+                    var candidateId = (memberType === "DH") ? list[i][0] : list[i][2];
+                    if ((candidateId + "") === (newVal + "")) list.splice(i, 1);
+                }
+            }
+
+            // restore oldVal in correct master position (if allowed and not already present)
+            if (oldVal && isAllowedFor(memberType, oldVal)) {
+                var present = list.some(function(item) {
+                    var id = (memberType === "DH") ? item[0] : item[2];
+                    return (id + "") === (oldVal + "");
+                });
+
+                if (!present) {
+                    var orig = getMasterObjFor(memberType, oldVal);
+                    var masterIdx = getMasterIndex(memberType, oldVal);
+                    if (orig && masterIdx !== -1) {
+                        // insert at correct position by comparing master indices
+                        var inserted = false;
+                        for (var j = 0; j < list.length; j++) {
+                            var candidateId = (memberType === "DH") ? list[j][0] : list[j][2];
+                            var candIdx = getMasterIndex(memberType, candidateId);
+                            if (candIdx > masterIdx) {
+                                list.splice(j, 0, orig);
+                                inserted = true;
+                                break;
+                            }
+                        }
+                        if (!inserted) list.push(orig);
+                    }
+                }
+            }
+
+            dropdownEmployeeMap.set(otherId, { memberType: memberType, list: list });
+        });
+
+        // rebuild UI in master order with updated selections
+        rebuildAllDropdownsAfterSync();
+    });
+}
+
+// ================= OPEN FORWARD MODAL (main flow) =================
 function openForwardModal(
-		fundRequestId,estimatedCost,estimatedType,ReFbeYear,budgetHeadDescription,HeadOfAccounts,
-		CodeHead,Itemnomenclature,justification,empName,designation,divisionDetails, fundStatus, divisionHeadId)
+    fundRequestId, estimatedCost, estimatedType, ReFbeYear, budgetHeadDescription, HeadOfAccounts,
+    CodeHead, Itemnomenclature, justification, empName, designation, divisionDetails, fundStatus, divisionHeadId)
 {
-	refreshModal('.ItemForwardModal');
-	$(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
-	$(".forwardAction,.statusHistory").hide();
-	$(".ItemForwardModal").modal('show');
-	
-	$(".BudgetDetails").html("GEN (General)");
-	$(".BudgetHeadDetails").html(budgetHeadDescription);
-	$(".budgetItemDetails").html(HeadOfAccounts+' ('+ CodeHead +')');
-	$(".EstimatedCostDetails").html(rupeeFormat(estimatedCost));
-	$(".ItemNomenclatureDetails").html(Itemnomenclature);
-	$(".JustificationDetails").html(justification);
-	$(".MainEstimateType").html(estimatedType!=null && estimatedType=='R' ? 'RE' : 'FBE');
-	$(".reFbeYearForward").html(ReFbeYear);
-	$(".divisionDetailsForward").html(divisionDetails);
-	
-	$("#FundRequestIdForward").val(fundRequestId);
-	
-	// show and Hide Approval flow action
-	if(fundStatus == 'N')    // N - New Request
-	{
-		$(".forwardAction").show();
-		$("#FundRequestAction").val('F');
-	}
-	else if(fundStatus == 'E')    // E - Revoked
-	{ 
-		$(".forwardAction").show();
-		$("#FundRequestAction").val('RF');    // RF - Re-Forward
-		$(".forwardActionName").html("Re-Forward");
-		$("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+    // store divisionHeadId globally for fillDropdown when needed
+    currentDivisionHeadId = divisionHeadId || "";
 
-	}
-	else if(fundStatus == 'R')    // R - Returned
-	{
-		$(".statusHistory").show();
-		$("#FundRequestAction").val('RF');   // RF - Re-Forward
-		$(".forwardActionName").html("Re-Forward");
-		$("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
-		
-		// getting fund history
-		$.ajax({
-	        url: 'getRPBApprovalHistoryAjax.htm',
-	        type: 'GET',
-	        data: { fundApprovalId: fundRequestId },
-	        success: function(response) {
-	            var data = JSON.parse(response);
-	            if (!Array.isArray(data[0])) {
-	                data = [data]; 
-	            }
+    refreshModal('.ItemForwardModal');
+    $(".RPBMember1,.RPBMember2,.RPBMember3,.SubjectExpert").hide();
+    $(".forwardAction,.statusHistory").hide();
+    $(".ItemForwardModal").modal('show');
 
-	            var tableHTML = generateTableHTML(data);
-	            $('.statusHistory').html(tableHTML);
+    $(".BudgetDetails").html("GEN (General)");
+    $(".BudgetHeadDetails").html(budgetHeadDescription);
+    $(".budgetItemDetails").html(HeadOfAccounts + ' (' + CodeHead + ')');
+    $(".EstimatedCostDetails").html(rupeeFormat(estimatedCost));
+    $(".ItemNomenclatureDetails").html(Itemnomenclature);
+    $(".JustificationDetails").html(justification);
+    $(".MainEstimateType").html(estimatedType != null && estimatedType == 'R' ? 'RE' : 'FBE');
+    $(".reFbeYearForward").html(ReFbeYear);
+    $(".divisionDetailsForward").html(divisionDetails);
 
-	        },
-	        error: function(xhr, status, error) {
-	            console.error('AJAX Error: ' + status + error);
-	        }
-	    });
-	}
-	
-	getAttachementDetailsInline(fundRequestId);
-	
-	$.ajax({
-        url: 'GetMasterFlowDetails.htm',  
-        method: 'GET', 
-        data: { fundRequestId : fundRequestId },  
+    $("#FundRequestIdForward").val(fundRequestId);
+
+    // show/hide actions as before
+    if (fundStatus == 'N') {
+        $(".forwardAction").show();
+        $(".forwardActionName").html("Forward");
+        $("#FundRequestAction").val('F');
+    } else if (fundStatus == 'E') {
+        $(".forwardAction").show();
+        $("#FundRequestAction").val('RF');
+        $(".forwardActionName").html("Re-Forward");
+        $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+        $(".revokeRemarks").append('<span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span> <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>');
+    } else if (fundStatus == 'R') {
+        $(".statusHistory").show();
+        $("#FundRequestAction").val('R'); // R - Return Re-Forward
+        $(".forwardActionName").html("Re-Forward");
+        $("#ForwardButton").attr("data-tooltip", 'Re-Forward Item for Approval');
+        $(".returnRemarks").append('<span style="color:#034189;font-weight: 600;">Remarks :&nbsp;&nbsp;</span> <textarea placeholder="Enter Remark" id="forwardRemark" maxlength="500" name="forwardRemark" required="required" class="form-control"></textarea>');
+
+        $.ajax({
+            url: 'getRPBApprovalHistoryAjax.htm',
+            type: 'GET',
+            data: { fundApprovalId: fundRequestId },
+            success: function(response) {
+                var data = JSON.parse(response || "[]");
+                if (!Array.isArray(data[0])) data = [data];
+                var tableHTML = generateTableHTML(data);
+                $('.statusHistory').html(tableHTML);
+            },
+            error: function(xhr, status, err) { console.error('getRPBApprovalHistoryAjax error', status, err); }
+        });
+    }
+
+    getAttachementDetailsInline(fundRequestId);
+
+    // Load master flow details and build dropdowns
+    $.ajax({
+        url: 'GetMasterFlowDetails.htm',
+        method: 'GET',
+        data: { fundRequestId: fundRequestId },
         success: function(responseJson) {
-        	   var data = JSON.parse(responseJson);
-        	   masterFlowDetails = data;
-        	   
-        	   if (masterFlowDetails && masterFlowDetails.length > 0) {
-        	       $("#fundApprovalForardTable").empty(); // clear old rows
-        	       
-        	       $("#fundApprovalForardTable").append('<tr><td style="padding: 8px; text-align: right; color: #00087a; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>' +
-                 			'<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="'+empName +', '+designation+'"></td>' +
-                 		'</tr>');
+            var data = JSON.parse(responseJson || "[]");
+            masterFlowDetails = data;
 
-        	       let cmCount = 0;
+            if (!masterFlowDetails || masterFlowDetails.length === 0) {
+                $("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
+                return;
+            }
 
-        	       $.each(masterFlowDetails, function(key, value) {
-        	    	   
-        	    	   $("#FundFlowMasterIdForward").val(value[0]);
-        	    	   
-        	           let memberType = value[1]; // DH, CM, CS, CC, SE
-        	           let empId = value[3];
+            // clear previous UI/maps
+            $("#fundApprovalForardTable").empty();
+            dropdownEmployeeMap.clear();
+            selectedMap.clear();
 
-        	           if (memberType === "CM") {
-        	               cmCount++;
-        	               appendFlowRow(memberType, cmCount);
-        	           } else {
-        	               appendFlowRow(memberType, "");
-        	           }
+            // Initiating officer row
+            $("#fundApprovalForardTable").append(
+                '<tr><td style="padding: 8px; text-align: right; color: #00087a; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Initiating Officer :</td>' +
+                '<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="' + empName + ', ' + designation + '"></td>' +
+                '</tr>'
+            );
 
-        	           // now fill select after append
-        	           let inputId;
-        	           if (memberType === "CM") inputId = "#RPBMemberDetails" + cmCount;
-        	           else if (memberType === "DH") inputId = "#divisionHeadDetails";
-        	           else if (memberType === "SE") inputId = "#SubjectExpertDetails";
-        	           else if (memberType === "CS") inputId = "#RPBMemberSecretaryDetails";
-        	           else if (memberType === "CC") inputId = "#chairmanDetails";
+            var cmCount = 0;
 
-        	           if (!inputId) return;
+            // build rows and initial maps
+            masterFlowDetails.forEach(function(value) {
+                $("#FundFlowMasterIdForward").val(value[0]);
+                var memberType = value[1];   // DH, CM, CS, CC, SE
+                var backendEmpId = value[3]; // empId coming from backend flow (if any)
+                var inputId = null;
+                var preSelectId = "";
 
-        	           let sourceList = (memberType === "DH") ? allEmployeeList : committeeMemberList;
+                if (memberType === "CM") {
+                    cmCount++;
+                    appendFlowRow(memberType, cmCount);
+                    inputId = "#RPBMemberDetails" + cmCount;
+                    preSelectId = backendEmpId;
+                } else {
+                    appendFlowRow(memberType, "");
+                    if (memberType === "DH") { inputId = "#divisionHeadDetails"; preSelectId = divisionHeadId; }
+                    if (memberType === "SE") { inputId = "#SubjectExpertDetails"; preSelectId = backendEmpId; }
+                    if (memberType === "CC") { inputId = "#chairmanDetails"; preSelectId = chairmanId; }
+                    if (memberType === "CS") { inputId = "#RPBMemberSecretaryDetails"; preSelectId = SecretaryId; }
+                }
 
-        	           $.each(sourceList, function(key, value) {
-        	        	   
-        	        	   var listMemberType = value[1];
-        	        	   var empId = (memberType === "DH") ? value[0] : value[2];
-        	        	   var empName = (memberType === "DH") ? value[2] : value[3];
-        	        	   var empDesig = (memberType === "DH") ? value[3] : value[4];
-        	        	   
-        	        	   if((memberType === "DH"))
-       	        		   {
-        	        		   $(inputId).append("<option value="+ empId +" "+ (empId == divisionHeadId ? 'selected' : '') +" >"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
-       	        		   }
-        	        	   else if((memberType === "CM" || memberType === "SE") && listMemberType == 'CM')
-       	        		   {
-        	        		   $(inputId).append("<option value="+ empId +">"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
-       	        		   }
-        	        	   else if((memberType === "CC") && (listMemberType == 'CC' || listMemberType == 'SC'))
-       	        		   {
-        	        		   $(inputId).append("<option value="+ empId +" "+ (chairmanId == empId ? 'selected' : '') +" >"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
-       	        		   }
-        	        	   else if((memberType === "CS" && listMemberType == 'CS'))
-       	        		   {
-        	        		   $(inputId).append("<option value="+ empId +" selected>"+ empName +""+ (empDesig!=null ? ", "+ empDesig +"" : "") +"</option>");
-       	        		   }
-        					
-        				});
-        	           
-        	           if(inputId)
-       	        	   {
-        	        	   reccAttributeMap.set(inputId, $(inputId).val());
-        	        	   reccAttributeSet.add(inputId);
-       	        	   }
-        	           
-        	       });
-        	       
-        	       dropdownSelector = [...reccAttributeSet].join(", ");
+                if (!inputId) return;
 
-        	   } else {
-        	       $("#fundApprovalForardTable").append("<span style='font-weight:600;color:red;'>Something Went Wrong ..!</span>");
-        	   }
-        	}
-	    });
-	}
-	
-	
+                // per-dropdown working copy (we'll rebuild in master order below)
+                var listCopy = (memberType === "DH") ? [...masterEmployeeList] : [...masterCommitteeList];
+                dropdownEmployeeMap.set(inputId, { memberType: memberType, list: listCopy });
+
+                // set the preselected value into the selectedMap
+                if (preSelectId) selectedMap.set(inputId, preSelectId);
+            });
+
+            // Rebuild every dropdown's list in master order excluding already selected
+            rebuildAllDropdownsAfterSync();
+        },
+        error: function(xhr, status, err) {
+            console.error('GetMasterFlowDetails Ajax error', status, err);
+        }
+    });
+}
+
+// ---------------- Append Flow Row ----------------
 function appendFlowRow(role, index) {
     let config = roleConfig[role];
     if (!config) return;
 
-    // Handle multiple members (like CM1, CM2, CM3)
     let inputId = config.multiple ? config.inputIdPrefix + index : config.inputId;
     let inputName = config.multiple ? config.inputNamePrefix : config.inputId;
 
     let $tr = $("<tr>").addClass(role + index);
 
     let $tdLabel = $("<td>").css({ padding: "8px", "text-align": "right", "font-weight": "600", "white-space": "nowrap", display: "flex", "align-items": "center" })
-        					.html(config.label + (config.required ? '&nbsp;<span class="mandatory" style="color:red;font-weight:normal;"> *</span>' : ''));
+        .html(config.label + (config.required ? '&nbsp;<span class="mandatory" style="color:red;font-weight:normal;"> *</span>' : ''));
 
     let $tdInput = $("<td>").css({ padding: "8px", width: "63%" });
 
-     let $select = $("<select>").attr({ id: inputId, name: inputName })
-						        .addClass("form-control select2")
-						        .css({ width: "100%", "font-size": "10px", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" })
-						        .append('<option value="">Select Employee</option>');
+    let $select = $("<select>").attr({ id: inputId, name: inputName })
+        .addClass("form-control select2")
+        .css({ width: "100%", "font-size": "10px", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" })
+        .append('<option value="">Select Employee</option>');
 
     $tdInput.append($select);
     $tr.append($tdLabel).append($tdInput);
 
     $("#fundApprovalForardTable").append($tr);
-    
-    $(".select2").select2({
-        width: "100%"
-    });
+
+    $(".select2").select2({ width: "100%" });
 }
 
-
+// ---------------- Config and Validation ----------------
 const roleConfig = {
-		  DH: { label: "Division Head", required: true, inputId: "divisionHeadDetails" },
-		  CM: { label: "RPB Member", required: true, multiple: true, inputIdPrefix: "RPBMemberDetails", inputNamePrefix: "RPBMemberDetails" },
-		  SE: { label: "Subject Expert", required: true, inputId: "SubjectExpertDetails" },
-		  CS: { label: "RPB Member Secretary", required: true, inputId: "RPBMemberSecretaryDetails" },
-		  CC: { label: "RPB Chairman / Stand by Chairman", required: true, inputId: "chairmanDetails" }
-		};
-
-
-$(document).on("change", dropdownSelector, function () {
-    const selectedValues = [];
-
-    $(dropdownSelector).each(function () {
-        const val = $(this).val();
-        if (val) {
-            selectedValues.push(val);
-            reccAttributeMap.set("#"+$(this).attr("id"), val);
-        }
-    });
-
-    console.log("Map:", Array.from(reccAttributeMap));
-
- 
-});
-
-/* var dropdownSelector = [...reccAttributeSet].join(", ");
-
-$(document).on("change", dropdownSelector, function () {
-    const selectedValues = [];
-
-    dropdownSelector = [...reccAttributeSet].join(", ");
-    $(dropdownSelector).each(function () {
-        const val = $(this).val();
-        if (val) {
-            selectedValues.push(val);
-            reccAttributeMap.set("#"+$(this).attr("id"), val);
-        }
-    });
-
-    console.log("Map:", Array.from(reccAttributeMap));
-
-    $(dropdownSelector).each(function () {
-        const currentDropdown = $(this);
-        const currentVal = currentDropdown.val();
-
-        currentDropdown.find("option").each(function () {
-            const optionVal = $(this).val();
-
-            if (optionVal === currentVal || optionVal === "") {
-                $(this).prop("disabled", false);
-            } else if (selectedValues.includes(optionVal)) {
-                $(this).prop("disabled", true);
-            } else {
-                $(this).prop("disabled", false);
-            }
-        });
-    });
-}); */
+    DH: { label: "Division Head", required: true, inputId: "divisionHeadDetails" },
+    CM: { label: "RPB Member", required: true, multiple: true, inputIdPrefix: "RPBMemberDetails", inputNamePrefix: "RPBMemberDetails" },
+    SE: { label: "Subject Expert", required: true, inputId: "SubjectExpertDetails" },
+    CS: { label: "RPB Member Secretary", required: true, inputId: "RPBMemberSecretaryDetails" },
+    CC: { label: "RPB Chairman / Stand by Chairman", required: true, inputId: "chairmanDetails" }
+};
 
 const labelMap = {
-  "#divisionHeadDetails": "Division Head",
-  "#SubjectExpertDetails": "Subject Expert",
-  "#RPBMemberSecretaryDetails": "RPB Member Secretary",
-  "#chairmanDetails": "RPB Chairman / Standby Chairman"
+    "#divisionHeadDetails": "Division Head",
+    "#SubjectExpertDetails": "Subject Expert",
+    "#RPBMemberSecretaryDetails": "RPB Member Secretary",
+    "#chairmanDetails": "RPB Chairman / Standby Chairman"
 };
+
+/* // ---------------- SUBMIT / VALIDATE ----------------
+function ApprovalFlowForward() {
+    // 1) Build list of required dropdowns and check selectedMap
+    for (let [inputId, meta] of dropdownEmployeeMap.entries()) {
+        var memberType = meta.memberType;
+        var required = roleConfig[memberType] && roleConfig[memberType].required;
+        var val = selectedMap.get(inputId) || "";
+
+        if (required && (!val || val.trim() === "")) {
+            // user-friendly label
+            var label = labelMap[inputId] || (memberType === "CM" ? "RPB Member" : "Employee");
+            if (typeof showAlert === "function") {
+                showAlert("Please select an employee for " + label + " ..!");
+            } else if (typeof Swal !== "undefined") {
+                Swal.fire("Validation", "Please select an employee for " + label + " ..!", "warning");
+            } else {
+                alert("Please select an employee for " + label + " ..!");
+            }
+            // focus the dropdown if present
+            try { $(inputId).focus(); } catch(e) {}
+            return false;
+        }
+    }
+
+    // 2) Ensure DOM selects reflect selectedMap (important for select2 and form submission)
+    dropdownEmployeeMap.forEach(function(meta, inputId) {
+        var val = selectedMap.get(inputId) || "";
+        try {
+            $(inputId).val(val);
+            if ($(inputId).hasClass('select2')) $(inputId).trigger('change.select2');
+            else $(inputId).trigger('change');
+        } catch(e) {}
+    });
+
+    // 3) Confirm with user
+    function doSubmit() {
+        // prefer existing form with id #FundForwardForm
+        var form = $("#FundForwardForm");
+        if (form.length === 0) form = $("#approvalFlowForwardForm");
+        if (form.length === 0) {
+            // try to find form that contains the table
+            var candidate = $("#fundApprovalForardTable").closest("form");
+            if (candidate.length) form = candidate;
+        }
+
+        if (form.length) {
+            // submit native to keep server-handled selects intact
+            try {
+                form[0].submit();
+            } catch (e) {
+                // fallback to AJAX post: gather named fields from selects (best-effort)
+                var payload = {};
+                selectedMap.forEach(function(empId, selId) {
+                    var name = $(selId).attr('name') || selId.replace('#','');
+                    payload[name] = empId;
+                });
+                $.ajax({
+                    url: form.attr('action') || 'ForwardFundRequest.htm',
+                    type: form.attr('method') || 'POST',
+                    data: payload,
+                    success: function(resp) { location.reload(); },
+                    error: function(xhr, status, err) { console.error("Submit fallback error", status, err); alert("Submit failed."); }
+                });
+            }
+        } else {
+            // final fallback (no form found) - send data to ForwardFundRequest.htm
+            var payload = {};
+            selectedMap.forEach(function(empId, selId) {
+                var name = $(selId).attr('name') || selId.replace('#','');
+                payload[name] = empId;
+            });
+            $.ajax({
+                url: 'ForwardFundRequest.htm',
+                type: 'POST',
+                data: payload,
+                success: function(resp) { location.reload(); },
+                error: function(xhr, status, err) { console.error("Submit fallback error", status, err); alert("Submit failed."); }
+            });
+        }
+    }
+
+    if (typeof Swal !== "undefined") {
+        Swal.fire({
+            title: "Are You Sure?",
+            text: "Are You Sure To Forward The Fund Request..?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Forward",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) doSubmit();
+        });
+    } else {
+        if (confirm("Are You Sure To Forward The Fund Request..?")) doSubmit();
+    }
+
+    return false;
+} */
 
 function ApprovalFlowForward() {
     let isValid = true;
 
-    for (let [selector, value] of reccAttributeMap.entries()) {
+/*     for (let [selector, value] of selectedMap.entries()) {
         if (!value || value.trim() === "") {
-           
             let message = labelMap[selector] 
                           || (selector.startsWith("#RPBMemberDetails") ? "RPB Member" : "Unknown");
-
             showAlert("Please select an employee for " + message + " ..!");
             $(selector).focus();
             isValid = false;
             break;
         }
     }
-
+ */
     if (isValid) {
         let form = $("#FundForwardForm");
         if (form.length) {
@@ -1128,8 +1377,12 @@ function ApprovalFlowForward() {
     }
 }
 
-
 </script>
+
+
+
+
+
 
 <script type="text/javascript">
 function refreshModal(modalId) {
@@ -1323,7 +1576,6 @@ function getProposedProjectDetails(proposedProjectId)
 }
 
 </script>
-  
- 
-  
+
+
 </html>

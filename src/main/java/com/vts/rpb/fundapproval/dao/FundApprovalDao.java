@@ -6,6 +6,7 @@ import java.util.List;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
@@ -83,6 +84,10 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
 
 	public List<Object[]> getCommitteeMemberType (long empId) throws Exception;
+	
+	public List<Object[]> getCommitteeMembersLinked (long empId) throws Exception;
+	
+	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception;
 
 	public List<Object[]> getDemandDetails(String demandId) throws Exception;
 
@@ -111,4 +116,11 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getTransactionStatusDetails(String action, String actionType) throws Exception;
 
 	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId);
+
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries);
+	
+	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception;
+	
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 }
+

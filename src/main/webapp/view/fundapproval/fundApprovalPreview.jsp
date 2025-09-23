@@ -391,6 +391,8 @@ Object[] fundDetails=(Object[])request.getAttribute("fundDetails");
 List<Object[]> masterFlowDetails=(List<Object[]>)request.getAttribute("MasterFlowDetails");
 List<Object[]> committeeMasterList=(List<Object[]>)request.getAttribute("AllCommitteeMasterDetails");
 List<Object[]> employeeList=(List<Object[]>)request.getAttribute("AllEmployeeDetails");
+
+
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
@@ -449,7 +451,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 		budgetYear="-";
 		budgetYearType="***";
 	}%>
-	
+
 <div class="card-header page-top">
 	 	<div class="row">
 	 	  <div class="col-md-5"><h5><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %>Forecast Budget Estimate<%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %>Revised Estimate<%} %> Preview&nbsp;<span style="color:#057480;"><%if(finYear!=null){ %> (<%=finYear %>) <%} %></span></h5></div>
@@ -470,7 +472,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 
   <%String success=(String)request.getParameter("resultSuccess"); 
    String failure=(String)request.getParameter("resultFailure");%>  
-			
+
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
 <div class="container">
@@ -478,16 +480,16 @@ if(fundDetails!=null && fundDetails.length > 0)
         <div class="col-md-12">
         	  <div class="flex-container" style="margin-top:7px !important;background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 	           		<div class="form-inline" style="padding: 10px;">
-	           		
+
 	           			<label style="font-size: 19px;"><b> <%=budgetYearType %> :&nbsp;</b></label><span class="spanClass"> <%=budgetYear %> </span>
 	           		</div>
 	           		<div class="form-inline" style="padding: 10px;">
-	           			
+
 	           			<label style="font-size: 19px;"><b>Division :&nbsp;</b></label><span class="spanClass"><% if(dto!=null && dto.getDivisionName()!=null){%><%=dto.getDivisionName() %>&nbsp;<%}else{ %>-<%} %><% if(dto!=null && dto.getDivisionCode()!=null){%>(<%=dto.getDivisionCode() %>)<%}%></span>
-	           		
+
 	           		</div>
 	           </div>
-        
+
             <!-- Big Division -->
             <div class="big-box">
             	<div class="row">
@@ -516,14 +518,14 @@ if(fundDetails!=null && fundDetails.length > 0)
 		          </table>
 	          </div>
             	</div>
-            	
+
             	  <div style="font-weight: 600;color:black;margin:10px;"> Attachments: 
 		          	<span class="attachementLink">
-                           
+
                      </span>
 		          </div>
-            	
-            	
+
+
                 <div class="row">
                     <!-- Left Division -->
                     <div class="col-md-6">
@@ -536,15 +538,15 @@ if(fundDetails!=null && fundDetails.length > 0)
 					            </td>
 					        </tr>
 					    <% } %>
-					    
+
 					    <%if(masterFlowDetails != null){ %>
-					    
+
 						    <% for(Object[] masterList : masterFlowDetails){ 
 						    
 						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
 						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
 						    %>
-						    
+
 						    	<tr <%if(isCurrentEmp){ %> class="highlight-box" <%} %>>
 					            <td style="width:40%;"><b><%=masterList[2] %></b>
 					            <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
@@ -560,23 +562,23 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
-					                
+
 					                <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">&nbsp;<%=masterList[8] %></span> <%} %>
-					                
+
 					            </td>
 					        </tr>
-						    
+
 						    <%} %>
-					    
+
 					    <%} %>
-					
+
 					</table>
-                        
+
                     </div>
-                    
+
                     <!-- Right Division -->
                     <div class="col-md-6">
-                    
+
                      <% String memberType = null, rcApprovalDetails = null;
                        String dhDetails = null,csDetails = null,ccDetails = null;
                        boolean dhStatus=false,csStatus=false,ccStatus = false,rcStatus =false;
@@ -615,25 +617,29 @@ if(fundDetails!=null && fundDetails.length > 0)
                             System.out.println("rcStatus------"+rcStatus);
                        }
                        %>
-						  
+
 						<%boolean showPending = false;
+
 						
 						switch(currentEmpStatus.toUpperCase()) {
 						    case "CS":
 						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus));
+
 						        break;
 						    case "CC":
 						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus) || csStatus);
+
 						        break;
 						}
 						%>
 						
 						<%System.out.println("showPending------"+showPending); %>
-									
+
 						<%if(!showPending){ %>
-                    
+
                         <div class="inner-box">
                             <div align="center">
+
                                <div class="reccReturnDiv">
 	                               <form id="fbeForm" action="CommitteeMemberAction.htm">
 	                               
@@ -649,9 +655,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 									
 											<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
 											
-											<% if(currentEmpStatus.equalsIgnoreCase("DH")){ %>
+											<% if(currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("CS")){ %>
 									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Edit</button>
-									    	<%} %>
+									    	&nbsp;<%} %>
 									    	
 									    	 <% String actionName = "", action= "A";
 									        if (currentEmpStatus.equalsIgnoreCase("CC")) 
@@ -674,17 +680,20 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    
 									        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmActionFromMember('<%=actionName %>','<%=currentEmpStatus %>','<%=action %>')">
 									        <%=actionName %>
-									        </button>
+									        </button> &nbsp;
 									    
 									    <% if(currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("SC")){ %>
 										    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=currentEmpStatus %>','R')">
 											        Return
-											</button>
+											</button>  &nbsp;
 										<%} %>
+										
+										 <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 									    
 									</form>
                                </div>
-								
+
+
 							<div class="EditRCDetailsDH" style="text-align: center; height: 100%;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;display:none;">
                         	<div class="card ApprovalDetails table-responsive"> 
                               	
@@ -732,7 +741,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 			                              				<%for(Object[] masterList: committeeMasterList){ %>
 			                              				
 			                              				<%if(masterList[1]!=null && masterList[3]!=null){ %>
-			                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")); // CM - Committee Member %>
+			                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")) || ((masterMemberType.equalsIgnoreCase("CC") || masterMemberType.equalsIgnoreCase("SC")) && ((masterList[1].toString()).equalsIgnoreCase("CC") || (masterList[1].toString()).equalsIgnoreCase("SC"))); // CM - Committee Member %>
 			                              				
 			                              					<%if(committeeAction){ %>
 			                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && rcEmpId.equalsIgnoreCase(masterList[2].toString())){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
@@ -774,11 +783,12 @@ if(fundDetails!=null && fundDetails.length > 0)
                               
 	                        </div>
 
-                            </div>
-                        </div>
-                        
+
+                           </div>
+                       </div>
+
                        <% }else { %>
-                       
+
                        <div class="RCPendingDiv" style="text-align: center; height: 100%; display: grid;place-items: center;box-shadow: 0px 0px 4px #cbcbcb;border-radius: 3px;">
                        <span style="color:#4a036c; border-radius:10px; padding:10px 9px; background:#eadcff; font-size:13px; font-weight:800;"> Recommendation Pending </span>
                         <% // Edit the Recommending Officer %>
@@ -799,7 +809,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                               	<table style="width: 100%;" id="fundApprovalForardTable">
                               		
                               		  <%if(masterFlowDetails != null){ %>
-					    
+
 									    <% for(Object[] masterFlowList : masterFlowDetails){ 
 									    
 									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
@@ -809,13 +819,13 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
 									    boolean committeeAction = true;
 									    %>
-									    
+
 									    	<tr>
 									    	<td class="editRCDetails"><%=masterFlowList[2] %>
 									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
 									    	</td>
 								            <td class="recommendation-value editRCDropDown">
-									              
+
 									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
 		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
 		                              			<option value="">Select Employee</option>
@@ -851,42 +861,43 @@ if(fundDetails!=null && fundDetails.length > 0)
 		                              			<%}else{ %>
 		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
 		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
-		                              			
+
 		                              			<%} %>
-								                
+
 								            </td>
 								        </tr>
-									    
+
 									    <%} %>
-									    
+
 									   <tr>
                               			<td colspan="2" class="rowProperties">
                               				<input class="btn btn-sm submit-btn" type="button" id="submiting" value="Update" onclick="updateReccDetailsFunction()"> &nbsp;
                               				<input type="button" class="btn btn-sm back-btn" value="Back" onclick="EditRecommendingDetailsAction('C')">
                               			</td>
-                              			
+
                               		</tr>
-								    
+
 								    <%} %>
-                              		
+
                               	</table>
-                              	
+
                               	</form>
                               	
                               </div>
-                              
+
 	                        </div>
-	                       
+
 	                       <%} %>
-	                          
+
 	                    </div>
 	                </div>
 	            </div>
+
 	        </div>
 	    </div>
 	</div>
 
-				
+
 </div>			
 
 </body>
@@ -1000,5 +1011,4 @@ $(document).ready(function(){
 });
 
 </script>
-
 </html>

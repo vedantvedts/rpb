@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.rpb.fundapproval.dto.BudgetDetails;
-import com.google.gson.JsonElement;
 import com.vts.rpb.fundapproval.dao.FundApprovalDao;
 import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -39,6 +38,7 @@ import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
 import com.vts.rpb.fundapproval.modal.FundApproval;
 import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
+import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
 import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
 import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
 import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
@@ -399,24 +399,35 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
+			System.out.println("fundDto.getAction()****"+fundDto.getAction());
+			
 			String transAction = "";
-			if(fundDto.getAction()!=null && (fundDto.getAction().equalsIgnoreCase("RF") || fundDto.getAction().equalsIgnoreCase("R"))) 
+			if(fundDto.getAction()!=null) 
 			{
-				transAction = "R-FWD";
+				if(fundDto.getAction().equalsIgnoreCase("F"))
+				{
+					fundDetails.setStatus("F");
+					transAction = "FWD";
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("RF")) 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("F");
+				}
+				else if(fundDto.getAction().equalsIgnoreCase("R"))    // R - Return Re-Forward 
+				{
+					transAction = "R-FWD";
+					fundDetails.setStatus("B");  // C - returned re-forward
+				}
+				
+				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
+				fundApprovalDao.insertFundApprovalTransaction(transModal);
+				
+				fundDetails.setModifiedBy(fundDto.getModifiedBy());
+				fundDetails.setModifiedDate(fundDto.getModifiedDate());
+				
+				status = fundApprovalDao.updateFundRequest(fundDetails);
 			}
-			else
-			{
-				transAction = "FWD";
-			}
-			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,transAction,"N",empId);
-			fundApprovalDao.insertFundApprovalTransaction(transModal);
-			
-			fundDetails.setStatus("F");
-			fundDetails.setModifiedBy(fundDto.getModifiedBy());
-			fundDetails.setModifiedDate(fundDto.getModifiedDate());
-			
-			status = fundApprovalDao.updateFundRequest(fundDetails);
 		}
 		
 		return status;
@@ -536,6 +547,12 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				if(fundDto.getAction().equalsIgnoreCase("A"))  // A - Approve or recommend
 				{
 					updateParticularLinkedMemberDetails(fundDto,empId,fundApproval.getFundApprovalId());
+					
+					if(fundDto.getMemberStatus()!=null && fundDto.getMemberStatus().equalsIgnoreCase("CC")) {
+						fundApproval.setStatus("A");
+						fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
+					}
+					
 				}
 				else if(fundDto.getAction().equalsIgnoreCase("R"))
 				{
@@ -544,20 +561,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					fundApproval.setReturnedDate(LocalDateTime.now());
 				}
 				
-				if(fundDto.getMemberStatus()!=null)
-				{
-					if(fundDto.getMemberStatus().equalsIgnoreCase("CC"))  // Committee Chairman
-					{
-						fundApproval.setStatus("A");
-						fundApproval.setSerialNo(createSerialNo(fundApproval.getReFbeYear(),fundApproval.getEstimateType()));
-					}
-				}
+				FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,fundDto.getMemberStatus(),fundDto.getAction(),empId);
+				fundApprovalDao.insertFundApprovalTransaction(transModal);
+				
+				status = fundApprovalDao.updateFundRequest(fundApproval);
 			}
-			
-			FundApprovalTrans transModal = buildFundTransactonDetails(fundDto,fundDto.getMemberStatus(),fundDto.getAction(),empId);
-			fundApprovalDao.insertFundApprovalTransaction(transModal);
-			
-			status = fundApprovalDao.updateFundRequest(fundApproval);
 		
 		return status;
 	}
@@ -967,6 +975,26 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		    }
 		    return null;
 	}
+	
+	@Override
+	public String getCommitteeMembersLinked (long empId) throws Exception{
+		List<Object[]> committeeType= fundApprovalDao.getCommitteeMembersLinked(empId);
+		 if (committeeType != null && !committeeType.isEmpty()) {
+		        Object[] firstRow = committeeType.get(0);
+		        return firstRow[0].toString();
+		    }
+		    return null;
+	}
+	
+	@Override
+	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception{
+		List<Object[]> totalCountFundApproval= fundApprovalDao.committeeMemberFundApprovalCount(committeeMember,empId);
+		if (totalCountFundApproval != null && !totalCountFundApproval.isEmpty()) {
+	        
+	        return totalCountFundApproval;
+	    }
+	    return null;
+	}
 
 	@Override
 	public List<Object[]> getProposedProjectDetails() throws Exception {
@@ -1106,6 +1134,22 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		}
 		
 		return status;
+	}
+	
+	@Override
+	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
+		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
+	}
+	
+	@Override
+	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception{
+		return fundApprovalDao.getParticularFundQueryHeader(fundApprovalId);
+	}
+	
+	@Override
+	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
+		
+		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
 	}
 	
 }

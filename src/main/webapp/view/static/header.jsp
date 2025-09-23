@@ -1,3 +1,4 @@
+<%@page import="java.util.Arrays"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -144,7 +145,7 @@ background-repeat: no-repeat;
 }
 #notifications {
    /* Background pattern from Toptal Subtle Patterns */
-   background-image: url("view/images/not.jpg");
+   background-image: url("view/images/");
    background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -610,7 +611,7 @@ input[type=number] {
     width: 100%;
     height: 100%;
     background: rgb(0 0 0 / 73%);
-    z-index: 1051; /* Higher than modal but lower than alert */
+    z-index: 1051;
 }
 
 /* Custom alert & confirm box */
@@ -620,29 +621,61 @@ input[type=number] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: #fff;
     padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
     text-align: center;
-    z-index: 1100; /* Ensures it's above the modal */
+    z-index: 1100;
+
+    /* Static & responsive */
+    width: 420px;        /* fixed width */
+    max-width: 90%;      /* shrink for small screens */
+    min-height: 180px;   /* fixed minimum height */
 }
 
+/* Message text */
 .custom-box p {
-    margin: 10px 0;
+    margin: 15px 0 25px;
+    font-weight: 600;
+    line-height: 1.4;
+    word-wrap: break-word;
+    max-height: 100px;   /* keep height stable */
+    overflow-y: auto;    /* scroll if too long */
 }
 
+/* Buttons */
 .custom-box button {
-    padding: 8px 15px;
-    margin: 5px;
+    padding: 8px 18px;
+    margin: 0 8px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 600;
+    min-width: 90px;
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
+/* Hover effect */
+.custom-box button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Alert button */
 #customAlert button {
     background: #007bff;
-    color: white;
+    color: #fff;
+}
+
+/* Confirm buttons */
+#customConfirm button:first-of-type {
+    background: #dc3545;
+    color: #fff;
+}
+#customConfirm button:last-of-type {
+    background: #007bff;
+    color: #fff;
 }
 
 /* Loading Spinner */
@@ -740,12 +773,6 @@ input[type=number] {
 	color: black !important;
 }
 
-/* Target all submodule dropdowns */
-.dropdown-menu {
-    min-width: 13rem;   /* reduce from default 10rem */
-    width: auto;       /* shrink to fit content */
-    padding: 0.25rem 0;
-}
 
 	
 
@@ -849,10 +876,58 @@ function showFailureFlyMessage(message) {
 	  setTimeout(() => $msg.addClass('show'), 10);
 
 	  setTimeout(() => {
-	    $msg.removeClass('show');
+	    $msg.removeClass('show'); 
 	    setTimeout(() => $msg.remove(), 400);
 	  }, 5000);
 	}
+
+</script>
+
+<script type="text/javascript">
+
+function rupeeFormat(amount) {
+    let result = "", minus = "", decimal = "";
+
+    if (amount !== null && amount !== "-") {
+        if (amount.indexOf('.') !== -1) { // Remove Decimal Value
+            let amountarray = amount.split(".");
+            if (amountarray !== null && amountarray.length > 0) {
+                let number = amountarray[0];
+                let paisa = amountarray[1];
+                decimal = "." + paisa;
+                amount = number;
+            }
+        }
+
+        amount = amount.replace(/,/g, ""); // if value has Comma(,) this function will remove
+        if (amount !== null && Number(amount) < 0) {
+            amount = amount.split("-")[1];
+            minus = "-";
+        }
+
+        let len = amount.length;
+
+        if (len === 1 || len === 2 || len === 3) {
+            result = amount;
+        } else {
+            let a = 0;
+            for (let i = len - 1; i >= 0; i--) {
+                a++;
+                if (a === 1 || a === 2 || a === 3 || a % 2 === 1) {
+                    result = result + amount.charAt(i);
+                } else if (a % 2 === 0) {
+                    result = result + "," + amount.charAt(i);
+                }
+            }
+            let reverse = result.split("").reverse().join("");
+            result = reverse; // reversing the Result
+        }
+    } else {
+        result = "0";
+    }
+
+    return minus + result + decimal;
+}
 
 </script>
 
@@ -888,8 +963,11 @@ function showFailureFlyMessage(message) {
  	  List<Object[]> SubModuleList =(List<Object[]>)session.getAttribute("SubModuleList");
  	 int temp=-1;
  	String applicationType = "F";
+ 	String memberType=(String)session.getAttribute("memberLoginType");
     %>
+    
     <input type="hidden" id="hiddendeveloperToolsStatus" value="<%=developerToolsStatus%>">
+     <input type="hidden" id="hiddenMemberType" value="<%=memberType%>">
       <div id="custom-menu" class="custom-menu" style="z-index: 10000;">
 							    
 								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
@@ -924,137 +1002,92 @@ function showFailureFlyMessage(message) {
 		<div style="margin-left: 12px;">
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 17px;font-weight: 700; color: #a7ffff;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 16px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: white;margin-left: -0.3rem;font-weight: 600;"><%=LocalDate.now().getMonth() %> &nbsp;<%=LocalDate.now().getYear() %> </span></div>
-			
-								
-								 <% for (Object[] mainModule : MainModuleList) { 
-									
-								 %>
-								
-    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")||(mainModule[1].toString()).equalsIgnoreCase("Committee Master")){%>
-		 
-		 <%if((!(mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
-		<!-- Emp Name -->					
+	    
+	    <!-- Emp Name -->					
 		<div style="margin-left: -0.9rem;">&nbsp;
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
-	<%} %>
-	
-<% if (mainModule[1].toString().equalsIgnoreCase("Committee Master")) { %>
-  <li class="nav-item dropdown">
-    <!-- Main module as dropdown toggle -->
-    <a class="nav-link dropdown-toggle" 
-       href="#" 
-       id="dropdown-<%= mainModule[0] %>" 
-       role="button" 
-       data-toggle="dropdown" 
-       aria-haspopup="true" 
-       aria-expanded="false" style="color: white; font-weight: 600;">
-      
-       <%= mainModule[1] %>
-    </a>
-
-    <!-- Submodules -->
-    <div class="dropdown-menu" aria-labelledby="dropdown-<%= mainModule[0] %>">
-      <% for (Object[] subModule : SubModuleList) { 
-           if (subModule[0].equals(mainModule[0])) { %>
-            <a class="dropdown-item  hovercolorsub" 
-               href="<%= subModule[1] %>">
-               <i class="fas fa-arrow-right" style="font-size:12px; font-weight:800;"></i>
-               &nbsp;&nbsp;<%= subModule[2] %>
-            </a>
-      <%   } 
-         } %>
-    </div>
-  </li>
-<% } %>	
- <%if(((mainModule[1].toString()).equalsIgnoreCase("Fund Approval"))) {%>
-	    <ul class="navbar-nav  " > <!-- adds extra space from left -->
-	    <% for (Object[] subModule : SubModuleList) {
-	    if (subModule[0].equals(mainModule[0])) { %>
-	        <li class="nav-item active" style=" margin: 2px 4px;">
-	            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
-	               style="width: 80%;
-	                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
-	                      border-radius: 3px;
-	                      margin-top: 0.1rem;
-	                      padding-left: 13px;padding-right: 13px;"
-	               role="button"
-	               aria-controls="otherSections"
-	               class="text-nowrap bi-list"
-	               href="<%=subModule[1]%>">
-	              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
-	                &nbsp;
-	                <span style="font-weight: 700; color: white; font-size: 15px;">
-	                    <%=subModule[2] %>
-	                </span>
-	            </a>
-	        </li>
-	        
-	        <% } 
-	    temp = Integer.parseInt(subModule[0].toString());
-		}} %>
-	    </ul>
-	
-	   <%}else if(applicationType!=null && applicationType.equalsIgnoreCase("I")){ %>
-	      
-	       <li id="MainModuleId" value="<%= mainModule[0] %>" class='nav-link mb-2 shadow custom_width hovercolor dropdown-toggle' onclick="toggleSubmoduleList('<%= mainModule[0] %>')"><span class="<%=mainModule[2]%>">&nbsp;&nbsp;</span><%= mainModule[1]%></li>
-	      <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0]%>">
-	        <!-- Populate submodule list with items for the current main module -->
-	        <div class="sidebar-content">
-	        <% for (Object[] subModule : SubModuleList) {
-	               if (subModule[0].equals(mainModule[0])) {%>
-	          <li class="" style="margin-left:-0.3rem"><a class="dropdown-item hovercolorsub" style='width: 105%;margin-bottom: 7px !important;border-radius: 3px;margin-top:0.1rem;padding:3px;margin:4px' role='button' aria-controls='otherSections' class="text-nowrap bi-list" href='<%=subModule[1]%>'><i id="my-icon" class='fas fa-arrow-right' style="font-size: 11px;font-weight:800"></i>&nbsp;&nbsp;<span style="font-weight:700;color:#0303b9;font-size: 15px;"><%=subModule[2] %></span></a></li>
-	        <%    } temp=Integer.parseInt(subModule[0].toString());
-	             } %>
-	             </div>
-	      </ul>       
-	       <% }} %>
-	       	
-			<%if(!logintype.equalsIgnoreCase("P")){ %>
-						 <div  class="btn-group HeaderNotifications" style="margin-left: 13%;">
-	                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
-						           <!--  <span id="NotificationCount" class="badge" style="font-weight: 700;color: white;">Notifications</span> -->
-						            <span id="NotificationCount" class="badge"></span><!-- <span>Notifications</span> -->
-						            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
-					        </a>
-					        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width:200px;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
-								<span class="dropdown-header" style="background-color: #faa51e;font-size: 16px;color: #145374; margin-top: -1px;border-top-left-radius: 3px;border-top-right-radius: 3px;font-weight: 700"><i class="fa-solid fa-bell"></i>&nbsp;&nbsp;&nbsp;&nbsp;All Notifications</span>
-						        <a class="dropdown-item text-center small text-gray-500 showall notification" href="DemandApprove.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">No Notifications</span><span id="badge" class="badge"></span></a>						        
-						        </div>
-						    </div>
-						    <%} %>
-						    
-						    <div class="btn-group HeaderUserAction">
-						        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
-							            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
-							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
-							  	</button>
-							
-							    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
-							    	
-								    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
-								    <div class="dropdown-divider logoutdivider"></div>
-								    
-									 <div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
-								  	<div class="dropdown-divider logoutdivider"></div> 
+		
+		
+		<ul class="navbar-nav ml-auto"> 						
+	 <% MainModuleList.forEach(row -> System.out.println(Arrays.toString(row)));
+	 for (Object[] mainModule : MainModuleList) { %>
 									
-									<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
-								            
-								    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
-									        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-								                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
-								                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
-								                    &nbsp;&nbsp;Logout
-								                </button>
-								        </form>
-							        
+	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master")) {%>
+		    
+		    <% for (Object[] subModule : SubModuleList) {
+		    if (subModule[0].equals(mainModule[0])) { %>
+		        <li class="nav-item active" style=" margin: 2px 4px;">
+		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
+		               style="width: 95%;
+		                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
+		                      border-radius: 3px;
+		                      margin-top: 0.1rem;
+		                      padding-left: 13px;padding-right: 13px;"
+		               role="button"
+		               aria-controls="otherSections"
+		               class="text-nowrap bi-list"
+		               href="<%=subModule[1]%>">
+		              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+		                &nbsp;
+		                <span style="font-weight: 700; color: white; font-size: 15px;">
+		                    <%=subModule[2] %>
+		                </span>
+		            </a>
+		        </li>
+		        
+		        <% } 
+		    temp = Integer.parseInt(subModule[0].toString());
+			} %>
+		    <%} %>
+		
+		   <%} %>
+		   
+		   </ul>
+		       	
+							<div  class="btn-group HeaderNotifications">
+		                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						            <img alt="logo" src="view/images/notification.png" style="width: 28px; height: 28px;" >
+							           <!--  <span id="NotificationCount" class="badge" style="font-weight: 700;color: white;">Notifications</span> -->
+							            <span id="NotificationCount" class="badge"></span><!-- <span>Notifications</span> -->
+							            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+						        </a>
+						        <div id="notifications" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in custombell" aria-labelledby="alertsDropdown" style="width: auto;padding: 0px;margin-top: 6px;box-shadow: 0px 0px 5px #353535;">
+									<span class="dropdown-header" style="background-color: #faa51e;font-size: 16px;color: #145374; margin-top: -1px;border-top-left-radius: 3px;border-top-right-radius: 3px;font-weight: 700"><i class="fa-solid fa-bell"></i>&nbsp;&nbsp;&nbsp;&nbsp;All Notifications</span>
+<!-- 									  <a class="dropdown-item text-center small text-gray-500 showall notification" id="fundShow" href="FundApprovalList.htm" style="height: 30px;font-size: 13px;color: black; text-align: left;" ><span style="font-weight: 600;">Fund Approval</span><span id="FundBadge" class="badge"></span></a>
+ -->							        </div>
 							    </div>
+							    
+							    <div class="btn-group HeaderUserAction">
+							        <button type="button" class="btn btn-link btn-responsive UserActionButton" style="text-decoration: none !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								    	<img alt="logo" src="view/images/userlogo.png" style="width: 30px; height: 30px;">
+								            <span style="font-weight: 700;color: white;">&nbsp;<%=Username %></span>
+								            <i class="fa fa-caret-down " aria-hidden="true" style="padding-left:5px;color: #ffffff"></i>
+								  	</button>
+								
+								    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in logout" aria-labelledby="userDropdown" style="box-shadow: 0px 0px 5px #353535;">
+								    	
+									    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
+									    <div class="dropdown-divider logoutdivider"></div>
+										<div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
+									  	<div class="dropdown-divider logoutdivider"></div> 
+										 <a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
+										<div class="dropdown-divider logoutdivider"></div>
+										<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
+									            
+									    	<form id="logoutForm" method="POST" action="${pageContext.request.contextPath}/logout">
+										        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+									                <button class="dropdown-item " data-target="#logoutModal" style="font-weight: 700;cursor: pointer;">
+									                   &nbsp; <i class="fa fa-sign-out fa-1.5x" aria-hidden="true" style="color: #B20600"></i>
+									                    &nbsp;&nbsp;Logout
+									                </button>
+									        </form>
+								        
+								    </div>
+								</div>
 							</div>
 						</div>
-					</div>
-			 </nav>
+				 </nav>
 			 
 			 
 	<script type="text/javascript">
@@ -1178,7 +1211,6 @@ function toggleSubmoduleList(mainModuleValue) {
 
     // Hide all other submodule lists
     var allSubmoduleLists = document.querySelectorAll('ul.list-unstyled.menu-elements');
-    console.log("allSubmoduleLists----"+allSubmoduleLists)
     allSubmoduleLists.forEach(function(ul) {
         if (ul !== submoduleList) {
             ul.style.display = 'none';
@@ -1193,13 +1225,91 @@ function toggleSubmoduleList(mainModuleValue) {
     if (submoduleList.style.display === 'block') {
         submoduleList.style.display = 'none';
     } else {
-    	
         submoduleList.style.display = 'block';
     }
 }
 </script>
+<script>
+$(document).ready(function(){
+    $.ajax({
+        type : "GET",
+        url : "ApprovalCount.htm",	 
+        dataType : 'json',  
+        success : function(result){
+            console.log("Raw result:", result);
+
+            // clear old notifications except the header
+            $("#notifications").find(".notif-list, #noNotif").remove();
+
+            if(result && result.length > 0){
+                var totalCount = result.length; // number of rows
+                $("#NotificationCount").html(totalCount).show();
+
+                // build <ul> list
+                var $ul = $('<ul class="notif-list list-unstyled mb-0" style="padding-top: 1%;"></ul>');
+
+                result.forEach(function(row){
+                    var count = row[0];          // totalcount
+                    var estimateType = row[1];   // EstimateType
+                    var finYear = row[2];        // FinYear
+                    var division = row[3];       // DivisionName
+                    var amount = row[4] != null ? row[4].toString() : "0";         // FundRequestAmount
+                    var fundApprovalId = row[5];
+                    var pending='';
+                    var memberType=$("#hiddenMemberType").val();
+                    if(estimateType=='R'){
+                    	estimateType='RE';
+                    }
+                    if(estimateType=='F'){
+                    	estimateType='FBE';
+                    }
+
+                    if(memberType=='CC' || memberType=='CS'){
+                    	pending='Approval Pending';
+                    }
+                    if(memberType=='CS'){
+                    	pending='Review Pending';
+                    }
+                    if(memberType=='CM' || memberType=='DH' || memberType=='SE'){
+                    	pending='Recommendation Pending';
+                    }
+                    var item = 
+                        '<li class="dropdown-item" style="font-size: 13px; text-align: left; cursor:pointer;">' +
+                             '<a href="FundApprovalPreview.htm?FundApprovalIdSubmit='+fundApprovalId+'" style="color:inherit; text-decoration:none; display:block;">' +
+                                '<div><strong>' + division + '</strong>' +
+                                ' with a Fund Request Amount of <strong style="color:blue">' +rupeeFormat(amount)+ '</strong> - <strong style="color: #e03e3e;">'+pending+' !</strong></div>' +
+                            '</a>' +
+                        '</li>' +
+                        '<div class="dropdown-divider"></div>';
 
 
+                    $ul.append(item);  
+                });
+
+                // append the whole list after header
+                $("#notifications").append($ul);
+
+            } else {
+                // no data found
+                $("#fundShow").hide();
+                $("#FundBadge").hide();
+                $("#NotificationCount").hide();
+
+                if($("#noNotif").length === 0){
+                    $("#notifications").append(
+                        '<a class="dropdown-item text-center small text-gray-500 showall notification" ' +
+                         'id="noNotif" href="#" style="height: 30px;font-size: 13px;color: black; text-align: left;">' +
+                        '<span style="font-weight: 600;">No Notifications</span></a>'
+                    );
+                }
+            }
+        },
+        error: function(xhr, status, error){
+            console.error("Ajax error:", error);
+        }
+    });
+});
+</script>
     
         </body>
 
