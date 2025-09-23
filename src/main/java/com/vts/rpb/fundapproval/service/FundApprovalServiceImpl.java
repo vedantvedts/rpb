@@ -1017,8 +1017,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		FundApproval fundApprovalRevise=fundApprovalDao.getRevisionListDetails(fundApprovalId);
 		
 		if(fundApprovalRevise!=null) {
-			long revisionCount=fundApprovalDao.getRevisionCount(fundApprovalId);
-			revisionCount+=1;
+			Long revisionCount=fundApprovalDao.getRevisionCount(fundApprovalId);
+			
+			if (revisionCount == null) {
+				System.err.println("Current Rev count is null-"+revisionCount);
+			    revisionCount = 0L;
+			} else {
+				System.err.println("Current Rev count-"+revisionCount);
+			    revisionCount++;
+			}
+			
 			FundApprovedRevision revision = new FundApprovedRevision();
 			
 			revision.setFundApprovalId(fundApprovalRevise.getFundApprovalId());
@@ -1150,6 +1158,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
 		
 		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
+	}
+	
+	@Override
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception{
+		return fundApprovalDao.getFundApprovalRevisionDetails(fundApprovalId);
 	}
 	
 }

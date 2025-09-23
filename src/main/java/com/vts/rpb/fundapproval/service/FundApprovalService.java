@@ -89,4 +89,6 @@ public interface FundApprovalService
 	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception;
 	
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
+	
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
 }

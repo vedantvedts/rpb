@@ -99,7 +99,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public FundApproval getRevisionListDetails(String fundApprovalId) throws Exception;
 
-	public long getRevisionCount(String fundApprovalId) throws Exception;
+	public Long getRevisionCount(String fundApprovalId) throws Exception;
 	
 	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception;
 
@@ -122,5 +122,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception;
 	
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
+	
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
 }
 

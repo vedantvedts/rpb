@@ -1236,6 +1236,34 @@ public class FundApprovalController
 	    return resultList;
 	}
 
+	@RequestMapping(value = "getFundApprovalRevisionDetails.htm", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public List<Map<String, Object>> getFundApprovalRevisionDetails(HttpServletRequest req) {
+	    long fundApprovalId = Long.parseLong(req.getParameter("fundApprovalId"));
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+
+	    try {
+	    	List<Object[]> list = fundApprovalService.getFundApprovalRevisionDetails(String.valueOf(fundApprovalId));
+
+	        if (list != null) {
+	            for (Object[] obj : list) {
+	                Map<String, Object> map = new HashMap<>();
+	                map.put("RevisionCount", obj[2]);
+	                map.put("BudgetType", obj[3]);
+	                map.put("BudgetHead", obj[4]);
+	                map.put("InitiatingOfficer", obj[5]); 
+	                map.put("Designation", obj[6]);
+	                map.put("ItemNomenculature", obj[7]);
+	                map.put("EstimatedCost", obj[8]);
+	               
+	                resultList.add(map);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return resultList;
+	}
 	
 	@RequestMapping(value = "PreviewAttachment.htm", method = {RequestMethod.GET} )
 	public void previewAttachment(HttpServletRequest req, HttpServletResponse response) throws Exception {

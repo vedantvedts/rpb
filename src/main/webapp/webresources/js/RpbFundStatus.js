@@ -238,6 +238,65 @@ function generateTableHTML(data) {
          }
      });
 
+	 $.ajax({
+	     url: 'getFundApprovalRevisionDetails.htm',
+	     method: 'GET',
+	     data: { fundApprovalId: fundApprovalId },
+	     success: function(data) {
+	         var container = $("#RevisionHistoryContainer");
+	         container.empty();
+
+	         if (!data || data.length === 0) {
+	             container.html("<div class='alert alert-warning text-center font-weight-bold'>No revision found</div>");
+	             return;
+	         }
+
+	         $.each(data, function(index, rev) {
+	             var revTitle = rev.RevisionCount == 0 ? "Original" : "Revision " + rev.RevisionCount;
+
+	             var tableHtml =
+	                 '<h6 class="text-primary font-weight-bold mt-3">' + revTitle + '</h6>' +
+	                 '<table class="table table-bordered table-striped mt-2">' +
+	                   '<tbody>' +
+
+	                     // Row 1: Budget Type + Budget Head
+	                     '<tr>' +
+	                       '<th style="width:30%">Budget Type</th>' +
+	                       '<td>' + (rev.BudgetType || '-') + '</td>' +
+	                       '<th style="width:30%">Budget Head</th>' +
+	                       '<td>' + (rev.BudgetHead || '-') + '</td>' +
+	                     '</tr>' +
+
+	                     // Row 2: Initiating Officer + Designation
+	                     '<tr>' +
+	                       '<th>Initiating Officer</th>' +
+	                       '<td>' + (rev.InitiatingOfficer || '-') +', '+(rev.Designation || '-') + '</td>' +
+						   '<th>Estimated Cost</th>' +
+   	                       '<td style="color:#00008B;font-weight:600">' + (rev.EstimatedCost || '-') + '</td>' +
+	                     '</tr>' +
+
+	                     // Row 3: Nomenclature + Estimated Cost
+	                     '<tr>' +
+	                       '<th>Nomenclature</th>' +
+	                       '<td colspan="3">' + (rev.ItemNomenculature || '-') + '</td>' +
+	                       
+	                     '</tr>' +
+
+	                   '</tbody>' +
+	                 '</table>';
+
+	             container.append(tableHtml);
+	         });
+	     },
+	     error: function() {
+	         $("#RevisionHistoryContainer").html(
+	             "<div class='alert alert-danger text-center font-weight-bold'>Failed to load revisions</div>"
+	         );
+	     }
+	 });
+
+
+	   
      // Second AJAX call (Attachments list)
      $.ajax({
          url: 'GetFundRequestAttachmentAjax.htm',

@@ -776,19 +776,21 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	
 	
 	@Override
-	public long getRevisionCount(String fundApprovalId) throws Exception{
-		try {
-			Query query=manager.createNativeQuery("SELECT COALESCE(MAX(r.revisionCount), 0) FROM fund_approval r WHERE r.fundApprovalId = :fundApprovalId");
-			query.setParameter("fundApprovalId", fundApprovalId);
-			return (long)query.getSingleResult();
-			
-		}catch (Exception e) {
-			logger.error(new Date() +"Inside DAO getRevisionCount "+ e);
-			e.printStackTrace();
-			return 0;
-		}
-		
+	public Long getRevisionCount(String fundApprovalId) throws Exception {
+	    try {
+	        Query query = manager.createNativeQuery(
+	            "SELECT MAX(r.revisionCount) FROM fund_approved_revision r WHERE r.fundApprovalId = :fundApprovalId"
+	        );
+	        query.setParameter("fundApprovalId", fundApprovalId);
+	        Object result = query.getSingleResult();
+	        return (result != null) ? ((Number) result).longValue() : null;
+	    } catch (Exception e) {
+	        logger.error(new Date() + " Inside DAO getRevisionCount " + e);
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
+
 	
 	@Override
 	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception{
@@ -936,12 +938,13 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			Query query= manager.createNativeQuery("SELECT CASE WHEN f.BudgetType='B' THEN 'General' WHEN f.BudgetType='N' THEN 'Proposed Project' ELSE NULL END AS BudgetType,pi.ProjectShortName, bh.BudgetHeadDescription,\n"
 					+ "e.EmpName AS Initiator_name,ed.Designation, f.ItemNomenclature, \n"
 					+ "(IFNULL(f.Apr,0) + IFNULL(f.May,0) + IFNULL(f.Jun,0) + IFNULL(f.Jul,0) + IFNULL(f.Aug,0) + IFNULL(f.Sep,0) + IFNULL(f.OCT,0) + IFNULL(f.Nov,0) + IFNULL(f.December,0) + \n"
-					+ "IFNULL(f.Jan,0) + IFNULL(f.Feb,0) + IFNULL(f.Mar,0)) AS ItemCost FROM fund_approval f\n"
+					+ "IFNULL(f.Jan,0) + IFNULL(f.Feb,0) + IFNULL(f.Mar,0)) AS ItemCost,dm.DivisionCode FROM fund_approval f\n"
 					+ "LEFT JOIN tblbudgethead bh ON bh.BudgetHeadId = f.BudgetHeadId \n"
 					+ "LEFT JOIN tblbudgetitem bi ON bi.BudgetItemId=f.BudgetItemId\n"
 					+ "LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.InitiatingOfficer \n"
 					+ "LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId\n"
 					+ "LEFT JOIN "+mdmdb+".pfms_initiation PI ON pi.InitiationId = f.InitiationId\n"
+					+ "LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId= f.DivisionId\n"
 					+ " WHERE f.FundApprovalId=:fundApprovalId ");
 
 			query.setParameter("fundApprovalId", fundApprovalId);  
@@ -959,6 +962,28 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
 		try {
 			Query query= manager.createNativeQuery("SELECT r.FundApprovalId, e.EmpId,e.EmpName, ed.Designation, dm.DivisionCode,r.Query , r.ActionDate FROM fund_approval_queries r LEFT JOIN "+mdmdb+".employee e ON e.EmpId = r.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=e.DivisionId WHERE r.FundApprovalId=:fundApprovalId ORDER BY r.ActionDate ASC");
+
+			query.setParameter("fundApprovalId", fundApprovalId);  
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getFundApprovalQueryDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception{
+		try {
+			Query query= manager.createNativeQuery("SELECT f.FundApprovedRevisionId, f.FundApprovalId,f.RevisionCount,CASE WHEN f.BudgetType='B' THEN 'General' WHEN f.BudgetType='N' THEN 'Proposed Project' ELSE NULL END AS BudgetType,bh.BudgetHeadDescription, e.EmpName,ed.Designation, f.ItemNomenclature,\n"
+					+ "					(IFNULL(f.Apr,0) + IFNULL(f.May,0) + IFNULL(f.Jun,0) + IFNULL(f.Jul,0) + IFNULL(f.Aug,0) + IFNULL(f.Sep,0) + IFNULL(f.OCT,0) + IFNULL(f.Nov,0) + IFNULL(f.December,0) + \n"
+					+ "					IFNULL(f.Jan,0) + IFNULL(f.Feb,0) + IFNULL(f.Mar,0)) AS EstimatedCost FROM fund_approved_revision f\n"
+					+ "					LEFT JOIN tblbudgethead bh ON bh.BudgetHeadId = f.BudgetHeadId \n"
+					+ "					LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.InitiatingOfficer \n"
+					+ "					LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId = e.DesigId\n"
+					+ "					WHERE f.FundApprovalId=:fundApprovalId");
 
 			query.setParameter("fundApprovalId", fundApprovalId);  
 			List<Object[]> result = (List<Object[]>)query.getResultList();
