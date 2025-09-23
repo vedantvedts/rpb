@@ -377,16 +377,16 @@ input[name="ItemNomenclature"]::placeholder {
                 <div style="align-items: center;align-content: space-evenly;">
                     <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
                     <span class="approvalstatus">
-                        <input type="radio" id="approvalStatus" <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="A" onchange="this.form.submit();" />
+                        <input type="radio" <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="A" onchange="submitApprovalStatus()" />
                         &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     
-                        <input type="radio" id="approvalStatus" <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="N" onchange="this.form.submit();" />
+                        <input type="radio" <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="N" onchange="submitApprovalStatus()" />
                         &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        <input type="radio" id="approvalStatus" <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
+                        <input type="radio" <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                            name="approvalStatus" value="NA" onchange="submitApprovalStatus()" title="Not Applicable" />
                         &nbsp;<span style="font-weight: 600">Both</span>
                     </span>
                 </div>
@@ -395,6 +395,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
                     <select class="form-control select2" id="selBudget" name="selBudget" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                        <option value="-1" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("-1")){ %> selected="selected" <%} %>>All</option>
                         <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
 						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
                     </select>
@@ -409,22 +410,20 @@ input[name="ItemNomenclature"]::placeholder {
                 </div>
 
                 <!-- Budget Head -->
-                <div style="display: flex; align-items: center;">
+                <div style="display: flex; align-items: center;" class="BudgetHeadDetails">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
                     <select id="selbudgethead" name="budgetHeadId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
                         <option value="">Select BudgetHead</option>
                     </select>
                 </div>
 
-                <%if(ExistingbudgetHeadId != null && Long.valueOf(ExistingbudgetHeadId)!=0 ){ %>
                 <!-- Budget Item -->
-                <div style="display: flex; align-items: center;">
+                <div style="display: flex; align-items: center;" class="BudgetItemDetails">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
                     <select id="selbudgetitem" name="budgetItemId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 400px;">
                         <option value="">Select BudgetItem</option>
                     </select>
                 </div>
-                <%} %>
             </div>
 
             <!-- Second Row: Cost Range and Cost Format -->
@@ -614,6 +613,18 @@ $("#CostFormat,#selbudgetitem").change(function(){
 $('#selBudget,#selProposedProject').change(function(event) {
 	 
 	var budget = '0#General';
+	var budgetType = $("select#selBudget").val();
+	
+	if(budgetType && budgetType == '-1')
+	{
+		$("#selbudgethead").append("<option value='0'>All</option>"); 
+		$("#selbudgetitem").append("<option value='0'>All</option>");
+		var form=$("#RequistionForm");
+		if(form)
+		{
+			form.submit();
+		} 
+	}
 	
 	$.get('GetBudgetHeadList.htm', {
 		ProjectDetails : budget
@@ -621,6 +632,7 @@ $('#selBudget,#selProposedProject').change(function(event) {
 	{
 		$('#selbudgethead').find('option').remove();
 		$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
+		$("#selbudgethead").append("<option selected value='0'>All</option>"); 
 			var result = JSON.parse(responseJson);
 			var budgetHeadId = $("#budgetHeadIdHidden").val();
 			$.each(result, function(key, value) {
@@ -658,9 +670,20 @@ $(document).ready(function(event) {
 			var proposedProjectId=$("#proposedProjectHidden").val();
 			getProposedProjectDetails(proposedProjectId);
 		}
+		else if(budgetDetails == '-1')
+		{
+			$(".ProposedProject").hide();
+			$(".BudgetHeadDetails").hide();
+			$(".BudgetItemDetails").hide();
+		}
 	}
 	
 	var budgetHeadId = $("#budgetHeadIdHidden").val();
+	
+		if(budgetHeadId == 0)
+		{
+			$(".BudgetItemDetails").hide();
+		}
 	
 		$.get('GetBudgetHeadList.htm', {
 				ProjectDetails : budget
@@ -669,7 +692,14 @@ $(document).ready(function(event) {
 				var result = JSON.parse(result);
 				
 				 if(result.length >1){
-						$("#selbudgethead").append("<option  value='0'>All</option>");
+					 if(budgetHeadId == 0){
+						 $("#selbudgethead").append("<option selected value='0'>All</option>");
+					 }
+					 else
+						 {
+						 	$("#selbudgethead").append("<option value='0'>All</option>");
+						 }
+						
 					}  
 				 
 				var html1='';
@@ -825,11 +855,20 @@ function onloadSetBudgetItem(budgetItemId) {
   
   $('#FBEstimateType,#REstimateType').change(function(event) {
 		var form=$("#RequistionForm");
-			if(form)
-			{
-				form.submit();
-			}
-		});
+		if(form)
+		{
+			form.submit();
+		}
+	});
+  
+  function submitApprovalStatus()
+  {
+	var form=$("#RequistionForm");
+	if(form)
+	{
+		form.submit();
+	}
+  }
   
   </script>
   

@@ -649,7 +649,8 @@ if(fundDetails!=null && fundDetails.length > 0)
 									        <b>Remarks :</b><br>
 									        <textarea rows="3" cols="65" maxlength="1000" class="form-control" name="remarks" id="remarksarea"></textarea>
 									    </div>
-									    
+				    			    <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
+									<input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
 									    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 									
@@ -688,7 +689,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 											</button>  &nbsp;
 										<%} %>
 										
-										 <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+											  	<img id="ForwardButton_<%=fundApprovalId%>" onclick="openChatBox(<%=fundApprovalId%>, 'ForwardButton_<%=fundApprovalId%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 									    
 									</form>
                                </div>

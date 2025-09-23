@@ -494,7 +494,8 @@ $(window).resize(resizeCards);
 				<div class="flex-container" style="background-color:#ffedc6;height: auto;width: 99%;margin: auto;box-shadow: 0px 0px 4px #6b797c;">
 			           		<div class="form-inline" style="padding: 10px;">
 			           		
-			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear%>">
+			           		    <input type="hidden" name="Action" value="<%=action %>">
+			           		    <input type="hidden" id="HiddenFinYear" value="<%=FinYear %>">
 			           			<label style="font-size: 19px;"><b><%=BudgetYearType %> :&nbsp;</b></label><span class="spanClass"><%=BudgetYear %></span>
 			           		</div>
 			           		<div class="form-inline" style="padding: 10px;">
@@ -526,7 +527,7 @@ $(window).resize(resizeCards);
 								
 		<form action="CarryForwardDetails.htm" id="CFForm" autocomplete="off">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	        <input type="hidden" name="Action" value="<%=action %>">
+	        <input type="hidden" name="ActionSubmit" value="<%=action %>">
 	         <div class="table-responsive" style="margin-top:0px !important;">
 	         
 	         <%if(action!=null){ %>

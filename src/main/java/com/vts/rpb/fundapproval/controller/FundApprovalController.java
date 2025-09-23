@@ -629,7 +629,7 @@ public class FundApprovalController
 		try
 		{
 			String[] demandItemOrderDetails=req.getParameterValues("DemandItemOrderDetails");
-			String action=req.getParameter("Action");
+			String action=req.getParameter("ActionSubmit");
 			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
 			int stringLength=1;
 			if(demandItemOrderDetails!=null) 
