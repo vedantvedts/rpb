@@ -539,7 +539,8 @@ $(window).resize(resizeCards);
 			         </div>
 			         
 			         <% if(carryForwardList!=null && carryForwardList.size()>0){ %>
-			         <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
+	         
+			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableDemand">
 	                   <thead>
 	                       <tr style="background-color:#ffda96;color:#000000;">
 	                   
@@ -569,10 +570,7 @@ $(window).resize(resizeCards);
 		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
 	                       </tr>
 	                   </thead>
-	                  </table>
-	         
-			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableDemand">
-	                
+	                   
 	                   <tbody>
 	                   <%int sn=0;
 	                   long totalSerialNo=0;
@@ -700,8 +698,9 @@ $(window).resize(resizeCards);
 			        
 			        <% if(carryForwardList!=null && carryForwardList.size()>0){ %>
 			         
-			       <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
-	                   <thead>
+	            <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableSupplyOrder">
+	                  
+	                  <thead>
 	                       <tr style="background-color:#ffda96;color:#000000;">
 	                   
 		                     <th class="text-nowrap" style="width: 3%;">SN</th>
@@ -732,9 +731,6 @@ $(window).resize(resizeCards);
 		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
 	                       </tr>
 	                   </thead>
-	               </table>
-	               
-	            <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableSupplyOrder">
 	                  
 	               <tbody>
 	               
@@ -903,8 +899,9 @@ $(window).resize(resizeCards);
 			         	<span class="box">Existing Item Details</span>
 			         </div>
 			         
-			         <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
-	                   <thead>
+			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableItem">
+	                
+	                <thead>
 	                       <tr style="background-color:#ffda96;color:#000000;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
@@ -931,9 +928,6 @@ $(window).resize(resizeCards);
 		                       <th class="text-nowrap" style="width: 10%;">Item Amount</th>
 	                       </tr>
 	                   </thead>
-	                  </table>
-	         
-			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableItem">
 	                
 	                   <tbody>
 	                   <%int sn=0;

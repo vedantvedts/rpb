@@ -149,6 +149,11 @@
         box-shadow: 0px 1px 15px rgb(157 7 7) !important;
         background: #fff2f2 !important;
     }
+    
+    #RevisionHistoryContainer
+    {
+    	text-align: -webkit-center;
+    }
 
 </style>
 

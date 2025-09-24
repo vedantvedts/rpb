@@ -1069,9 +1069,11 @@ function rupeeFormat(amount) {
 								    	
 									    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
 									    <div class="dropdown-divider logoutdivider"></div>
+									    <a class="dropdown-item" href="ChangeUserPassword.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Password Change </a>  
+										<div class="dropdown-divider logoutdivider"></div>
 										<div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
 									  	<div class="dropdown-divider logoutdivider"></div> 
-										 <a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
+										<a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
 										<div class="dropdown-divider logoutdivider"></div>
 										<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
 									            
