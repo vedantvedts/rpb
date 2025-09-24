@@ -772,6 +772,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	
 	
 	@Override
+	@Transactional
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
 		
 	    if (cogMonth == null || isEmpty(cogMonth.getCarryForwardSerialNo()) || cogMonth.getActionType() == null) {
@@ -787,6 +788,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 
 	    for (int i = 0; i < cogMonth.getCarryForwardSerialNo().length; i++) {
 	        FundApproval fundRequest = buildFundRequest(cogMonth, backDto, estimateType, fbeReYear, action, i);
+	        fundRequest.setBudgetType("B");
 	        fundRequest.setCreatedBy(userName);
 	        fundRequest.setCreatedDate(LocalDateTime.now());
 	        fundRequest.setStatus("N");

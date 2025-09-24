@@ -519,7 +519,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                       		
 					                       		<%} %>
 					                       		
-					                       		<%if(!"N".equalsIgnoreCase(fundStatus) && !"A".equalsIgnoreCase(fundStatus)){ buttonStatus = 1; %>
+					                       		<%if(!"N".equalsIgnoreCase(fundStatus)){ buttonStatus = 1; %>
 
 
 											  	<img id="ForwardButton_<%=data[0]%>" onclick="openChatBox(<%=data[0]%>, 'ForwardButton_<%=data[0]%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">

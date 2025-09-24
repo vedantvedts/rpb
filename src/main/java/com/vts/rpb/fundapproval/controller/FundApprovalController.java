@@ -598,7 +598,8 @@ public class FundApprovalController
 			}
 			
 			fundApprovalDto.setBudgetHeadId(budgetHeadId!=null ? Long.parseLong(budgetHeadId) : 0);			
-			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);			
+			fundApprovalDto.setBudgetItemId(budgetItemId!=null ? Long.parseLong(budgetItemId) : 0);
+			
 			if(fundApprovalDto!=null)
 			{
 				List<Object[]> carryForwardList=fundApprovalService.getFundRequestCarryForwardDetails(fundApprovalDto,labCode,action);
@@ -638,7 +639,6 @@ public class FundApprovalController
 			{
 				stringLength=demandItemOrderDetails.length;
 			}
-			System.out.println("stringLength*****"+stringLength);
 			
 			String[] commitmentPayId = new String[stringLength],commitmentId = new String[stringLength],demandId=new String[stringLength],cfFundRequestId=new String[stringLength],itemNomenclature=new String[stringLength]
 					,selectedFundRequestId=new String[stringLength],ItemAmount=new String[stringLength],aprilMonth=new String[stringLength],
@@ -1705,19 +1705,6 @@ public class FundApprovalController
 					budgetItemId="0";
 				}
 			
-				/*
-				 * 
-				 * if(budgetHeadId==null) { budgetHeadId="0"; }
-				 * 
-				 * if(budgetItemId==null) { budgetItemId="0"; }
-				 * 
-				 * if(fromCost==null) { fromCost="0"; }
-				 * 
-				 * if(toCost==null) { toCost="10000000"; }
-				 * 
-				 * if(status==null) { status="N"; }
-				 */
-				
 				List<Object[]> labInfoList=masterService.GetLabInfo(labCode);
 			    String labName = null;
 			    
@@ -1984,19 +1971,5 @@ public class FundApprovalController
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
 		}
 		
-		
-		@RequestMapping(value = "HeaderHelpAction.htm", method = RequestMethod.GET)
-		public String headerHelpAction(HttpServletRequest req, HttpSession ses, HttpServletResponse res) throws Exception {
-			String UserId = (String) ses.getAttribute("Username");
-			logger.info(new Date() +"Inside HeaderHelpAction.htm "+UserId);		
-			try {
-				
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				logger.error(new Date() +" Inside HeaderHelpAction.htm "+UserId, e);
-			}
-			return "fundapproval/rpbuserguide";
-		}
 		
 }

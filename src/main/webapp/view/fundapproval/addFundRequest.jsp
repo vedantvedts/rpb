@@ -1581,9 +1581,11 @@ $(document).ready(function() {
     var toYear = $("#toYearHidden").val();
     var startDate = null;
     var endDate = null;
+    
+    var today = moment();
 
     if (estimateType == 'R') {
-        startDate = '01-08-' + fromYear;
+        startDate = today;
         endDate = '31-03-' + toYear;
     } else if (estimateType == 'F') {
         startDate = '01-04-' + toYear;
@@ -1592,7 +1594,6 @@ $(document).ready(function() {
     
     var minDate = moment(startDate, 'DD-MM-YYYY');
     var maxDate = moment(endDate, 'DD-MM-YYYY');
-    var today = moment();
     
     var action=$("#actionType").val();
     var initiationDate=$("#initiationDateHidden").val();
