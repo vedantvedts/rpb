@@ -169,6 +169,7 @@ String AmtFormat =(String)request.getAttribute("amountFormat");
 String loginType=(String)session.getAttribute("LoginType");
 String Date=(String)request.getAttribute("dateForCCM");
 Integer DigitValue = (Integer)request.getAttribute("digitValueSel");
+String MemberType =(String)request.getAttribute("MemberType");
 String fromYear =(String)request.getAttribute("fromYear");
 String toYear =(String)request.getAttribute("toYear");
 
@@ -217,6 +218,7 @@ if(fundApprovalDto!=null)
                         required readonly>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
 
+   <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
                 <!-- Cost Format -->
                 <div class="d-flex align-items-center">
                     <label for="CostFormat" class="fw-bold me-2"><b>Cost:</b>&nbsp;&nbsp;&nbsp;</label>
@@ -226,6 +228,7 @@ if(fundApprovalDto!=null)
                         <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
                     </select>
                 </div>
+                <%} %>
             </form>
         </div>
     </div>

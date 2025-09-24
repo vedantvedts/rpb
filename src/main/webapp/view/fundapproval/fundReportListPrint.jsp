@@ -293,16 +293,22 @@ padding : 7px;
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
 		String financialYear = "";
+		String ProposedProject = null;
 		if (requisitionList != null && !requisitionList.isEmpty()) {
 		    Object[] firstItem = requisitionList.get(0);
 		    DivName = firstItem[29] != null ? firstItem[29] : "";
 		    DivCode = firstItem[30] != null ? firstItem[30] : "";
+		    ProposedProject = firstItem[31] != null ? String.valueOf(firstItem[31]) : "";
 		}
 		%>
 		
 								     <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;">
  <span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#19a2af;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span>
-
+ &nbsp;&nbsp;&nbsp;
+<%if(ProposedProject!=null && !ProposedProject.equalsIgnoreCase("")) {%>
+  <span style="font-weight: 600;color:#6a1616;">Proposed Project : </span>
+   <span style="font-weight: 600;color:#19a2af;"><%=ProposedProject%></span> 
+<%} %>
  </div>
 <div class="group2" id="demandDetailsMod">
 <%if(ExistingbudgetHeadId!=null && Long.valueOf(ExistingbudgetHeadId)==0){ %>

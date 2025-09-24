@@ -8,5 +8,5 @@ public interface LoginService
 	
     public List<Object[]> getSubModuleList(String loginType) throws Exception;
     
-    public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId) throws Exception;
+    public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId,String memberType,String loginType) throws Exception;
 }

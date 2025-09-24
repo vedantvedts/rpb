@@ -188,16 +188,20 @@
 				        </thead>
 				        <tbody id="eAttachmentModalBody" style="font-weight: 400;"></tbody>
 				      </table>
+				      <div id="RevisionHistoryContainer"></div>
 				    </div>
 				
-				<div class="col-md-6">
-			<div id="RevisionHistoryContainer"></div>
-            </div>
+				
 				    <!-- Right: File Preview Section -->
 				    <div class="col-md-6" id="previewSection" style="display: none;">
 				      <h5 class="text-primary" style="font-weight: 600;">Preview:&nbsp;&nbsp;<span  style="color:black;">(</span><span id="previewFileName" style="color:black;"></span><span  style="color:black;">)</span></h5>
 				      <iframe id="filePreviewIframe" style="width: 100%; height: 440px; border: 1px solid #ccc;"></iframe>
 				    </div>
+				    
+				    <div class="col-md-6">
+			
+            </div>
+            
 				  </div>
 				</div>
 		    </div>
@@ -516,7 +520,7 @@ function renderChatHeader(details) {
 
     var header = document.createElement("div");
     header.id = "chatHeaderMessage";
-    header.style.textAlign = "center";
+    header.style.textAlign = "left";
     header.style.margin = "10px auto";
     header.style.maxWidth = "90%";
     header.style.background = "rgb(255 252 220)"; //#f1f1f1
@@ -526,7 +530,8 @@ function renderChatHeader(details) {
     header.style.color = "#333";
     header.style.lineHeight = "1.7";
     header.style.boxShadow = "-1px 2px 17px darkgrey";
-
+    header.style.fontWeight = "600";
+    	
     var BudgetType = null;
     if(details.BudgetType =='General'){
     	BudgetType="General";
@@ -535,7 +540,7 @@ function renderChatHeader(details) {
     	BudgetType="Proposed Project - "+ details.ProjectShortName;
     }
     header.innerHTML =
-        "<div style=''><b style='color: #034189;'>Division:</b> <b>" + details.DivisionCode + "</b><br>"+
+        "<div style=''><b style='color: #034189;'>Division: </b>" + details.DivisionCode + "<br>"+
     "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
 
         "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +

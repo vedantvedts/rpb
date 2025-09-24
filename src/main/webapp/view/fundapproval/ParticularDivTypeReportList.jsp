@@ -461,7 +461,7 @@ input[name="ItemNomenclature"]::placeholder {
 <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
   
   <!-- Center-aligned span -->
-  <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;">
+  <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;box-shadow: 2px 2px 9px darkgrey;">
   <span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#160ab7;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span>
 &nbsp;&nbsp;&nbsp;
     &nbsp;&nbsp; <span style="font-weight: 600;color:#6a1616;">
@@ -525,6 +525,7 @@ input[name="ItemNomenclature"]::placeholder {
 	            <%for(Object[] data:requisitionList){ 
 	            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
 	            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
+	            	
 	            %>
 	            
 	            	 <tr>
@@ -536,24 +537,50 @@ input[name="ItemNomenclature"]::placeholder {
                    			<td><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
                   			
 							 <td align="center">
-							    <button type="button" 
-							            class="btn btn-sm btn-outline-primary" 
+							     <button type="button" 
+							            class="btn btn-sm btn-outline-primary tooltip-container" 
 							            onclick="openFundDetailsModal('<%=data[0] %>', this)" 
-							            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
+							            data-tooltip="Fund Details and Attachment(s)" data-position="top">
 							        <i class="fa fa-eye"></i>
 							    </button>
 							</td>
-							 <td>
-                   			 
-                 					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="click to view status" 
-						            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-						            <span  <%if("A".equalsIgnoreCase(fundStatus)) {%> style="color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="color: red;" <%} %>>
-						            <%if("A".equalsIgnoreCase(fundStatus)) {%> Approved <%} else if("N".equalsIgnoreCase(fundStatus)){ %> Pending  <%} else if("F".equalsIgnoreCase(fundStatus)){ %> Forwarded <%} else if("R".equalsIgnoreCase(fundStatus)){ %> Returned <%} %>
-						            </span> 
-						            <i class="fa-solid fa-arrow-up-right-from-square" <%if("A".equalsIgnoreCase(fundStatus)) {%> style="float: right;color: green;" <%} else if("N".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: #8c2303;" <%} else if("F".equalsIgnoreCase(fundStatus)){ %> style="float: right;color: blue;"  <%} else if("R".equalsIgnoreCase(fundStatus)){ %>  style="float: right;color: red;" <%} %>></i>											
-					       </button>
-							       
-					       </td>
+							<td style="width: 200px;" align="center">
+				                   			 
+				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
+												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
+												            
+												            <% String statusColor="",message="NA";
+												            if(fundStatus!=null) { 
+												               if("A".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "green";
+												            	   message = "Approved";
+												               } else if("N".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#8c2303";
+												                   message = "Forward Pending";
+												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[30]!=null && (data[30].toString()).equalsIgnoreCase("N"))) {
+												            	   statusColor = "blue";
+												                   message = "Forwarded";
+					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "red";
+												                   message = "Returned";
+					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#007e68";
+												                   message = "Revoked";
+					            							   } else {
+					            								   message = "Reco Pending";
+												            	   statusColor = "#8c2303";
+												               }
+					            							 }
+												               %>
+												               
+												           		<div class="form-inline">
+												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+												           		</div>
+												             
+											       </button>
+											       
+									       </td>
                    			<td align="center"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
                      	 
 	           		  </tr>

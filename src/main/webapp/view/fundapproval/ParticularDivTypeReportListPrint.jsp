@@ -65,6 +65,7 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
 		String financialYear = "";
+		String ProposedProject = null;
 		if (requisitionList != null && !requisitionList.isEmpty()) {
 			requisitionList.forEach(row -> System.out.println(Arrays.toString(row)));
 		    Object[] firstItem = requisitionList.get(0);
@@ -72,6 +73,7 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		    DivCode = firstItem[27] != null ? firstItem[27] : "";
 		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
 		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
+		    ProposedProject = firstItem[30] != null ? String.valueOf(firstItem[30]) : "";
 		    System.err.print("Divname->"+firstItem[2]);
 		}
 		
@@ -299,7 +301,11 @@ border-collapse: collapse;
      <% } else {%>--
      <%} %>
    </span>
-   <span style="font-weight: 600;color:#19a2af;"><%=financialYear%> </span>
+   <span style="font-weight: 600;color:#19a2af;"><%=financialYear%> </span>&nbsp;&nbsp;&nbsp;&nbsp;
+<%if(ProposedProject!=null && !ProposedProject.equalsIgnoreCase("")) {%>
+   <span style="font-weight: 600;color:#6a1616;">Proposed Project : </span>
+   <span style="font-weight: 600;color:#19a2af;"><%=ProposedProject%></span> 
+<%} %>
  </div>
 						
 						<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">

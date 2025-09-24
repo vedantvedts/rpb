@@ -149,6 +149,8 @@ public class FundApprovalController
    			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId,committeeMember);
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
+   			RequisitionList.stream().forEach(a->System.err.println("Request list->"+Arrays.toString(a)));
+   			
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
    			req.setAttribute("MemberType", committeeMember);
@@ -1245,6 +1247,7 @@ public class FundApprovalController
 	    try {
 	    	List<Object[]> list = fundApprovalService.getFundApprovalRevisionDetails(String.valueOf(fundApprovalId));
 
+	    	System.err.println("Revision list size-"+list.size());
 	        if (list != null) {
 	            for (Object[] obj : list) {
 	                Map<String, Object> map = new HashMap<>();
@@ -1460,11 +1463,14 @@ public class FundApprovalController
 				String DivisionDetails=req.getParameter("DivisionDetails");
 				String estimateType=req.getParameter("EstimateType");
 				String status=req.getParameter("approvalStatus");
+				String budget=req.getParameter("selBudget");
 				String budgetHeadId=req.getParameter("budgetHeadId");
 				String budgetItemId=req.getParameter("budgetItemId");
 				String fromCost=req.getParameter("FromCost");
 				String toCost=req.getParameter("ToCost");
 				String amountFormat = req.getParameter("AmountFormat");
+				String Budget = req.getParameter("selBudget");
+				String proposedProject=req.getParameter("selProposedProject");
 				int RupeeValue=0;
 				
 				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
@@ -1475,6 +1481,11 @@ public class FundApprovalController
 				if(toCost!=null) {
 					toCost=toCost.trim();
 				}
+				
+				if(budget == null) {
+					budget = "-1";  // B - General, N - Proposed Project
+				}
+				
 				
 				
 				if(estimateType==null)
@@ -1564,9 +1575,10 @@ public class FundApprovalController
 				    	RupeeValue = 10000000;
 					}
 				    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
 				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
 				String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+				
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 				req.setAttribute("DivisionList", DivisionList);
@@ -1579,6 +1591,8 @@ public class FundApprovalController
 				req.setAttribute("committeeMember", committeeMember);
 				req.setAttribute("amountFormat", amountFormat);
 				req.setAttribute("MemberType", MemberType);
+				req.setAttribute("ExistingBudget", Budget);
+				req.setAttribute("ExistingProposedProject", proposedProject);
 				
 				//user selected different year Estimate type reset to RE
 				FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -1633,6 +1647,8 @@ public class FundApprovalController
 				String ReOrFbe=null;
 				String ReOrFbeYear=null;
 				String amountFormat = req.getParameter("AmountFormat");
+				String Budget = req.getParameter("selBudget");
+				String proposedProject=req.getParameter("selProposedProject");
 				int RupeeValue=0;
 			
 				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
@@ -1744,7 +1760,8 @@ public class FundApprovalController
 			    	RupeeValue = 10000000;
 				}
 			    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,String.valueOf(RupeeValue));
+				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
+				RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
 				
 				req.setAttribute("RequisitionList", RequisitionList);
 			    req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
@@ -1759,6 +1776,8 @@ public class FundApprovalController
 			    req.setAttribute("labName", labName);
 			    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
 			    req.setAttribute("amountFormat", amountFormat);
+			    req.setAttribute("ExistingBudget", Budget);
+				req.setAttribute("ExistingProposedProject", proposedProject);
 			    
 				if("pdf".equalsIgnoreCase(PrintAction)) {
 					

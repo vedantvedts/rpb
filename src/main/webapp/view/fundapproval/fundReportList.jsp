@@ -294,6 +294,8 @@ input[name="ItemNomenclature"]::placeholder {
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
 		String AmtFormat =(String)request.getAttribute("amountFormat");
 		String MemberType =(String)request.getAttribute("MemberType");
+		String existingbudget =(String)request.getAttribute("ExistingBudget");
+		String existingProposedProject=(String)request.getAttribute("ExistingProposedProject");
 		
 		String committeeMember=null;
 		if(!"A".equalsIgnoreCase(loginType)){
@@ -326,6 +328,7 @@ input[name="ItemNomenclature"]::placeholder {
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
+        <input id="proposedProjectHidden" type="hidden" <%if(existingProposedProject != null ){ %>value="<%=existingProposedProject%>" <%} %>>
 
         <!-- Division + From/To Year Row -->
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 8px; width: 100%;">
@@ -389,7 +392,7 @@ input[name="ItemNomenclature"]::placeholder {
            <div style="align-items: center;">
 			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
 			
-			<span style="border: solid 0.1px;padding: 2px 5px;border-radius: 6px;border-color: darkgray;background-color: white;">
+			<span style="border: solid 0.1px;padding: 5px 9px;border-radius: 6px;border-color: darkgray;background-color: white;">
 			    <input type="radio" id="approvalStatus"
 			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
 			        name="approvalStatus" value="A" onchange="this.form.submit();" />
@@ -397,7 +400,7 @@ input[name="ItemNomenclature"]::placeholder {
 			
 			    <input type="radio" id="approvalStatus"
 			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="N" onchange="this.form.submit();" />
+			        name="approvalStatus" value="F" onchange="this.form.submit();" />
 			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			    
 			    <input type="radio" id="approvalStatus"
@@ -414,12 +417,22 @@ input[name="ItemNomenclature"]::placeholder {
             <!-- Budget -->
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
-                <select class="form-control select2" id="selProject" name="selProject"
+                <select class="form-control select2" id="selBudget" name="selBudget"
                     data-live-search="true" onchange="this.form.submit();" required
                     style="font-size: 12px; min-width: 200px;">
-                    <option value="0#GEN#General" hidden>GEN (General)</option>
+                    <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
+						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
+                    
                 </select>
             </div>
+            
+               <!-- Proposed Project -->
+	               <div style="display: flex; align-items: center;" class="ProposedProject">
+                    <label style="font-weight: bold; margin-right: 8px;">Proposed Project:</label>
+                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                        <option  value="" disabled="disabled">Select Proposed Project</option>
+                    </select>
+                </div>
 
             <!-- Budget Head -->
             <div style="display: flex; align-items: center;">
@@ -448,7 +461,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %><%=ExistingfromCost.trim()%><%} else {%>0<%} %>"  required
                     class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                <span style="margin: 0 10px; font-weight: bold;">--</span>
+                <span style="margin: 0 10px; font-weight: bold;">-</span>
                 <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %><%=ExistingtoCost.trim()%><%} else {%>1000000<%} %>" required
                     class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
                     onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
@@ -519,6 +532,10 @@ input[name="ItemNomenclature"]::placeholder {
 					            
 					            <%for(Object[] data:requisitionList){ 
 					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
+					            	String fundStatus=data[23]==null ? "NaN" : data[23].toString();
+					            	if(fundStatus!=null){
+					            		System.err.println("fnudstatus="+fundStatus);
+					            	}
 					            %>
 					            
 					            	 <tr>
@@ -529,28 +546,49 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			<td class='tableEstimatedCost' align="right" ><%if(data[18]!=null){ %> <%=AmountConversion.amountConvertion(data[18], AmtFormat) %><%}else{ %> - <%} %></td>
 				                   			<td><%if(data[17]!=null){ %> <%=data[17] %><%}else{ %> - <%} %></td>
 				                   			 <td align="center">
-    <button type="button" 
-            class="btn btn-sm btn-outline-primary" 
-            onclick="openAttachmentModal('<%=data[0] %>', this)" 
-            data-toggle="tooltip" data-placement="top" title="Info and Attachments ">
-        <i class="fa fa-eye"></i>
-    </button>
-</td>
-				                   			<td style="width: 120px;">
-				                   			<%if(data[23]!=null && "A".equalsIgnoreCase(data[23].toString())) {%>
-				                   					<button type="button"  class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
+ 												   <button type="button" 
+											            class="btn btn-sm btn-outline-primary tooltip-container" 
+											            onclick="openFundDetailsModal('<%=data[0] %>', this)" 
+											            data-tooltip="Fund Details and Attachment(s)" data-position="top">
+											        <i class="fa fa-eye"></i>
+											  	  </button>
+											</td>
+				                   		<td style="width: 200px;" align="center">
+				                   			 
+				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            <span style="color: #2b8c03;">Approved</span> 
-												            <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color: #2b8c03;" ></i>											
+												            
+												            <% String statusColor="",message="NA";
+												            if(fundStatus!=null) { 
+												               if("A".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "green";
+												            	   message = "Approved";
+												               } else if("N".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#8c2303";
+												                   message = "Forward Pending";
+												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[32].toString()).equalsIgnoreCase("N"))) {
+												            	   statusColor = "blue";
+												                   message = "Forwarded";
+					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "red";
+												                   message = "Returned";
+					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
+												            	   statusColor = "#007e68";
+												                   message = "Revoked";
+					            							   } else {
+					            								   message = "Reco Pending";
+												            	   statusColor = "#8c2303";
+												               }
+					            							 }
+												               %>
+												               
+												           		<div class="form-inline">
+												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+												           		</div>
+												             
 											       </button>
-											       <%} else if(data[23]!=null && "N".equalsIgnoreCase(data[23].toString())){ %>	
-											       	<button type="button" class="btn btn-sm btn-link w-100 btn-status greek-style" data-toggle="tooltip" data-placement="top" title="" 
-												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												             <span style="color: #8c2303;">Pending</span>
-												             <i class="fa-solid fa-arrow-up-right-from-square" style="float: right; color: #8c2303;"></i>
-											
-											       </button>
-											       <%} %>
+											       
 									       </td>
 				                   			<td align="center" ><%if(data[26]!=null && !data[26].toString().isEmpty()){ %> <%=data[26] %><%} else { %>-<%} %></td>
 			                      	 
@@ -608,7 +646,7 @@ input[name="ItemNomenclature"]::placeholder {
 <script src="webresources/js/RpbFundStatus.js"></script>
 <script>
 					
-					$(document).ready(function(event) {
+				/* 	$(document).ready(function(event) {
 						
 								var $project= $("#projectIdHidden").val();
 								//projectIDHiden
@@ -663,7 +701,7 @@ input[name="ItemNomenclature"]::placeholder {
 
         function SetBudgetItem(budgetItemId) {
             // Set BudgetItem
-            var project = $("select#selProject").val(); 
+            var project = $("select#selBudget").val(); 
             var budgetHeadId = $("select#selbudgethead").val();
             var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
             
@@ -692,8 +730,218 @@ input[name="ItemNomenclature"]::placeholder {
                     }
                 });
             });
-        }
+        } */
+        
+        $('#selBudget,#selProposedProject').change(function(event) {
+       	 
+        	var budget = '0#General';
+        	var budgetType = $("select#selBudget").val();
+        	
+        	if(budgetType && budgetType == '-1')
+        	{
+        		$("#selbudgethead").append("<option value='0'>All</option>"); 
+        		$("#selbudgetitem").append("<option value='0'>All</option>");
+        		var form=$("#RequistionForm");
+        		if(form)
+        		{
+        			form.submit();
+        		} 
+        	}
+        	
+        	$.get('GetBudgetHeadList.htm', {
+        		ProjectDetails : budget
+        	}, function(responseJson) 
+        	{
+        		$('#selbudgethead').find('option').remove();
+        		$("#selbudgethead").append("<option disabled value=''>Select Budget Head </option>"); 
+        		$("#selbudgethead").append("<option selected value='0'>All</option>"); 
+        			var result = JSON.parse(responseJson);
+        			var budgetHeadId = $("#budgetHeadIdHidden").val();
+        			$.each(result, function(key, value) {
+        				if(budgetHeadId != null && budgetHeadId == value.budgetHeadId)
+        				{
+        					$("#selbudgethead").append("<option selected value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+        				}
+        				else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+        				{
+        					$("#selbudgethead").append("<option value="+value.budgetHeadId+">"+ value.budgetHeaddescription + "</option>");
+        				}
+        			});
+        			
+        			var budgetItemId = $("#budgetItemIdHidden").val();
+        			onChangeSetBudgetItem(budgetItemId); 
+        	});
+        	
+        });
+
 		
+        $(document).ready(function(event) {
+        	
+        	var budgetDetails = $("select#selBudget").val();
+        	var budget = '0#General';
+        	
+        	if(budgetDetails!=null && budgetDetails!="")
+        	{
+        		if(budgetDetails == 'B')
+        		{
+        			$("#selProposedProject").prop("disabled", false);
+        			$(".ProposedProject").hide();
+        		}
+        		else if(budgetDetails == 'N')
+        		{
+        			$(".ProposedProject").show();
+        			var proposedProjectId=$("#proposedProjectHidden").val();
+        			getProposedProjectDetails(proposedProjectId);
+        		}
+        		else if(budgetDetails == '-1')
+        		{
+        			$(".ProposedProject").hide();
+        			$(".BudgetHeadDetails").hide();
+        			$(".BudgetItemDetails").hide();
+        		}
+        	}
+        	
+        	var budgetHeadId = $("#budgetHeadIdHidden").val();
+        	
+        		if(budgetHeadId == 0)
+        		{
+        			$(".BudgetItemDetails").hide();
+        		}
+        	
+        		$.get('GetBudgetHeadList.htm', {
+        				ProjectDetails : budget
+        			}, function(result) {
+        				$('#selbudgethead').find('option').remove();
+        				var result = JSON.parse(result);
+        				
+        				 if(result.length >1){
+        					 if(budgetHeadId == 0){
+        						 $("#selbudgethead").append("<option selected value='0'>All</option>");
+        					 }
+        					 else
+        						 {
+        						 	$("#selbudgethead").append("<option value='0'>All</option>");
+        						 }
+        						
+        					}  
+        				 
+        				var html1='';
+        				$.each(result, function(key, value) {
+        					 if(value.budgetHeadId== budgetHeadId)
+        					 {
+        						html1+='<option value="'+value.budgetHeadId+'" selected="selected">'+value.budgetHeaddescription+'</option>';
+        					 }
+        					 else if(value.budgetHeadId == '1' || value.budgetHeadId == '2')
+        					{
+        						html1+="<option value="+value.budgetHeadId+">"+  value.budgetHeaddescription+ "</option>";
+        					}
+        				});
+        				
+        				$("#selbudgethead").append(html1);
+        				
+        			var budgetItemId = $("#budgetItemIdHidden").val();
+        			onloadSetBudgetItem(budgetItemId);
+        			    
+        		});
+        		
+        });   
+        function getProposedProjectDetails(proposedProjectId)
+        {
+        	$.get('getProposedProjectDetails.htm', {
+        		
+        	}, function(responseJson) {
+        		$('#selProposedProject').find('option').remove();
+        		$("#selProposedProject").append("<option disabled value=''>Select Proposed Project </option>");
+        			var result = JSON.parse(responseJson);
+        			$.each(result, function(key, value) {
+        				if(proposedProjectId!=null && proposedProjectId==value[0])
+        				{
+        					$("#selProposedProject").append("<option selected value="+value[0]+" >"+ value[3]+"</option>");
+        				}
+        				else
+        				{
+        					$("#selProposedProject").append("<option value="+value[0]+" >"+ value[3]+"</option>");
+        				}
+        				
+        			});
+        	});	
+        }
+        
+
+        $('#selbudgethead').change( function(event) {
+        	onChangeSetBudgetItem('');  
+        });
+
+
+        function onChangeSetBudgetItem(budgetItemId) {
+        	    
+        	    var budget = '0#General';
+        	    var budgetHeadId = $("select#selbudgethead").val();
+        	    var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
+        	    
+        	    //calling controller using ajax for project Drop Down based on projectId
+        	    $.get('SelectbudgetItem.htm', {
+        	        projectid: budget,
+        	        budgetHeadId: budgetHeadId
+        	    }, function(responseJson) {
+        	        $('#selbudgetitem').find('option').remove();
+        	        $("#selbudgetitem").append("<option disabled value=''>Select Budget Item</option>");
+        	        
+        	        var result = JSON.parse(responseJson);
+        	        
+        	        // Add "All" option if HiddenbudgetHeadId is 0 or if there are multiple items
+        	        if (HiddenbudgetHeadId == 0 || result.length > 1) {
+        	            $("#selbudgetitem").append("<option value='0'>All</option>");
+        	        }
+        	        
+        	        $.each(result, function(key, value) {
+        	            if (budgetItemId != null && budgetItemId == value.budgetItemId) 
+        	            {
+        	                $("#selbudgetitem").append("<option selected value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+        	            } else {
+        	                $("#selbudgetitem").append("<option value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+        	            }
+        	        });
+        	        
+        	         var form=$("#RequistionForm");
+        			if(form)
+        			{
+        				form.submit();
+        			} 
+        	    });
+        	}
+        function onloadSetBudgetItem(budgetItemId) {
+        	    
+        	    var budget = '0#General';
+        	    var budgetHeadId = $("select#selbudgethead").val();
+        	    var HiddenbudgetHeadId = $("#budgetHeadIdHidden").val();
+        	    
+        	    //calling controller using ajax for project Drop Down based on projectId
+        	    $.get('SelectbudgetItem.htm', {
+        	        projectid: budget,
+        	        budgetHeadId: budgetHeadId
+        	    }, function(responseJson) {
+        	        $('#selbudgetitem').find('option').remove();
+        	        $("#selbudgetitem").append("<option disabled value=''>Select Budget Item</option>");
+        	        
+        	        var result = JSON.parse(responseJson);
+        	        
+        	        // Add "All" option if HiddenbudgetHeadId is 0 or if there are multiple items
+        	        if (HiddenbudgetHeadId == 0 || result.length > 1) {
+        	            $("#selbudgetitem").append("<option value='0'>All</option>");
+        	        }
+        	        
+        	        $.each(result, function(key, value) {
+        	            if (budgetItemId != null && budgetItemId == value.budgetItemId) 
+        	            {
+        	                $("#selbudgetitem").append("<option selected value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+        	            } else {
+        	                $("#selbudgetitem").append("<option value=" + value.budgetItemId + ">" + value.headOfAccounts + " [" + value.subHead + "]</option>");
+        	            }
+        	        });
+        	        
+        	    });
+        	}
 		
 </script>
 <script type="text/javascript">
@@ -979,6 +1227,7 @@ function openAttachmentModal(fundApprovalId, ec) {
 
     var estimatedCost = $(ec).closest('tr').find('.tableEstimatedCost').text().trim() || '-';
 
+    getRevisionDetails(fundApprovalId);
     // First AJAX call (Details)
     $.ajax({
         url: 'GetAttachmentDetailsAjax.htm',
@@ -1042,6 +1291,66 @@ function openAttachmentModal(fundApprovalId, ec) {
         }
     });
 
+    function getRevisionDetails(fundApprovalId){
+    	 $.ajax({
+    	     url: 'getFundApprovalRevisionDetails.htm',
+    	     method: 'GET',
+    	     data: { fundApprovalId: fundApprovalId },
+    	     success: function(data) {
+    	         var container = $("#RevisionHistoryContainer");
+    	         container.empty();
+
+    	         if (!data || data.length === 0) {
+    	              container.html("<div class=' text-center font-weight-bold' style='color: #856404; background-color: #fff3cd;border-color: #ffeeba;padding: 4px;'>No Revision found</div>");
+    	             return;
+    	         }
+
+    	         $.each(data, function(index, rev) {
+    	             var revTitle = rev.RevisionCount == 0 ? "ORIGINAL" : "REVISION - " + rev.RevisionCount;
+
+    	             // Header background colors only
+    	             var headerColor = rev.RevisionCount == 0 ? "background-color:#69af4c; color:white;"   
+    	                                                      : "background-color:#af9f4c; color:white;"; 
+
+    	             var tableHtml =
+    	                 '<div class="mb-3" style="border:1px solid #ccc; border-radius:4px;">' +
+    	                   '<h6 class="font-weight-bold p-2 m-0" style="text-align: center; ' + headerColor + '">' + revTitle + '</h6>' +
+    	                   '<table class="table table-bordered table-striped m-0 bg-white">' +
+    	                     '<tbody>' +
+
+    	                       '<tr>' +
+    	                         '<th style="width:30%;color:#0080b3;">Budget Type</th>' +
+    	                         '<td style="font-weight:600">' + (rev.BudgetType || '-') + '</td>' +
+    	                         '<th style="width:30%;color:#0080b3;">Budget Head</th>' +
+    	                         '<td style="font-weight:600">' + (rev.BudgetHead || '-') + '</td>' +
+    	                       '</tr>' +
+
+    	                       '<tr>' +
+    	                         '<th style="width:30%;color:#0080b3;">Initiating Officer</th>' +
+    	                         '<td style="font-weight:600">' + (rev.InitiatingOfficer || '-') + ', ' + (rev.Designation || '-') + '</td>' +
+    	                         '<th style="width:30%;color:#0080b3;">Estimated Cost</th>' +
+    	                         '<td style="color:#00008B;font-weight:600">' + rupeeFormat((rev.EstimatedCost).toLocaleString()) + '</td>' +
+    	                       '</tr>' +
+
+    	                       '<tr>' +
+    	                         '<th style="width:30%;color:#0080b3;">Nomenclature</th>' +
+    	                         '<td colspan="3" style="font-weight:600">' + (rev.ItemNomenculature || '-') + '</td>' +
+    	                       '</tr>' +
+
+    	                     '</tbody>' +
+    	                   '</table>' +
+    	                 '</div>';
+
+    	             container.append(tableHtml);
+    	         });
+    	     },
+    	     error: function() {
+    	         $("#RevisionHistoryContainer").html(
+    	             "<div class='alert alert-danger text-center font-weight-bold'>Failed to load revisions</div>"
+    	         );
+    	     }
+    	 });
+    }
     // Second AJAX call (Attachments list)
     $.ajax({
         url: 'GetFundRequestAttachmentAjax.htm',

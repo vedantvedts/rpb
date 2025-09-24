@@ -247,43 +247,45 @@ function generateTableHTML(data) {
 	         container.empty();
 
 	         if (!data || data.length === 0) {
-	             container.html("<div class='alert alert-warning text-center font-weight-bold'>No revision found</div>");
+	              container.html("<div class=' text-center font-weight-bold' style='color: #856404; background-color: #fff3cd;border-color: #ffeeba;padding: 4px;'>No Revision found</div>");
 	             return;
 	         }
 
 	         $.each(data, function(index, rev) {
-	             var revTitle = rev.RevisionCount == 0 ? "Original" : "Revision " + rev.RevisionCount;
+	             var revTitle = rev.RevisionCount == 0 ? "ORIGINAL" : "REVISION - " + rev.RevisionCount;
+
+	             // Header background colors only
+	             var headerColor = rev.RevisionCount == 0 ? "background-color:#69af4c; color:white;"   
+	                                                      : "background-color:#af9f4c; color:white;"; 
 
 	             var tableHtml =
-	                 '<h6 class="text-primary font-weight-bold mt-3">' + revTitle + '</h6>' +
-	                 '<table class="table table-bordered table-striped mt-2">' +
-	                   '<tbody>' +
+	                 '<div class="mb-3" style="border:1px solid #ccc; border-radius:4px;">' +
+	                   '<h6 class="font-weight-bold p-2 m-0" style="text-align: center; ' + headerColor + '">' + revTitle + '</h6>' +
+	                   '<table class="table table-bordered table-striped m-0 bg-white">' +
+	                     '<tbody>' +
 
-	                     // Row 1: Budget Type + Budget Head
-	                     '<tr>' +
-	                       '<th style="width:30%">Budget Type</th>' +
-	                       '<td>' + (rev.BudgetType || '-') + '</td>' +
-	                       '<th style="width:30%">Budget Head</th>' +
-	                       '<td>' + (rev.BudgetHead || '-') + '</td>' +
-	                     '</tr>' +
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Budget Type</th>' +
+	                         '<td style="font-weight:600">' + (rev.BudgetType || '-') + '</td>' +
+	                         '<th style="width:30%;color:#0080b3;">Budget Head</th>' +
+	                         '<td style="font-weight:600">' + (rev.BudgetHead || '-') + '</td>' +
+	                       '</tr>' +
 
-	                     // Row 2: Initiating Officer + Designation
-	                     '<tr>' +
-	                       '<th>Initiating Officer</th>' +
-	                       '<td>' + (rev.InitiatingOfficer || '-') +', '+(rev.Designation || '-') + '</td>' +
-						   '<th>Estimated Cost</th>' +
-   	                       '<td style="color:#00008B;font-weight:600">' + (rev.EstimatedCost || '-') + '</td>' +
-	                     '</tr>' +
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Initiating Officer</th>' +
+	                         '<td style="font-weight:600">' + (rev.InitiatingOfficer || '-') + ', ' + (rev.Designation || '-') + '</td>' +
+	                         '<th style="width:30%;color:#0080b3;">Estimated Cost</th>' +
+	                         '<td style="color:#00008B;font-weight:600">' + rupeeFormat((rev.EstimatedCost).toLocaleString()) + '</td>' +
+	                       '</tr>' +
 
-	                     // Row 3: Nomenclature + Estimated Cost
-	                     '<tr>' +
-	                       '<th>Nomenclature</th>' +
-	                       '<td colspan="3">' + (rev.ItemNomenculature || '-') + '</td>' +
-	                       
-	                     '</tr>' +
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Nomenclature</th>' +
+	                         '<td colspan="3" style="font-weight:600">' + (rev.ItemNomenculature || '-') + '</td>' +
+	                       '</tr>' +
 
-	                   '</tbody>' +
-	                 '</table>';
+	                     '</tbody>' +
+	                   '</table>' +
+	                 '</div>';
 
 	             container.append(tableHtml);
 	         });
@@ -294,6 +296,7 @@ function generateTableHTML(data) {
 	         );
 	     }
 	 });
+
 
 
 	   
@@ -384,5 +387,51 @@ function getAttachementDetailsInline(fundRequestId) {
         }
     });
 }
+
+
+function rupeeFormat(amount) {
+    let result = "", minus = "", decimal = "";
+
+    if (amount !== null && amount !== "-") {
+        if (amount.indexOf('.') !== -1) { // Remove Decimal Value
+            let amountarray = amount.split(".");
+            if (amountarray !== null && amountarray.length > 0) {
+                let number = amountarray[0];
+                let paisa = amountarray[1];
+                decimal = "." + paisa;
+                amount = number;
+            }
+        }
+
+        amount = amount.replace(/,/g, ""); // if value has Comma(,) this function will remove
+        if (amount !== null && Number(amount) < 0) {
+            amount = amount.split("-")[1];
+            minus = "-";
+        }
+
+        let len = amount.length;
+
+        if (len === 1 || len === 2 || len === 3) {
+            result = amount;
+        } else {
+            let a = 0;
+            for (let i = len - 1; i >= 0; i--) {
+                a++;
+                if (a === 1 || a === 2 || a === 3 || a % 2 === 1) {
+                    result = result + amount.charAt(i);
+                } else if (a % 2 === 0) {
+                    result = result + "," + amount.charAt(i);
+                }
+            }
+            let reverse = result.split("").reverse().join("");
+            result = reverse; // reversing the Result
+        }
+    } else {
+        result = "0";
+    }
+
+    return minus + result + decimal;
+}
+
 
  

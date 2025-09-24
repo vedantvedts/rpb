@@ -432,6 +432,9 @@ input[name="ItemNomenclature"]::placeholder {
 					            <%for(Object[] data:requisitionList){ 
 					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
 					            	String fundStatus=data[24]==null ? "NaN" : data[24].toString();
+					            	if(fundStatus!=null){
+					            		System.err.println("fnudstatus="+fundStatus);
+					            	}
 					            %>
 					            
 					            	 <tr>
@@ -446,7 +449,7 @@ input[name="ItemNomenclature"]::placeholder {
 											    <button type="button" 
 											            class="btn btn-sm btn-outline-primary tooltip-container" 
 											            onclick="openFundDetailsModal('<%=data[0] %>', this)" 
-											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
+											            data-tooltip="Fund Details and Attachment(s)" data-position="top">
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>

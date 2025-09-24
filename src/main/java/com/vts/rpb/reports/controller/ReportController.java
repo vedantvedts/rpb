@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class ReportController
 			}
 			
 			if(fromCost==null) {
-				fromCost="1";
+				fromCost="0";
 			}
 			
 			if(toCost==null) {
@@ -124,8 +125,8 @@ public class ReportController
 			 
 			if (amountFormat == null || amountFormat.isEmpty()) {
 			    if ("A".equalsIgnoreCase(loginType) 
-			        || "CH".equalsIgnoreCase(memberType) 
-			        || "CS".equalsIgnoreCase(memberType)) {
+			        || "CS".equalsIgnoreCase(memberType) 
+			        || "CC".equalsIgnoreCase(memberType)) {
 			        amountFormat = "L"; // Lakhs
 			    } else {
 			        amountFormat = "R"; // Rupees (default for normal users)
@@ -184,11 +185,13 @@ public class ReportController
 		try
 		{	
 			String PrintAction= req.getParameter("PrintAction");
-			Long divisionId=Long.valueOf(req.getParameter("divisionId"));
+			String divisionId=req.getParameter("divisionId");
 			String estimateType=req.getParameter("estimateType");
 			String FromYear=req.getParameter("FromYear");
 			String ToYear=req.getParameter("ToYear");
 			String status=req.getParameter("approvalStatus");
+			String budget=req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
 			String budgetHeadId=req.getParameter("budgetHeadId");
 			String budgetItemId=req.getParameter("budgetItemId");
 			String fromCost=req.getParameter("FromCost");
@@ -261,7 +264,7 @@ public class ReportController
 		    	RupeeValue = 10000000;
 			}
 			
-			List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
+			List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(Long.valueOf(divisionId), estimateType,FinYear,loginType,empId, budget, proposedProject, budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 			
 			req.setAttribute("attachList",estimateTypeParticularDivList);
 			req.setAttribute("ExistingbudgetHeadId", budgetHeadId);

@@ -47,9 +47,17 @@ public class LoginController {
 		   String ToYear=req.getParameter("ToYear");
 		   int RupeeValue=0;
 		  
-		    if (amountFormat == null || amountFormat.isEmpty()) {
-		        amountFormat = "L"; // default
-		    }
+		   String memberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+
+			if (amountFormat == null || amountFormat.isEmpty()) {
+			    if ("A".equalsIgnoreCase(loginType) 
+			        || "CS".equalsIgnoreCase(memberType) 
+			        || "CC".equalsIgnoreCase(memberType)) {
+			        amountFormat = "L"; // Lakhs
+			    } else {
+			        amountFormat = "R"; // Rupees (default for normal users)
+			    }
+			}
 		    
 		    if(amountFormat.equalsIgnoreCase("L")) {
 		    	 RupeeValue = 100000;
@@ -73,16 +81,13 @@ public class LoginController {
 				FinYear=FromYear+"-"+ToYear;
 			}
 			
-			String memberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
-			if("CS".equalsIgnoreCase(memberType) || "CC".equalsIgnoreCase(memberType) || "A".equalsIgnoreCase(loginType)) {
+			
+			if("CC".equalsIgnoreCase(memberType) || "A".equalsIgnoreCase(loginType)) {
 				divisionId=-1L;
 			}
 		    
 		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
-		    DivisionList.forEach(row -> System.out.println(Arrays.toString(row)));
-		    System.out.println("----------------------------------------");
-			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId);
-			DivisionDetailsList.forEach(row -> System.out.println(Arrays.toString(row)));
+			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType);
 			
 			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
 			ses.setAttribute("memberLoginType", memberLoginType);
@@ -91,6 +96,7 @@ public class LoginController {
 		   req.setAttribute("amountFormat", amountFormat);
 		   req.setAttribute("fromYear", FromYear);
 		   req.setAttribute("toYear", ToYear);
+		   req.setAttribute("MemberType", memberType);
 		   return "dashboard/homePage";
 	   }
 	   
@@ -104,7 +110,7 @@ public class LoginController {
 			try {  
 				String committeeMember=fundApprovalService.getCommitteeMembersLinked(Long.valueOf(empId));
 				List<Object[]>  result = fundApprovalService.committeeMemberFundApprovalCount(committeeMember,empId);
-				return json.toJson(result);   //return to Ajax Where You Call Hide.htm
+				return json.toJson(result);   
 			    }catch (Exception e){
 				e.printStackTrace();
 			    }
