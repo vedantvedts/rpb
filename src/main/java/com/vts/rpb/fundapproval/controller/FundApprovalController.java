@@ -446,6 +446,7 @@ public class FundApprovalController
 			
 			if(fundApprovalId == null)
 			{
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 				return "redirect:/FundRequest.htm";
 			}
 			
@@ -460,6 +461,15 @@ public class FundApprovalController
 				redir.addAttribute("resultSuccess", "Fund Request Revoked Successfully..&#128077;");
 			}else {
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			}
+			
+			FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+			if(fundApprovalDto != null) 
+			{
+				redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+				redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+				redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+				redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
 			}
 			
 			url="redirect:/FundRequest.htm";
@@ -540,6 +550,7 @@ public class FundApprovalController
 			
 			if(fundApprovalId == null)
 			{
+				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 				return "redirect:/FundRequest.htm";
 			}
 			
@@ -554,16 +565,25 @@ public class FundApprovalController
 			}else {
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 			}
-			
-			url="redirect:/FundRequest.htm";
-			
+			url = "redirect:/FundRequest.htm";
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			logger.error(new Date() + " Inside DeleteFundRequest.htm " + UserName, e);
-			return "static/error";
+			redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+			url = "redirect:/FundRequest.htm";
 		}
+		
+		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+		if(fundApprovalDto != null) 
+		{
+			redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+			redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+			redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+			redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
+		}
+		
 		return url;
 		
 	}
@@ -1432,6 +1452,15 @@ public class FundApprovalController
 				else 
 				{
 					redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
+				}
+				
+				FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+				if(fundApprovalDto != null) 
+				{
+					redir.addAttribute("FromYear", fundApprovalDto.getFromYearBackBtn());
+					redir.addAttribute("ToYear", fundApprovalDto.getToYearBackBtn());
+					redir.addAttribute("DivisionDetails", fundApprovalDto.getDivisionBackBtn());
+					redir.addAttribute("EstimateType", fundApprovalDto.getEstimatedTypeBackBtn());
 				}
 			}
 			catch(Exception e)

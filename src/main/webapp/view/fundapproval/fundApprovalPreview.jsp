@@ -383,6 +383,18 @@ tr:last-of-type th:last-of-type {
      color:red;
     }
     
+    @media (min-width: 1200px) {
+	    .container {
+	        max-width: 1500px;
+	    }
+	}
+	
+	@media (min-width: 768px) {
+	    .container {
+	        max-width: 1500px;
+	    }
+	}
+    
 </style>
 </head>
 <body>

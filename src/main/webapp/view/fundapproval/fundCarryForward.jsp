@@ -542,7 +542,7 @@ $(window).resize(resizeCards);
 	         
 			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableDemand">
 	                   <thead>
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       
@@ -562,7 +562,7 @@ $(window).resize(resizeCards);
 		                       <%} %>
 		                       
 		                       <th class="text-nowrap" style="width: 4%;">Serial No</th>
-		                       <th class="text-nowrap" style="width: 10%;">Demand No</th>
+		                       <th class="text-nowrap" style="width: 10%;">Demand No <br> Demand Date</th>
 		                       <th class="text-nowrap" style="width: 20%;">File No</th>
 		                       <th class="text-nowrap" style="width: 30%;">Item Nomenclature</th>
 		                       <th class="text-nowrap" style="width: 10%;">Demand Cost</th>
@@ -592,7 +592,7 @@ $(window).resize(resizeCards);
 				                     	</td>
 				                     	
 				                     	<td rowspan="1" align="center" style="width: 4%;"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
-				                     	<td align="center" style="width: 10%;"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %></td>
+				                     	<td align="center" style="width: 10%;"><% if(carryForward[17]!=null){ // Demand Number%><%=carryForward[17] %> <%}else{ %> - <%} %><br><% if(carryForward[38]!=null){ // Demand Date %><%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[38].toString()) %> <%}else{ %> - <%} %></td>
 				                     	<td align="left" style="width: 20%;"><% if(carryForward[36]!=null){ // File No%><%=carryForward[36] %> <%}else{ %> - <%} %></td>
 				                     	<td align="left" style="width: 30%;"><% if(carryForward[33]!=null){ // Item Nomenclature%><%=carryForward[33] %> <%}else{ %> - <%} %></td>
 				                     	<td align="right" style="width: 10%;"><% if(carryForward[19]!=null){ // Estimated Cost%><%=AmountConversion.amountConvertion(carryForward[19], "R") %> <%}else{ %> - <%} %></td>
@@ -620,10 +620,10 @@ $(window).resize(resizeCards);
 											             <div class="inputBox"><input required id="MayMonthForward-<%=totalSerialNo %>" name="CFMayMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MayMonthForward')"><span>May</span></div>
 											             <div class="inputBox"><input required id="JuneMonthForward-<%=totalSerialNo %>" name="CFJuneMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JuneMonthForward')"><span>June</span></div>
 											             <div class="inputBox"><input required id="JulyMonthForward-<%=totalSerialNo %>" name="CFJulyMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JulyMonthForward')"><span>July</span></div>
-											             <%} %>
-											             
 											             <div class="inputBox"><input required id="AugustMonthForward-<%=totalSerialNo %>" name="CFAugustMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AugustMonthForward')"><span>August</span></div>
 											             <div class="inputBox"><input required id="SeptemberMonthForward-<%=totalSerialNo %>" name="CFSeptemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','SeptemberMonthForward')"><span>September</span></div>
+											             <%} %>
+											             
 											             <div class="inputBox"><input required id="OctoberMonthForward-<%=totalSerialNo %>" name="CFOctoberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','OctoberMonthForward')"><span>October</span></div>
 											             <div class="inputBox"><input required id="NovemberMonthForward-<%=totalSerialNo %>" name="CFNovemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','NovemberMonthForward')"><span>November</span></div>
 											             <div class="inputBox"><input required id="DecemberMonthForward-<%=totalSerialNo %>" name="CFDecemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','DecemberMonthForward')"><span>December</span></div>
@@ -664,7 +664,7 @@ $(window).resize(resizeCards);
                    <%}else{ %>
                    
                    <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       
@@ -701,7 +701,7 @@ $(window).resize(resizeCards);
 	            <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableSupplyOrder">
 	                  
 	                  <thead>
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                     <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       
@@ -721,7 +721,7 @@ $(window).resize(resizeCards);
 		                       <%} %>
 		                       
 		                       <th class="text-nowrap" style="width: 4%;">Serial No</th>
-		                       <th class="text-nowrap" style="width: 10%;">SO No</th>
+		                       <th class="text-nowrap" style="width: 10%;">SO No <br> SO Date</th>
 		                       <th class="text-nowrap" style="width: 10%;">File No</th>
 		                       <th class="text-nowrap" style="width: 28%;">Item Nomenclature</th>
 		                       <th class="text-nowrap" style="width: 8%;">SO Cost</th>
@@ -764,7 +764,7 @@ $(window).resize(resizeCards);
 		                     	</td>
 		                     	
 		                     	<td align="center" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width: 4%;"><%if(carryForward[1]!=null){ %> <%=carryForward[1] %> <%}else{ %> - <%} %></td>
-		                     	<td align="center" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width:10%;"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %></td>
+		                     	<td align="center" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width:10%;"><% if(carryForward[23]!=null){ // SO Number%><%=carryForward[23] %> <%}else{ %> - <%} %><br><% if(carryForward[24]!=null){ // SO Date %><%=DateTimeFormatUtil.getSqlToRegularDate(carryForward[24].toString()) %> <%}else{ %> - <%} %></td>
 		                     	<td align="left" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width:10%;"><% if(carryForward[22]!=null){ // File No%><%=carryForward[22] %> <%}else{ %> - <%} %></td>
 		                     	<td align="left" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width:28%;"><% if(carryForward[34]!=null){ // Item Nomenclature%><%=carryForward[34] %> <%}else{ %> - <%} %></td>
 		                     	<td align="right" rowspan="<%=commitmentIdCount %>" style="vertical-align: top !important;width:8%;"><% if(carryForward[26]!=null){ // SO Cost%><%=AmountConversion.amountConvertion(carryForward[26], "R") %> <%}else{ %> - <%} %></td>
@@ -798,12 +798,16 @@ $(window).resize(resizeCards);
 										     
 					                       	  <div class="col-md-12" style="margin: auto;padding: 0px;">
 					                       	     <div class="form-inline" style="justify-content:center;margin:auto;width: 85%;background-color: #ffefe3;border-radius: 5px;">
+					                       		 
+					                       		  <%if(estimateType!=null && !estimateType.equalsIgnoreCase("R")){ %>
 					                       		 <div class="inputBox"><input required id="AprilMonthForward-<%=totalSerialNo %>" name="CFAprilMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AprilMonthForward')"><span>April</span></div>
 									             <div class="inputBox"><input required id="MayMonthForward-<%=totalSerialNo %>" name="CFMayMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MayMonthForward')"><span>May</span></div>
 									             <div class="inputBox"><input required id="JuneMonthForward-<%=totalSerialNo %>" name="CFJuneMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JuneMonthForward')"><span>June</span></div>
 									             <div class="inputBox"><input required id="JulyMonthForward-<%=totalSerialNo %>" name="CFJulyMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JulyMonthForward')"><span>July</span></div>
 									             <div class="inputBox"><input required id="AugustMonthForward-<%=totalSerialNo %>" name="CFAugustMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AugustMonthForward')"><span>August</span></div>
 									             <div class="inputBox"><input required id="SeptemberMonthForward-<%=totalSerialNo %>" name="CFSeptemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','SeptemberMonthForward')"><span>September</span></div>
+									             <%} %>
+									             
 									             <div class="inputBox"><input required id="OctoberMonthForward-<%=totalSerialNo %>" name="CFOctoberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','OctoberMonthForward')"><span>October</span></div>
 									             <div class="inputBox"><input required id="NovemberMonthForward-<%=totalSerialNo %>" name="CFNovemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','NovemberMonthForward')"><span>November</span></div>
 									             <div class="inputBox"><input required id="DecemberMonthForward-<%=totalSerialNo %>" name="CFDecemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','DecemberMonthForward')"><span>December</span></div>
@@ -851,7 +855,7 @@ $(window).resize(resizeCards);
                    
                    <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
 	                   <thead>
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                     <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       
@@ -902,7 +906,7 @@ $(window).resize(resizeCards);
 			   		<table class="table table-bordered" style="font-weight: 600;width: 100%;" id="carryForwardTableItem">
 	                
 	                <thead>
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       
@@ -970,12 +974,16 @@ $(window).resize(resizeCards);
 												     
 							                       	  <div class="col-md-12" style="margin: auto;padding: 0px;">
 							                       	     <div class="form-inline" style="justify-content:center;width: 85%;background-color: #ffefe3;border-radius: 5px;margin:auto;">
+							                       		 
+							                       		  <%if(estimateType!=null && !estimateType.equalsIgnoreCase("R")){ %>
 							                       		 <div class="inputBox"><input required id="AprilMonthForward-<%=totalSerialNo %>" name="CFAprilMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AprilMonthForward')"><span>April</span></div>
 											             <div class="inputBox"><input required id="MayMonthForward-<%=totalSerialNo %>" name="CFMayMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','MayMonthForward')"><span>May</span></div>
 											             <div class="inputBox"><input required id="JuneMonthForward-<%=totalSerialNo %>" name="CFJuneMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JuneMonthForward')"><span>June</span></div>
 											             <div class="inputBox"><input required id="JulyMonthForward-<%=totalSerialNo %>" name="CFJulyMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','JulyMonthForward')"><span>July</span></div>
 											             <div class="inputBox"><input required id="AugustMonthForward-<%=totalSerialNo %>" name="CFAugustMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','AugustMonthForward')"><span>August</span></div>
 											             <div class="inputBox"><input required id="SeptemberMonthForward-<%=totalSerialNo %>" name="CFSeptemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','SeptemberMonthForward')"><span>September</span></div>
+											             <%} %>
+											             
 											             <div class="inputBox"><input required id="OctoberMonthForward-<%=totalSerialNo %>" name="CFOctoberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','OctoberMonthForward')"><span>October</span></div>
 											             <div class="inputBox"><input required id="NovemberMonthForward-<%=totalSerialNo %>" name="CFNovemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','NovemberMonthForward')"><span>November</span></div>
 											             <div class="inputBox"><input required id="DecemberMonthForward-<%=totalSerialNo %>" name="CFDecemberMonth-<%=totalSerialNo %>" class="form-control custom-placeholder ForwardAmount-<%=totalSerialNo %>" onkeydown="preventInvalidInput(event)" onkeyup="calculateForwardItemAmount('<%=totalSerialNo %>','DecemberMonthForward')"><span>December</span></div>
@@ -1017,7 +1025,7 @@ $(window).resize(resizeCards);
                  
                  <table class="table table-bordered" style="font-weight: 600;width: 100%;margin-bottom: 0px ! important;">
 	                   <thead>
-	                       <tr style="background-color:#ffda96;color:#000000;">
+	                       <tr style="background-color:#ffda96;color:#0c098d;">
 	                   
 		                       <th class="text-nowrap" style="width: 3%;">SN</th>
 		                       

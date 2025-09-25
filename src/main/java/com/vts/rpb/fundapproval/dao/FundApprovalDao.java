@@ -124,5 +124,15 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 	
 	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
+
+	public void deleteFundRequestAttachmentDetails(long fundApprovalId);
+
+	public void deleteFundRequestQueriesDetails(long fundApprovalId);
+
+	public void deleteFundRequestRevisionDetails(long fundApprovalId);
+
+	public void deleteFundRequestTransDetails(long fundApprovalId);
+
+	public void deleteFundRequestLinkedMembersDetails(long fundApprovalId);
 }
 

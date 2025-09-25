@@ -802,12 +802,12 @@ function revokeConfirm(fundRequestId)
 }
 
 // Delete Fund Request
-function confirmDelete(fundRequestId)
+function confirmDelete(fundRequestId) 
 {
 	var form = $("#RequistionFormAction");
 
 	if (form) {
-	    showConfirm('Are You Sure To Delete The Fund Request..?',
+	    showConfirm('Are You Sure To Delete The Fund Request..?\n This action cannot be undone.',
 	        function (confirmResponse) {
 	            if (confirmResponse) {
 	            	form.attr("action","DeleteFundRequest.htm");
@@ -1243,7 +1243,7 @@ function appendFlowRow(role, index) {
     let $tdInput = $("<td>").css({ padding: "8px", width: "63%" });
 
     let $select = $("<select>").attr({ id: inputId, name: inputName })
-        .addClass("form-control select2")
+        .addClass("form-control select2 forwardDropDown")
         .css({ width: "100%", "font-size": "10px", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" })
         .append('<option value="">Select Employee</option>');
 
@@ -1252,7 +1252,7 @@ function appendFlowRow(role, index) {
 
     $("#fundApprovalForardTable").append($tr);
 
-    $(".select2").select2({ width: "100%" });
+    $(".forwardDropDown").select2({ width: "100%" });
 }
 
 // ---------------- Config and Validation ----------------

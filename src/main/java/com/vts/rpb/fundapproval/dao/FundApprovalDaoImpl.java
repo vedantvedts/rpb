@@ -39,6 +39,14 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,ROUND((f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar),2) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.RequisitionDate,f.status, d.DivisionCode, d.DivisionName,f.InitiationId, f.BudgetType, ini.ProjectShortName, ini.ProjectTitle ,cml.IsApproved, d.DivisionHeadId FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=f.DivisionId LEFT JOIN  "+mdmdb+".pfms_initiation ini ON ini.InitiationId = f.InitiationId LEFT JOIN ibas_fund_members_linked cml ON cml.FundApprovalId = f.FundApprovalId AND cml.MemberType = 'DH' WHERE f.FinYear=:finYear AND f.ProjectId=:projectId AND f.EstimateType=:estimateType AND (CASE WHEN '-1' = :divisionId THEN 1 = 1 ELSE f.DivisionId = :divisionId END) AND (CASE WHEN ('A'=:loginType OR :committeeMember IN ('CS', 'CC')) THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) ORDER BY f.FundApprovalId DESC");
 			
+			System.out.println("finYear****"+finYear);
+			System.out.println("divisionId****"+divisionId);
+			System.out.println("estimateType****"+estimateType);
+			System.out.println("loginType****"+loginType);
+			System.out.println("empId****"+empId);
+			System.out.println("projectId****"+projectId);
+			System.out.println("committeeMember****"+committeeMember);
+			
 			query.setParameter("finYear",finYear);
 			query.setParameter("divisionId",divisionId);
 			query.setParameter("estimateType",estimateType);
@@ -1016,5 +1024,110 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}
 	}
 
+	@Override
+	public void deleteFundRequestAttachmentDetails(long fundApprovalId) {
+		
+		String jpql = "SELECT att FROM fund_approval_attach att WHERE att.FundApprovalId = :fundApprovalId";
+		List<FundApprovalAttach> attachList = manager.createQuery(jpql, FundApprovalAttach.class)
+                .setParameter("fundApprovalId", fundApprovalId)
+                .getResultList();
+		
+		if(attachList != null)
+		{
+			attachList.forEach(row -> {
+				FundApprovalAttach attachModal = manager.find(FundApprovalAttach.class, row.getFundApprovalAttachId());
+
+			    if (attachModal != null) {
+			        manager.remove(attachModal);
+			        manager.flush();
+			    } 
+			});
+		}
+	}
+
+	@Override
+	public void deleteFundRequestQueriesDetails(long fundApprovalId) {
+		String jpql = "SELECT aq FROM fund_approval_queries aq WHERE aq.fundApprovalId = :fundApprovalId";
+		List<FundApprovalQueries> queriesList = manager.createQuery(jpql, FundApprovalQueries.class)
+                .setParameter("fundApprovalId", fundApprovalId)
+                .getResultList();
+		
+		if(queriesList != null)
+		{
+			queriesList.forEach(row -> {
+				FundApprovalQueries queryModal = manager.find(FundApprovalQueries.class, row.getQueryId());
+
+			    if (queryModal != null) {
+			        manager.remove(queryModal);
+			        manager.flush();
+			    } 
+			});
+		}
+		
+	}
+
+	@Override
+	public void deleteFundRequestRevisionDetails(long fundApprovalId) {
+		
+		String jpql = "SELECT fr FROM fund_approved_revision fr WHERE fr.fundApprovalId = :fundApprovalId";
+		List<FundApprovedRevision> revisionList = manager.createQuery(jpql, FundApprovedRevision.class)
+                .setParameter("fundApprovalId", fundApprovalId)
+                .getResultList();
+		
+		if(revisionList != null)
+		{
+			revisionList.forEach(row -> {
+				FundApprovedRevision revisionModal = manager.find(FundApprovedRevision.class, row.getFundApprovedRevisionId());
+
+			    if (revisionModal != null) {
+			        manager.remove(revisionModal);
+			        manager.flush();
+			    } 
+			});
+		}
+	}
+
+	@Override
+	public void deleteFundRequestTransDetails(long fundApprovalId) {
+		
+		String jpql = "SELECT ft FROM ibas_fund_approval_trans ft WHERE ft.fundApprovalId = :fundApprovalId";
+		List<FundApprovalTrans> transList = manager.createQuery(jpql, FundApprovalTrans.class)
+                .setParameter("fundApprovalId", fundApprovalId)
+                .getResultList();
+		
+		if(transList != null)
+		{
+			transList.forEach(row -> {
+				FundApprovalTrans transModal = manager.find(FundApprovalTrans.class, row.getFundApprovalTransId());
+
+			    if (transModal != null) {
+			        manager.remove(transModal);
+			        manager.flush();
+			    } 
+			});
+		}
+		
+	}
+
+	@Override
+	public void deleteFundRequestLinkedMembersDetails(long fundApprovalId) {
+		
+		String jpql = "SELECT fl FROM ibas_fund_members_linked fl WHERE fl.fundApprovalId = :fundApprovalId";
+		List<FundLinkedMembers> linkedList = manager.createQuery(jpql, FundLinkedMembers.class)
+                .setParameter("fundApprovalId", fundApprovalId)
+                .getResultList();
+		
+		if(linkedList != null)
+		{
+			linkedList.forEach(row -> {
+				FundLinkedMembers linkedModal = manager.find(FundLinkedMembers.class, row.getCommitteeMemberLinkedId());
+
+			    if (linkedModal != null) {
+			        manager.remove(linkedModal);
+			        manager.flush();
+			    } 
+			});
+		}
+	}
 
 }

@@ -1094,15 +1094,21 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
+	@Transactional
 	public long deleteFundRequest(FundApprovalDto fundDto) throws Exception {
 		
 		long status = 0;
 		if(fundDto!=null) 
 		{
 			if(fundDto.getFundApprovalId()!=0) {
-				status = fundApprovalDao.deleteFundRequestDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestAttachmentDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestQueriesDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestRevisionDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestTransDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestLinkedMembersDetails(fundDto.getFundApprovalId());
+				status = 1;
 			}
-			
 		}
 		return status;
 	}
