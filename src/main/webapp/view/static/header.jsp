@@ -1013,7 +1013,7 @@ function rupeeFormat(amount) {
 	 <% MainModuleList.forEach(row -> System.out.println(Arrays.toString(row)));
 	 for (Object[] mainModule : MainModuleList) { %>
 									
-	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master")) {%>
+	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master") || (mainModule[1].toString()).equalsIgnoreCase("Reports")) {%>
 		    
 		    <% for (Object[] subModule : SubModuleList) {
 		    if (subModule[0].equals(mainModule[0])) { %>

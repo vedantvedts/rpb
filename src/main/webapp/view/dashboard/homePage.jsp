@@ -280,6 +280,7 @@ if(fundApprovalDto!=null)
                 <input type="hidden" name="estimateType" value="R">
                 <input type="hidden" name="FromYear" value="<%=fromYear%>">
                 <input type="hidden" name="ToYear" value="<%=toYear%>">
+                <input type="hidden" name="AmountFormat" value="<%=AmtFormat%>">
                 
                  <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <!-- <h5 class="card-title" style="color: #2f3247;"><b>RE DETAILS</b></h5> -->
@@ -303,6 +304,7 @@ if(fundApprovalDto!=null)
                 <input type="hidden" name="estimateType" value="F">
                 <input type="hidden" name="fromYear" value="<%=fromYear%>">
                 <input type="hidden" name="toYear" value="<%=toYear%>">
+                <input type="hidden" name="AmountFormat" value="<%=AmtFormat%>">
                 
                 <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <p style="display: flex; justify-content: center; align-items: center; position: relative;">

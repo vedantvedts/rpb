@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.vts.rpb.login.service.LoginService;
 import com.vts.rpb.master.dao.MasterDao;
 import com.vts.rpb.master.modal.Login;
+import com.vts.rpb.master.service.MasterService;
 
 
 @Component
@@ -31,6 +32,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	
 	@Autowired
 	private MasterDao masterDao;
+	
+	@Autowired
+	private MasterService masterService;
 	
 	@Autowired
 	private LoginService authService;
@@ -63,6 +67,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	    	      ses.setAttribute("EmployeeDivisionCode", EmpDetails[5]); 
 	    	      ses.setAttribute("EmployeeDivisionName", EmpDetails[6]); 
 	    	      ses.setAttribute("client_name", labcode);
+	    	      ses.setAttribute("LoginTypeName", masterService.FormRoleName(login.getLoginType()));
 	    			
 	    		validUrl=req.getContextPath() + "/MainDashBoard.htm";
 			}

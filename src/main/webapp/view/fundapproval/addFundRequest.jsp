@@ -382,7 +382,7 @@ tr:last-of-type th:last-of-type {
       String logintype= (String)session.getAttribute("LoginType");
       String empId = ((Long) session.getAttribute("EmployeeId")).toString();
       String rpbMemberType= (String)request.getAttribute("rpbMemberType");
-      String InitiationDate= (String)session.getAttribute("InitiationDate");
+      String PdiDemandDate= (String)session.getAttribute("InitiationDate");
       FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
       
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
@@ -441,7 +441,7 @@ tr:last-of-type th:last-of-type {
 			           			
 			           		}%>
 			           		
-			           		<% String budgetType=null,initiationId=null,initiationDate=null; 
+			           		<% String budgetType=null,initiationId=null,pdiDemandDate=null; 
 			           		if(FundRequestObj!=null){
 			           			if(FundRequestObj[32]!=null){
 			           				budgetType=FundRequestObj[32].toString();
@@ -450,7 +450,7 @@ tr:last-of-type th:last-of-type {
 				           			initiationId=FundRequestObj[33].toString();
 				           		}
 			           			if(FundRequestObj[30]!=null){
-			           				initiationDate=FundRequestObj[30].toString();
+			           				pdiDemandDate=FundRequestObj[30].toString();
 				           		}
 			           		}
 			           			%>
@@ -461,7 +461,7 @@ tr:last-of-type th:last-of-type {
 			           		<input type="hidden" id="budgetTypeHidden" value="<%=budgetType %>">
 			           		<input type="hidden" id="InitiationIdHidden" value="<%=initiationId %>">
 			           		<input type="hidden" id="divisionIdHidden" value="<%=divisionId %>">
-			           		<input type="hidden" id="initiationDateHidden" <%if(initiationDate!=null){ %> value="<%=DateTimeFormatUtil.getSqlToRegularDate(initiationDate) %>" <%} %>>
+			           		<input type="hidden" id="pdiDemandDateHidden" <%if(pdiDemandDate!=null){ %> value="<%=DateTimeFormatUtil.getSqlToRegularDate(pdiDemandDate) %>" <%} %>>
 			           		
 		<div class="card-header page-top">
 		 	<div class="row">
@@ -515,6 +515,9 @@ tr:last-of-type th:last-of-type {
  					<input type="hidden" id="actionType" name="Action" value="Add">
  					<%} %>
  					
+ 	<%if(BudgetYearType!=null && BudgetYearType.equalsIgnoreCase("RE Year")){ %><input type="hidden" name="estimateAction" value="C"><%} %> 
+ 	<%if(BudgetYearType!=null && BudgetYearType.equalsIgnoreCase("FBE Year")){ %><input type="hidden" name="estimateAction" value="L"><%} %>
+ 					
  				<%if(FundRequestObj!=null ){ %>	<input type="hidden" name="fundApprovalId" value="<%=FundRequestObj[0] %>" ><%} %>
  					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
  					<input type="hidden" name="finYear"<%if(FinYear!=null && !FinYear.isEmpty()){ %> value="<%=FinYear %>" <%} %>>
@@ -566,7 +569,7 @@ tr:last-of-type th:last-of-type {
 			         </div>
 			          <div class="form-inline" style="display: flex; flex-direction: column;">
 					    <label style="font-weight: bold;padding-right: 35px;">Probable Date of Initiation&nbsp;<span class="text-danger">*</span></label>
-					    <input style="background-color:white;width: 100%" type="text" readonly id="InitiationDate" name="InitiationDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
+					    <input style="background-color:white;width: 100%" type="text" readonly id="PdiDemandDate" name="PdiDemandDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
 					</div>
 			         
                   </div>
@@ -1596,7 +1599,7 @@ $(document).ready(function() {
     var maxDate = moment(endDate, 'DD-MM-YYYY');
     
     var action=$("#actionType").val();
-    var initiationDate=$("#initiationDateHidden").val();
+    var pdiDemandDate=$("#pdiDemandDateHidden").val();
     var defaultDate;
 
     if (action === 'Add') {
@@ -1608,10 +1611,10 @@ $(document).ready(function() {
             defaultDate = maxDate;
         }
     } else if (action === 'Update') {
-        defaultDate = moment(initiationDate, 'DD-MM-YYYY');
+        defaultDate = moment(pdiDemandDate, 'DD-MM-YYYY');
     }
 
-    $("#InitiationDate").daterangepicker({
+    $("#PdiDemandDate").daterangepicker({
         singleDatePicker: true,
         autoApply: true,
         showDropdowns: true,

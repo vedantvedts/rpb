@@ -50,9 +50,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 	
-	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String  budget,String proposedProject, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
-
 	public long insertFundApprovalTransaction(FundApprovalTrans transaction) throws Exception;
 
 	public long insertLinkedCommitteeMembers(FundLinkedMembers linkedMembers) throws Exception;
@@ -134,5 +131,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public void deleteFundRequestTransDetails(long fundApprovalId);
 
 	public void deleteFundRequestLinkedMembersDetails(long fundApprovalId);
+
 }
 

@@ -18,6 +18,8 @@ public interface MasterDao
 	public List<Object[]> GetLabInfo(String Labcode) throws Exception;
 
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
+	
+	public String getFormRoleName(String loginType) throws Exception;
 
 	public List<Object[]> getOfficersList(String labCode) throws Exception;
 

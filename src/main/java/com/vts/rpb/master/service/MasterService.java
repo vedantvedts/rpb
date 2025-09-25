@@ -12,6 +12,8 @@ public interface MasterService
 	public List<Object[]> GetLabInfo(String LabCode) throws Exception;
 
 	public List<Object[]> getOfficersList(String labCode) throws Exception;
+	
+	public String FormRoleName(String LoginType) throws Exception;
 
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
 

@@ -49,9 +49,6 @@ public interface FundApprovalService
 
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 
-	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String  budget,String proposedProject, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
-	
 	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception;
 	
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
