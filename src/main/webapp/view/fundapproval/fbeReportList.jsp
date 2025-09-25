@@ -309,7 +309,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 <div class="card-header page-top">
 	 	<div class="row">
-	 	  <div class="col-md-3"><h5>Fund Report List</h5></div>
+	 	  <div class="col-md-3"><h5>FBE Report List</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
 	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
@@ -324,7 +324,7 @@ input[name="ItemNomenclature"]::placeholder {
 		
       <div class="page card dashboard-card">
         <div class="" style="width: 100%;background-color: #fff8ed;padding: 5px">
-    <form action="FundReport.htm" method="POST" id="RequistionForm" autocomplete="off">
+    <form action="FbeReport.htm" method="POST" id="RequistionForm" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <input id="budgetHeadIdHidden" type="hidden" <%if(ExistingbudgetHeadId != null){ %>value="<%=ExistingbudgetHeadId%>" <%} %>>
         <input id="budgetItemIdHidden" type="hidden" <%if(ExistingbudgetItemId != null ){ %>value="<%=ExistingbudgetItemId%>" <%} %>>
@@ -368,50 +368,8 @@ input[name="ItemNomenclature"]::placeholder {
             </div>
         </div>
 
-        <!-- Estimate Type and Approval -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 10px;">
-            <!-- RE Radio -->
-            <div style="align-items: center;">
-                <input type="radio" id="REstimateType" checked name="EstimateType" value="R" />
-                <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">
-                    RE <span style="color: red; font-weight: 600;">(<%= reYear %>)</span>
-                </label>
-                <input type="hidden" name="reYear" value="<%= reYear %>">
-            </div>
-
-            <!-- FBE Radio -->
-            <div style="align-items: center;">
-                <input type="radio" id="FBEstimateType" name="EstimateType" value="F" />
-                <label for="FBEstimateType" style="font-weight: bold; margin-left: 5px;">
-                    FBE <span style="color: red; font-weight: 600;">(<%= fbeYear %>)</span>
-                </label>
-                 <input type="hidden" name="fbeYear" value="<%= fbeYear %>">
-            </div>
-
-            <!-- Approved Dropdown -->
-           <div style="align-items: center;">
-			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			<span style="border: solid 0.1px;padding: 5px 9px;border-radius: 6px;border-color: darkgray;background-color: white;">
-			    <input type="radio" id="approvalStatus"
-			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="A" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			    <input type="radio" id="approvalStatus"
-			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="F" onchange="this.form.submit();" />
-			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			    
-			    <input type="radio" id="approvalStatus"
-			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
-			    &nbsp;<span style="font-weight: 600">Both</span>
-			    </span>
-			</div>
-
-        </div>
-
+   
+ 
         <!-- Budget Details -->
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
             <!-- Budget -->
@@ -1445,7 +1403,7 @@ function submitPrintAction(printAction) {
     form.appendChild(actionInput);
     
     // Set the form action and target
-    form.action = 'FundReportPrint.htm';
+    form.action = 'FbeReportPrint.htm';
     form.target = '_blank';
     
     // Submit the form
@@ -1454,7 +1412,7 @@ function submitPrintAction(printAction) {
     // Reset form attributes after submission
     setTimeout(() => {
         form.removeChild(actionInput);
-        form.action = 'FundReport.htm';
+        form.action = 'FbeReportPrint.htm';
         form.target = '_self';
     }, 100);
 }

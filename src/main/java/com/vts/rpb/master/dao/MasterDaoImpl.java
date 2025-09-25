@@ -62,6 +62,17 @@ public class MasterDaoImpl implements MasterDao {
 			return null;
 		}
 	}
+	
+	private static final String LOGINTYPENAME="SELECT logindesc FROM login_type WHERE logintype=:logintype";
+	@Override
+	public String getFormRoleName(String loginType) throws Exception {
+		
+		Query query=manager.createNativeQuery(LOGINTYPENAME);
+		query.setParameter("logintype",loginType);
+		String FormRoleName=(String)query.getSingleResult();
+		
+		return FormRoleName;
+	}
 
 	@Override
 	public AuditStamping getAuditPatchDetails(long auditStampingId) throws Exception {

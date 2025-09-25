@@ -867,6 +867,7 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String finYear=req.getParameter("finYear");
 			String estimatedType=req.getParameter("estimatedType");
+			String estimateAction=req.getParameter("estimateAction");
 			String divisionId=req.getParameter("divisionId");
 			String initiationId=req.getParameter("selProposedProject");
 			String budgetType=req.getParameter("budgetSel");
@@ -874,7 +875,7 @@ public class FundApprovalController
 			String budgetHeadId=req.getParameter("budgetHeadId");
 			String budgetItemId=req.getParameter("budgetItemId");
 			String empId=req.getParameter("OfficerCode");
-			String InitiationDate=req.getParameter("InitiationDate");
+			String PdiDemandDate=req.getParameter("PdiDemandDate");
 			String fbeYear=req.getParameter("fbeYear");
 			String reYear=req.getParameter("reYear");
 			
@@ -919,7 +920,9 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate.trim()));
+				fundApproval.setEstimateAction(estimateAction);
+				fundApproval.setRequisitionDate(LocalDate.now());
+				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 				fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 				fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
@@ -969,7 +972,9 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setRequisitionDate(DateTimeFormatUtil.getRegularToSqlDate(InitiationDate.trim()));
+				fundApproval.setEstimateAction(estimateAction);
+				fundApproval.setRequisitionDate(LocalDate.now());
+				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 				fundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 				fundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
@@ -1017,7 +1022,9 @@ public class FundApprovalController
 				exisitingFundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				exisitingFundApproval.setItemNomenclature(itemNomenclature!=null ? itemNomenclature.trim() : null);
 				exisitingFundApproval.setJustification(justification!=null ? justification.trim() : null);
-				exisitingFundApproval.setRequisitionDate(InitiationDate!=null ? DateTimeFormatUtil.getRegularToSqlDate(InitiationDate.trim()) : null);
+				exisitingFundApproval.setEstimateAction(estimateAction);
+				exisitingFundApproval.setRequisitionDate(LocalDate.now());
+				exisitingFundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				exisitingFundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setApril(apr != null && !apr.trim().isEmpty() ? new BigDecimal(apr.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setMay(may != null && !may.trim().isEmpty() ? new BigDecimal(may.trim()) : BigDecimal.ZERO);
@@ -1445,371 +1452,9 @@ public class FundApprovalController
 			
 		}
 		
-		@RequestMapping(value="FundReport.htm",method = {RequestMethod.GET,RequestMethod.POST})
-		public String FundReport(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
-		{
-			String UserName = (String) ses.getAttribute("Username");
-			logger.info(new Date() + "Inside FundApproval.htm " + UserName);
-			String labCode = (ses.getAttribute("client_name")).toString();
-			String loginType= (String)ses.getAttribute("LoginType");
-			String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
-			String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
-			String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
-			String divisionId = ((Long) ses.getAttribute("Division")).toString();
-			try
-			{
-				String FromYear=req.getParameter("FromYear");
-				String ToYear=req.getParameter("ToYear");
-				String DivisionDetails=req.getParameter("DivisionDetails");
-				String estimateType=req.getParameter("EstimateType");
-				String status=req.getParameter("approvalStatus");
-				String budget=req.getParameter("selBudget");
-				String budgetHeadId=req.getParameter("budgetHeadId");
-				String budgetItemId=req.getParameter("budgetItemId");
-				String fromCost=req.getParameter("FromCost");
-				String toCost=req.getParameter("ToCost");
-				String amountFormat = req.getParameter("AmountFormat");
-				String Budget = req.getParameter("selBudget");
-				String proposedProject=req.getParameter("selProposedProject");
-				int RupeeValue=0;
-				
-				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
-
-				if(fromCost!=null) {
-					fromCost=fromCost.trim();
-				}
-				if(toCost!=null) {
-					toCost=toCost.trim();
-				}
-				
-				if(budget == null) {
-					budget = "-1";  // B - General, N - Proposed Project
-				}
-				
-				
-				
-				if(estimateType==null)
-				{
-					estimateType="R";
-				}
-				
-				String DivisionId=null;
-				if(DivisionDetails!=null)
-				{
-					DivisionId=DivisionDetails.split("#")[0];
-				}
-				else
-				{
-					if(loginType!=null && !loginType.equalsIgnoreCase("A"))
-					{
-						DivisionId=divisionId;
-						DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
-					}
-					else
-					{
-						DivisionId="-1";
-						DivisionDetails="-1#All#All";
-					}
-				}
-				
-				String projectId="0";
-				
-				String FinYear=null;
-				if(FromYear==null || ToYear==null) 
-				{
-					FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
-					FromYear=FinYear.split("-")[0];
-					ToYear=FinYear.split("-")[1];
-				}
-				else
-				{
-					FinYear=FromYear+"-"+ToYear;
-				}
-					
-				
-				
-				
-				
-				if(budgetHeadId==null) {
-					budgetHeadId="0";
-				}
-				
-				if(budgetItemId==null) {
-					budgetItemId="0";
-				}
-				
-				if(fromCost==null) {
-					fromCost="0";
-				}
-				
-				if(toCost==null) {
-					toCost="10000000";
-				}
-				
-				if(status==null) {
-					status="NA";
-				}
-				
-				if(Long.valueOf(budgetHeadId)==0) {
-					budgetItemId="0";
-				}
-				
-				if (amountFormat == null || amountFormat.isEmpty()) {
-				    if ("A".equalsIgnoreCase(loginType) 
-				        || "CS".equalsIgnoreCase(committeeMember) 
-				        || "CC".equalsIgnoreCase(committeeMember)) {
-				        amountFormat = "L"; // Lakhs
-				    } else {
-				        amountFormat = "R"; // Rupees (default for normal users)
-				    }
-				}
-
-				    
-				    if(amountFormat.equalsIgnoreCase("L")) {
-				    	 RupeeValue = 100000;
-				    }
-				    else if (amountFormat.equalsIgnoreCase("R")) {
-				    	RupeeValue = 1;
-					}
-				    else if (amountFormat.equalsIgnoreCase("C")) {
-				    	RupeeValue = 10000000;
-					}
-				    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
-				List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
-				String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
-				
-				
-				req.setAttribute("RequisitionList", RequisitionList);
-				req.setAttribute("DivisionList", DivisionList);
-				req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
-				req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
-				req.setAttribute("ExistingbudgetItemId", budgetItemId);
-				req.setAttribute("ExistingfromCost", fromCost);
-				req.setAttribute("ExistingtoCost", toCost);
-				req.setAttribute("Existingstatus", status);
-				req.setAttribute("committeeMember", committeeMember);
-				req.setAttribute("amountFormat", amountFormat);
-				req.setAttribute("MemberType", MemberType);
-				req.setAttribute("ExistingBudget", Budget);
-				req.setAttribute("ExistingProposedProject", proposedProject);
-				
-				//user selected different year Estimate type reset to RE
-				FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
-				   backDto.setDivisionBackBtn(DivisionDetails);
-				   backDto.setDivisionName(DivisionDetails.split("#")[2]);
-				   backDto.setDivisionCode(DivisionDetails.split("#")[1]);
-				   backDto.setFromYearBackBtn(FinYear.split("-")[0]);
-				   backDto.setToYearBackBtn( FinYear.split("-")[1]);
-				   backDto.setEstimatedTypeBackBtn(estimateType);
-				   backDto.setDivisionId(DivisionId);
-				   backDto.setREYear(FromYear+"-"+ToYear);
-				   backDto.setFBEYear((Long.parseLong(FromYear)+1)+"-"+(Long.parseLong(ToYear)+1));
-				   
-				   ses.setAttribute("FundApprovalAttributes", backDto);
-				
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				logger.error(new Date() + " Inside RequisitionList.htm " + UserName, e);
-				return "static/error";
-			}
-			return "fundapproval/fundReportList";
-			
-		}
+	
 		
-		@RequestMapping(value="FundReportPrint.htm",method = {RequestMethod.GET,RequestMethod.POST})
-		public String FundReportPrint(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
-		{
-			String UserName = (String) ses.getAttribute("Username");
-			logger.info(new Date() + "Inside FundReportPrint.htm " + UserName);
-			String labCode = (ses.getAttribute("client_name")).toString();
-			String loginType= (String)ses.getAttribute("LoginType");
-			String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
-			String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
-			String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
-			String divisionId = ((Long) ses.getAttribute("Division")).toString();
-			try
-			{	
-				String PrintAction= req.getParameter("PrintAction");
-				String FromYear=req.getParameter("FromYear");
-				String ToYear=req.getParameter("ToYear");
-				String DivisionDetails=req.getParameter("DivisionDetails");
-				String estimateType=req.getParameter("EstimateType");
-				String status=req.getParameter("approvalStatus");
-				String budgetHeadId=req.getParameter("budgetHeadId");
-				String budgetItemId=req.getParameter("budgetItemId");
-				String fromCost=req.getParameter("FromCost");
-				String toCost=req.getParameter("ToCost");
-				String fbeYear=req.getParameter("fbeYear");
-				String reYear=req.getParameter("reYear");
-				String ReOrFbe=null;
-				String ReOrFbeYear=null;
-				String amountFormat = req.getParameter("AmountFormat");
-				String Budget = req.getParameter("selBudget");
-				String proposedProject=req.getParameter("selProposedProject");
-				int RupeeValue=0;
-			
-				String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
-				
-				String projectId="0";
-				
-				String FinYear=null;
-				if(FromYear==null || ToYear==null) 
-				{
-					FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
-					FromYear=FinYear.split("-")[0];
-					ToYear=FinYear.split("-")[1];
-				}
-				else
-				{
-					FinYear=FromYear+"-"+ToYear;
-				}
-					
-				
-				
-				if(fromCost!=null) {
-					fromCost=fromCost.trim();
-				}
-				if(toCost!=null) {
-					toCost=toCost.trim();
-				}
-				
-				
-				if(estimateType==null)
-				{
-					estimateType="R";
-				}
-				
-				String DivisionId=null;
-				if(DivisionDetails!=null)
-				{
-					DivisionId=DivisionDetails.split("#")[0];
-				}
-				else
-				{
-					if(loginType!=null && !loginType.equalsIgnoreCase("A"))
-					{
-						DivisionId=divisionId;
-						DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
-					}
-					else
-					{
-						DivisionId="-1";
-						DivisionDetails="-1#All#All";
-					}
-				}
-				
-				if(Long.valueOf(budgetHeadId)==0) {
-					budgetItemId="0";
-				}
-			
-				List<Object[]> labInfoList=masterService.GetLabInfo(labCode);
-			    String labName = null;
-			    
-			    for(Object[] obj : labInfoList) {
-				     labName = String.valueOf(obj[1].toString());
-			    }   
-				
-			    if(labLogo.getLabLogoAsBase64()!=null) {
-
-				       req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
-				    }
-			    
-			    if("R".equalsIgnoreCase(estimateType)) {
-			    	ReOrFbeYear=reYear;
-			    	ReOrFbe="R";
-			    }
-			    else if ("F".equalsIgnoreCase(estimateType)) {
-			    	ReOrFbeYear=fbeYear;
-			    	ReOrFbe="F";
-				}
-			    
-			    if (amountFormat == null || amountFormat.isEmpty()) {
-			        if ("A".equalsIgnoreCase(loginType) 
-			            || "CS".equalsIgnoreCase(committeeMember) 
-			            || "CC".equalsIgnoreCase(committeeMember)) {
-			            amountFormat = "L"; 
-			        } else {
-			            amountFormat = "R"; 
-			        }
-			    }
-
-			    
-			    if(amountFormat.equalsIgnoreCase("L")) {
-			    	 RupeeValue = 100000;
-			    }
-			    else if (amountFormat.equalsIgnoreCase("R")) {
-			    	RupeeValue = 1;
-				}
-			    else if (amountFormat.equalsIgnoreCase("C")) {
-			    	RupeeValue = 10000000;
-				}
-			    
-				List<Object[]> RequisitionList=fundApprovalService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
-				RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
-				
-				req.setAttribute("RequisitionList", RequisitionList);
-			    req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
-			    req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
-			    req.setAttribute("ExistingbudgetItemId", budgetItemId);
-			    req.setAttribute("ExistingfromCost", fromCost);
-			    req.setAttribute("ExistingtoCost", toCost);
-			    req.setAttribute("Existingstatus", status);
-			    req.setAttribute("ReOrFbe", ReOrFbe);
-			    req.setAttribute("ReOrFbeYear", ReOrFbeYear);
-			    req.setAttribute("FinYear", FinYear);
-			    req.setAttribute("labName", labName);
-			    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
-			    req.setAttribute("amountFormat", amountFormat);
-			    req.setAttribute("ExistingBudget", Budget);
-				req.setAttribute("ExistingProposedProject", proposedProject);
-			    
-				if("pdf".equalsIgnoreCase(PrintAction)) {
-					
-					
-					String filename="RPB Fund Report";
-					String path=req.getServletContext().getRealPath("/view/temp");
-			       
-			        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(resp);
-					req.getRequestDispatcher("/view/fundapproval/fundReportListPrint.jsp").forward(req, customResponse);
-					String html = customResponse.getOutput();        
-					
-			        HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf")) ; 
-			        resp.setContentType("application/pdf");
-			        resp.setHeader("Content-disposition","inline;filename="+filename+".pdf");
-			      
-			        File f=new File(path +File.separator+ filename+".pdf");
-			        FileInputStream fis = new FileInputStream(f);
-			        DataOutputStream os = new DataOutputStream(resp.getOutputStream());
-			        resp.setHeader("Content-Length",String.valueOf(f.length()));
-			        byte[] buffer = new byte[1024];
-			        int len = 0;
-			        while ((len = fis.read(buffer)) >= 0) {
-			            os.write(buffer, 0, len);
-			        } 
-			        os.close(); 
-			        fis.close();
-			        Path pathOfFile= Paths.get( path+File.separator+filename+".pdf"); 
-			        Files.delete(pathOfFile);
-				}
-				else if("Excel".equalsIgnoreCase(PrintAction))
-				{
-					return "fundapproval/fundReportListPrint";
-				}
-				
-				
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				logger.error(new Date() + " Inside FundReportPrint.htm " + UserName, e);
-				return "static/error";
-			}
-			return "fundapproval/fundReportListPrint";
-			
-		}
+		
 		
 		@RequestMapping(value = "getRPBApprovalHistoryAjax.htm",method= {RequestMethod.GET,RequestMethod.POST})
 		public @ResponseBody String getRPBApprovalHistoryAjax(HttpServletRequest req,HttpServletResponse resp, HttpSession ses, RedirectAttributes redir)
@@ -1970,6 +1615,8 @@ public class FundApprovalController
 			}         
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
 		}
+		
+		
 		
 		
 }

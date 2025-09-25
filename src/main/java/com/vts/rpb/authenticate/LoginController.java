@@ -109,6 +109,7 @@ public class LoginController {
 			Gson json = new Gson();
 			try {  
 				String committeeMember=fundApprovalService.getCommitteeMembersLinked(Long.valueOf(empId));
+				System.err.println(committeeMember+", "+empId);
 				List<Object[]>  result = fundApprovalService.committeeMemberFundApprovalCount(committeeMember,empId);
 				return json.toJson(result);   
 			    }catch (Exception e){
