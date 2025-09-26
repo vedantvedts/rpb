@@ -336,7 +336,7 @@ input[name="ItemNomenclature"]::placeholder {
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Division:</label>
                 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails"
-                    data-live-search="true" onchange="this.form.submit();" required
+                    data-live-search="true" onchange="formSubmit(this)" required
                     style="font-size: 12px; min-width: 340px;">
                     <% if ( committeeMember!=null && committeeMember.equalsIgnoreCase("CS") || committeeMember!=null && committeeMember.equalsIgnoreCase("CC") || loginType.equalsIgnoreCase("A")) { %>
                         <option value="-1#All#All" <% if (divisionId != null && divisionId.equalsIgnoreCase("-1")) { %> selected <% } %> hidden>All</option>
@@ -395,17 +395,17 @@ input[name="ItemNomenclature"]::placeholder {
 			<span style="border: solid 0.1px;padding: 5px 9px;border-radius: 6px;border-color: darkgray;background-color: white;">
 			    <input type="radio" id="approvalStatus"
 			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="A" onchange="this.form.submit();" />
+			        name="approvalStatus" value="A" onchange="formSubmit()" />
 			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			
 			    <input type="radio" id="approvalStatus"
 			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="F" onchange="this.form.submit();" />
+			        name="approvalStatus" value="F" onchange="formSubmit()" />
 			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			    
 			    <input type="radio" id="approvalStatus"
 			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="NA" onchange="this.form.submit();" title="Not Applicable" />
+			        name="approvalStatus" value="NA" onchange="formSubmit()" title="Not Applicable" />
 			    &nbsp;<span style="font-weight: 600">Both</span>
 			    </span>
 			</div>
@@ -418,7 +418,7 @@ input[name="ItemNomenclature"]::placeholder {
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
                 <select class="form-control select2" id="selBudget" name="selBudget"
-                    data-live-search="true" onchange="this.form.submit();" required
+                    data-live-search="true" onchange="formSubmit()" required
                     style="font-size: 12px; min-width: 200px;">
                     <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
 						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
@@ -438,7 +438,7 @@ input[name="ItemNomenclature"]::placeholder {
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
                 <select id="selbudgethead" name="budgetHeadId" class="form-control select2"
-                    data-live-search="true" onchange="this.form.submit();" required style="font-size: 12px; min-width: 200px;">
+                    data-live-search="true" onchange="formSubmit()" required style="font-size: 12px; min-width: 200px;">
                     <option value="">Select BudgetHead</option>
                 </select>
             </div>
@@ -448,7 +448,7 @@ input[name="ItemNomenclature"]::placeholder {
             <div style="display: flex; align-items: center;">
                 <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
                 <select id="selbudgetitem" name="budgetItemId" class="form-control select2"
-                    data-live-search="true" onchange="this.form.submit();" required
+                    data-live-search="true" onchange="formSubmit()" required
                     style="font-size: 12px; min-width: 200px;">
                     <option value="">Select BudgetItem</option>
                 </select>
@@ -646,6 +646,14 @@ input[name="ItemNomenclature"]::placeholder {
 <script src="webresources/js/RpbFundStatus.js"></script>
 <script>
 					
+					function formSubmit(){
+						this.form.submit();
+					}
+					
+					function formSubmit(el){
+					    el.form.submit();
+					}
+
 				/* 	$(document).ready(function(event) {
 						
 								var $project= $("#projectIdHidden").val();

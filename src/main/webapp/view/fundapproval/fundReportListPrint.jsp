@@ -36,6 +36,7 @@ String FinYear=(String)request.getAttribute("FinYear");
 String ReOrFbeYear=(String)request.getAttribute("ReOrFbeYear");
 String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 String AmtFormat =(String)request.getAttribute("amountFormat");
+String amt =(String)request.getAttribute("amountFormat");
 if(AmtFormat!=null){
 	if("R".equalsIgnoreCase(AmtFormat)){
 		AmountFormat="Rupees";
@@ -211,9 +212,9 @@ padding : 7px;
     }
     @top-center::before {
     <%if("R".equalsIgnoreCase(ReOrFbe)){%>
-        content: "<%=labName %> \A Revised Estimates (RE) for <%=ReOrFbeYear %>  (Build Up / MA)";
+        content: "<%=labName %> \A Revised Estimate (RE) for <%=ReOrFbeYear %>";
         <%} else if("F".equalsIgnoreCase(ReOrFbe)){%>
-        content: "<%=labName %> \A Forecast BudgetEstimates (FBE) for <%=ReOrFbeYear %> (Build Up / MA)";
+        content: "<%=labName %> \A Forecast Budget Estimate (FBE) for <%=ReOrFbeYear %>";
         <%}%>
         white-space: pre-wrap; /* Ensures the line break is applied */
         text-decoration: underline;
@@ -311,153 +312,145 @@ padding : 7px;
 <%} %>
  </div>
 <div class="group2" id="demandDetailsMod">
-<%if(ExistingbudgetHeadId!=null && Long.valueOf(ExistingbudgetHeadId)==0){ %>
-  <table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
+<%-- <%if(ExistingbudgetHeadId!=null && Long.valueOf(ExistingbudgetHeadId)==0){ %> --%>
+<table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
     <thead style="background-color: #d1d1d1; text-align: center;">
         <tr style="background-color: #ffd589;">
             <th>SN</th>
-            <th>Budget Head</th>
             <th>Initiating Officer</th>
             <th>Item Nomenculature</th>
-             <th>Probable Date of Demand</th>
+            <th>Probable Date of Demand</th>
             <th>Estimated Cost</th>
-            <th>Files</th>
+            <th width="10%">Files</th>
             <th>Justification</th>
-            <th>Remarks by Member RPB</th>
+            <th width="15%">Remarks by Member RPB</th>
         </tr>
     </thead>
     <tbody>
         <%
-            int sn = 1;
             BigDecimal grandTotal = new BigDecimal(0);
+            int sn = 1;
 
             if (requisitionList != null && !requisitionList.isEmpty()) {
-                Map<String, Map<String, List<Object[]>>> groupedData = new LinkedHashMap<>();
+                Map<String, List<Object[]>> groupedData = new LinkedHashMap<>();
 
-                // Grouping requisitionList by Budget Head → Budget Item
+                // Grouping requisitionList only by Budget Head
                 for (Object[] data : requisitionList) {
                     String budgetHead = (data[7] != null) ? data[7].toString() : "Uncategorized";
-                    String budgetItem = (data[20] != null) ? data[20].toString() : "Unspecified Item";
-
-                    groupedData.putIfAbsent(budgetHead, new LinkedHashMap<>());
-                    groupedData.get(budgetHead).putIfAbsent(budgetItem, new ArrayList<>());
-                    groupedData.get(budgetHead).get(budgetItem).add(data);
+                    groupedData.putIfAbsent(budgetHead, new ArrayList<>());
+                    groupedData.get(budgetHead).add(data);
                 }
 
-                for (Map.Entry<String, Map<String, List<Object[]>>> headEntry : groupedData.entrySet()) {
+                int totalBudgetHeads = groupedData.size(); // count of budget heads
+
+                for (Map.Entry<String, List<Object[]>> headEntry : groupedData.entrySet()) {
                     String budgetHead = headEntry.getKey();
-                    Map<String, List<Object[]>> itemsByBudgetItem = headEntry.getValue();
-
-                    int totalRowspan = itemsByBudgetItem.values().stream().mapToInt(List::size).sum() + 1;
+                    List<Object[]> items = headEntry.getValue();
                     BigDecimal subTotal = new BigDecimal(0);
-                    boolean budgetHeadShown = false;
+        %>
+        <!-- Budget Head Row -->
+        <tr style="background-color:#ffefd5; font-weight:bold;">
+            <td colspan="8" align="center" style="font-size: 18px"><%= budgetHead %></td>
+        </tr>
 
-                    for (Map.Entry<String, List<Object[]>> itemEntry : itemsByBudgetItem.entrySet()) {
-                        String budgetItem = itemEntry.getKey();
-                        List<Object[]> items = itemEntry.getValue();
-
-                        for (int i = 0; i < items.size(); i++) {
-                            Object[] data = items.get(i);
-                            BigDecimal estimatedCost = (data[18] != null) ? new BigDecimal(data[18].toString()) : new BigDecimal(0);
-                            subTotal = subTotal.add(estimatedCost);
-                            grandTotal =grandTotal.add(estimatedCost);
+        <%
+                    for (Object[] data : items) {
+                        BigDecimal estimatedCost = (data[18] != null) ? new BigDecimal(data[18].toString()) : new BigDecimal(0);
+                        subTotal = subTotal.add(estimatedCost);
+                        grandTotal = grandTotal.add(estimatedCost);
         %>
         <tr>
-            <% if (!budgetHeadShown) { %>
-                <td align="center" rowspan="<%= totalRowspan %>"><%= sn++ %></td>
-                <td rowspan="<%= totalRowspan %>"><%= budgetHead %></td>
-                <% budgetHeadShown = true; %>
-            <% } %>
-            
-            <td><%= budgetItem %><%= (data[21] != null) ? ", " + data[21] : "" %></td>
+            <td align="center"><%= sn++ %>.</td>
+            <td><%= (data[20] != null) ? data[20]+", " : "-" %><%= (data[21] != null) ? data[21] : "-" %></td>
             <td><%= (data[16] != null) ? data[16] : "-" %></td>
             <td align="center"><%= (data[24] != null) ? DateTimeFormatUtil.getSqlToRegularDate(data[24].toString()) : "-" %></td>
             <td align="right" style="color: #00008B;">
                 <%= (data[18] != null) ? AmountConversion.amountConvertion(data[18], "R") : "-" %>
             </td>
-      <td id="Files">
-<%
-    int count = 1;
-    if (data[27] != null && !data[27].toString().isEmpty()) {
-        String[] files = data[27].toString().split("\\|\\|");
+            <td id="Files">
+                <%
+                    int count = 1;
+                    if (data[27] != null && !data[27].toString().isEmpty()) {
+                        String[] files = data[27].toString().split("\\|\\|");
 
-        // Categories in required order
-        String[] categories = {"BQ", "Cost Of Estimate", "Justification"};
+                        // Categories in required order
+                        String[] categories = {"BQ", "Cost Of Estimate", "Justification"};
+                        java.util.Set<String> printed = new java.util.HashSet<>();
 
-        // Track already printed files
-        java.util.Set<String> printed = new java.util.HashSet<>();
+                        // Print files by category
+                        for (String category : categories) {
+                            for (String fileEntry : files) {
+                                String[] parts = fileEntry.split("::");
+                                if (parts.length == 4) {
+                                    String fileName = parts[0];
+                                    String FundApprovalAttachId = parts[3];
 
-        // Print files that belong to defined categories (in order)
-        for (String category : categories) {
-            for (String fileEntry : files) {
-                String[] parts = fileEntry.split("::");
-                if (parts.length == 4) {
-                    String fileName = parts[0];
-                    String originalName = parts[1];
-                    String filePath = parts[2];
-                    String FundApprovalAttachId = parts[3];
+                                    if (fileName.contains(category) && !printed.contains(FundApprovalAttachId)) {
+                                        printed.add(FundApprovalAttachId);
+                %>
+                                        <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                                           target="_blank"
+                                           style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                                           title="Click to preview/download">
+                                           <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                                        </a><br/>
+                <%
+                                    }
+                                }
+                            }
+                        }
 
-                    if (fileName.contains(category) && !printed.contains(FundApprovalAttachId)) {
-                        printed.add(FundApprovalAttachId);
-%>
-                        <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
-                           target="_blank"
-                           style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
-                           title="Click to preview/download">
-                           <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
-                        </a><br/>
-<%
+                        // Print other files
+                        for (String fileEntry : files) {
+                            String[] parts = fileEntry.split("::");
+                            if (parts.length == 4) {
+                                String fileName = parts[0];
+                                String FundApprovalAttachId = parts[3];
+
+                                if (!printed.contains(FundApprovalAttachId)) {
+                                    printed.add(FundApprovalAttachId);
+                %>
+                                    <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                                       target="_blank"
+                                       style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                                       title="Click to preview/download">
+                                       <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                                    </a><br/>
+                <%
+                                }
+                            }
+                        }
+                    } else {
+                %>
+                        -
+                <%
                     }
-                }
-            }
-        }
-
-        // Print files not in predefined categories
-        for (String fileEntry : files) {
-            String[] parts = fileEntry.split("::");
-            if (parts.length == 4) {
-                String fileName = parts[0];
-                String FundApprovalAttachId = parts[3];
-
-                if (!printed.contains(FundApprovalAttachId)) {
-                    printed.add(FundApprovalAttachId);
-%>
-                    <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
-                       target="_blank"
-                       style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
-                       title="Click to preview/download">
-                       <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
-                    </a><br/>
-<%
-                }
-            }
-        }
-    } else {
-%>
-        -
-<%
-    }
-%>
-</td>
-
-
+                %>
+            </td>
             <td><%= (data[17] != null) ? data[17] : "-" %></td>
-            <td align="center" style="font-weight: 200"><%if(data[26]!=null && !data[26].toString().isEmpty()){ %> <%=data[26] %><%} else { %>-<%} %></td>
+            <td align="center" style="font-weight: 200">
+                <%= (data[26] != null && !data[26].toString().isEmpty()) ? data[26] : "-" %>
+            </td>
         </tr>
-        <% 
-                        } // end of one budget item entries
-                    } // end of budget item loop
+        <%
+                    } // end items loop
+        %>
+        <%-- Subtotal only if more than 1 budget head --%>
+        <%
+            if (totalBudgetHeads > 1) {
         %>
         <tr style="font-weight:bold; background-color: #f0f0f0;">
-            <td colspan="3" align="right">Subtotal for <%= budgetHead %></td>
+            <td colspan="4" align="right" style="font-size: 14px">Sub Total</td>
             <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(subTotal, "R") %></td>
             <td colspan="3"></td>
         </tr>
-        <% 
-                } // End budget head loop
+        <%
+            }
+                } // end headEntry loop
         %>
+        <!-- Grand Total Row -->
         <tr style="font-weight:bold; background-color: #ffd589;">
-            <td colspan="5" align="right">Grand Total</td>
+            <td colspan="4" align="right">Grand Total</td>
             <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
             <td colspan="3"></td>
         </tr>
@@ -465,19 +458,19 @@ padding : 7px;
             } else {
         %>
         <tr style="height: 9rem;">
-            <td colspan="10" style="color:red;font-weight: 600" align="center">
-                
-                    No Requisition Found
-                
+            <td colspan="8" style="color:red;font-weight: 600" align="center">
+                No Requisition Found
             </td>
         </tr>
         <%
             }
         %>
     </tbody>
-  </table>
+</table>
+
+<%-- <%} %> --%>
   
-  <%}else{ %>
+  <%-- <%}else{ %>
   
   <table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
     <thead style="background-color: #d1d1d1; text-align: center;">
@@ -599,7 +592,7 @@ padding : 7px;
 					            </tfoot> 
 					            <%} %>
   </table>
-  <%} %>
+  <%} %> --%>
   </div>
 </body>
 <script>

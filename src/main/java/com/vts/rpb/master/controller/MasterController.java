@@ -93,7 +93,7 @@ public class MasterController
 			List<Object[]>getAllOfficersList=null;
 			
 			try {
-				getAllOfficersList=masterService.getAllOfficersList(labCode);
+				getAllOfficersList=masterService.getOfficersListWithoutCommitteeMembers(labCode);
 			}catch (Exception e) {
 				e.printStackTrace();
 			}

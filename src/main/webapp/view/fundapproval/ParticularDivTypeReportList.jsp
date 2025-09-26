@@ -378,15 +378,15 @@ input[name="ItemNomenclature"]::placeholder {
                     <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;
                     <span class="approvalstatus">
                         <input type="radio" <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="A" onchange="submitApprovalStatus()" />
+                            name="approvalStatus" value="A" onchange="formSubmit()" />
                         &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     
                         <input type="radio" <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="N" onchange="submitApprovalStatus()" />
+                            name="approvalStatus" value="N" onchange="formSubmit()" />
                         &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         
                         <input type="radio" <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-                            name="approvalStatus" value="NA" onchange="submitApprovalStatus()" title="Not Applicable" />
+                            name="approvalStatus" value="NA" onchange="formSubmit()" title="Not Applicable" />
                         &nbsp;<span style="font-weight: 600">Both</span>
                     </span>
                 </div>
@@ -394,7 +394,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget -->
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
-                    <select class="form-control select2" id="selBudget" name="selBudget" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                    <select class="form-control select2" id="selBudget" name="selBudget" onchange="formSubmit()" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
                         <option value="-1" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("-1")){ %> selected="selected" <%} %>>All</option>
                         <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
 						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
@@ -404,7 +404,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Proposed Project -->
 	               <div style="display: flex; align-items: center;" class="ProposedProject">
                     <label style="font-weight: bold; margin-right: 8px;">Proposed Project:</label>
-                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" onchange="formSubmit()" required style="font-size: 12px; min-width: 200px;">
                         <option  value="" disabled="disabled">Select Proposed Project</option>
                     </select>
                 </div>
@@ -412,7 +412,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget Head -->
                 <div style="display: flex; align-items: center;" class="BudgetHeadDetails">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Head:</label>
-                    <select id="selbudgethead" name="budgetHeadId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                    <select id="selbudgethead" name="budgetHeadId" class="form-control select2" data-live-search="true" onchange="formSubmit()" required style="font-size: 12px; min-width: 200px;">
                         <option value="">Select BudgetHead</option>
                     </select>
                 </div>
@@ -420,7 +420,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget Item -->
                 <div style="display: flex; align-items: center;" class="BudgetItemDetails">
                     <label style="font-weight: bold; margin-right: 8px;">Budget Item:</label>
-                    <select id="selbudgetitem" name="budgetItemId" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 400px;">
+                    <select id="selbudgetitem" name="budgetItemId" class="form-control select2" data-live-search="true" onchange="formSubmit()" required style="font-size: 12px; min-width: 400px;">
                         <option value="">Select BudgetItem</option>
                     </select>
                 </div>
@@ -432,11 +432,11 @@ input[name="ItemNomenclature"]::placeholder {
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Cost Range:</label>
                     <input type="text" name="FromCost" id="FromCost" value="<%if(ExistingfromCost!=null ){ %><%=ExistingfromCost.trim()%><%} else {%>0<%} %>"  required
-                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;" onchange="formSubmit()"
                         onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <span style="margin: 0 10px; font-weight: bold;">-</span>
                     <input type="text" name="ToCost" id="ToCost" value="<%if(ExistingtoCost!=null ){ %><%=ExistingtoCost.trim()%><%} else {%>1000000<%} %>" required
-                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;"
+                        class="form-control" style="width: 140px; background-color: white;padding-left: 0; padding-right: 0; text-align: center;" onchange="formSubmit()"
                         onblur="if (validateCost()) document.getElementById('RequistionForm').submit();" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 </div>
                 &nbsp;&nbsp;
@@ -444,7 +444,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
                 <div style="display: flex; align-items: center;">
                     <label for="CostFormat" style="font-weight: bold; margin-right: 8px;">Cost:</label>
-                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat">
+                    <select class="form-control select2" style="width: 120px;" name="AmountFormat" id="CostFormat" onchange="formSubmit()">
                         <option value="R" <%if(AmtFormat!=null && "R".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Rupees</option>
                         <option value="L" <%if((AmtFormat==null) || "L".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Lakhs</option>
                         <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
@@ -850,6 +850,15 @@ function onloadSetBudgetItem(budgetItemId) {
 </script>
 
 <script>
+
+function formSubmit(){
+	this.form.submit();
+}
+
+function formSubmit(x){
+    x.form.submit();
+}
+	
    $("#FromYear").datepicker({
 	   format: "yyyy",
 	     viewMode: "years", 

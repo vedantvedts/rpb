@@ -55,6 +55,10 @@ public class MasterServiceImpl implements MasterService
 	}
 
 	@Override
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception{
+		return masterDao.getOfficersListWithoutCommitteeMembers(labCode);
+	}
+	@Override
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
 		return masterDao.getAllEmployeeDetailsByDivisionId(divisionId);
 	}

@@ -18,6 +18,8 @@ public interface MasterService
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
 
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception;
+	
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
 

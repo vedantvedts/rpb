@@ -97,7 +97,7 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                  <td class="no-wrap"style="text-align: center;"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
 				                  <td class="no-wrap" style="text-align: center;"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
 				                  <td align="center">
-				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
+				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>','<%=obj[4]%>','<%=obj[5]%>','<%=obj[1]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
 				                  
 				                  </td>
 				                  
@@ -194,11 +194,12 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
        
 </body>
 <script type="text/javascript">
-function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,CommitteMasterId) {
+function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,CommitteMasterId,EmpName, EmpDesig, EmpId) {
 	$(".comitteeMasterModal").modal('show'); 
 	$(".committeMasterHeading").empty();
 	$(".CommiteeMemberId").empty();
 	
+	console.log(EmpId+', '+EmpName+' ,'+EmpDesig);
 	
 	 // Hide both buttons first
     $("#addBtn").hide();
@@ -208,6 +209,8 @@ function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,Commi
 	
 	if(Action=='Add')
 	{   
+		
+		$("#AllOfficersList").prop("disabled", false);
 		$(".committeMasterHeading").append("Committee Add");
 		
 		EmployeeList('');
@@ -243,21 +246,24 @@ function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,Commi
 	}
 	
 	if(Action=='Edit'){
-	
-		$(".committeMasterHeading").append("Committee Edit");
-		  $("#editBtn").show();  // Show Edit button only
-	    // Set MemberType and refresh Select2
-	    $("#MemberType").val(MemberType).trigger("change");
+		 $("#AllOfficersList").prop("disabled", true);
+		    $(".committeMasterHeading").append("Committee Edit");
+		    $("#editBtn").show();
 
-	    $(".CommiteeMemberId").val(CommitteMasterId);
-		
-		//id--CommitteMasterId
-		$(".CommiteeMemberId").val(CommitteMasterId);
+		    $("#MemberType").val(MemberType).trigger("change");
+		    $(".CommiteeMemberId").val(CommitteMasterId);
 
-        // Populate employee dropdown & select the current employee
-        EmployeeList(EmployeeID);
+		    // Populate employee dropdown & select the current employee
+		    $("#AllOfficersList").empty();
+		    $("#AllOfficersList").append(
+		        "<option value='" + EmpId + "' selected='selected'>" + EmpName + ", " + EmpDesig + "</option>"
+		    );
 
-        // Set dates in input + datepicker
+		    // Now disable after setting value
+		    $("#AllOfficersList").prop("disabled", false);
+
+
+        // Dates
         $("#FromDate").val(FromDate);
         $("#FromDate").data('daterangepicker').setStartDate(FromDate);
         $("#FromDate").data('daterangepicker').setEndDate(FromDate);
@@ -321,29 +327,6 @@ function EmployeeList(OfficerId)
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Date --picker validations
 $(document).ready(function() {
     // Initialize the Date picker
@@ -398,13 +381,6 @@ $("#FromDate").change(function() {
 	    });
 	
 });
-
-
-
-
-
-
-
 
 /* function committeeMAsterModal(Action) {
 	$(".comitteeMasterModal").modal('show'); 
@@ -477,27 +453,6 @@ $("#FromDate").change(function() {
 }
 
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 $(document).ready(function () {

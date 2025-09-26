@@ -240,11 +240,11 @@ if(fundApprovalDto!=null)
                 <button type="submit" class="btn btn-sm">&nbsp;&nbsp;Go&nbsp;&nbsp;</button>
                 </form>  </div> --%>
          
-<div style="text-align: center; margin-bottom: 20px;">
+<div style="text-align: center; margin-bottom: 20px;margin-left: 67px;">
    <span style="font-weight: 700;font-size: 16px;">RE - </span>
-    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
+    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Revised Estimate Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
     <span style="font-weight: 700;font-size: 16px;">FBE - </span>
-    <span style="color: #004a8b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span>
+    <span style="color: rgb(88 79 164); font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Forecast Budget Estimate Fund Request Amount</span>
 </div>
 
 	<div id="noResultMessage" style="display: none; text-align: center; color: red; margin-top: 20px;font-size: 20px;">

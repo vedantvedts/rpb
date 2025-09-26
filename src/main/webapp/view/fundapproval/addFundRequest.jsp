@@ -588,7 +588,7 @@ tr:last-of-type th:last-of-type {
 						    
 						    <div class="form-inline">
 						    
-						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)) {%>
+						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)  || "A".equalsIgnoreCase(logintype)) {%>
 					           <input type="checkbox" class="tooltip-container" id="AllOfficers" name="AllOfficers" data-tooltip="check the box to get all employee(s)" data-position="top">&nbsp;
 					           <%} %>
                        <select name="OfficerCode" id="OfficerCode" class="form-control officerCode select2"

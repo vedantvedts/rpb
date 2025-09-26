@@ -24,6 +24,8 @@ public interface MasterDao
 	public List<Object[]> getOfficersList(String labCode) throws Exception;
 
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception;
+	
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
 

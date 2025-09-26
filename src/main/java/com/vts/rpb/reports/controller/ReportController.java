@@ -266,6 +266,7 @@ public class ReportController
 			}
 			
 			List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(Long.valueOf(divisionId), estimateType,FinYear,loginType,empId, budget, proposedProject, budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
+			estimateTypeParticularDivList.stream().forEach(a->System.err.println("TypeParticularDiv->"+Arrays.toString(a)));
 			
 			req.setAttribute("attachList",estimateTypeParticularDivList);
 			req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
