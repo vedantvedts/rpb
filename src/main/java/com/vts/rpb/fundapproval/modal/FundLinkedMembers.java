@@ -34,7 +34,13 @@ public class FundLinkedMembers {
 	private String memberType;
 
 	@Column(name = "IsApproved", length = 1)
-	private String isApproved;
+	private String isApproved = "N";
+	
+	@Column(name = "IsSkipped", length = 5)
+	private String isSkipped = "N";
+	
+	@Column(name = "SkipReason", length = 5)
+	private String skipReason;
 	
 	@Column(name = "CreatedBy", length = 100)
 	private String  createdBy;

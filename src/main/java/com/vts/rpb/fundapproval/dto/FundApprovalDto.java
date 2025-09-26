@@ -40,6 +40,8 @@ public class FundApprovalDto {
 	private String[] reccEmpId;
 	private String[] membersId;
 	private String[] subjectExpertsId;
+	private String[] skippedStatus;
+	private String[] reasonType;
 	private long secretaryId;
 	private long chairmanId;
 	private String Status;

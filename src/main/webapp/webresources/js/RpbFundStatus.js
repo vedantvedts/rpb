@@ -85,8 +85,17 @@ function previewInformation(fundApprovalId) {
                 var status = statuses[idx] || "N";
 
                 var isApproved = status === "Y";
-                var pendingText = (role === "CC") ? "Approval Pending" : "Recommendation Pending";
-
+                
+                var pendingText = 'Recommendation Pending';
+                if(role === "CC")
+                {
+					pendingText = "Approval Pending";
+				}
+                else if(role === "CS")
+                {
+					pendingText = "Review Pending";
+				}
+				
                 // Map role codes to readable titles
                 var titleMap = {
                     "DH": "Division Head",

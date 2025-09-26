@@ -1125,6 +1125,20 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					{
 						FundLinkedMembers modal = fundApprovalDao.getCommitteeMemberLinkedDetails(linkedMemberId);
 						modal.setEmpId(Long.parseLong(linkedEmpId));
+						
+						String skippStatus = getSkippedStatusDetails(fundDto.getSkippedStatus(), i);
+						
+						modal.setIsSkipped(skippStatus);
+						
+						if(skippStatus.equalsIgnoreCase("Y"))
+						{
+							modal.setSkipReason(getReasonDetails(fundDto.getReasonType(), i));
+						}
+						else
+						{
+							modal.setSkipReason("N");
+						}
+						
 						modal.setModifiedBy(fundDto.getModifiedBy());
 						modal.setModifiedDate(LocalDateTime.now());
 						
@@ -1145,6 +1159,38 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return status;
 	}
 	
+	private String getSkippedStatusDetails(String[] skippedStatus, int serialNo) {
+		
+		if(skippedStatus == null || skippedStatus.length == 0) {
+			return "N";
+		}
+		
+		String status = skippedStatus[serialNo];
+		
+		if(status == null)
+		{
+			status = "N";
+		}
+		
+		return status;
+	}
+	
+	private String getReasonDetails(String[] getReasonDetails, int serialNo) {
+		
+		if(getReasonDetails == null || getReasonDetails.length == 0) {
+			return "N";
+		}
+		
+		String status = getReasonDetails[serialNo];
+		
+		if(status == null)
+		{
+			status = "N";
+		}
+		
+		return status;
+	}
+
 	@Override
 	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
 		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);

@@ -496,6 +496,11 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalIdEdit");
 			String[] memberLinkedId=req.getParameterValues("MemberLinkedIdEdit");
 			String[] reccEmpId=req.getParameterValues("EditReccEmpId");
+			String[] skippedStatus=req.getParameterValues("SkipReccEmpStatus");
+			String[] reasonType=req.getParameterValues("ReasonType");
+			
+			System.out.println("skippedStatus*******"+Arrays.toString(skippedStatus));
+			System.out.println("reasonType*******"+Arrays.toString(reasonType));
 			
 			if(fundApprovalId == null)
 			{
@@ -513,6 +518,8 @@ public class FundApprovalController
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
 			fundDto.setMemberLinkedId(memberLinkedId);
 			fundDto.setReccEmpId(reccEmpId);
+			fundDto.setSkippedStatus(skippedStatus);
+			fundDto.setReasonType(reasonType);
 			fundDto.setCreatedBy(UserName);
 			
 			long status = fundApprovalService.editRecommendationDetails(fundDto,empId); 
