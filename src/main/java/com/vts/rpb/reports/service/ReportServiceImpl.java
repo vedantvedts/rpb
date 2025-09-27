@@ -35,5 +35,14 @@ public class ReportServiceImpl implements ReportService
 		return reportDao.getFbeReportList(finYear, divisionId,loginType, empId, budget,proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, committeeMember,RupeeValue);
 	}
 	
+	@Override
+	public List<Object[]> getNoteSheetFundDetails(String fundApprovalId){
+		return reportDao.getNoteSheetFundDetails(fundApprovalId);
+	}
+	
+	@Override
+	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId){
+		return reportDao.getNoteSheetMemberDetails(fundApprovalId);
+	}
 	
 }

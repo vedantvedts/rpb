@@ -653,7 +653,7 @@ tr:last-of-type th:last-of-type {
 				            <th style="font-weight: 600;">
 				                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
 				            </th>
-				            <th style="font-weight: 600;">Actions</th>
+				            <th style="font-weight: 600;width: 10%;">Actions</th>
 				           
 				            
 				        </tr>
@@ -768,50 +768,52 @@ tr:last-of-type th:last-of-type {
 				    <% } %>
 				</tr>
 				
-				<!-- Dynamic Attachment Row -->
-				<tr class="file-row4">
-				    <% 
-				        List<String> staticNames = Arrays.asList("Budgetary quotes / LPO (Last Purchase Order)", "Cost Of Estimation", "Justification");
-				        Object[] dynamicAttach = null;
-				        
-				        if (AttachList != null) {
-				            for (Object[] attach : AttachList) {
-				                String attachName = (attach[1] != null) ? attach[1].toString() : "";
-				                if (!staticNames.contains(attachName)) {
-				                    dynamicAttach = attach;
-				                    break;
-				                }
-				            }
-				        }
-				        
-				        if (dynamicAttach != null) { 
-				    %>
-				    <td style="width: 54%;">
-				        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
-				    </td>
-				    <td>
-				        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
-				        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
-				        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
-				    </td>
-				    <td>
-				        <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
-				            <i class="fa fa-download" style="color: green;"></i>
-				        </button>
-				        <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
-				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-				        </button>
-				    </td>
-				    <% } else { %>
-				    <td>
-				        <input type="text" class="form-control" name="filename" value="Others">
-				    </td>
-				    <td>
-				        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-				    </td>
-				    
-				    <% } %>
-				</tr>
+				
+	 <tr class="file-row4">
+        <%
+           
+            List<String> staticNames = Arrays.asList("BQs / LPO", "Cost Estimation", "Justification");
+            Object[] dynamicAttach = null;
+
+            if (AttachList != null) {
+                for (Object obj : AttachList) {
+                    Object[] attach = (Object[]) obj;
+                    String attachName = (attach[1] != null) ? attach[1].toString().trim() : "";
+                    
+                    if (!attachName.isEmpty() && !staticNames.contains(attachName)) {
+                        dynamicAttach = attach;
+                        break;
+                    }
+                }
+            }
+            
+            if (dynamicAttach != null) { 
+        %>
+        <td style="width: 54%;">
+            <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
+        </td>
+        <td>
+            <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+            <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
+        </td>
+        <td>
+            <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
+                <i class="fa fa-download" style="color: green;"></i>
+            </button>
+            <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
+                <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+            </button>
+        </td>
+        <% } else { %>
+        <td>
+            <input type="text" class="form-control" name="filename" value="Others">
+        </td>
+        <td>
+            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+        </td>
+        <% } %>
+    </tr>
 				
 				    </tbody>
 				</table>

@@ -11,4 +11,8 @@ public interface ReportDao
 	
 	public List<Object[]> getFbeReportList(String finYear, String divisionId, String loginType,String empId, String  budget,String proposedProject, String budgetHeadId, String budgetItemId,
 			String fromCost, String toCost,String committeeMember,String RupeeValue)  throws Exception;
+	
+	public List<Object[]> getNoteSheetFundDetails(String fundApprovalId);
+	
+	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId);
 }

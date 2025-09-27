@@ -1059,7 +1059,7 @@ function rupeeFormat(amount) {
            style="font-weight:700; color:white;font-size: 16px;">
             Reports
         </a>
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="reportsDropdown" style="background-color:#5b7878; min-width: 165px; max-width: 250px;"> <!-- c5be2d -->
+        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="reportsDropdown" style="background-color:white; min-width: 165px; max-width: 250px;"> <!-- c5be2d -->
             <% for (Object[] mainModule : MainModuleList) {
                    for (Object[] subModule : SubModuleList) {
                        if (subModule[0].equals(mainModule[0])) {
@@ -1069,7 +1069,7 @@ function rupeeFormat(amount) {
                 <a class="dropdown-item subModule  hovercolorsub2 btn btn-sm" href="<%=subModule[1]%>" style="font-weight:700; color:white;">
                     <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
                     &nbsp;
-		                <span style="font-weight: 700; color: white; font-size: 15px;">
+		                <span style="font-weight: 700; color: black; font-size: 15px;">
                    <%=subModule[2] %>
                     </span>
                 </a>

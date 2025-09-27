@@ -71,9 +71,10 @@ public class MasterController
 	   		logger.info(new Date() + "Inside CommitteMaster.htm " + UserName);
 	   		try
 	   		{
-	   			
+	   			String todayDate=DateTimeFormatUtil.getTodayDateInRegularFormat();
+	   			System.err.println("Todat date->"+todayDate);
 	   			req.setAttribute("CommitteMaster", masterService.CommitteeMasterList());
-	   			
+	   			req.setAttribute("todayDate", todayDate);
 	   			
 	   		}catch(Exception e) {
 	   			e.printStackTrace();

@@ -418,7 +418,7 @@ input[name="ItemNomenclature"]::placeholder {
 					                    <th>Justification</th>
 					                    <th>View</th>
 					                    <th>Status</th>
-					                    <th class="text-nowrap" style="width: 10%;">Action</th>
+					                    <th class="text-nowrap" style="width: 191.031px">Action</th>
 					                </tr>
 					            </thead>
 					            <tbody>
@@ -525,6 +525,13 @@ input[name="ItemNomenclature"]::placeholder {
 											  	<img id="ForwardButton_<%=data[0]%>" onclick="openChatBox(<%=data[0]%>, 'ForwardButton_<%=data[0]%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 											  	
 											  	<%} %>
+											  	
+											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
+					                       		
+						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/notesheet.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+					                       		
+					                       		<%}%>
+											  	
 
 
 											    
@@ -1592,6 +1599,10 @@ function getProposedProjectDetails(proposedProjectId)
 				}
 			});
 	});	
+}
+
+function noteSheet(fundApprovalId){
+	
 }
 
 </script>

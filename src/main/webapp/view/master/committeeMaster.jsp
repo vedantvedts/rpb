@@ -1,3 +1,4 @@
+<%@page import="java.util.Date"%>
 <%@page import="com.vts.rpb.utils.DateTimeFormatUtil"%>
 <%@page import="java.util.List"%>
 
@@ -12,6 +13,7 @@
 <title>Committee Master List</title>
 <%
 List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaster");
+String currentDate=(String)request.getAttribute("todayDate");
 %>
 <style type="text/css">
 #addBtn, #editBtn {
@@ -76,6 +78,22 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 			                        int a=1;
 			                        if(CommitteMaster!=null && CommitteMaster.size()>0){
 				                	   for(Object[]obj:CommitteMaster){
+				                		   
+				                		    String currentDateStr = (String) request.getAttribute("todayDate");
+				                		    String validToStr = (obj[3] != null) ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : null;
+
+				                		    String color = "black"; // default
+
+				                		    if (currentDateStr != null && validToStr != null) {
+				                		        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy"); 
+				                		        Date currentDateObj = sdf.parse(currentDateStr);
+				                		        Date validToObj = sdf.parse(validToStr);
+
+				                		        if (!currentDateObj.before(validToObj)) { 
+				                		            
+				                		            color = "red";
+				                		        }
+				                		    }
 				                	   %>
 				                  <tr>
 				                  
@@ -94,8 +112,8 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                 
 				                 <%}else{ %>--<%} %></td>
 				                  <td class="no-wrap"><%=obj[4] %><%=','%> <%=obj[5] %></td>
-				                  <td class="no-wrap"style="text-align: center;"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
-				                  <td class="no-wrap" style="text-align: center;"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
+				                  <td class="no-wrap"style="text-align: center;color: <%= color%>"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
+				                  <td class="no-wrap" style="text-align: center;color: <%= color%>"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
 				                  <td align="center">
 				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>','<%=obj[4]%>','<%=obj[5]%>','<%=obj[1]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
 				                  

@@ -158,5 +158,36 @@ public class ReportDaoImpl implements ReportDao
 		}
 	}
 	
+	@Override
+	public List<Object[]> getNoteSheetFundDetails(String fundApprovalId){
+		 try {
+		        Query query = manager.createNativeQuery("SELECT f.FundApprovalId, CASE WHEN f.EstimateType='R' THEN 'RE' WHEN  f.EstimateType='F' THEN 'FBE' END AS EstimateType ,f.DivisionId,f.FinYear,f.REFBEYear,h.BudgetHeadDescription,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.ItemNomenclature,f.Justification,ROUND((f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar),2) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.PDIDemandDate, d.DivisionName,d.DivisionCode, f.InitiationId, f.BudgetType, ini.ProjectShortName, ini.ProjectTitle, d.DivisionHeadId FROM fund_approval f LEFT JOIN "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=f.DivisionId LEFT JOIN "+mdmdb+".pfms_initiation ini ON ini.InitiationId = f.InitiationId WHERE f.FundApprovalId=:fundApprovalId");
+		        
+		        query.setParameter("fundApprovalId", fundApprovalId);
+		       
+		        return  (List<Object[]>)query.getResultList();
+		    } catch (Exception e) {
+		        logger.error(new Date() + "Inside DAO getNoteSheetFundDetails() " + e);
+		        e.printStackTrace();
+		        return null;
+		    }
+	}
+	
+	@Override
+	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId){
+		 try {
+		        Query query = manager.createNativeQuery("CALL Ibas_Fund_Master_Flow_Details(:fundApprovalId)");
+		        System.out.println(" CALL Ibas_Fund_Master_Flow_Details("+fundApprovalId+");");
+		        
+		        query.setParameter("fundApprovalId", fundApprovalId);
+		       
+		        return  (List<Object[]>)query.getResultList();
+		    } catch (Exception e) {
+		        logger.error(new Date() + "Inside DAO getNoteSheetFundDetails() " + e);
+		        e.printStackTrace();
+		        return null;
+		    }
+	}
+	
 	
 }

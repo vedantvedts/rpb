@@ -1029,5 +1029,60 @@ public class ReportController
 		
 	}
 	
+	@RequestMapping(value="NoteSheetPrint.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String NoteSheetPrint(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside NoteSheetPrint.htm " + UserName);
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalId");
+		    
+			List<Object[]> NoteSheetFundDetails=reportService.getNoteSheetFundDetails(fundApprovalId);
+			List<Object[]> NoteSheetMemberDetails=reportService.getNoteSheetMemberDetails(fundApprovalId);
+			String todayDate=DateTimeFormatUtil.getTodayDateInRegularFormat();
+			
+
+
+   			req.setAttribute("todayDate", todayDate);
+			req.setAttribute("noteSheetFundDetails", NoteSheetFundDetails);
+			req.setAttribute("noteSheetMemberDetails", NoteSheetMemberDetails);
+			
+			String filename="RPB Note Sheet";
+			String path=req.getServletContext().getRealPath("/view/temp");
+	       
+	        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(resp);
+			req.getRequestDispatcher("/view/fundapproval/noteSheetPrint.jsp").forward(req, customResponse);
+			String html = customResponse.getOutput();        
+			
+	        HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf")) ; 
+	        resp.setContentType("application/pdf");
+	        resp.setHeader("Content-disposition","inline;filename="+filename+".pdf");
+	      
+	        File f=new File(path +File.separator+ filename+".pdf");
+	        FileInputStream fis = new FileInputStream(f);
+	        DataOutputStream os = new DataOutputStream(resp.getOutputStream());
+	        resp.setHeader("Content-Length",String.valueOf(f.length()));
+	        byte[] buffer = new byte[1024];
+	        int len = 0;
+	        while ((len = fis.read(buffer)) >= 0) {
+	            os.write(buffer, 0, len);
+	        } 
+	        os.close(); 
+	        fis.close();
+	        Path pathOfFile= Paths.get( path+File.separator+filename+".pdf"); 
+	        Files.delete(pathOfFile);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside NoteSheetPrint.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/noteSheetPrint";
+		
+	}
+	
 	
 }
