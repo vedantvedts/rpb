@@ -453,6 +453,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		FundApprovalTrans transaction = new FundApprovalTrans();
 		
 		transaction.setFundApprovalId(fundDto.getFundApprovalId());
+		transaction.setMemberLinkedId(fundDto.getFundMemberLinkedId());
 		transaction.setFlowDetailsId(flowDetailsId);
 		transaction.setRemarks(fundDto.getRemarks()!=null && fundDto.getRemarks()!="" ? fundDto.getRemarks().trim() : null);
 		transaction.setActionBy(empId);
