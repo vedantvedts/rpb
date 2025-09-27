@@ -10,6 +10,7 @@ import lombok.Data;
 public class FundApprovalDto {
 	
 	private long FundApprovalId;
+	private long fundMemberLinkedId;
 	private String EstimateType;
 	private BigDecimal DivisionId;
 	private String FinYear;

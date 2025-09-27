@@ -361,6 +361,7 @@ public class FundApprovalController
 		String url=null;
 		
 		String fundApprovalId=req.getParameter("fundApprovalId");
+		String memberLinkedId=req.getParameter("MemberLinkedId");
 		String action=req.getParameter("Action");
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
@@ -374,7 +375,7 @@ public class FundApprovalController
 				return "static/error";
 			}
 			
-			if(action==null || memberStatus == null)
+			if(action==null || memberStatus == null || memberLinkedId == null)
 			{
 				redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 				return "redirect:/FundApprovalPreview.htm";
@@ -382,6 +383,7 @@ public class FundApprovalController
 			
 			FundApprovalDto fundDto=new FundApprovalDto();
 			fundDto.setFundApprovalId(fundApprovalId!=null ? Long.parseLong(fundApprovalId) : 0);
+			fundDto.setFundMemberLinkedId(memberLinkedId!=null ? Long.parseLong(memberLinkedId) : 0);
 			fundDto.setRemarks(remarks!=null ? remarks.trim() : null);
 			fundDto.setMemberStatus(memberStatus);
 			fundDto.setAction(action);
