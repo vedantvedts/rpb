@@ -41,7 +41,7 @@ function previewInformation(fundApprovalId) {
             var html = '<div class="status-card-container">';
 
             // Always show Initiator
-            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
+            html += createCard("Initiationclass","Initiated By", row[19], "", row[31], "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
 
 			var fundStatus = row[20];
 			
@@ -55,6 +55,8 @@ function previewInformation(fundApprovalId) {
             var empIds = row[22] ? row[22].split(",") : [];
             var officers = row[24] ? row[24].split("###").map(e => e.trim()) : [];
             var officerRemarks = row[25] ? row[25].split("###").map(e => e.trim()) : [];
+            var actionDates = row[30] ? row[30].split("###").map(e => e.trim()) : [];
+            var skipReasons = row[32] ? row[32].split(",").map(e => e.trim()) : [];
             var statuses = row[23] ? row[23].split(",") : [];
             var returnedBy = row[26] || 0;
             var returedDate = row[27] || 0;
@@ -63,7 +65,7 @@ function previewInformation(fundApprovalId) {
             {
 				var statusText = fundStatus == 'E' ? 'Re-Forward Pending' : 'Forward Pending';
 				
-				html += createCard("forwardPendingclass", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
+				html += createCard("forwardPendingclass", "", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
 				$('#ApprovalStatusDiv').html(html);
 				$(".forwardPendingclass").empty();
 				$(".forwardPendingclass").css({
@@ -82,18 +84,28 @@ function previewInformation(fundApprovalId) {
                 var officer = officers[idx] || "-";
                 var empId = empIds[idx] || "-";
                 var officerRemark = officerRemarks[idx] || "";
+                var actionDate = actionDates[idx] || "";
+                var skipReason = skipReasons[idx] || "";
                 var status = statuses[idx] || "N";
 
                 var isApproved = status === "Y";
                 
                 var pendingText = 'Recommendation Pending';
-                if(role === "CC")
+                
+                if(skipReason && skipReason == 'N')
                 {
-					pendingText = "Approval Pending";
+					if(role === "CC")
+	                {
+						pendingText = "Approval Pending";
+					}
+	                else if(role === "CS")
+	                {
+						pendingText = "Review Pending";
+					}
 				}
-                else if(role === "CS")
-                {
-					pendingText = "Review Pending";
+				else
+				{
+					pendingText = 'Recommending Officer Skipped because of ' + (skipReason == "L" ? "Leave" : "TD");
 				}
 				
                 // Map role codes to readable titles
@@ -109,21 +121,22 @@ function previewInformation(fundApprovalId) {
                     titleMap[role] || role,
                     officer,
                     officerRemark,
+                    actionDate,
                     isApproved ? (role === "CC" ? "Approved" : (role === "CS" ? "Reviewed" : "Recommended")) : "Pending",
                     isApproved,
                     pendingText,
-                    isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
+                    (skipReason == 'N' ? (isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half") : ''),
                     "left",
                      returnedBy == empId && fundStatus=='R' ? 'Returned on ' : '',
                      returedDate
                 );
-                console.log('fundStatus****',fundStatus);
+                
             });
 
             html += '</div>';
 
             // Utility to render a card
-            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
+            function createCard(classAttribute, title, officer, remark, actionDate, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
                 let statusClass = isApproved ? "success" : "warning";
                 let statusText = isApproved ? status : pendingText;
 
@@ -136,6 +149,7 @@ function previewInformation(fundApprovalId) {
                     <div class="status ${statusClass}">
                         <i class="${iconClass}"></i> ${statusText}
                     </div>
+                    <div>${actionDate && actionDate!='NA' ? `<span class="actionDate">${actionDate}</span>` : ''}</div>
                      ${remark && remark!='NA' ? `<p class="RcRemarks"><span class="RcRemarkTitle">Remarks : </span> ${remark}</p>` : ''}
                 </div>`;
             }

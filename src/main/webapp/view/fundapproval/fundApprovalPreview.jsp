@@ -1177,7 +1177,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 											
 
 									            <div class="rcEditReasonDropDown rcEditReasonDropDown-<%=masterFlowList[5] %>" <% if(isSkippedStatus.equalsIgnoreCase("N")){ %> style="display: none;" <%} %>>
-										            <select id="Reason-<%=masterFlowList[5] %>" name="ReasonType" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+										            <select id="Reason-<%=masterFlowList[5] %>" name="ReasonType" class="form-control select2 editRcDropDownSelect" style="width: 100%;" <% if(isSkippedStatus.equalsIgnoreCase("N")){ %> disabled="disabled" <%} %>>
 											            <option <%if(reasonType.equalsIgnoreCase("N")){ %> selected="selected" <%} %> value="-1">Select Reason</option>
 											            <option <%if(reasonType.equalsIgnoreCase("T")){ %> selected="selected" <%} %> value="T">TD</option>
 											            <option <%if(reasonType.equalsIgnoreCase("L")){ %> selected="selected" <%} %> value="L">Leave</option>
@@ -1318,6 +1318,7 @@ function displayReasonDropDown(memberLinkedId, dropDownIdAttribute)
 		$('#' + dropDownIdAttribute).prop("disabled", true);
 		$('#' + dropDownIdAttribute).attr("name", "EditReccEmpIdDisabled");
 
+		$('#Reason-' + memberLinkedId).prop("disabled", false);
 	}
 	else
 	{
@@ -1328,6 +1329,8 @@ function displayReasonDropDown(memberLinkedId, dropDownIdAttribute)
 		$("#TempEditReccEmpId").remove();
 		$('#' + dropDownIdAttribute).prop("disabled", false);
 		$('#' + dropDownIdAttribute).attr("name", "EditReccEmpId");
+		
+		$('#Reason-' + memberLinkedId).prop("disabled", true);
 	}
 	
 	
@@ -1343,7 +1346,11 @@ function updateReccDetailsFunction()
 	        return $(this).val();  
 	    }).get(); 
 	
-	var reasonTypes = $("select[name='ReasonType'], input[name='ReasonType']").map(function() {
+	var reasonTypes = $("select[name='ReasonType']:not(:disabled), input[name='ReasonType']").map(function() {
+	        return $(this).val();  
+	    }).get(); 
+	
+	var isSkipped = $("select[name='SkipReccEmpStatus'], input[name='SkipReccEmpStatus']").map(function() {
 	        return $(this).val();  
 	    }).get(); 
 	

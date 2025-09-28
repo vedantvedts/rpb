@@ -197,6 +197,12 @@ public class FundApprovalController
 		{
 			String fromYear=req.getParameter("FromYear");
 			String toYear=req.getParameter("ToYear");
+			String listStatus=req.getParameter("FundListApprovedOrNot");
+			
+			if(listStatus == null) 
+			{
+				listStatus = "F";   // pending
+			}
 			
 				String finYear=null;
 				if(fromYear==null || toYear==null) 
@@ -218,7 +224,7 @@ public class FundApprovalController
 			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
-			req.setAttribute("FundListApprovedOrNot","F"); // pending 
+			req.setAttribute("FundListApprovedOrNot",listStatus); 
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -397,6 +403,7 @@ public class FundApprovalController
 			if(action.equalsIgnoreCase("A"))
 			{
 				actionMssg = "Approved";
+				redir.addAttribute("FundListApprovedOrNot", "A");
 			}
 			else if(action.equalsIgnoreCase("R"))
 			{
@@ -410,7 +417,6 @@ public class FundApprovalController
 			if(status > 0) 
 			{
 				redir.addAttribute("resultSuccess", "Fund Request "+actionMssg+" Successfully..&#128077;");
-				redir.addAttribute("FundListApprovedOrNot", "A");
 				url="redirect:/FundApprovalList.htm";
 			}
 			else 

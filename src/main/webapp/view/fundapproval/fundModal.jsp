@@ -123,6 +123,14 @@
      font-size: 14px;
     }
     
+ .actionDate
+    {
+     font-weight: 600;
+     color:#e17400 !important;
+     margin:5px !important;
+     font-size: 13px;
+    }
+    
     .statusHeader
     {
     	text-decoration: underline;
