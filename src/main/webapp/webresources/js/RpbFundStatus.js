@@ -41,7 +41,7 @@ function previewInformation(fundApprovalId) {
             var html = '<div class="status-card-container">';
 
             // Always show Initiator
-            html += createCard("Initiationclass","Initiated By", row[19], "", "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
+            html += createCard("Initiationclass","Initiated By", row[19], "", row[31], "Initiated", true, "Initiated", "fa-solid fa-circle-check", "left", "", "");
 
 			var fundStatus = row[20];
 			
@@ -55,6 +55,8 @@ function previewInformation(fundApprovalId) {
             var empIds = row[22] ? row[22].split(",") : [];
             var officers = row[24] ? row[24].split("###").map(e => e.trim()) : [];
             var officerRemarks = row[25] ? row[25].split("###").map(e => e.trim()) : [];
+            var actionDates = row[30] ? row[30].split("###").map(e => e.trim()) : [];
+            var skipReasons = row[32] ? row[32].split(",").map(e => e.trim()) : [];
             var statuses = row[23] ? row[23].split(",") : [];
             var returnedBy = row[26] || 0;
             var returedDate = row[27] || 0;
@@ -63,7 +65,7 @@ function previewInformation(fundApprovalId) {
             {
 				var statusText = fundStatus == 'E' ? 'Re-Forward Pending' : 'Forward Pending';
 				
-				html += createCard("forwardPendingclass", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
+				html += createCard("forwardPendingclass", "", "", "", "", "", false, statusText, "fa-solid fa-circle-check", "center", "", "");
 				$('#ApprovalStatusDiv').html(html);
 				$(".forwardPendingclass").empty();
 				$(".forwardPendingclass").css({
@@ -82,11 +84,30 @@ function previewInformation(fundApprovalId) {
                 var officer = officers[idx] || "-";
                 var empId = empIds[idx] || "-";
                 var officerRemark = officerRemarks[idx] || "";
+                var actionDate = actionDates[idx] || "";
+                var skipReason = skipReasons[idx] || "";
                 var status = statuses[idx] || "N";
 
                 var isApproved = status === "Y";
-                var pendingText = (role === "CC") ? "Approval Pending" : "Recommendation Pending";
-
+                
+                var pendingText = 'Recommendation Pending';
+                
+                if(skipReason && skipReason == 'N')
+                {
+					if(role === "CC")
+	                {
+						pendingText = "Approval Pending";
+					}
+	                else if(role === "CS")
+	                {
+						pendingText = "Review Pending";
+					}
+				}
+				else
+				{
+					pendingText = 'Recommending Officer skipped due to ' + (skipReason == "L" ? "Leave" : "TD");
+				}
+				
                 // Map role codes to readable titles
                 var titleMap = {
                     "DH": "Division Head",
@@ -100,21 +121,22 @@ function previewInformation(fundApprovalId) {
                     titleMap[role] || role,
                     officer,
                     officerRemark,
+                    actionDate,
                     isApproved ? (role === "CC" ? "Approved" : (role === "CS" ? "Reviewed" : "Recommended")) : "Pending",
                     isApproved,
                     pendingText,
-                    isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half",
+                    (skipReason == 'N' ? (isApproved ? "fa-solid fa-circle-check" : "fa-solid fa-hourglass-half") : ''),
                     "left",
                      returnedBy == empId && fundStatus=='R' ? 'Returned on ' : '',
                      returedDate
                 );
-                console.log('fundStatus****',fundStatus);
+                
             });
 
             html += '</div>';
 
             // Utility to render a card
-            function createCard(classAttribute, title, officer, remark, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
+            function createCard(classAttribute, title, officer, remark, actionDate, status, isApproved, pendingText, iconClass, align, returnedTxt, returnedDate) {
                 let statusClass = isApproved ? "success" : "warning";
                 let statusText = isApproved ? status : pendingText;
 
@@ -127,6 +149,7 @@ function previewInformation(fundApprovalId) {
                     <div class="status ${statusClass}">
                         <i class="${iconClass}"></i> ${statusText}
                     </div>
+                    <div>${actionDate && actionDate!='NA' ? `<span class="actionDate">${actionDate}</span>` : ''}</div>
                      ${remark && remark!='NA' ? `<p class="RcRemarks"><span class="RcRemarkTitle">Remarks : </span> ${remark}</p>` : ''}
                 </div>`;
             }
@@ -238,6 +261,68 @@ function generateTableHTML(data) {
          }
      });
 
+	 $.ajax({
+	     url: 'getFundApprovalRevisionDetails.htm',
+	     method: 'GET',
+	     data: { fundApprovalId: fundApprovalId },
+	     success: function(data) {
+	         var container = $("#RevisionHistoryContainer");
+	         container.empty();
+
+	         if (!data || data.length === 0) {
+	              container.html("<div class=' text-center font-weight-bold' style='color: #856404; background-color: #fff3cd;border-color: #ffeeba;padding: 4px;'>No Revision found</div>");
+	             return;
+	         }
+
+	         $.each(data, function(index, rev) {
+	             var revTitle = rev.RevisionCount == 0 ? "ORIGINAL" : "REVISION - " + rev.RevisionCount;
+
+	             // Header background colors only
+	             var headerColor = rev.RevisionCount == 0 ? "background-color:#69af4c; color:white;"   
+	                                                      : "background-color:#af9f4c; color:white;"; 
+
+	             var tableHtml =
+	                 '<div class="mb-3" style="border:1px solid #ccc; border-radius:4px;">' +
+	                   '<h6 class="font-weight-bold p-2 m-0" style="text-align: center; ' + headerColor + '">' + revTitle + '</h6>' +
+	                   '<table class="table table-bordered table-striped m-0 bg-white">' +
+	                     '<tbody>' +
+
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Budget Type</th>' +
+	                         '<td style="font-weight:600">' + (rev.BudgetType || '-') + '</td>' +
+	                         '<th style="width:30%;color:#0080b3;">Budget Head</th>' +
+	                         '<td style="font-weight:600">' + (rev.BudgetHead || '-') + '</td>' +
+	                       '</tr>' +
+
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Initiating Officer</th>' +
+	                         '<td style="font-weight:600">' + (rev.InitiatingOfficer || '-') + ', ' + (rev.Designation || '-') + '</td>' +
+	                         '<th style="width:30%;color:#0080b3;">Estimated Cost</th>' +
+	                         '<td style="color:#00008B;font-weight:600">' + rupeeFormat((rev.EstimatedCost).toLocaleString()) + '</td>' +
+	                       '</tr>' +
+
+	                       '<tr>' +
+	                         '<th style="width:30%;color:#0080b3;">Nomenclature</th>' +
+	                         '<td colspan="3" style="font-weight:600">' + (rev.ItemNomenculature || '-') + '</td>' +
+	                       '</tr>' +
+
+	                     '</tbody>' +
+	                   '</table>' +
+	                 '</div>';
+
+	             container.append(tableHtml);
+	         });
+	     },
+	     error: function() {
+	         $("#RevisionHistoryContainer").html(
+	             "<div class='alert alert-danger text-center font-weight-bold'>Failed to load revisions</div>"
+	         );
+	     }
+	 });
+
+
+
+	   
      // Second AJAX call (Attachments list)
      $.ajax({
          url: 'GetFundRequestAttachmentAjax.htm',
@@ -325,5 +410,51 @@ function getAttachementDetailsInline(fundRequestId) {
         }
     });
 }
+
+
+function rupeeFormat(amount) {
+    let result = "", minus = "", decimal = "";
+
+    if (amount !== null && amount !== "-") {
+        if (amount.indexOf('.') !== -1) { // Remove Decimal Value
+            let amountarray = amount.split(".");
+            if (amountarray !== null && amountarray.length > 0) {
+                let number = amountarray[0];
+                let paisa = amountarray[1];
+                decimal = "." + paisa;
+                amount = number;
+            }
+        }
+
+        amount = amount.replace(/,/g, ""); // if value has Comma(,) this function will remove
+        if (amount !== null && Number(amount) < 0) {
+            amount = amount.split("-")[1];
+            minus = "-";
+        }
+
+        let len = amount.length;
+
+        if (len === 1 || len === 2 || len === 3) {
+            result = amount;
+        } else {
+            let a = 0;
+            for (let i = len - 1; i >= 0; i--) {
+                a++;
+                if (a === 1 || a === 2 || a === 3 || a % 2 === 1) {
+                    result = result + amount.charAt(i);
+                } else if (a % 2 === 0) {
+                    result = result + "," + amount.charAt(i);
+                }
+            }
+            let reverse = result.split("").reverse().join("");
+            result = reverse; // reversing the Result
+        }
+    } else {
+        result = "0";
+    }
+
+    return minus + result + decimal;
+}
+
 
  

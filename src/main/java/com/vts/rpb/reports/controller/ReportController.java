@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.service.FundApprovalService;
 import com.vts.rpb.master.service.MasterService;
 import com.vts.rpb.reports.service.ReportService;
@@ -95,7 +97,7 @@ public class ReportController
 			}
 			
 			if(budget == null) {
-				budget = "B";  // B - General, N - Proposed Project
+				budget = "-1";  // B - General, N - Proposed Project
 			}
 			
 			if(budgetHeadId==null) {
@@ -124,8 +126,8 @@ public class ReportController
 			 
 			if (amountFormat == null || amountFormat.isEmpty()) {
 			    if ("A".equalsIgnoreCase(loginType) 
-			        || "CH".equalsIgnoreCase(memberType) 
-			        || "CS".equalsIgnoreCase(memberType)) {
+			        || "CS".equalsIgnoreCase(memberType) 
+			        || "CC".equalsIgnoreCase(memberType)) {
 			        amountFormat = "L"; // Lakhs
 			    } else {
 			        amountFormat = "R"; // Rupees (default for normal users)
@@ -184,11 +186,13 @@ public class ReportController
 		try
 		{	
 			String PrintAction= req.getParameter("PrintAction");
-			Long divisionId=Long.valueOf(req.getParameter("divisionId"));
+			String divisionId=req.getParameter("divisionId");
 			String estimateType=req.getParameter("estimateType");
 			String FromYear=req.getParameter("FromYear");
 			String ToYear=req.getParameter("ToYear");
 			String status=req.getParameter("approvalStatus");
+			String budget=req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
 			String budgetHeadId=req.getParameter("budgetHeadId");
 			String budgetItemId=req.getParameter("budgetItemId");
 			String fromCost=req.getParameter("FromCost");
@@ -261,7 +265,8 @@ public class ReportController
 		    	RupeeValue = 10000000;
 			}
 			
-			List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
+			List<Object[]> estimateTypeParticularDivList=fundApprovalService.estimateTypeParticularDivList(Long.valueOf(divisionId), estimateType,FinYear,loginType,empId, budget, proposedProject, budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
+			estimateTypeParticularDivList.stream().forEach(a->System.err.println("TypeParticularDiv->"+Arrays.toString(a)));
 			
 			req.setAttribute("attachList",estimateTypeParticularDivList);
 			req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
@@ -319,6 +324,763 @@ public class ReportController
 			return "static/error";
 		}
 		return "fundapproval/fundReportListPrint";
+		
+	}
+	
+	
+	
+	@RequestMapping(value="FundReport.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String FundReport(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside FundApproval.htm " + UserName);
+		String labCode = (ses.getAttribute("client_name")).toString();
+		String loginType= (String)ses.getAttribute("LoginType");
+		String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
+		String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
+		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		String divisionId = ((Long) ses.getAttribute("Division")).toString();
+		try
+		{
+			String FromYear=req.getParameter("FromYear");
+			String ToYear=req.getParameter("ToYear");
+			String DivisionDetails=req.getParameter("DivisionDetails");
+			String estimateType=req.getParameter("EstimateType");
+			String status=req.getParameter("approvalStatus");
+			String budget=req.getParameter("selBudget");
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			String fromCost=req.getParameter("FromCost");
+			String toCost=req.getParameter("ToCost");
+			String amountFormat = req.getParameter("AmountFormat");
+			String Budget = req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
+			int RupeeValue=0;
+			
+			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+
+			if(fromCost!=null) {
+				fromCost=fromCost.trim();
+			}
+			if(toCost!=null) {
+				toCost=toCost.trim();
+			}
+			
+			if(budget == null) {
+				budget = "-1";  // B - General, N - Proposed Project
+			}
+			
+			
+			
+			if(estimateType==null)
+			{
+				estimateType="R";
+			}
+			
+			String DivisionId=null;
+			if(DivisionDetails!=null)
+			{
+				DivisionId=DivisionDetails.split("#")[0];
+			}
+			else
+			{
+				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
+				{
+					DivisionId=divisionId;
+					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+				}
+				else
+				{
+					DivisionId="-1";
+					DivisionDetails="-1#All#All";
+				}
+			}
+			
+			String projectId="0";
+			
+			String FinYear=null;
+			if(FromYear==null || ToYear==null) 
+			{
+				FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+				FromYear=FinYear.split("-")[0];
+				ToYear=FinYear.split("-")[1];
+			}
+			else
+			{
+				FinYear=FromYear+"-"+ToYear;
+			}
+				
+			
+			
+			
+			
+			if(budgetHeadId==null) {
+				budgetHeadId="0";
+			}
+			
+			if(budgetItemId==null) {
+				budgetItemId="0";
+			}
+			
+			if(fromCost==null) {
+				fromCost="0";
+			}
+			
+			if(toCost==null) {
+				toCost="10000000";
+			}
+			
+			if(status==null) {
+				status="NA";
+			}
+			
+			if(Long.valueOf(budgetHeadId)==0) {
+				budgetItemId="0";
+			}
+			
+			if (amountFormat == null || amountFormat.isEmpty()) {
+			    if ("A".equalsIgnoreCase(loginType) 
+			        || "CS".equalsIgnoreCase(committeeMember) 
+			        || "CC".equalsIgnoreCase(committeeMember)) {
+			        amountFormat = "L"; // Lakhs
+			    } else {
+			        amountFormat = "R"; // Rupees (default for normal users)
+			    }
+			}
+
+			    
+			    if(amountFormat.equalsIgnoreCase("L")) {
+			    	 RupeeValue = 100000;
+			    }
+			    else if (amountFormat.equalsIgnoreCase("R")) {
+			    	RupeeValue = 1;
+				}
+			    else if (amountFormat.equalsIgnoreCase("C")) {
+			    	RupeeValue = 10000000;
+				}
+			    
+			List<Object[]> RequisitionList=reportService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
+			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
+			String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			
+			
+			req.setAttribute("RequisitionList", RequisitionList);
+			req.setAttribute("DivisionList", DivisionList);
+			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
+			req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+			req.setAttribute("ExistingbudgetItemId", budgetItemId);
+			req.setAttribute("ExistingfromCost", fromCost);
+			req.setAttribute("ExistingtoCost", toCost);
+			req.setAttribute("Existingstatus", status);
+			req.setAttribute("committeeMember", committeeMember);
+			req.setAttribute("amountFormat", amountFormat);
+			req.setAttribute("MemberType", MemberType);
+			req.setAttribute("ExistingBudget", Budget);
+			req.setAttribute("ExistingProposedProject", proposedProject);
+			
+			//user selected different year Estimate type reset to RE
+			FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
+			   backDto.setDivisionBackBtn(DivisionDetails);
+			   backDto.setDivisionName(DivisionDetails.split("#")[2]);
+			   backDto.setDivisionCode(DivisionDetails.split("#")[1]);
+			   backDto.setFromYearBackBtn(FinYear.split("-")[0]);
+			   backDto.setToYearBackBtn( FinYear.split("-")[1]);
+			   backDto.setEstimatedTypeBackBtn(estimateType);
+			   backDto.setDivisionId(DivisionId);
+			   backDto.setREYear(FromYear+"-"+ToYear);
+			   backDto.setFBEYear((Long.parseLong(FromYear)+1)+"-"+(Long.parseLong(ToYear)+1));
+			   
+			   ses.setAttribute("FundApprovalAttributes", backDto);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside RequisitionList.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/fundReportList";
+		
+	}
+	
+	@RequestMapping(value="FundReportPrint.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String FundReportPrint(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside FundReportPrint.htm " + UserName);
+		String labCode = (ses.getAttribute("client_name")).toString();
+		String loginType= (String)ses.getAttribute("LoginType");
+		String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
+		String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
+		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		String divisionId = ((Long) ses.getAttribute("Division")).toString();
+		try
+		{	
+			String PrintAction= req.getParameter("PrintAction");
+			String FromYear=req.getParameter("FromYear");
+			String ToYear=req.getParameter("ToYear");
+			String DivisionDetails=req.getParameter("DivisionDetails");
+			String estimateType=req.getParameter("EstimateType");
+			String status=req.getParameter("approvalStatus");
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			String fromCost=req.getParameter("FromCost");
+			String toCost=req.getParameter("ToCost");
+			String fbeYear=req.getParameter("fbeYear");
+			String reYear=req.getParameter("reYear");
+			String ReOrFbe=null;
+			String ReOrFbeYear=null;
+			String amountFormat = req.getParameter("AmountFormat");
+			String Budget = req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
+			int RupeeValue=0;
+		
+			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			
+			String projectId="0";
+			
+			String FinYear=null;
+			if(FromYear==null || ToYear==null) 
+			{
+				FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+				FromYear=FinYear.split("-")[0];
+				ToYear=FinYear.split("-")[1];
+			}
+			else
+			{
+				FinYear=FromYear+"-"+ToYear;
+			}
+				
+			
+			
+			if(fromCost!=null) {
+				fromCost=fromCost.trim();
+			}
+			if(toCost!=null) {
+				toCost=toCost.trim();
+			}
+			
+			
+			if(estimateType==null)
+			{
+				estimateType="R";
+			}
+			
+			String DivisionId=null;
+			if(DivisionDetails!=null)
+			{
+				DivisionId=DivisionDetails.split("#")[0];
+			}
+			else
+			{
+				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
+				{
+					DivisionId=divisionId;
+					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+				}
+				else
+				{
+					DivisionId="-1";
+					DivisionDetails="-1#All#All";
+				}
+			}
+			
+			if(Long.valueOf(budgetHeadId)==0) {
+				budgetItemId="0";
+			}
+		
+			List<Object[]> labInfoList=masterService.GetLabInfo(labCode);
+		    String labName = null;
+		    
+		    for(Object[] obj : labInfoList) {
+			     labName = String.valueOf(obj[1].toString());
+		    }   
+			
+		    if(labLogo.getLabLogoAsBase64()!=null) {
+
+			       req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
+			    }
+		    
+		    if("R".equalsIgnoreCase(estimateType)) {
+		    	ReOrFbeYear=reYear;
+		    	ReOrFbe="R";
+		    }
+		    else if ("F".equalsIgnoreCase(estimateType)) {
+		    	ReOrFbeYear=fbeYear;
+		    	ReOrFbe="F";
+			}
+		    
+		    if (amountFormat == null || amountFormat.isEmpty()) {
+		        if ("A".equalsIgnoreCase(loginType) 
+		            || "CS".equalsIgnoreCase(committeeMember) 
+		            || "CC".equalsIgnoreCase(committeeMember)) {
+		            amountFormat = "L"; 
+		        } else {
+		            amountFormat = "R"; 
+		        }
+		    }
+
+		    
+		    if(amountFormat.equalsIgnoreCase("L")) {
+		    	 RupeeValue = 100000;
+		    }
+		    else if (amountFormat.equalsIgnoreCase("R")) {
+		    	RupeeValue = 1;
+			}
+		    else if (amountFormat.equalsIgnoreCase("C")) {
+		    	RupeeValue = 10000000;
+			}
+		    
+			List<Object[]> RequisitionList=reportService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
+			RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
+			
+			req.setAttribute("RequisitionList", RequisitionList);
+		    req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
+		    req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+		    req.setAttribute("ExistingbudgetItemId", budgetItemId);
+		    req.setAttribute("ExistingfromCost", fromCost);
+		    req.setAttribute("ExistingtoCost", toCost);
+		    req.setAttribute("Existingstatus", status);
+		    req.setAttribute("ReOrFbe", ReOrFbe);
+		    req.setAttribute("ReOrFbeYear", ReOrFbeYear);
+		    req.setAttribute("FinYear", FinYear);
+		    req.setAttribute("labName", labName);
+		    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
+		    req.setAttribute("amountFormat", amountFormat);
+		    req.setAttribute("ExistingBudget", Budget);
+			req.setAttribute("ExistingProposedProject", proposedProject);
+		    
+			if("pdf".equalsIgnoreCase(PrintAction)) {
+				
+				
+				String filename="RPB Fund Report";
+				String path=req.getServletContext().getRealPath("/view/temp");
+		       
+		        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(resp);
+				req.getRequestDispatcher("/view/fundapproval/fundReportListPrint.jsp").forward(req, customResponse);
+				String html = customResponse.getOutput();        
+				
+		        HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf")) ; 
+		        resp.setContentType("application/pdf");
+		        resp.setHeader("Content-disposition","inline;filename="+filename+".pdf");
+		      
+		        File f=new File(path +File.separator+ filename+".pdf");
+		        FileInputStream fis = new FileInputStream(f);
+		        DataOutputStream os = new DataOutputStream(resp.getOutputStream());
+		        resp.setHeader("Content-Length",String.valueOf(f.length()));
+		        byte[] buffer = new byte[1024];
+		        int len = 0;
+		        while ((len = fis.read(buffer)) >= 0) {
+		            os.write(buffer, 0, len);
+		        } 
+		        os.close(); 
+		        fis.close();
+		        Path pathOfFile= Paths.get( path+File.separator+filename+".pdf"); 
+		        Files.delete(pathOfFile);
+			}
+			else if("Excel".equalsIgnoreCase(PrintAction))
+			{
+				return "fundapproval/fundReportListPrint";
+			}
+			
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside FundReportPrint.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/fundReportListPrint";
+		
+	}
+	
+	@RequestMapping(value="FbeReport.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String FbeReport(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside FbeReport.htm " + UserName);
+		String labCode = (ses.getAttribute("client_name")).toString();
+		String loginType= (String)ses.getAttribute("LoginType");
+		String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
+		String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
+		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		String divisionId = ((Long) ses.getAttribute("Division")).toString();
+		try
+		{
+			String FromYear=req.getParameter("FromYear");
+			String ToYear=req.getParameter("ToYear");
+			String DivisionDetails=req.getParameter("DivisionDetails");
+			String budget=req.getParameter("selBudget");
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			String fromCost=req.getParameter("FromCost");
+			String toCost=req.getParameter("ToCost");
+			String amountFormat = req.getParameter("AmountFormat");
+			String Budget = req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
+			int RupeeValue=0;
+			
+			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+
+			if(fromCost!=null) {
+				fromCost=fromCost.trim();
+			}
+			if(toCost!=null) {
+				toCost=toCost.trim();
+			}
+			
+			if(budget == null) {
+				budget = "-1";  // B - General, N - Proposed Project
+			}
+			
+			String DivisionId=null;
+			if(DivisionDetails!=null)
+			{
+				DivisionId=DivisionDetails.split("#")[0];
+			}
+			else
+			{
+				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
+				{
+					DivisionId=divisionId;
+					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+				}
+				else
+				{
+					DivisionId="-1";
+					DivisionDetails="-1#All#All";
+				}
+			}
+			
+			String projectId="0";
+			
+			String FinYear=null;
+			if(FromYear==null || ToYear==null) 
+			{
+				FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+				FromYear=FinYear.split("-")[0];
+				ToYear=FinYear.split("-")[1];
+			}
+			else
+			{
+				FinYear=FromYear+"-"+ToYear;
+			}
+				
+			
+			
+			
+			
+			if(budgetHeadId==null) {
+				budgetHeadId="0";
+			}
+			
+			if(budgetItemId==null) {
+				budgetItemId="0";
+			}
+			
+			if(fromCost==null) {
+				fromCost="0";
+			}
+			
+			if(toCost==null) {
+				toCost="10000000";
+			}
+			
+			if(Long.valueOf(budgetHeadId)==0) {
+				budgetItemId="0";
+			}
+			
+			if (amountFormat == null || amountFormat.isEmpty()) {
+			    if ("A".equalsIgnoreCase(loginType) 
+			        || "CS".equalsIgnoreCase(committeeMember) 
+			        || "CC".equalsIgnoreCase(committeeMember)) {
+			        amountFormat = "L"; // Lakhs
+			    } else {
+			        amountFormat = "R"; // Rupees (default for normal users)
+			    }
+			}
+
+			    
+			    if(amountFormat.equalsIgnoreCase("L")) {
+			    	 RupeeValue = 100000;
+			    }
+			    else if (amountFormat.equalsIgnoreCase("R")) {
+			    	RupeeValue = 1;
+				}
+			    else if (amountFormat.equalsIgnoreCase("C")) {
+			    	RupeeValue = 10000000;
+				}
+			    
+			List<Object[]> RequisitionList=reportService.getFbeReportList(FinYear, DivisionId, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost,committeeMember,String.valueOf(RupeeValue));
+			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
+			String MemberType=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			
+			
+			req.setAttribute("RequisitionList", RequisitionList);
+			req.setAttribute("DivisionList", DivisionList);
+			req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
+			req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+			req.setAttribute("ExistingbudgetItemId", budgetItemId);
+			req.setAttribute("ExistingfromCost", fromCost);
+			req.setAttribute("ExistingtoCost", toCost);
+			req.setAttribute("committeeMember", committeeMember);
+			req.setAttribute("amountFormat", amountFormat);
+			req.setAttribute("MemberType", MemberType);
+			req.setAttribute("ExistingBudget", Budget);
+			req.setAttribute("ExistingProposedProject", proposedProject);
+			
+			//user selected different year Estimate type reset to RE
+			FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
+			   backDto.setDivisionBackBtn(DivisionDetails);
+			   backDto.setDivisionName(DivisionDetails.split("#")[2]);
+			   backDto.setDivisionCode(DivisionDetails.split("#")[1]);
+			   backDto.setFromYearBackBtn(FinYear.split("-")[0]);
+			   backDto.setToYearBackBtn( FinYear.split("-")[1]);
+			   backDto.setDivisionId(DivisionId);
+			   backDto.setREYear(FromYear+"-"+ToYear);
+			   backDto.setFBEYear((Long.parseLong(FromYear)+1)+"-"+(Long.parseLong(ToYear)+1));
+			   
+			   ses.setAttribute("FundApprovalAttributes", backDto);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside FbeReport.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/fbeReportList";
+		
+	}
+	
+	@RequestMapping(value="FbeReportPrint.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String FbeReportPrint(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside FbeReportPrint.htm " + UserName);
+		String labCode = (ses.getAttribute("client_name")).toString();
+		String loginType= (String)ses.getAttribute("LoginType");
+		String empDivisionCode= (String)ses.getAttribute("EmployeeDivisionCode");
+		String empDivisionName= (String)ses.getAttribute("EmployeeDivisionName");
+		String empId = ((Long) ses.getAttribute("EmployeeId")).toString();
+		String divisionId = ((Long) ses.getAttribute("Division")).toString();
+		try
+		{	
+			String PrintAction= req.getParameter("PrintAction");
+			String FromYear=req.getParameter("FromYear");
+			String ToYear=req.getParameter("ToYear");
+			String DivisionDetails=req.getParameter("DivisionDetails");
+			String budgetHeadId=req.getParameter("budgetHeadId");
+			String budgetItemId=req.getParameter("budgetItemId");
+			String fromCost=req.getParameter("FromCost");
+			String toCost=req.getParameter("ToCost");
+			String fbeYear=req.getParameter("fbeYear");
+			String reYear=req.getParameter("reYear");
+			String ReOrFbe=null;
+			String ReOrFbeYear=null;
+			String amountFormat = req.getParameter("AmountFormat");
+			String Budget = req.getParameter("selBudget");
+			String proposedProject=req.getParameter("selProposedProject");
+			int RupeeValue=0;
+		
+			String committeeMember=fundApprovalService.getCommitteeMemberType(Long.valueOf(empId));
+			
+			String projectId="0";
+			
+			String FinYear=null;
+			if(FromYear==null || ToYear==null) 
+			{
+				FinYear=DateTimeFormatUtil.getCurrentFinancialYear();
+				FromYear=FinYear.split("-")[0];
+				ToYear=FinYear.split("-")[1];
+			}
+			else
+			{
+				FinYear=FromYear+"-"+ToYear;
+			}
+				
+			
+			
+			if(fromCost!=null) {
+				fromCost=fromCost.trim();
+			}
+			if(toCost!=null) {
+				toCost=toCost.trim();
+			}
+			
+			
+			String DivisionId=null;
+			if(DivisionDetails!=null)
+			{
+				DivisionId=DivisionDetails.split("#")[0];
+			}
+			else
+			{
+				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
+				{
+					DivisionId=divisionId;
+					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+				}
+				else
+				{
+					DivisionId="-1";
+					DivisionDetails="-1#All#All";
+				}
+			}
+			
+			if(Long.valueOf(budgetHeadId)==0) {
+				budgetItemId="0";
+			}
+		
+			List<Object[]> labInfoList=masterService.GetLabInfo(labCode);
+		    String labName = null;
+		    
+		    for(Object[] obj : labInfoList) {
+			     labName = String.valueOf(obj[1].toString());
+		    }   
+			
+		    if(labLogo.getLabLogoAsBase64()!=null) {
+
+			       req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
+			    }
+		    
+		    if (amountFormat == null || amountFormat.isEmpty()) {
+		        if ("A".equalsIgnoreCase(loginType) 
+		            || "CS".equalsIgnoreCase(committeeMember) 
+		            || "CC".equalsIgnoreCase(committeeMember)) {
+		            amountFormat = "L"; 
+		        } else {
+		            amountFormat = "R"; 
+		        }
+		    }
+
+		    
+		    if(amountFormat.equalsIgnoreCase("L")) {
+		    	 RupeeValue = 100000;
+		    }
+		    else if (amountFormat.equalsIgnoreCase("R")) {
+		    	RupeeValue = 1;
+			}
+		    else if (amountFormat.equalsIgnoreCase("C")) {
+		    	RupeeValue = 10000000;
+			}
+		    
+			List<Object[]> RequisitionList=reportService.getFbeReportList(FinYear, DivisionId, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost,committeeMember,String.valueOf(RupeeValue));
+			RequisitionList.stream().forEach(a->System.err.println(Arrays.toString(a)));
+			
+			req.setAttribute("RequisitionList", RequisitionList);
+		    req.setAttribute("CurrentFinYear", DateTimeFormatUtil.getCurrentFinancialYear());
+		    req.setAttribute("ExistingbudgetHeadId", budgetHeadId);
+		    req.setAttribute("ExistingbudgetItemId", budgetItemId);
+		    req.setAttribute("ExistingfromCost", fromCost);
+		    req.setAttribute("ExistingtoCost", toCost);
+		    req.setAttribute("ReOrFbe", ReOrFbe);
+		    req.setAttribute("ReOrFbeYear", ReOrFbeYear);
+		    req.setAttribute("FinYear", FinYear);
+		    req.setAttribute("labName", labName);
+		    req.setAttribute("LabLogo", labLogo.getLabLogoAsBase64());
+		    req.setAttribute("amountFormat", amountFormat);
+		    req.setAttribute("ExistingBudget", Budget);
+			req.setAttribute("ExistingProposedProject", proposedProject);
+		    
+			if("pdf".equalsIgnoreCase(PrintAction)) {
+				
+				
+				String filename="RPB Fund Report";
+				String path=req.getServletContext().getRealPath("/view/temp");
+		       
+		        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(resp);
+				req.getRequestDispatcher("/view/fundapproval/fbeReportListPrint.jsp").forward(req, customResponse);
+				String html = customResponse.getOutput();        
+				
+		        HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf")) ; 
+		        resp.setContentType("application/pdf");
+		        resp.setHeader("Content-disposition","inline;filename="+filename+".pdf");
+		      
+		        File f=new File(path +File.separator+ filename+".pdf");
+		        FileInputStream fis = new FileInputStream(f);
+		        DataOutputStream os = new DataOutputStream(resp.getOutputStream());
+		        resp.setHeader("Content-Length",String.valueOf(f.length()));
+		        byte[] buffer = new byte[1024];
+		        int len = 0;
+		        while ((len = fis.read(buffer)) >= 0) {
+		            os.write(buffer, 0, len);
+		        } 
+		        os.close(); 
+		        fis.close();
+		        Path pathOfFile= Paths.get( path+File.separator+filename+".pdf"); 
+		        Files.delete(pathOfFile);
+			}
+			else if("Excel".equalsIgnoreCase(PrintAction))
+			{
+			return "fundapproval/fbeReportListPrint";
+			}
+			
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside FbeReportPrint.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/fbeReportListPrint";
+		
+	}
+	
+	@RequestMapping(value="NoteSheetPrint.htm",method = {RequestMethod.GET,RequestMethod.POST})
+	public String NoteSheetPrint(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+	{
+		String UserName = (String) ses.getAttribute("Username");
+		logger.info(new Date() + "Inside NoteSheetPrint.htm " + UserName);
+		try
+		{
+			String fundApprovalId=req.getParameter("fundApprovalId");
+		    
+			List<Object[]> NoteSheetFundDetails=reportService.getNoteSheetFundDetails(fundApprovalId);
+			List<Object[]> NoteSheetMemberDetails=reportService.getNoteSheetMemberDetails(fundApprovalId);
+			String todayDate=DateTimeFormatUtil.getTodayDateInRegularFormat();
+			
+
+
+   			req.setAttribute("todayDate", todayDate);
+			req.setAttribute("noteSheetFundDetails", NoteSheetFundDetails);
+			req.setAttribute("noteSheetMemberDetails", NoteSheetMemberDetails);
+			
+			String filename="RPB Note Sheet";
+			String path=req.getServletContext().getRealPath("/view/temp");
+	       
+	        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(resp);
+			req.getRequestDispatcher("/view/fundapproval/noteSheetPrint.jsp").forward(req, customResponse);
+			String html = customResponse.getOutput();        
+			
+	        HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf")) ; 
+	        resp.setContentType("application/pdf");
+	        resp.setHeader("Content-disposition","inline;filename="+filename+".pdf");
+	      
+	        File f=new File(path +File.separator+ filename+".pdf");
+	        FileInputStream fis = new FileInputStream(f);
+	        DataOutputStream os = new DataOutputStream(resp.getOutputStream());
+	        resp.setHeader("Content-Length",String.valueOf(f.length()));
+	        byte[] buffer = new byte[1024];
+	        int len = 0;
+	        while ((len = fis.read(buffer)) >= 0) {
+	            os.write(buffer, 0, len);
+	        } 
+	        os.close(); 
+	        fis.close();
+	        Path pathOfFile= Paths.get( path+File.separator+filename+".pdf"); 
+	        Files.delete(pathOfFile);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.error(new Date() + " Inside NoteSheetPrint.htm " + UserName, e);
+			return "static/error";
+		}
+		return "fundapproval/noteSheetPrint";
 		
 	}
 	

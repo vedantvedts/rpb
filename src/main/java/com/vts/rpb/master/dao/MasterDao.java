@@ -18,10 +18,18 @@ public interface MasterDao
 	public List<Object[]> GetLabInfo(String Labcode) throws Exception;
 
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
+	
+	public String getFormRoleName(String loginType) throws Exception;
 
 	public List<Object[]> getOfficersList(String labCode) throws Exception;
 
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception;
+	
+	public List<Object[]> checkOfficerValidity(String memberType, String fromDate, String toDate) throws Exception;
+	
+	public List<Object[]> checkEditOfficerValidity(String memberType, String committeMasterId, String fromDate, String toDate) throws Exception;
+	
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
 
@@ -34,5 +42,7 @@ public interface MasterDao
 	public long EditCommitteMemberDetails(CommitteeMembers comMember)throws Exception;
 
 	public List<Object[]> getParticularDivisionDetails(String divisionId)throws Exception;
+	
+	public long deleteCommitteeMember(String committeeMemberId,String ModifiedBy,String ModifiedDate) throws Exception;
 }
 

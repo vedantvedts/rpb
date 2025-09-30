@@ -773,6 +773,11 @@ input[type=number] {
 	color: black !important;
 }
 
+.hovercolorsub2:hover span
+{
+	color: green !important;
+}
+
 
 	
 
@@ -1013,10 +1018,13 @@ function rupeeFormat(amount) {
 	 <% MainModuleList.forEach(row -> System.out.println(Arrays.toString(row)));
 	 for (Object[] mainModule : MainModuleList) { %>
 									
-	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master")) {%>
+	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master") || (mainModule[1].toString()).equalsIgnoreCase("Reports")) {%>
 		    
 		    <% for (Object[] subModule : SubModuleList) {
-		    if (subModule[0].equals(mainModule[0])) { %>
+		    if (subModule[0].equals(mainModule[0])) { 
+		    	if(!"FundReport.htm".equalsIgnoreCase(subModule[1].toString())  && !"FbeReport.htm".equalsIgnoreCase(subModule[1].toString()) ){
+		    %>
+		    
 		        <li class="nav-item active" style=" margin: 2px 4px;">
 		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
 		               style="width: 95%;
@@ -1036,14 +1044,44 @@ function rupeeFormat(amount) {
 		            </a>
 		        </li>
 		        
-		        <% } 
+		        <%} } 
 		    temp = Integer.parseInt(subModule[0].toString());
 			} %>
 		    <%} %>
 		
 		   <%} %>
 		   
-		   </ul>
+		   
+		   
+  <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+           style="font-weight:700; color:white;font-size: 16px;">
+            Reports
+        </a>
+        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="reportsDropdown" style="background-color:white; min-width: 165px; max-width: 250px;"> <!-- c5be2d -->
+            <% for (Object[] mainModule : MainModuleList) {
+                   for (Object[] subModule : SubModuleList) {
+                       if (subModule[0].equals(mainModule[0])) {
+                           if ("FundReport.htm".equalsIgnoreCase(subModule[1].toString()) 
+                               || "FbeReport.htm".equalsIgnoreCase(subModule[1].toString())) {
+            %>
+                <a class="dropdown-item subModule  hovercolorsub2 btn btn-sm" href="<%=subModule[1]%>" style="font-weight:700; color:white;">
+                    <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+                    &nbsp;
+		                <span style="font-weight: 700; color: black; font-size: 15px;">
+                   <%=subModule[2] %>
+                    </span>
+                </a>
+            <%             } 
+                       }
+                   }
+               } 
+            %>
+        </div>
+    </li>
+</ul>
+		   
 		       	
 							<div  class="btn-group HeaderNotifications">
 		                        <a class="nav-link  onclickbell" href="" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1069,9 +1107,11 @@ function rupeeFormat(amount) {
 								    	
 									    <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> &nbsp;&nbsp;Hi <%=Username%>!! </a>
 									    <div class="dropdown-divider logoutdivider"></div>
+									    <a class="dropdown-item" href="ChangeUserPassword.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Password Change </a>  
+										<div class="dropdown-divider logoutdivider"></div>
 										<div style="font-weight: 800;padding: .25rem 1.5rem;">&nbsp;<i class="fa fa-cog" aria-hidden="true" style="color: green"></i>&nbsp;<input type="checkbox" id="devTools" <%if(developerToolsStatus!=null && developerToolsStatus.equalsIgnoreCase("0")){ %> checked="checked" value="<%=developerToolsStatus%>" <%} %>>&nbsp;Enable dev tools</div>
 									  	<div class="dropdown-divider logoutdivider"></div> 
-										 <a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
+										<a class="dropdown-item" href="HeaderHelpAction.htm" target="_blank"><i class="fas fa-question-circle"></i>&nbsp;&nbsp;Help </a>  
 										<div class="dropdown-divider logoutdivider"></div>
 										<input type="hidden" value="<%=logintype %>" name="logintype" id="logintype">
 									            

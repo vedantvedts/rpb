@@ -62,6 +62,17 @@ public class MasterDaoImpl implements MasterDao {
 			return null;
 		}
 	}
+	
+	private static final String LOGINTYPENAME="SELECT logindesc FROM login_type WHERE logintype=:logintype";
+	@Override
+	public String getFormRoleName(String loginType) throws Exception {
+		
+		Query query=manager.createNativeQuery(LOGINTYPENAME);
+		query.setParameter("logintype",loginType);
+		String FormRoleName=(String)query.getSingleResult();
+		
+		return FormRoleName;
+	}
 
 	@Override
 	public AuditStamping getAuditPatchDetails(long auditStampingId) throws Exception {
@@ -159,6 +170,22 @@ public class MasterDaoImpl implements MasterDao {
 			return null; 
 		}
 	}
+	
+	 @Override
+		public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception {
+			logger.info(new Date() +"Inside MaterDaoImpl getOfficersListWithoutCommitteeMembers");
+			try {
+			Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.IsActive = '1' AND a.labCode = :labCode  AND NOT EXISTS (SELECT 1 FROM ibas_committee_members cm WHERE cm.EmpId = a.EmpId) ORDER BY a.SrNo=0,a.SrNo ");
+			query.setParameter("labCode", labCode);
+			List<Object[]> OfficerList=(List<Object[]>)query.getResultList();
+			return OfficerList;
+			
+			} catch (Exception e) {
+				logger.error(new Date() +"Inside MaterDaoImpl getOfficersListWithoutCommitteeMembers");
+				e.printStackTrace();
+				return null; 
+			}
+		}
 
 	@Override
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
@@ -180,12 +207,49 @@ public class MasterDaoImpl implements MasterDao {
 	public List<Object[]> getCommitteeMasterList() throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getCommitteeMasterList");
 		try {
-		Query query= manager.createNativeQuery("SELECT cm.MemberType, cm.EmpId, cm.FromDate, cm.ToDate, e.EmpName, d.DesigCode, cm.CommitteeMemberId FROM ibas_committee_members cm INNER JOIN "+mdmdb+".employee e ON e.EmpId=cm.EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId WHERE cm.IsActive='1'");
+		Query query= manager.createNativeQuery("SELECT cm.MemberType, cm.EmpId, cm.FromDate, cm.ToDate, e.EmpName, d.Designation, cm.CommitteeMemberId FROM ibas_committee_members cm INNER JOIN "+mdmdb+".employee e ON e.EmpId=cm.EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId WHERE cm.IsActive='1'");
 		List<Object[]> getCommitteeMasterList=(List<Object[]>)query.getResultList();
 		return getCommitteeMasterList;
 		
 		} catch (Exception e) {
 			logger.error(new Date() +"Inside MaterDaoImpl getCommitteeMasterList");
+			e.printStackTrace();
+			return null; 
+		}
+	}
+	
+	@Override
+	public List<Object[]> checkOfficerValidity(String memberType, String fromDate, String toDate) throws Exception{
+		logger.info(new Date() +"Inside MasterDaoImpl checkOfficerValidity");
+		try {
+		Query query= manager.createNativeQuery("SELECT cm.MemberType, cm.EmpId, cm.FromDate, cm.ToDate, e.EmpName, d.Designation, cm.CommitteeMemberId FROM ibas_committee_members cm INNER JOIN "+mdmdb+".employee e ON e.EmpId=cm.EmpId LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId = e.DesigId WHERE cm.IsActive='1' AND MemberType=:memberType   AND ((cm.FromDate <= :toDate) AND (cm.ToDate   >= :fromDate));");
+		query.setParameter("memberType", memberType);
+		query.setParameter("fromDate", fromDate);
+		query.setParameter("toDate", toDate);
+		List<Object[]> getCommitteeMasterList=(List<Object[]>)query.getResultList();
+		return getCommitteeMasterList;
+		
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside MasterDaoImpl checkOfficerValidity");
+			e.printStackTrace();
+			return null; 
+		}
+	}
+	
+	@Override
+	public List<Object[]> checkEditOfficerValidity(String memberType, String committeMasterId, String fromDate, String toDate) throws Exception{
+		logger.info(new Date() +"Inside MasterDaoImpl checkEditOfficerValidity");
+		try {
+		Query query= manager.createNativeQuery("SELECT CommitteeMemberId, MemberType, EmpId, FromDate, ToDate FROM ibas_committee_members WHERE MemberType = :memberType AND CommitteeMemberId != :committeMasterId AND IsActive = 1 AND ((FromDate <= :toDate) AND (ToDate   >= :fromDate));");
+		query.setParameter("memberType", memberType);
+		query.setParameter("committeMasterId", committeMasterId);
+		query.setParameter("fromDate", fromDate);
+		query.setParameter("toDate", toDate);
+		List<Object[]> getCommitteeMasterList=(List<Object[]>)query.getResultList();
+		return getCommitteeMasterList;
+		
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside MasterDaoImpl checkEditOfficerValidity");
 			e.printStackTrace();
 			return null; 
 		}
@@ -239,6 +303,24 @@ public class MasterDaoImpl implements MasterDao {
 			logger.error(new Date() +"Inside MaterDaoImpl getParticularDivisionDetails");
 			e.printStackTrace();
 			return null; 
+		}
+	}
+	
+	@Override
+	public long deleteCommitteeMember(String committeeMemberId,String ModifiedBy,String ModifiedDate) throws Exception{
+		logger.info(new Date() +"Inside MaterDaoImpl getAllEmployeeDetailsByDivisionId");
+		try {
+		Query query= manager.createNativeQuery("UPDATE ibas_committee_members SET ModifiedBy=:modifiedBy, ModifiedDate=:modifiedDate, isActive=0 WHERE CommitteeMemberId=:committeeMemberId");
+		query.setParameter("committeeMemberId",committeeMemberId);
+		query.setParameter("modifiedBy",ModifiedBy);
+		query.setParameter("modifiedDate",ModifiedDate);
+		long isDeleted=(long)query.executeUpdate();
+		return isDeleted;
+		
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside MaterDaoImpl getParticularDivisionDetails");
+			e.printStackTrace();
+			return 0L; 
 		}
 	}
 

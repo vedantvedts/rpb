@@ -1,3 +1,5 @@
+<%@page import="java.util.Arrays"%>
+<%@page import="java.util.Date"%>
 <%@page import="com.vts.rpb.utils.DateTimeFormatUtil"%>
 <%@page import="java.util.List"%>
 
@@ -12,6 +14,8 @@
 <title>Committee Master List</title>
 <%
 List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaster");
+CommitteMaster.stream().forEach(a->System.err.println(Arrays.toString(a)));
+String currentDate=(String)request.getAttribute("todayDate");
 %>
 <style type="text/css">
 #addBtn, #editBtn {
@@ -76,6 +80,22 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 			                        int a=1;
 			                        if(CommitteMaster!=null && CommitteMaster.size()>0){
 				                	   for(Object[]obj:CommitteMaster){
+				                		   
+				                		    String currentDateStr = (String) request.getAttribute("todayDate");
+				                		    String validToStr = (obj[3] != null) ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : null;
+
+				                		    String color = "black"; // default
+
+				                		    if (currentDateStr != null && validToStr != null) {
+				                		        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy"); 
+				                		        Date currentDateObj = sdf.parse(currentDateStr);
+				                		        Date validToObj = sdf.parse(validToStr);
+
+				                		        if (!currentDateObj.before(validToObj)) { 
+				                		            
+				                		            color = "red";
+				                		        }
+				                		    }
 				                	   %>
 				                  <tr>
 				                  
@@ -94,11 +114,14 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				                 
 				                 <%}else{ %>--<%} %></td>
 				                  <td class="no-wrap"><%=obj[4] %><%=','%> <%=obj[5] %></td>
-				                  <td class="no-wrap"style="text-align: center;"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
-				                  <td class="no-wrap" style="text-align: center;"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
+				                  <td class="no-wrap"style="text-align: center;color: <%= color%>"><%if(obj[2]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) %><%}else{ %>--<%} %></td>
+				                  <td class="no-wrap" style="text-align: center;color: <%= color%>"><%if(obj[3]!=null){ %><%=DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) %><%}else{ %>--<%} %></td>
 				                  <td align="center">
-				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
+				                 <button type="button" class="btn btn-sm edit-icon"  title="Edit" onclick="committeeMAsterModal('Edit','<%=obj[0]%>','<%=obj[1]%>','<%=obj[2] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[2].toString()) : "" %>','<%=obj[3] != null ? DateTimeFormatUtil.getSqlToRegularDate(obj[3].toString()) : "" %>','<%=obj[6]%>','<%=obj[4]%>','<%=obj[5]%>','<%=obj[1]%>')"><i class="fa-solid fa-pen-to-square"></i></button>
 				                  
+				                  <button type="button" class="btn" onclick="memberDelete('<%=obj[1]%>','<%=obj[6]%>')" title="Delete Member">
+				                   <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+				                 </button>
 				                  </td>
 				                  
 				                  <%}}else{ %>
@@ -130,7 +153,7 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				      <div class="modal-body">
 				       <form action="#" id="committeMasterform" >
 				      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				    
+				      
 				       <input type="hidden" id="CommiteeMemberId" name="CommiteeMemberId" class="CommiteeMemberId">
 				       <div class="table-responsive">
 				       <table style="width: 100%;">
@@ -178,11 +201,9 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 				   
                       
 			<div class="modal-footer" style="justify-content: center;">
-			    <button type="button" class="btn btn-success" id="addBtn"
-			            onclick="CommitteeMasterValidation('Add')">Add Committee</button>
+			    <button type="button" class="btn btn-success" id="addBtn">Add Committee</button>
 			
-			    <button type="button" class="btn btn-warning" id="editBtn"
-			            onclick="CommitteeMasterValidation('Edit')">Update Committee</button>
+			    <button type="button" class="btn btn-warning" id="editBtn">Update Committee</button>
 			</div>
 				      
 				   
@@ -191,73 +212,67 @@ List<Object[]>CommitteMaster=(List<Object[]>)request.getAttribute("CommitteMaste
 	    </div>
 	  </div>
 	</div>
-       
+         <form action="#" id="DeleteMemberform" >
+				      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				    
+				     <input type="hidden" id="committeeMemberIdDelete" name="committeeMemberIdDelete" >
+				      <input type="hidden" id="empIdDelete" name="empIdDelete" >
+		</form>
 </body>
 <script type="text/javascript">
-function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,CommitteMasterId) {
-	$(".comitteeMasterModal").modal('show'); 
-	$(".committeMasterHeading").empty();
-	$(".CommiteeMemberId").empty();
-	
-	
-	 // Hide both buttons first
+
+function committeeMAsterModal(Action, MemberType, EmployeeID, FromDate, ToDate, CommitteMasterId, EmpName, EmpDesig, EmpId) {
+    $(".comitteeMasterModal").modal('show'); 
+    $(".committeMasterHeading").empty();
+    $(".CommiteeMemberId").empty();
+    
+    console.log(EmpId+', '+EmpName+' ,'+EmpDesig);
+    
+    // Hide both buttons first
     $("#addBtn").hide();
-    $("#editBtn").hide()
-	
-	
-	
-	if(Action=='Add')
-	{   
-		$(".committeMasterHeading").append("Committee Add");
-		
-		EmployeeList('');
-		
-		 $("#addBtn").show();   // Show Add button only
-		 
-		// Set FromDate to today
-		    let today = new Date();
-		    let dd = String(today.getDate()).padStart(2, '0');
-		    let mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-		    let yyyy = today.getFullYear();
-		    let fromDateStr = dd + '-' + mm + '-' + yyyy;
-		 
-		 
-		 
-		 $("#FromDate").val('');
-	        $("#FromDate").data('daterangepicker').setStartDate(new Date());
-	        $("#FromDate").data('daterangepicker').setEndDate(new Date());
+    $("#editBtn").hide();
+    
+    console.log("EmployeeID-"+EmployeeID);
+    // Initialize date pickers
+    initDatePickers(Action === 'Edit', FromDate, ToDate, MemberType, CommitteMasterId);
 
+    if(Action=='Add') {   
+        $("#AllOfficersList").prop("disabled", false);
+        $(".committeMasterHeading").append("Committee Add");
+        
+        EmployeeList(null);
+        $("#addBtn").show();   // Show Add button only
+        
+        // Set FromDate to today
+        let today = moment();
+        $("#FromDate").val(today.format('DD-MM-YYYY'));
+        $("#FromDate").data('daterangepicker').setStartDate(today);
+        $("#FromDate").data('daterangepicker').setEndDate(today);
 
-	        // Set ValidDate to one month after FromDate
-	        let nextMonth = new Date(today);
-	        nextMonth.setMonth(today.getMonth() + 1);
-	        let dd2 = String(nextMonth.getDate()).padStart(2, '0');
-	        let mm2 = String(nextMonth.getMonth() + 1).padStart(2, '0');
-	        let yyyy2 = nextMonth.getFullYear();
-	        let validDateStr = dd2 + '-' + mm2 + '-' + yyyy2;
+        // Set ValidDate to one month after FromDate
+        let nextMonth = moment(today).add(1, 'months');
+        $("#ValidDate").val(nextMonth.format('DD-MM-YYYY'));
+        $("#ValidDate").data('daterangepicker').setStartDate(nextMonth);
+        $("#ValidDate").data('daterangepicker').setEndDate(nextMonth);
+    }
+    
+    if(Action=='Edit'){
+        $("#AllOfficersList").prop("disabled", true);
+        $(".committeMasterHeading").append("Committee Edit");
+        $("#editBtn").show();
 
-	        $("#ValidDate").val(validDateStr);
-	        $("#ValidDate").data('daterangepicker').setStartDate(validDateStr);
-	        $("#ValidDate").data('daterangepicker').setEndDate(validDateStr)
-						
-	}
-	
-	if(Action=='Edit'){
-	
-		$(".committeMasterHeading").append("Committee Edit");
-		  $("#editBtn").show();  // Show Edit button only
-	    // Set MemberType and refresh Select2
-	    $("#MemberType").val(MemberType).trigger("change");
-
-	    $(".CommiteeMemberId").val(CommitteMasterId);
-		
-		//id--CommitteMasterId
-		$(".CommiteeMemberId").val(CommitteMasterId);
+        $("#MemberType").val(MemberType).trigger("change");
+        $(".CommiteeMemberId").val(CommitteMasterId);
 
         // Populate employee dropdown & select the current employee
-        EmployeeList(EmployeeID);
+        $("#AllOfficersList").empty();
+        $("#AllOfficersList").append(
+            "<option value='" + EmpId + "' selected='selected'>" + EmpName + ", " + EmpDesig + "</option>"
+        );
 
-        // Set dates in input + datepicker
+        $("#AllOfficersList").prop("disabled", false);
+
+        // Set existing dates
         $("#FromDate").val(FromDate);
         $("#FromDate").data('daterangepicker').setStartDate(FromDate);
         $("#FromDate").data('daterangepicker').setEndDate(FromDate);
@@ -265,86 +280,193 @@ function committeeMAsterModal(Action,MemberType,EmployeeID,FromDate,ToDate,Commi
         $("#ValidDate").val(ToDate);
         $("#ValidDate").data('daterangepicker').setStartDate(ToDate);
         $("#ValidDate").data('daterangepicker').setEndDate(ToDate);
-		
-	}
-	$("#Action").val(Action);
-}
-
-function EmployeeList(OfficerId)
-{
-	$.get('EmployeeListAjax.htm', 
-			 function(responseJson) {
-				$('#AllOfficersList').find('option').remove();		
-			
-				var result = JSON.parse(responseJson);
-			
-				$.each(result, function(key, value) {
-					var html1='';
-					if(value[0]== OfficerId){
-						
-						html1=	'<option value="'+value[0]+'" selected="selected">'+ value[2] + ", " + value[3] +'</option>'
-						}else{
-							
-							html1 = "<option value='" + value[0] + "'>"  + value[2] + ", " + value[3] + "</option>";
-						}
-					    $("#AllOfficersList").append(html1);
-					
-				});
-				
-			});
-	}
-
-
- function CommitteeMasterValidation(Action) {
-    // Prevent form submission if called from the button click
-    event.preventDefault(); 
-   
-    
-   
-    var Form = $("#committeMasterform");
-
-    var url = '';
-    if (Action === 'Add') {
-        url = 'committeMasterAdd.htm';
-    } else if (Action === 'Edit') {
-        url = 'committeMasterEdit.htm';
     }
 
-  
+    $("#Action").val(Action);
+}
 
-      if (Form) {
-          Form.attr('action', url);
-          if (confirm("Are you sure you want to submit?")) {
-              Form.submit();
-          }
-      }
-  }
+// Fetch employees for dropdown
+function EmployeeList(OfficerId) {
+    $.get('EmployeeListAjax.htm', function(responseJson) {
+        $('#AllOfficersList').find('option').remove();        
+        var result = JSON.parse(responseJson);
+        $.each(result, function(key, value) {
+            let html = (value[0] == OfficerId) ?
+                '<option value="'+value[0]+'" selected="selected">'+ value[2] + ", " + value[3] +'</option>' :
+                "<option value='" + value[0] + "'>"  + value[2] + ", " + value[3] + "</option>";
+            $("#AllOfficersList").append(html);
+        });
+    });
+}
+
+// Form submit buttons
+$(document).ready(function () {
+    $("#addBtn").on("click", function (e) { CommitteeMasterValidation("Add", e); });
+     $("#editBtn").on("click", function (e) { CommitteeMasterEditValidation("Edit", e); }); 
+});
+
+// Form validation
+function CommitteeMasterValidation(Action, event) {
+    event.preventDefault();  
+    var Form = $("#committeMasterform");
+    var memberType = $("#MemberType").val();
+    var fromDate = $("#FromDate").val();
+    var toDate = $("#ValidDate").val();
+    var url = (Action === "Add") ? "committeMasterAdd.htm" : "committeMasterEdit.htm";
+    
+    if (!validateDates(fromDate, toDate)) return;
+
+    if (Action === "Add" && ["CC", "CS", "SC"].includes(memberType)) {
+        $.ajax({
+            url: "CheckEmployeeValidity.htm",
+            method: "GET",
+            data: { memberType: memberType, fromDate: fromDate, toDate: toDate },
+            success: function (response) {
+                var data = JSON.parse(response);
+
+                if (memberType === 'CC') memberType = 'Chair Person';
+                if (memberType === 'CS') memberType = 'Secretary';
+                if (memberType === 'SC') memberType = 'Standby Chair Person';
+
+                if (data && data.length > 0) {
+                    alert("Another '" + memberType + "' already exists within valid dates. Choose Future Dates!");
+                    return; 
+                }
+
+                Form.attr("action", url);
+                if (confirm("Are you sure you want to submit?")) { Form.submit(); }
+            },
+            error: function () { alert("Error while checking employee validity."); }
+        });
+    } else {
+        Form.attr("action", url);
+        if (confirm("Are you sure you want to submit?")) { Form.submit(); }
+    }
+}
+
+function initDatePickers(isEdit, fromDate, toDate) {
+    // FromDate picker
+    $("#FromDate").daterangepicker({
+        autoclose: true,
+        singleDatePicker: true,
+        linkedCalendars: false,
+        showCustomRangeLabel: true,
+        showDropdowns: true,
+        locale: { format: 'DD-MM-YYYY' },
+        minDate: isEdit ? null : moment() // restrict past dates only in Add mode
+    });
+
+    if (fromDate) {
+        $("#FromDate").data('daterangepicker').setStartDate(fromDate);
+        $("#FromDate").data('daterangepicker').setEndDate(fromDate);
+    }
+
+    // ValidDate picker
+    $("#ValidDate").daterangepicker({
+        autoclose: true,
+        singleDatePicker: true,
+        linkedCalendars: false,
+        showCustomRangeLabel: true,
+        showDropdowns: true,
+        locale: { format: 'DD-MM-YYYY' },
+        minDate: fromDate ? moment(fromDate, 'DD-MM-YYYY') : (isEdit ? null : moment())
+    });
+
+    if (toDate) {
+        $("#ValidDate").data('daterangepicker').setStartDate(toDate);
+        $("#ValidDate").data('daterangepicker').setEndDate(toDate);
+    }
+}
 
 
+	function CommitteeMasterEditValidation(Action, event) {
+    event.preventDefault();
+
+    var Form = $("#committeMasterform");
+    var memberType = $("#MemberType").val();
+    var fromDate = $("#FromDate").val();
+    var toDate = $("#ValidDate").val();
+    var currentMemberId = $(".CommiteeMemberId").val();
+    var url = (Action === "Edit") ? "committeMasterEdit.htm" : "committeMasterAdd.htm";
+    
+    if (!validateDates(fromDate, toDate)) return;
+
+    if (["CC", "CS", "SC"].includes(memberType)) {
+        $.ajax({
+        url: "CheckEditEmployeeValidity.htm",
+        method: "GET",
+        data: { memberType: memberType, committeMasterId: currentMemberId , fromDate : fromDate, toDate :toDate},
+        success: function (response) {
+            var data = JSON.parse(response);
+
+            if (memberType === 'CC') memberType = 'Chair Person';
+            if (memberType === 'CS') memberType = 'Secretary';
+            if (memberType === 'SC') memberType = 'Standby Chair Person';
+
+            if (data && data.length > 0) {
+                alert("Another '" + memberType + "' already exists within valid dates. Choose Future Dates!");
+                return; 
+            }
+
+            Form.attr("action", url);
+            if (confirm("Are you sure you want to update?")) { Form.submit(); }
+        },
+        error: function () { alert("Error while checking employee validity."); }
+    });
+} else {
+    Form.attr("action", url);
+    if (confirm("Are you sure you want to update?")) { Form.submit(); }
+}
+
+	}
+
+	
+	// Common Date Validation
+	function validateDates(fromDate, toDate) {
+	    if (!fromDate || !toDate) {
+	        alert("Both From Date and Valid Date are required.");
+	        return false;
+	    }
+
+	    // Convert to moment objects
+	    let from = moment(fromDate, "DD-MM-YYYY");
+	    let to = moment(toDate, "DD-MM-YYYY");
+
+	    if (!from.isValid() || !to.isValid()) {
+	        alert("Invalid date format. Please use DD-MM-YYYY.");
+	        return false;
+	    }
+
+	    if (from.isAfter(to)) {
+	        alert("From Date should not exceed Valid Date.");
+	        return false;
+	    }
+
+	    return true;
+	}
 
 
+$(document).ready(function () {
+    $('#TableCommitteMaster').DataTable({
+    	"lengthMenu": [[ 10, 25, 50, 75, 100,'-1'],[ 10, 25, 50, 75, 100,"All"]],
+        paging: true,
+        "searching": true,
+   	    "ordering": true,
+	    "responsive": true
+    });
+});
 
+function memberDelete(empId, committeeMemberId){
+	var Form = $("#DeleteMemberform");
+	if(confirm('Do you want to delete this Member?')){
+		 $("#committeeMemberIdDelete").val(committeeMemberId);
+		 $("#empIdDelete").val(empId);
+		 Form.attr("action", "deleteCommitteeMember.htm");
+		 Form.submit();
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Date --picker validations
+/* //Date --picker validations
 $(document).ready(function() {
     // Initialize the Date picker
     var SanctionDate=$("#hiddenSanctionDate").val();
@@ -361,6 +483,7 @@ $(document).ready(function() {
         locale: {
             format: 'DD-MM-YYYY'
         },
+        minDate: new Date(),
         maxDate:SanctionDate
     });
 
@@ -380,9 +503,9 @@ $(document).ready(function() {
         },
         minDate: SanctionDate 
     });
-}); 
+});  */
 
-$("#FromDate").change(function() {
+/* $("#FromDate").change(function() {
 	 var SanctionDate=$("#FromDate").val();
 	 $('#ValidDate').daterangepicker({
 	        autoclose: true,
@@ -397,14 +520,7 @@ $("#FromDate").change(function() {
 	        startDate: SanctionDate 
 	    });
 	
-});
-
-
-
-
-
-
-
+}); */
 
 /* function committeeMAsterModal(Action) {
 	$(".comitteeMasterModal").modal('show'); 
@@ -477,40 +593,29 @@ $("#FromDate").change(function() {
 }
 
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-$(document).ready(function () {
-    $('#TableCommitteMaster').DataTable({
-    	"lengthMenu": [[ 10, 25, 50, 75, 100,'-1'],[ 10, 25, 50, 75, 100,"All"]],
-        paging: true,
-        "searching": true,
-   	    "ordering": true,
-	    "responsive": true
-    });
-});
-
-
+/*  function EmployeeList(OfficerId)
+ {
+ 	$.get('CheckEmployeeValidity.htm', 
+ 			 function(responseJson) {
+ 				$('#AllOfficersList').find('option').remove();		
+ 			
+ 				var result = JSON.parse(responseJson);
+ 			
+ 				$.each(result, function(key, value) {
+ 					var html1='';
+ 					if(value[0]== OfficerId){
+ 						
+ 						html1=	'<option value="'+value[0]+'" selected="selected">'+ value[2] + ", " + value[3] +'</option>'
+ 						}else{
+ 							
+ 							html1 = "<option value='" + value[0] + "'>"  + value[2] + ", " + value[3] + "</option>";
+ 						}
+ 					    $("#AllOfficersList").append(html1);
+ 					
+ 				});
+ 				
+ 			});
+ 	} */
 
 </script>
 </html>

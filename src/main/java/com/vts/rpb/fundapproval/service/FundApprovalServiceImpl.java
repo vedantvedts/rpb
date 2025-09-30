@@ -453,6 +453,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		FundApprovalTrans transaction = new FundApprovalTrans();
 		
 		transaction.setFundApprovalId(fundDto.getFundApprovalId());
+		transaction.setMemberLinkedId(fundDto.getFundMemberLinkedId());
 		transaction.setFlowDetailsId(flowDetailsId);
 		transaction.setRemarks(fundDto.getRemarks()!=null && fundDto.getRemarks()!="" ? fundDto.getRemarks().trim() : null);
 		transaction.setActionBy(empId);
@@ -636,13 +637,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception{
-		
-		return fundApprovalDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, projectId, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,RupeeValue);
-	}
-	
-	@Override
 	public List<BudgetDetails> getBudgetHeadList(String projectId) throws Exception {
 		
 		List<Object[]> budgetHeadList=null;
@@ -766,12 +760,13 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception{
-		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId,String budget, String proposedProject, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception{
+		return fundApprovalDao.estimateTypeParticularDivList(divisionId, estimateType,finYear,loginType,empId,budget,proposedProject,budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 	}
 	
 	
 	@Override
+	@Transactional
 	public long insertCarryForwardItemDetails(FundRequestCOGDetails cogMonth,FundApprovalBackButtonDto backDto, String userName) throws Exception {
 		
 	    if (cogMonth == null || isEmpty(cogMonth.getCarryForwardSerialNo()) || cogMonth.getActionType() == null) {
@@ -787,6 +782,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 
 	    for (int i = 0; i < cogMonth.getCarryForwardSerialNo().length; i++) {
 	        FundApproval fundRequest = buildFundRequest(cogMonth, backDto, estimateType, fbeReYear, action, i);
+	        fundRequest.setBudgetType("B");
 	        fundRequest.setCreatedBy(userName);
 	        fundRequest.setCreatedDate(LocalDateTime.now());
 	        fundRequest.setStatus("N");
@@ -1017,8 +1013,16 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		FundApproval fundApprovalRevise=fundApprovalDao.getRevisionListDetails(fundApprovalId);
 		
 		if(fundApprovalRevise!=null) {
-			long revisionCount=fundApprovalDao.getRevisionCount(fundApprovalId);
-			revisionCount+=1;
+			Long revisionCount=fundApprovalDao.getRevisionCount(fundApprovalId);
+			
+			if (revisionCount == null) {
+				System.err.println("Current Rev count is null-"+revisionCount);
+			    revisionCount = 0L;
+			} else {
+				System.err.println("Current Rev count-"+revisionCount);
+			    revisionCount++;
+			}
+			
 			FundApprovedRevision revision = new FundApprovedRevision();
 			
 			revision.setFundApprovalId(fundApprovalRevise.getFundApprovalId());
@@ -1084,15 +1088,21 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
+	@Transactional
 	public long deleteFundRequest(FundApprovalDto fundDto) throws Exception {
 		
 		long status = 0;
 		if(fundDto!=null) 
 		{
 			if(fundDto.getFundApprovalId()!=0) {
-				status = fundApprovalDao.deleteFundRequestDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestAttachmentDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestQueriesDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestRevisionDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestTransDetails(fundDto.getFundApprovalId());
+				fundApprovalDao.deleteFundRequestLinkedMembersDetails(fundDto.getFundApprovalId());
+				status = 1;
 			}
-			
 		}
 		return status;
 	}
@@ -1116,6 +1126,20 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					{
 						FundLinkedMembers modal = fundApprovalDao.getCommitteeMemberLinkedDetails(linkedMemberId);
 						modal.setEmpId(Long.parseLong(linkedEmpId));
+						
+						String skippStatus = getSkippedStatusDetails(fundDto.getSkippedStatus(), i);
+						
+						modal.setIsSkipped(skippStatus);
+						
+						if(skippStatus.equalsIgnoreCase("Y"))
+						{
+							modal.setSkipReason(getReasonDetails(fundDto.getReasonType(), i));
+						}
+						else
+						{
+							modal.setSkipReason("N");
+						}
+						
 						modal.setModifiedBy(fundDto.getModifiedBy());
 						modal.setModifiedDate(LocalDateTime.now());
 						
@@ -1136,6 +1160,38 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		return status;
 	}
 	
+	private String getSkippedStatusDetails(String[] skippedStatus, int serialNo) {
+		
+		if(skippedStatus == null || skippedStatus.length == 0) {
+			return "N";
+		}
+		
+		String status = skippedStatus[serialNo];
+		
+		if(status == null)
+		{
+			status = "N";
+		}
+		
+		return status;
+	}
+	
+	private String getReasonDetails(String[] getReasonDetails, int serialNo) {
+		
+		if(getReasonDetails == null || getReasonDetails.length == 0) {
+			return "N";
+		}
+		
+		String status = getReasonDetails[serialNo];
+		
+		if(status == null)
+		{
+			status = "N";
+		}
+		
+		return status;
+	}
+
 	@Override
 	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries) {
 		return fundApprovalDao.fundApprovalQuerySubmit(FundApprovalQueries);
@@ -1150,6 +1206,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception{
 		
 		return fundApprovalDao.getFundApprovalQueryDetails(fundApprovalId);
+	}
+	
+	@Override
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception{
+		return fundApprovalDao.getFundApprovalRevisionDetails(fundApprovalId);
 	}
 	
 }

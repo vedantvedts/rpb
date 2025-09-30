@@ -24,6 +24,9 @@ public class FundApprovalTrans {
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
 	
+	@Column(name = "MemberLinkedId")
+	private long memberLinkedId;
+	
 	@Column(name = "FlowDetailsId")
 	private long flowDetailsId;
 	

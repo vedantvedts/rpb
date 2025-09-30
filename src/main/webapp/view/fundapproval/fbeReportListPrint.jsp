@@ -36,7 +36,6 @@ String FinYear=(String)request.getAttribute("FinYear");
 String ReOrFbeYear=(String)request.getAttribute("ReOrFbeYear");
 String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 String AmtFormat =(String)request.getAttribute("amountFormat");
-String amt =(String)request.getAttribute("amountFormat");
 if(AmtFormat!=null){
 	if("R".equalsIgnoreCase(AmtFormat)){
 		AmountFormat="Rupees";
@@ -47,6 +46,20 @@ if(AmtFormat!=null){
 	else if("C".equalsIgnoreCase(AmtFormat)){
 		AmountFormat="Crores";
 	}
+}
+
+Object DivName = "", DivCode = "";
+String EstimateTypeFromList = "";
+String financialYear = "";
+String ProposedProject = null;
+List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
+
+if (requisitionList != null && !requisitionList.isEmpty()) {
+    Object[] firstItem = requisitionList.get(0);
+    DivName = firstItem[29] != null ? firstItem[29] : "";
+    DivCode = firstItem[30] != null ? firstItem[30] : "";
+    ProposedProject = firstItem[31] != null ? String.valueOf(firstItem[31]) : "";
+    ReOrFbeYear=firstItem[4] != null ? firstItem[4].toString() : "";
 }
 %>
 <style>
@@ -211,12 +224,9 @@ padding : 7px;
         content: "";
     }
     @top-center::before {
-    <%if("R".equalsIgnoreCase(ReOrFbe)){%>
-        content: "<%=labName %> \A Revised Estimate (RE) for <%=ReOrFbeYear %>";
-        <%} else if("F".equalsIgnoreCase(ReOrFbe)){%>
+    
         content: "<%=labName %> \A Forecast Budget Estimate (FBE) for <%=ReOrFbeYear %>";
-        <%}%>
-        white-space: pre-wrap; /* Ensures the line break is applied */
+        white-space: pre-wrap;
         text-decoration: underline;
         font-weight: 800;
         width: 60%;
@@ -269,7 +279,6 @@ padding : 7px;
 </head>
 <body>
 <%
-		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String currentFinYear=(String)request.getAttribute("CurrentFinYear");
@@ -290,17 +299,8 @@ padding : 7px;
 		String ExistingfromCost=(String)request.getAttribute("ExistingfromCost");
 		String ExistingtoCost=(String)request.getAttribute("ExistingtoCost");
 		String Existingstatus=(String)request.getAttribute("Existingstatus");
-		
-		Object DivName = "", DivCode = "";
-		String EstimateTypeFromList = "";
-		String financialYear = "";
-		String ProposedProject = null;
-		if (requisitionList != null && !requisitionList.isEmpty()) {
-		    Object[] firstItem = requisitionList.get(0);
-		    DivName = firstItem[29] != null ? firstItem[29] : "";
-		    DivCode = firstItem[30] != null ? firstItem[30] : "";
-		    ProposedProject = firstItem[31] != null ? String.valueOf(firstItem[31]) : "";
-		}
+		String amt =(String)request.getAttribute("amountFormat");
+
 		%>
 		
 								     <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;">
@@ -312,8 +312,8 @@ padding : 7px;
 <%} %>
  </div>
 <div class="group2" id="demandDetailsMod">
-<%-- <%if(ExistingbudgetHeadId!=null && Long.valueOf(ExistingbudgetHeadId)==0){ %> --%>
-<table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
+<%-- <%if(ExistingbudgetHeadId!=null && Long.valueOf(ExistingbudgetHeadId)==0){ %>
+ --%><table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
     <thead style="background-color: #d1d1d1; text-align: center;">
         <tr style="background-color: #ffd589;">
             <th>SN</th>
@@ -360,7 +360,7 @@ padding : 7px;
                         grandTotal = grandTotal.add(estimatedCost);
         %>
         <tr>
-            <td align="center"><%= sn++ %>.</td>
+            <td align="center"><%= sn++ %></td>
             <td><%= (data[20] != null) ? data[20]+", " : "-" %><%= (data[21] != null) ? data[21] : "-" %></td>
             <td><%= (data[16] != null) ? data[16] : "-" %></td>
             <td align="center"><%= (data[24] != null) ? DateTimeFormatUtil.getSqlToRegularDate(data[24].toString()) : "-" %></td>
@@ -468,9 +468,8 @@ padding : 7px;
     </tbody>
 </table>
 
-<%-- <%} %> --%>
-  
-  <%-- <%}else{ %>
+  <%-- 
+  <%}else{ %>
   
   <table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
     <thead style="background-color: #d1d1d1; text-align: center;">
@@ -602,7 +601,7 @@ padding : 7px;
 	$(document).ready(function(){
 	  const table = document.querySelector("table");
 	  const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-	  XLSX.writeFile(workbook, "RPB Fund Report List.xlsx");
+	  XLSX.writeFile(workbook, "RPB FBE Report List.xlsx");
 	  
 	  window.close(); 
 	});

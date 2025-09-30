@@ -242,7 +242,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 		</form> 
 		
 		<div class="tabs-container" style="margin-top:7px;">
-		    <input type="radio" name="tabs" id="tab-pending" checked>
+		    <input type="radio" name="tabs" id="tab-pending">
 		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
@@ -450,7 +450,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                    <th class="text-nowrap">Item Nomenclature</th>
 			                    <th class="text-nowrap">Item Cost</th>
 			                    <th class="text-nowrap">View</th>
-			                    <th>Status</th>
+			                    <th style="width: 15%;">Status</th>
 			                </tr>
 						 </thead>
 						 <tbody>
@@ -599,6 +599,11 @@ $(document).ready(function(){
 		{
 			$("#tab-approved").click();
 		}
+		else if(listStatus == 'F') 
+		{
+			$("#tab-pending").click();
+		}
+			
 	}
 	
 });

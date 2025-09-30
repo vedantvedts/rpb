@@ -382,7 +382,7 @@ tr:last-of-type th:last-of-type {
       String logintype= (String)session.getAttribute("LoginType");
       String empId = ((Long) session.getAttribute("EmployeeId")).toString();
       String rpbMemberType= (String)request.getAttribute("rpbMemberType");
-      String InitiationDate= (String)session.getAttribute("InitiationDate");
+      String PdiDemandDate= (String)session.getAttribute("InitiationDate");
       FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
       
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
@@ -441,7 +441,7 @@ tr:last-of-type th:last-of-type {
 			           			
 			           		}%>
 			           		
-			           		<% String budgetType=null,initiationId=null,initiationDate=null; 
+			           		<% String budgetType=null,initiationId=null,pdiDemandDate=null; 
 			           		if(FundRequestObj!=null){
 			           			if(FundRequestObj[32]!=null){
 			           				budgetType=FundRequestObj[32].toString();
@@ -450,7 +450,7 @@ tr:last-of-type th:last-of-type {
 				           			initiationId=FundRequestObj[33].toString();
 				           		}
 			           			if(FundRequestObj[30]!=null){
-			           				initiationDate=FundRequestObj[30].toString();
+			           				pdiDemandDate=FundRequestObj[30].toString();
 				           		}
 			           		}
 			           			%>
@@ -461,7 +461,7 @@ tr:last-of-type th:last-of-type {
 			           		<input type="hidden" id="budgetTypeHidden" value="<%=budgetType %>">
 			           		<input type="hidden" id="InitiationIdHidden" value="<%=initiationId %>">
 			           		<input type="hidden" id="divisionIdHidden" value="<%=divisionId %>">
-			           		<input type="hidden" id="initiationDateHidden" <%if(initiationDate!=null){ %> value="<%=DateTimeFormatUtil.getSqlToRegularDate(initiationDate) %>" <%} %>>
+			           		<input type="hidden" id="pdiDemandDateHidden" <%if(pdiDemandDate!=null){ %> value="<%=DateTimeFormatUtil.getSqlToRegularDate(pdiDemandDate) %>" <%} %>>
 			           		
 		<div class="card-header page-top">
 		 	<div class="row">
@@ -515,6 +515,9 @@ tr:last-of-type th:last-of-type {
  					<input type="hidden" id="actionType" name="Action" value="Add">
  					<%} %>
  					
+ 	<%if(BudgetYearType!=null && BudgetYearType.equalsIgnoreCase("RE Year")){ %><input type="hidden" name="estimateAction" value="C"><%} %> 
+ 	<%if(BudgetYearType!=null && BudgetYearType.equalsIgnoreCase("FBE Year")){ %><input type="hidden" name="estimateAction" value="L"><%} %>
+ 					
  				<%if(FundRequestObj!=null ){ %>	<input type="hidden" name="fundApprovalId" value="<%=FundRequestObj[0] %>" ><%} %>
  					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
  					<input type="hidden" name="finYear"<%if(FinYear!=null && !FinYear.isEmpty()){ %> value="<%=FinYear %>" <%} %>>
@@ -566,7 +569,7 @@ tr:last-of-type th:last-of-type {
 			         </div>
 			          <div class="form-inline" style="display: flex; flex-direction: column;">
 					    <label style="font-weight: bold;padding-right: 35px;">Probable Date of Initiation&nbsp;<span class="text-danger">*</span></label>
-					    <input style="background-color:white;width: 100%" type="text" readonly id="InitiationDate" name="InitiationDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
+					    <input style="background-color:white;width: 100%" type="text" readonly id="PdiDemandDate" name="PdiDemandDate" required class="form-control" <%if(FundRequestObj!=null && FundRequestObj[30]!=null){ %>value="<%=DateTimeFormatUtil.getSqlToRegularDate(FundRequestObj[30].toString()) %>"<%} %>>       
 					</div>
 			         
                   </div>
@@ -585,7 +588,7 @@ tr:last-of-type th:last-of-type {
 						    
 						    <div class="form-inline">
 						    
-						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)) {%>
+						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)  || "A".equalsIgnoreCase(logintype)) {%>
 					           <input type="checkbox" class="tooltip-container" id="AllOfficers" name="AllOfficers" data-tooltip="check the box to get all employee(s)" data-position="top">&nbsp;
 					           <%} %>
                        <select name="OfficerCode" id="OfficerCode" class="form-control officerCode select2"
@@ -650,7 +653,7 @@ tr:last-of-type th:last-of-type {
 				            <th style="font-weight: 600;">
 				                <% if ("Add".equalsIgnoreCase(action)) { %>Attachment<% } else { %>Replace Attachment<% } %>
 				            </th>
-				            <th style="font-weight: 600;">Actions</th>
+				            <th style="font-weight: 600;width: 10%;">Actions</th>
 				           
 				            
 				        </tr>
@@ -765,50 +768,52 @@ tr:last-of-type th:last-of-type {
 				    <% } %>
 				</tr>
 				
-				<!-- Dynamic Attachment Row -->
-				<tr class="file-row4">
-				    <% 
-				        List<String> staticNames = Arrays.asList("Budgetary quotes / LPO (Last Purchase Order)", "Cost Of Estimation", "Justification");
-				        Object[] dynamicAttach = null;
-				        
-				        if (AttachList != null) {
-				            for (Object[] attach : AttachList) {
-				                String attachName = (attach[1] != null) ? attach[1].toString() : "";
-				                if (!staticNames.contains(attachName)) {
-				                    dynamicAttach = attach;
-				                    break;
-				                }
-				            }
-				        }
-				        
-				        if (dynamicAttach != null) { 
-				    %>
-				    <td style="width: 54%;">
-				        <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
-				    </td>
-				    <td>
-				        <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
-				        <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
-				        <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
-				    </td>
-				    <td>
-				        <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
-				            <i class="fa fa-download" style="color: green;"></i>
-				        </button>
-				        <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
-				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
-				        </button>
-				    </td>
-				    <% } else { %>
-				    <td>
-				        <input type="text" class="form-control" name="filename" value="Others">
-				    </td>
-				    <td>
-				        <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
-				    </td>
-				    
-				    <% } %>
-				</tr>
+				
+	 <tr class="file-row4">
+        <%
+           
+            List<String> staticNames = Arrays.asList("BQs / LPO", "Cost Estimation", "Justification");
+            Object[] dynamicAttach = null;
+
+            if (AttachList != null) {
+                for (Object obj : AttachList) {
+                    Object[] attach = (Object[]) obj;
+                    String attachName = (attach[1] != null) ? attach[1].toString().trim() : "";
+                    
+                    if (!attachName.isEmpty() && !staticNames.contains(attachName)) {
+                        dynamicAttach = attach;
+                        break;
+                    }
+                }
+            }
+            
+            if (dynamicAttach != null) { 
+        %>
+        <td style="width: 54%;">
+            <input type="text" class="form-control" id="file4" name="filename" maxlength="255" value="<%= dynamicAttach[1] %>">
+        </td>
+        <td>
+            <input type="file" class="form-control" id="attachment4" name="attachment" onchange="Filevalidation(this);">
+            <input type="hidden" name="existingAttachmentId" value="<%= dynamicAttach[0] %>">
+            <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
+        </td>
+        <td>
+            <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
+                <i class="fa fa-download" style="color: green;"></i>
+            </button>
+            <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
+                <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
+            </button>
+        </td>
+        <% } else { %>
+        <td>
+            <input type="text" class="form-control" name="filename" value="Others">
+        </td>
+        <td>
+            <input type="file" class="form-control" name="attachment" onchange="Filevalidation(this);">
+        </td>
+        <% } %>
+    </tr>
 				
 				    </tbody>
 				</table>
@@ -1581,9 +1586,11 @@ $(document).ready(function() {
     var toYear = $("#toYearHidden").val();
     var startDate = null;
     var endDate = null;
+    
+    var today = moment();
 
     if (estimateType == 'R') {
-        startDate = '01-08-' + fromYear;
+        startDate = today;
         endDate = '31-03-' + toYear;
     } else if (estimateType == 'F') {
         startDate = '01-04-' + toYear;
@@ -1592,10 +1599,9 @@ $(document).ready(function() {
     
     var minDate = moment(startDate, 'DD-MM-YYYY');
     var maxDate = moment(endDate, 'DD-MM-YYYY');
-    var today = moment();
     
     var action=$("#actionType").val();
-    var initiationDate=$("#initiationDateHidden").val();
+    var pdiDemandDate=$("#pdiDemandDateHidden").val();
     var defaultDate;
 
     if (action === 'Add') {
@@ -1607,10 +1613,10 @@ $(document).ready(function() {
             defaultDate = maxDate;
         }
     } else if (action === 'Update') {
-        defaultDate = moment(initiationDate, 'DD-MM-YYYY');
+        defaultDate = moment(pdiDemandDate, 'DD-MM-YYYY');
     }
 
-    $("#InitiationDate").daterangepicker({
+    $("#PdiDemandDate").daterangepicker({
         singleDatePicker: true,
         autoApply: true,
         showDropdowns: true,

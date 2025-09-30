@@ -315,6 +315,11 @@ tr:last-of-type th:last-of-type {
     padding: 10px;
     border-radius: 5px;
 }
+    .rcSkipped-box {
+    background-color: #dddddd; 
+    padding: 10px;
+    border-radius: 5px;
+}
 
 .container {
     width: 100%;
@@ -349,7 +354,7 @@ tr:last-of-type th:last-of-type {
     .editRCDropDown
     {
     	padding: 8px; 
-    	width: 55%;
+    	width: 70%;
     }
     
     .editRcDropDownSelect
@@ -383,6 +388,184 @@ tr:last-of-type th:last-of-type {
      color:red;
     }
     
+    @media (min-width: 1200px) {
+	    .container {
+	        max-width: 1500px;
+	    }
+	}
+	
+	@media (min-width: 768px) {
+	    .container {
+	        max-width: 1500px;
+	    }
+	}
+	
+	.rcEditinlineDropDown
+	{
+		width: auto;
+		min-width: 95% !important;
+		margin-left: 7px;
+	}
+	.rcEditinlineDropDownDefault
+	{
+		width: auto;
+		min-width: 100% !important;
+	}
+	
+	.rcEditReasonDropDown
+	{
+		width: auto;
+		min-width: 26% !important;
+		margin-left: 7px;
+	}
+	
+	.rcEditinlineDropDownLoad
+	{
+		width: auto;
+		min-width:68% !important;
+		margin-left:4px;
+	}
+	
+	.rcEditinlineinput
+	{
+		width: auto;
+		min-width: 100% !important;
+	}
+	
+	#remarksarea
+	{
+		margin-left: 10px;
+	}
+	
+	  .note {
+      background: #fff8c4;
+      border-left: 8px solid #ffcc00;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #333;
+      max-width: 100%;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .note_content
+    {
+     color : red;
+    }
+    
+</style>
+
+<style>
+  .checkbox-wrapper-26 * {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkbox-wrapper-26 label {
+    --size: 20px;
+    --shadow: calc(var(--size) * .07) calc(var(--size) * .1);
+
+    position: relative;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    margin: 0 auto;
+    background-color: #95006e;
+    border-radius: 50%;
+    box-shadow: 0 var(--shadow) #ffbeb8;
+    cursor: pointer;
+    transition: 0.2s ease transform, 0.2s ease background-color,
+      0.2s ease box-shadow;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .checkbox-wrapper-26 label:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    width: calc(var(--size) * .7);
+    height: calc(var(--size) * .7);
+    margin: 0 auto;
+    background-color: #fff;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    box-shadow: inset 0 var(--shadow) #ffbeb8;
+    transition: 0.2s ease width, 0.2s ease height;
+  }
+
+  .checkbox-wrapper-26 label:hover:before {
+    width: calc(var(--size) * .55);
+    height: calc(var(--size) * .55);
+    box-shadow: inset 0 var(--shadow) #ff9d96;
+  }
+
+  .checkbox-wrapper-26 label:active {
+    transform: scale(0.9);
+  }
+
+  .checkbox-wrapper-26 .tick_mark {
+    position: absolute;
+    top: 0px;
+    right: 0;
+    left: calc(var(--size) * -.05);
+    width: calc(var(--size) * .6);
+    height: calc(var(--size) * .6);
+    margin: 0 auto;
+    margin-left: calc(var(--size) * .14);
+    transform: rotateZ(-40deg);
+  }
+
+  .checkbox-wrapper-26 .tick_mark:before,
+  .checkbox-wrapper-26 .tick_mark:after {
+    content: "";
+    position: absolute;
+    background-color: #fff;
+    border-radius: 2px;
+    opacity: 0;
+    transition: 0.2s ease transform, 0.2s ease opacity;
+  }
+
+  .checkbox-wrapper-26 .tick_mark:before {
+    left: 0;
+    bottom: 0;
+    width: calc(var(--size) * .1);
+    height: calc(var(--size) * .3);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.23);
+    transform: translateY(calc(var(--size) * -.68));
+  }
+
+  .checkbox-wrapper-26 .tick_mark:after {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: calc(var(--size) * .1);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.23);
+    transform: translateX(calc(var(--size) * .78));
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label {
+    background-color: #07d410;
+    box-shadow: 0 var(--shadow) #92ff97;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label:before {
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:before,
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:after {
+    transform: translate(0);
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
@@ -409,6 +592,9 @@ String memberStatus=null;
 String budgetHead=null,budgetItem=null,codeHead=null,estimatedCost=null,itemNomenclature=null,justification=null;
 String rolesStr = null;
 String approvalsStr = null;
+String skipsStr = null;
+String linkedMemberIdsStr = null;
+String empIdsStr = null;
 
 if(fundDetails!=null && fundDetails.length > 0)
 {
@@ -427,6 +613,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 	justification=fundDetails[15]!=null  ? fundDetails[15].toString() : null;
 	rolesStr = fundDetails[21]!=null ? fundDetails[21].toString() : null;
 	approvalsStr = fundDetails[23]!=null ? fundDetails[23].toString() : null;
+	skipsStr = fundDetails[28]!=null ? fundDetails[28].toString() : null;
+	linkedMemberIdsStr = fundDetails[29]!=null ? fundDetails[29].toString() : null;
+	empIdsStr = fundDetails[22]!=null ? fundDetails[22].toString() : null;
 	
 } %>
 
@@ -528,7 +717,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 
                 <div class="row">
                     <!-- Left Division -->
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <table class="table recommendation-table" border="1" style="width:100%; border-collapse: collapse;margin-bottom:0px !important;">
 					    <% if (initiatingOfficer != null) { %>
 					        <tr>
@@ -545,10 +734,11 @@ if(fundDetails!=null && fundDetails.length > 0)
 						    
 						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
 						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
+						    String isSkippedStatus = masterList[12]!=null ? masterList[12].toString() : "N";
 						    %>
 
 						    	<tr <%if(isCurrentEmp){ %> class="highlight-box" <%} %>>
-					            <td style="width:40%;"><b><%=masterList[2] %></b>
+					            <td style="width:40%;"><b><%=masterList[2] %>&nbsp;<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %><span>Skipped</span> <%} %></b>
 					            <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
 					            </td>
 					            <td style="width:60%;" class="recommendation-value">
@@ -558,12 +748,21 @@ if(fundDetails!=null && fundDetails.length > 0)
 					                <%if(isCurrentEmp){ %>
 					                    <%if(!isApproved){ %><span class="badge badge-info"><%=masterList[9] != null ? masterList[9] : "" %></span><%} %>
 					                <%} %>
+					                
+					                <%if(isSkippedStatus.equalsIgnoreCase("N")){ %>
+					                
 					                <%if(masterList[4]!=null && (masterList[4].toString()).equalsIgnoreCase("Y")){ %>
 					                    <img src="view/images/verifiedIcon.png" width="20" height="20" 
 					                         style="background: transparent;padding: 1px;margin-top: -5px;">
 					                <%} %>
 
 					                <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">&nbsp;<%=masterList[8] %></span> <%} %>
+					                
+					                <%}else{ %>
+					                
+					                 <% if(masterList[14] != null){ %><span class="remarksDetails">(Reason : <%=masterList[14] %>)</span> <%} %>
+					                
+					                <%} %>
 
 					            </td>
 					        </tr>
@@ -577,9 +776,21 @@ if(fundDetails!=null && fundDetails.length > 0)
                     </div>
 
                     <!-- Right Division -->
-                    <div class="col-md-6">
+                    <div class="col-md-7">
+                    
+                    <%String[] linkedMembers = linkedMemberIdsStr.split(",");
+                    String[] empIds = empIdsStr.split(",");
+                    
+                    System.out.println("linkedMembers---"+Arrays.toString(linkedMembers));
+                    System.out.println("empIds---"+Arrays.toString(empIds));
+                    System.out.println("empId---"+empId);
+                    
+                    String linkedMemberId = IntStream.range(0, linkedMembers.length)
+                    	    .filter(i -> empIds[i]!=null && Long.parseLong((empIds[i].toString())) == (empId)).mapToObj(i -> linkedMembers[i]).findFirst().orElse(null);
+                    
+                    %>
 
-                     <% String memberType = null, rcApprovalDetails = null;
+                     <% String memberType = null, rcApprovalDetails = null, rcSkippedDetails = null;
                        String dhDetails = null,csDetails = null,ccDetails = null;
                        boolean dhStatus=false,csStatus=false,ccStatus = false,rcStatus =false;
                        if(rolesStr != null && approvalsStr != null)
@@ -588,15 +799,15 @@ if(fundDetails!=null && fundDetails.length > 0)
                        	csDetails = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse("NA");
                        	ccDetails = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse("NA");
                        	
-                            String input = "RC"; 
                             Set<String> rcFilter = Set.of("CM", "SE");
 
                             String[] roles = rolesStr.split(",");
                             String[] approvals = approvalsStr.split(",");
-
+                            String[] skips = skipsStr.split(",");
+                            
                             List<String[]> filtered = IntStream.range(0, roles.length)
-                                    .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
-                                    .mapToObj(i -> new String[]{roles[i], approvals[i]})
+                                    .filter(i -> rcFilter.contains(roles[i]))
+                                    .mapToObj(i -> new String[]{roles[i],(skips[i]!=null && skips[i].equalsIgnoreCase("Y") ? "Y" : approvals[i])})
                                     .collect(Collectors.toList());
 
                             rcApprovalDetails = filtered.stream() .map(a -> a[1]).collect(Collectors.collectingAndThen( Collectors.joining(","), s -> s.isEmpty() ? "NA" : s));
@@ -645,12 +856,14 @@ if(fundDetails!=null && fundDetails.length > 0)
 	                               
 									    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									    
-									    <div class="row" style="margin-bottom: 35px; margin-top: 20px;">
+									    <div class="form-inline" style="margin-bottom: 35px; margin-top: 20px;">
 									        <b>Remarks :</b><br>
 									        <textarea rows="3" cols="65" maxlength="1000" class="form-control" name="remarks" id="remarksarea"></textarea>
 									    </div>
-									    
+				    			    <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
+									<input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
+									    <input type="hidden" name="MemberLinkedId" value="<%=linkedMemberId%>">
 									    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 									
 											<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
@@ -688,7 +901,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 											</button>  &nbsp;
 										<%} %>
 										
-										 <img id="ForwardButton" onclick="openChatBox(<%=fundApprovalId%>)" data-tooltip="Send / Receive Queries" data-position="top" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+											  	<img id="ForwardButton_<%=fundApprovalId%>" onclick="openChatBox(<%=fundApprovalId%>, 'ForwardButton_<%=fundApprovalId%>')" data-tooltip="Click to see Queries" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/messageGreen.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 									    
 									</form>
                                </div>
@@ -703,6 +916,26 @@ if(fundDetails!=null && fundDetails.length > 0)
 								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
                               	
                               	<table style="width: 100%;" id="fundApprovalForardTable">
+                              	
+                              		<%long isCMorSEApproved = masterFlowDetails.stream()
+                              		    .filter(row -> ((row[1]!=null && ("CM".equalsIgnoreCase(row[1].toString()) || "SE".equalsIgnoreCase(row[1].toString()))) 
+                              		    		&& (row[4] != null && "N".equalsIgnoreCase(row[4].toString()))))
+                              		    .count(); %>
+                              		    
+                              		<%long isDHApproved = masterFlowDetails.stream()
+                              		    .filter(row -> row[1]!=null && "DH".equalsIgnoreCase(row[1].toString()) 
+                              		    		&& row[4] != null && "Y".equalsIgnoreCase(row[4].toString()))
+                              		    .count(); %>
+                              	
+	                              	<%if(isCMorSEApproved > 0 && isDHApproved > 0){ %>
+	                              		<tr>
+	                              		<td colspan="2">
+	                              		 <div class="note">Notes : <span class="note_content">Select the radio button to either skip or include the Recommending Officer.</span></div>
+	                              		</td>
+	                              		</tr>
+	                              		
+	                              		<%} %>
+                              		
                               		
                               		  <%if(masterFlowDetails != null){ %>
 					    
@@ -713,6 +946,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
 									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
 									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
+									    boolean isMemberTypeCMorSE = masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE");
+									    String isSkippedStatus = masterFlowList[12]!=null ? masterFlowList[12].toString() : "N";
+									    String reasonType = masterFlowList[13]!=null ? masterFlowList[13].toString() : "N";
 									    boolean committeeAction = true;
 									    %>
 									    
@@ -721,44 +957,117 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
 									    	</td>
 								            <td class="recommendation-value editRCDropDown">
+								            
+								            <div class="form-inline">
+								            
+								            <% 
+								            System.out.println("isMemberTypeCMorSE-----"+isMemberTypeCMorSE);
+								            System.out.println("isCMorSEApproved-----"+isCMorSEApproved);
+								            System.out.println("isDHApproved-----"+isDHApproved);
+								            System.out.println("isApproved--#######################---"+isDHApproved);
+								            %>
+								            
+								            <%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %>
+								            
+								            <%if(!isApproved){ %>
+								              <div class="checkbox-wrapper-26">
+												  <input type="hidden" id="CheckBoxHidden-<%=masterFlowList[5] %>" name="SkipReccEmpStatus" value="<%=isSkippedStatus %>">
+												  <input type="checkbox" id="CheckBox-<%=masterFlowList[5] %>" class="form-control" onclick="displayReasonDropDown('<%=masterFlowList[5] %>','<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>')" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> checked="checked" <%} %>>
+												  <label for="CheckBox-<%=masterFlowList[5] %>" class="tooltip-container" data-tooltip="Click the button to Skip the Recommending Officer" data-position="top">
+												    <div class="tick_mark"></div>
+												  </label>
+												</div>
+
+									            <div class="rcEditReasonDropDown rcEditReasonDropDown-<%=masterFlowList[5] %>" <% if(isSkippedStatus.equalsIgnoreCase("N")){ %> style="display: none;" <%} %>>
+										            <select id="Reason-<%=masterFlowList[5] %>" name="ReasonType" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+											            <option <%if(reasonType.equalsIgnoreCase("N")){ %> selected="selected" <%} %> value="-1">Select Reason</option>
+											            <option <%if(reasonType.equalsIgnoreCase("T")){ %> selected="selected" <%} %> value="T">TD</option>
+											            <option <%if(reasonType.equalsIgnoreCase("L")){ %> selected="selected" <%} %> value="L">Leave</option>
+										            </select>
+									            </div>
+									            <%} %>
+									            <%} else{ %>
+									            
+									            	<input type="hidden" name="SkipReccEmpStatus" value="N">
+									            	<input type="hidden" name="ReasonType" value="N">
+									            
+									            <%} %>
+									            
+									            <div class="<%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %> 
+									            
+									            	<% if(!isApproved){ %>
+									            				<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %>
+									            				rcEditinlineDropDownLoad
+									            				<%}else{ %>
+									            				rcEditinlineDropDown 
+									            				<%} %>
+									            				
+									            		<%}else{ %>
+									            		
+									            		rcEditinlineDropDownDefault
+									            		
+									            		<%} %>
+									            				
+									            			<%}else{ %> 
+									            				rcEditinlineDropDownDefault 
+									            			<%} %> 
+									            			
+									            			rcEditinlineDropDown-<%=masterFlowList[5] %>">
 									              
 									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
-		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
-		                              			
-		                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
-		                              			
-			                              			<%if(employeeList!=null && employeeList.size()>0){ %>
-				                              				<%for(Object[] empDetails: employeeList){ %>
-				                              					<%if(empDetails[3]!=null){ %>
-				                              						<option value="<%=empDetails[0] %>" <%if(empDetails[0]!=null && rcEmpId.equalsIgnoreCase(empDetails[0].toString())){ %> selected="selected" <%} %>><%=empDetails[2] %><%if(empDetails[3]!=null){ %>, <%=empDetails[3] %><%} %></option>
-				                              					<%} %>
-				                              				<%} %>
-			                              			    <%} %>
-		                              			
+									            
+										            <select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> name="EditReccEmpIdDisabled" <%}else{ %> name="EditReccEmpId" <%} %> class="form-control select2 editRcDropDownSelect" style="width: 100%;" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> disabled="disabled" <%} %>>
+			                              			
+			                              			 <option value="">Select Employee</option>
+			                              			
+				                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
+				                              			
+					                              			<%if(employeeList!=null && employeeList.size()>0){ %>
+						                              				<%for(Object[] empDetails: employeeList){ %>
+						                              					<%if(empDetails[3]!=null){ %>
+						                              						<option value="<%=empDetails[0] %>" <%if(empDetails[0]!=null && rcEmpId.equalsIgnoreCase(empDetails[0].toString())){ %> selected="selected" <%} %>><%=empDetails[2] %><%if(empDetails[3]!=null){ %>, <%=empDetails[3] %><%} %></option>
+						                              					<%} %>
+						                              				<%} %>
+					                              			    <%} %>
+				                              			
+				                              			<%}else{ %>
+				                              			
+				                              				<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
+					                              				<%for(Object[] masterList: committeeMasterList){ %>
+					                              				
+					                              				<%if(masterList[1]!=null && masterList[3]!=null){ %>
+					                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")) || ((masterMemberType.equalsIgnoreCase("CC") || masterMemberType.equalsIgnoreCase("SC")) && ((masterList[1].toString()).equalsIgnoreCase("CC") || (masterList[1].toString()).equalsIgnoreCase("SC"))); // CM - Committee Member %>
+					                              				
+					                              					<%if(committeeAction){ %>
+					                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && rcEmpId.equalsIgnoreCase(masterList[2].toString())){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
+					                              					<%} %>
+					                              				<%} %>
+					                              				<%} %>
+				                              			    <%} %>
+				                              			
+				                              			<%} %>
+				                              			
+				                              			</select>
+				                              			
+				                              			<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %>
+				                              			<input type="hidden" id="TempEditReccEmpId" name="EditReccEmpId" value="<%=rcEmpId %>">
+				                              			<%} %>
+				                              			
+				                              			</div>
+									            
 		                              			<%}else{ %>
 		                              			
-		                              				<%if(committeeMasterList!=null && committeeMasterList.size()>0){ %>
-			                              				<%for(Object[] masterList: committeeMasterList){ %>
-			                              				
-			                              				<%if(masterList[1]!=null && masterList[3]!=null){ %>
-			                              					<% committeeAction = ((masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE")) && (masterList[1].toString()).equalsIgnoreCase("CM")) || ((masterMemberType.equalsIgnoreCase("CC") || masterMemberType.equalsIgnoreCase("SC")) && ((masterList[1].toString()).equalsIgnoreCase("CC") || (masterList[1].toString()).equalsIgnoreCase("SC"))); // CM - Committee Member %>
-			                              				
-			                              					<%if(committeeAction){ %>
-			                              						<option value="<%=masterList[2] %>" <%if(masterList[2]!=null && rcEmpId.equalsIgnoreCase(masterList[2].toString())){ %> selected="selected" <%} %>><%=masterList[3] %><%if(masterList[4]!=null){ %>, <%=masterList[4] %><%} %></option>
-			                              					<%} %>
-			                              				<%} %>
-			                              				<%} %>
-		                              			    <%} %>
-		                              			
+		                              			<%if(isMemberTypeCMorSE){%>
+		                              			<input type="hidden" name="SkipReccEmpStatus" value="N">
+									            <input type="hidden" name="ReasonType" value="N">
 		                              			<%} %>
-		                              			
-		                              			</select>
-		                              			<%}else{ %>
 		                              			
 		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
-		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
+		                              				<input type="text" class="form-control rcEditinlineinput" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
 		                              			
 		                              			<%} %>
+		                              			
+		                              			</div>
 								                
 								            </td>
 								        </tr>
@@ -793,8 +1102,8 @@ if(fundDetails!=null && fundDetails.length > 0)
                        <span style="color:#4a036c; border-radius:10px; padding:10px 9px; background:#eadcff; font-size:13px; font-weight:800;"> Recommendation Pending </span>
                         <% // Edit the Recommending Officer %>
                         <div >
-	                         <span style="font-weight:600;color:#000048;">Click Edit Button To Change Recommending Officer(s)</span><br>
-	                         <button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container secRcEditButton" onclick="EditRecommendingDetailsAction('O')">Edit&nbsp;&#10097;&#10097;</button>
+	                         <span style="font-weight:600;color:#000048;">Click Edit Button To Change or Skip Recommending Officer(s)</span><br>
+	                         <button type="button" data-tooltip="Change or Skip Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container secRcEditButton" onclick="EditRecommendingDetailsAction('O')">Edit&nbsp;&#10097;&#10097;</button>
                         </div>
                        </div>
                        
@@ -807,6 +1116,25 @@ if(fundDetails!=null && fundDetails.length > 0)
 								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
                               	
                               	<table style="width: 100%;" id="fundApprovalForardTable">
+                              	
+                              	<%long isCMorSEApproved = masterFlowDetails.stream()
+                              		    .filter(row -> ((row[1]!=null && ("CM".equalsIgnoreCase(row[1].toString()) || "SE".equalsIgnoreCase(row[1].toString()))) 
+                              		    		&& (row[4] != null && "N".equalsIgnoreCase(row[4].toString()))))
+                              		    .count(); %>
+                              		    
+                              	<%long isDHApproved = masterFlowDetails.stream()
+                              		    .filter(row -> row[1]!=null && "DH".equalsIgnoreCase(row[1].toString()) 
+                              		    		&& row[4] != null && "Y".equalsIgnoreCase(row[4].toString()))
+                              		    .count(); %>
+                              	
+                              	<%if(isCMorSEApproved > 0 && isDHApproved > 0){ %>
+                              		<tr>
+                              		<td colspan="2">
+                              		 <div class="note">Notes : <span class="note_content">Select the radio button to either skip or include the Recommending Officer.</span></div>
+                              		</td>
+                              		</tr>
+                              		
+                              		<%} %>
                               		
                               		  <%if(masterFlowDetails != null){ %>
 
@@ -817,7 +1145,15 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
 									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
 									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
+									    boolean isMemberTypeCMorSE = masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE");
+									    String isSkippedStatus = masterFlowList[12]!=null ? masterFlowList[12].toString() : "N";
+									    String reasonType = masterFlowList[13]!=null ? masterFlowList[13].toString() : "N";
 									    boolean committeeAction = true;
+									    %>
+									    
+									    <%
+									    System.out.println("reasonType****"+reasonType);
+									    System.out.println("isApproved--#######################---"+isApproved);
 									    %>
 
 									    	<tr>
@@ -825,9 +1161,58 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
 									    	</td>
 								            <td class="recommendation-value editRCDropDown">
+								            
+								            <div class="form-inline">
+								            
+								            <%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %>
+								            
+								            <%if(!isApproved){ %>
+								              <div class="checkbox-wrapper-26">
+												  <input type="hidden" id="CheckBoxHidden-<%=masterFlowList[5] %>" name="SkipReccEmpStatus" value="<%=isSkippedStatus %>">
+												  <input type="checkbox" id="CheckBox-<%=masterFlowList[5] %>" class="form-control" onclick="displayReasonDropDown('<%=masterFlowList[5] %>','<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>')" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> checked="checked" <%} %>>
+												  <label for="CheckBox-<%=masterFlowList[5] %>" class="tooltip-container" data-tooltip="Click the button to Skip the Recommending Officer" data-position="top">
+												    <div class="tick_mark"></div>
+												  </label>
+												</div>
+											
+
+									            <div class="rcEditReasonDropDown rcEditReasonDropDown-<%=masterFlowList[5] %>" <% if(isSkippedStatus.equalsIgnoreCase("N")){ %> style="display: none;" <%} %>>
+										            <select id="Reason-<%=masterFlowList[5] %>" name="ReasonType" class="form-control select2 editRcDropDownSelect" style="width: 100%;" <% if(isSkippedStatus.equalsIgnoreCase("N")){ %> disabled="disabled" <%} %>>
+											            <option <%if(reasonType.equalsIgnoreCase("N")){ %> selected="selected" <%} %> value="-1">Select Reason</option>
+											            <option <%if(reasonType.equalsIgnoreCase("T")){ %> selected="selected" <%} %> value="T">TD</option>
+											            <option <%if(reasonType.equalsIgnoreCase("L")){ %> selected="selected" <%} %> value="L">Leave</option>
+										            </select>
+									            </div>
+									            
+									            <%} %>
+									            <%} else{ %>
+									            
+									            	<input type="hidden" name="SkipReccEmpStatus" value="N">
+									            	<input type="hidden" name="ReasonType" value="N">
+									            
+									            <%} %>
+									            
+									            <div class="<%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %> 
+									            
+									            				<%if(!isApproved){ %>
+									            				<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %>
+									            				rcEditinlineDropDownLoad
+									            				<%}else{ %>
+									            				rcEditinlineDropDown 
+									            				<%} %>
+									            				<%}else{ %>
+									            			    rcEditinlineDropDownDefault
+									            				<%} %>
+									            				
+									            			<%}else{ %> 
+									            				rcEditinlineDropDownDefault 
+									            			<%} %> 
+									            			
+									            			rcEditinlineDropDown-<%=masterFlowList[5] %>">
 
 									            <% if(!isApproved && !isCurrentEmp && !mainAuthority){ %>
-		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" class="form-control select2 editRcDropDownSelect" style="width: 100%;">
+		                              			<select id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> name="EditReccEmpIdDisabled" <%}else{ %> name="EditReccEmpId" <%} %> class="form-control select2 editRcDropDownSelect" style="width: 100%;" <%if(isSkippedStatus.equalsIgnoreCase("Y")){ %> disabled="disabled" <%} %>>		                              			
+		                              			
 		                              			<option value="">Select Employee</option>
 		                              			
 		                              			<%if(masterMemberType.equalsIgnoreCase("DH")){ %>
@@ -858,11 +1243,26 @@ if(fundDetails!=null && fundDetails.length > 0)
 		                              			<%} %>
 		                              			
 		                              			</select>
+		                              			
+		                              			<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %>
+		                              			<input type="hidden" id="TempEditReccEmpId" name="EditReccEmpId" value="<%=rcEmpId %>">
+		                              			<%} %>
+		                              			
+		                              			</div>
+		                              			
 		                              			<%}else{ %>
+		                              			
+			                              			<%if(isMemberTypeCMorSE){%>
+			                              			<input type="hidden" name="SkipReccEmpStatus" value="N">
+										            <input type="hidden" name="ReasonType" value="N">
+			                              			<%} %>
+			                              			
 		                              				<input type="hidden" id="<%=masterFlowList[10]!=null ? masterFlowList[10] : ""  %>" name="EditReccEmpId" value="<%=masterFlowList[3] %>">
-		                              				<input type="text" class="form-control" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
+		                              				<input type="text" class="form-control rcEditinlineinput" readonly="readonly" value="<%=masterFlowList[6]!=null ? masterFlowList[6] : "-" %><%= masterFlowList[7] != null ? ", "+masterFlowList[7] : "" %>">
 
 		                              			<%} %>
+		                              			
+		                              			</div>
 
 								            </td>
 								        </tr>
@@ -904,15 +1304,64 @@ if(fundDetails!=null && fundDetails.length > 0)
 
 <script type="text/javascript">
 
+function displayReasonDropDown(memberLinkedId, dropDownIdAttribute)
+{
+	var checkbox = $("#CheckBox-"+memberLinkedId);
+	var member = $('#' + dropDownIdAttribute).val() || 0;
+	if(checkbox.is(":checked"))
+	{
+		$(".rcEditReasonDropDown-" + memberLinkedId).show();
+		$(".rcEditinlineDropDown-" + memberLinkedId).attr("style", "width:auto; min-width:68% !important;margin-left:4px;");
+		$("#CheckBoxHidden-" + memberLinkedId).val('Y');
+		
+		$('#' + dropDownIdAttribute).append('<input type="hidden" id="TempEditReccEmpId" name="EditReccEmpId" value="'+ member +'">');
+		$('#' + dropDownIdAttribute).prop("disabled", true);
+		$('#' + dropDownIdAttribute).attr("name", "EditReccEmpIdDisabled");
+
+		$('#Reason-' + memberLinkedId).prop("disabled", false);
+	}
+	else
+	{
+		$(".rcEditinlineDropDown-" + memberLinkedId).attr("style", "width:auto; min-width:95% !important;");
+		$(".rcEditReasonDropDown-" + memberLinkedId).hide();
+		$("#CheckBoxHidden-" + memberLinkedId).val('N');
+		
+		$("#TempEditReccEmpId").remove();
+		$('#' + dropDownIdAttribute).prop("disabled", false);
+		$('#' + dropDownIdAttribute).attr("name", "EditReccEmpId");
+		
+		$('#Reason-' + memberLinkedId).prop("disabled", true);
+	}
+	
+	
+}
+
+</script>
+
+<script type="text/javascript">
+
 function updateReccDetailsFunction()
 {
 	var rcMembers = $("select[name='EditReccEmpId'], input[name='EditReccEmpId']").map(function() {
 	        return $(this).val();  
 	    }).get(); 
+	
+	var reasonTypes = $("select[name='ReasonType']:not(:disabled), input[name='ReasonType']").map(function() {
+	        return $(this).val();  
+	    }).get(); 
+	
+	var isSkipped = $("select[name='SkipReccEmpStatus'], input[name='SkipReccEmpStatus']").map(function() {
+	        return $(this).val();  
+	    }).get(); 
+	
 
 	if (new Set(rcMembers).size !== rcMembers.length) 
 	{
 		showAlert("The same Recommending Officer cannot be selected more than once. Please review your selection.");
+	} 
+	else if (reasonTypes.includes('-1')) 
+	{
+		showAlert("When skipping the Recommending Officer, please select a reason.");
 	} 
 	else 
 	{
@@ -928,10 +1377,6 @@ function updateReccDetailsFunction()
 		    );
 		}
 	}
-
-
-	
-	
 }
 
 function EditRecommendingDetailsAction(actionType)
@@ -1009,6 +1454,13 @@ $(document).ready(function(){
 	
 	getAttachementDetailsInline('<%=fundApprovalId %>');
 });
+
+window.onload = function () {
+    if (!sessionStorage.getItem("msgShown")) {
+        showSuccessFlyMessage("Recommending Officer(s) Updated Successfully..&#128077;");
+        sessionStorage.setItem("msgShown", "true");
+    }
+};
 
 </script>
 </html>

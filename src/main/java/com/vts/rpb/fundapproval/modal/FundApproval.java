@@ -25,6 +25,9 @@ public class FundApproval {
 	@Column(name = "EstimateType", length = 1)
 	private String estimateType;
 	
+	@Column(name = "EstimateAction", length = 1)
+	private String estimateAction;
+	
 	@Column(name = "SerialNo", length = 20)
 	private String serialNo;
 	
@@ -66,6 +69,9 @@ public class FundApproval {
 	
 	@Column(name = "RequisitionDate")
 	private LocalDate RequisitionDate;
+	
+	@Column(name = "PDIDemandDate")
+	private LocalDate pdiDemandDate;
 	
 	@Column(name = "Justification", length = 500)
 	private String justification;

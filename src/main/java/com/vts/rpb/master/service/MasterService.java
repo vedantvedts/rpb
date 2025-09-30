@@ -12,10 +12,18 @@ public interface MasterService
 	public List<Object[]> GetLabInfo(String LabCode) throws Exception;
 
 	public List<Object[]> getOfficersList(String labCode) throws Exception;
+	
+	public String FormRoleName(String LoginType) throws Exception;
 
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception;
 
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception;
+	
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception;
+	
+	public List<Object[]> checkOfficerValidity(String memberType, String fromDate, String toDate) throws Exception;
+	
+	public List<Object[]> checkEditOfficerValidity(String memberType, String committeMasterId,String fromDate,String toDate) throws Exception;
 
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception;
 
@@ -26,5 +34,7 @@ public interface MasterService
 	public long EditCommitteeMembers(CommitteeMembers cm)throws Exception;
 
 	public Object[] getDivisionDetails(String divisionId) throws Exception;
+	
+	public long deleteCommitteeMember(String committeeMemberId,String ModifiedBy,String ModifiedDate) throws Exception;
 }
 

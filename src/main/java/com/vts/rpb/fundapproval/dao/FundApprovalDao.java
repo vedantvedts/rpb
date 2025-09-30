@@ -50,9 +50,6 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public List<Object[]> getAllCommitteeMemberDetails(LocalDate currentDate) throws Exception;
 	
-	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String projectId, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception;
-
 	public long insertFundApprovalTransaction(FundApprovalTrans transaction) throws Exception;
 
 	public long insertLinkedCommitteeMembers(FundLinkedMembers linkedMembers) throws Exception;
@@ -79,7 +76,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	
-	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception;
+	public List<Object[]> estimateTypeParticularDivList(long divisionId, String estimateType,String finYear, String loginType,String empId,String budget, String proposedProject, String budgetHeadId, String budgetItemId,String fromCost, String toCost,String status,String memberType,int RupeeValue) throws Exception;
 
 	public long insertCarryForwardItemDetails(FundApproval fundRequest) throws Exception;
 
@@ -99,7 +96,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public FundApproval getRevisionListDetails(String fundApprovalId) throws Exception;
 
-	public long getRevisionCount(String fundApprovalId) throws Exception;
+	public Long getRevisionCount(String fundApprovalId) throws Exception;
 	
 	public long RevisionDetailsSubmit(FundApprovedRevision revision) throws Exception;
 
@@ -122,5 +119,18 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	public List<Object[]> getParticularFundQueryHeader(String fundApprovalId) throws Exception;
 	
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
+	
+	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
+
+	public void deleteFundRequestAttachmentDetails(long fundApprovalId);
+
+	public void deleteFundRequestQueriesDetails(long fundApprovalId);
+
+	public void deleteFundRequestRevisionDetails(long fundApprovalId);
+
+	public void deleteFundRequestTransDetails(long fundApprovalId);
+
+	public void deleteFundRequestLinkedMembersDetails(long fundApprovalId);
+
 }
 

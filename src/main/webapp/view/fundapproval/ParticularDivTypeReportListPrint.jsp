@@ -65,14 +65,14 @@ String ReOrFbe=(String)request.getAttribute("ReOrFbe");
 		Object DivName = "", DivCode = "";
 		String EstimateTypeFromList = "";
 		String financialYear = "";
+		String ProposedProject = null;
 		if (requisitionList != null && !requisitionList.isEmpty()) {
-			requisitionList.forEach(row -> System.out.println(Arrays.toString(row)));
 		    Object[] firstItem = requisitionList.get(0);
 		    DivName = firstItem[2] != null ? firstItem[2] : "";
 		    DivCode = firstItem[27] != null ? firstItem[27] : "";
 		    EstimateTypeFromList = firstItem[3] != null ? String.valueOf(firstItem[3]) : "";
 		    financialYear = firstItem[6] != null ? String.valueOf(firstItem[6]) : "";
-		    System.err.print("Divname->"+firstItem[2]);
+		    ProposedProject = firstItem[30] != null ? String.valueOf(firstItem[30]) : "";
 		}
 		
 		String AmtFormat =(String)request.getAttribute("amountFormat");
@@ -299,139 +299,168 @@ border-collapse: collapse;
      <% } else {%>--
      <%} %>
    </span>
-   <span style="font-weight: 600;color:#19a2af;"><%=financialYear%> </span>
+   <span style="font-weight: 600;color:#19a2af;"><%=financialYear%> </span>&nbsp;&nbsp;&nbsp;&nbsp;
+<%if(ProposedProject!=null && !ProposedProject.equalsIgnoreCase("")) {%>
+   <span style="font-weight: 600;color:#6a1616;">Proposed Project : </span>
+   <span style="font-weight: 600;color:#19a2af;"><%=ProposedProject%></span> 
+<%} %>
  </div>
 						
-						<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;">
-					        <table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
-					            <thead>
-					                <tr style="background-color: #ffd589;">
-					                    <th>SN</th>
-					                    <th>Budget Head</th>
-					                    <th>Initiating Officer</th>
-					                    <th>Item Nomenclature</th>
-					                    <th class="text-nowrap">Estimated Cost</th>
-					                    <th>Files</th>
-					                    <th>Justification</th>
-					                    <th>Remarks</th>
-					                </tr>
-					            </thead>
-					            <tbody>
-					           
-					            <% int sn=1;
-					            BigDecimal grandTotal = new BigDecimal(0);
-					            BigDecimal subTotal = new BigDecimal(0);
-					           
-					            if(requisitionList!=null && requisitionList.size()>0 && !requisitionList.isEmpty()){ %>
-					           <% requisitionList.forEach(row -> System.out.println(Arrays.toString(row))); %>
-					            <%for(Object[] data:requisitionList){
-					            	grandTotal=grandTotal.add(new BigDecimal(data[20].toString()));
-					            	String fundStatus=data[25]==null ? "NaN" : data[25].toString();
-					            %>
-					           
-					            	 <tr >
-					            	   
-				                   			<td align="center" style="font-weight: 400"><%=sn++ %>.
-				                   			<input type="hidden" onchange="FindAttachments(<%=data[0]%>)" name="findAttachments" id="findAttachments"></td>
-				                   			<td align="center" id="budgetHead" style="font-weight: 400"><%if(data[9]!=null){ %> <%=data[9] %><%}else{ %> - <%} %></td>
-				                   			<td align="left" id="Officer" style="font-weight: 400"><%if(data[22]!=null){ %> <%=data[22] %><%if(data[23]!=null){ %>, <%=data[23] %> <%} %> <%}else{ %> - <%} %></td>
-				                   			<td id="Item" style="font-weight: 400"><%if(data[18]!=null){ %> <%=data[18] %><%}else{ %> - <%} %></td>
-				                   			<td align="right" style="font-weight: 400;color: #00008B;"><%if(data[20]!=null){ %> <%=AmountConversion.amountConvertion(data[20], "R") %><%}else{ %> - <%} %></td>
-<td id="Files">
-<%
-    int count = 1;
-    if (data[29] != null && !data[29].toString().isEmpty()) {
-        String[] files = data[29].toString().split("\\|\\|");
+						<div class="table-responsive" style="margin-top: 0.5rem;">
+<table class="table table-bordered table-hover table-striped table-condensed" id="tblDataCCM">
+    <thead style="background-color: #d1d1d1; text-align: center;">
+        <tr style="background-color: #ffd589;">
+            <th>SN</th>
+            <th>Initiating Officer</th>
+            <th>Item Nomenculature</th>
+            <th>Probable Date of Demand</th>
+            <th>Estimated Cost</th>
+            <th width="10%">Files</th>
+            <th>Justification</th>
+            <th width="15%">Remarks by Member RPB</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%
+            BigDecimal grandTotal = new BigDecimal(0);
+            int sn = 1;
 
-        // Categories in required order
-        String[] categories = {"BQ", "Cost Of Estimate", "Justification"};
+            if (requisitionList != null && !requisitionList.isEmpty()) {
+                Map<String, List<Object[]>> groupedData = new LinkedHashMap<>();
 
-        // Track already printed files
-        java.util.Set<String> printed = new java.util.HashSet<>();
+                // Grouping requisitionList only by Budget Head
+                for (Object[] data : requisitionList) {
+                    String budgetHead = (data[9] != null) ? data[9].toString() : "Uncategorized";
+                    groupedData.putIfAbsent(budgetHead, new ArrayList<>());
+                    groupedData.get(budgetHead).add(data);
+                }
 
-        // Print files that belong to defined categories (in order)
-        for (String category : categories) {
-            for (String fileEntry : files) {
-                String[] parts = fileEntry.split("::");
-                if (parts.length == 4) {
-                    String fileName = parts[0];
-                    String originalName = parts[1];
-                    String filePath = parts[2];
-                    String FundApprovalAttachId = parts[3];
+                int totalBudgetHeads = groupedData.size(); // count of budget heads
 
-                    if (fileName.contains(category) && !printed.contains(FundApprovalAttachId)) {
-                        printed.add(FundApprovalAttachId);
-%>
-                        <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
-                           target="_blank"
-                           style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
-                           title="Click to preview/download">
-                           <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
-                        </a><br/>
-<%
+                for (Map.Entry<String, List<Object[]>> headEntry : groupedData.entrySet()) {
+                    String budgetHead = headEntry.getKey();
+                    List<Object[]> items = headEntry.getValue();
+                    BigDecimal subTotal = new BigDecimal(0);
+        %>
+        <!-- Budget Head Row -->
+        <tr style="background-color:#ffefd5; font-weight:bold;">
+            <td colspan="8" align="center" style="font-size: 18px"><%= budgetHead %></td>
+        </tr>
+
+        <%
+                    for (Object[] data : items) {
+                        BigDecimal estimatedCost = (data[20] != null) ? new BigDecimal(data[20].toString()) : new BigDecimal(0);
+                        subTotal = subTotal.add(estimatedCost);
+                        grandTotal = grandTotal.add(estimatedCost);
+        %>
+        <tr>
+            <td align="center"><%= sn++ %>.</td>
+            <td><%= (data[22] != null) ? data[22]+", " : "-" %><%= (data[23] != null) ? data[23] : "-" %></td>
+            <td><%= (data[18] != null) ? data[18] : "-" %></td>
+            <td align="center"><%= (data[26] != null) ? DateTimeFormatUtil.getSqlToRegularDate(data[26].toString()) : "-" %></td>
+            <td align="right" style="color: #00008B;">
+                <%= (data[20] != null) ? AmountConversion.amountConvertion(data[20], "R") : "-" %>
+            </td>
+            <td id="Files">
+                <%
+                    int count = 1;
+                    if (data[29] != null && !data[29].toString().isEmpty()) {
+                        String[] files = data[29].toString().split("\\|\\|");
+
+                        // Categories in required order
+                        String[] categories = {"BQ", "Cost Of Estimate", "Justification"};
+                        java.util.Set<String> printed = new java.util.HashSet<>();
+
+                        // Print files by category
+                        for (String category : categories) {
+                            for (String fileEntry : files) {
+                                String[] parts = fileEntry.split("::");
+                                if (parts.length == 4) {
+                                    String fileName = parts[0];
+                                    String FundApprovalAttachId = parts[3];
+
+                                    if (fileName.contains(category) && !printed.contains(FundApprovalAttachId)) {
+                                        printed.add(FundApprovalAttachId);
+                %>
+                                        <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                                           target="_blank"
+                                           style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                                           title="Click to preview/download">
+                                           <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                                        </a><br/>
+                <%
+                                    }
+                                }
+                            }
+                        }
+
+                        // Print other files
+                        for (String fileEntry : files) {
+                            String[] parts = fileEntry.split("::");
+                            if (parts.length == 4) {
+                                String fileName = parts[0];
+                                String FundApprovalAttachId = parts[3];
+
+                                if (!printed.contains(FundApprovalAttachId)) {
+                                    printed.add(FundApprovalAttachId);
+                %>
+                                    <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
+                                       target="_blank"
+                                       style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
+                                       title="Click to preview/download">
+                                       <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
+                                    </a><br/>
+                <%
+                                }
+                            }
+                        }
+                    } else {
+                %>
+                        -
+                <%
                     }
-                }
+                %>
+            </td>
+            <td><%= (data[19] != null) ? data[19] : "-" %></td>
+            <td align="center" style="font-weight: 200">
+                <%= (data[28] != null && !data[28].toString().isEmpty()) ? data[28] : "-" %>
+            </td>
+        </tr>
+        <%
+                    } // end items loop
+        %>
+        <%-- Subtotal only if more than 1 budget head --%>
+        <%
+            if (totalBudgetHeads > 1) {
+        %>
+        <tr style="font-weight:bold; background-color: #f0f0f0;">
+            <td colspan="4" align="right" style="font-size: 14px">Sub Total</td>
+            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(subTotal, "R") %></td>
+            <td colspan="3"></td>
+        </tr>
+        <%
             }
-        }
-
-        // Print files not in predefined categories
-        for (String fileEntry : files) {
-            String[] parts = fileEntry.split("::");
-            if (parts.length == 4) {
-                String fileName = parts[0];
-                String FundApprovalAttachId = parts[3];
-
-                if (!printed.contains(FundApprovalAttachId)) {
-                    printed.add(FundApprovalAttachId);
-%>
-                    <a href="FundRequestAttachDownload.htm?attachid=<%= FundApprovalAttachId %>"
-                       target="_blank"
-                       style="color: blue; text-decoration: none; font-weight: 600; font-size: 12px"
-                       title="Click to preview/download">
-                       <i class="fa fa-download"></i> <%= count++ %>. <%= fileName %>
-                    </a><br/>
-<%
-                }
+                } // end headEntry loop
+        %>
+        <!-- Grand Total Row -->
+        <tr style="font-weight:bold; background-color: #ffd589;">
+            <td colspan="4" align="right">Grand Total</td>
+            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
+            <td colspan="3"></td>
+        </tr>
+        <%
+            } else {
+        %>
+        <tr style="height: 9rem;">
+            <td colspan="8" style="color:red;font-weight: 600" align="center">
+                No Requisition Found
+            </td>
+        </tr>
+        <%
             }
-        }
-    } else {
-%>
-        -
-<%
-    }
-%>
-</td>
-
-
-				                   			<td style="font-weight: 400"><%if(data[19]!=null){ %> <%=data[19] %><%}else{ %> - <%} %></td>
-				                   			<td align="center" style="font-weight: 200"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
-			                      	
-					           		  </tr>
-					            <%} %>
-					            <%}else{ %>
-					           
-					             <tr style="height: 9rem;">
-					                        <td colspan="9" style="vertical-align: middle;">
-					                            <div class="text-danger" style="text-align:center">
-					                                <h6 style="font-weight: 600;">No Requisition Found</h6>
-					                            </div>
-					                        </td>
-					                    </tr>
-					           
-					            <%} %>
-				                 
-					            </tbody>
-					           <%if(requisitionList!=null && requisitionList.size()!=0){ %>
-					               <tfoot>
-					            	
-			                        <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="4" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
-							            <td colspan="4"></td>
-						   		     </tr>
-					            </tfoot>
-					            <%} %>
-					        </table>
+        %>
+    </tbody>
+</table>
 					    </div>
 						
 					  </form>

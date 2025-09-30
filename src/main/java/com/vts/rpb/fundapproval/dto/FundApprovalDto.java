@@ -10,6 +10,7 @@ import lombok.Data;
 public class FundApprovalDto {
 	
 	private long FundApprovalId;
+	private long fundMemberLinkedId;
 	private String EstimateType;
 	private BigDecimal DivisionId;
 	private String FinYear;
@@ -40,6 +41,8 @@ public class FundApprovalDto {
 	private String[] reccEmpId;
 	private String[] membersId;
 	private String[] subjectExpertsId;
+	private String[] skippedStatus;
+	private String[] reasonType;
 	private long secretaryId;
 	private long chairmanId;
 	private String Status;

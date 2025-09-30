@@ -21,7 +21,7 @@
         /* Sticky sidebar */
         .sidebar {
             width: 200px;
-            background: linear-gradient(to right, #021B79);
+            background: linear-gradient(to right, #021B79) !important;
             color: #ffffff;
             padding: 20px 10px;
             display: flex;
@@ -393,15 +393,21 @@
                                                 class="fa fa-chevron-right"></i> RPB Member Secretary
                                             <i class="fa fa-chevron-right"></i> RPB Standby Chairman / Chairman.
                                         </strong></li>
+                                    <li class="list-group-item"> <strong>Above Rs. 10 Crore:
+                                            <i class="fa fa-chevron-right"></i> GD/TD (User)
+                                            <i class="fa fa-chevron-right"></i> All RPB Members <i
+                                                class="fa fa-chevron-right"></i> RPB Member Secretary
+                                            <i class="fa fa-chevron-right"></i> RPB Standby Chairman / Chairman.
+                                        </strong></li>
                                 </ul>
                             </div>
                             <li class="list-group-item">Click on <i class="fa fa-share"></i> Forward item for approval
-                                <i class="fa fa-chevron-right"></i> Select the appropriate employee to approve the
+                                <i class="fa fa-chevron-right"></i> Select the appropriate employee to recommend or approve the
                                 request based on the estimated cost. <i class="fa fa-chevron-right"></i>
                                 Click <strong class="text-success">Forward.</strong>
                                 <div class="alert alert-info mt-2" role="alert">
                                     <i class="fa fa-info-circle me-2"></i>
-                                    Note: If Recommending Officer has not recommended ,the user can revoke the request.
+                                    Note: If Recommending Officer has not recommended, initiating officer or initiating officer's division users can revoke the request.
                                 </div>
                             </li>
 

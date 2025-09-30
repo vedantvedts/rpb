@@ -169,6 +169,7 @@ String AmtFormat =(String)request.getAttribute("amountFormat");
 String loginType=(String)session.getAttribute("LoginType");
 String Date=(String)request.getAttribute("dateForCCM");
 Integer DigitValue = (Integer)request.getAttribute("digitValueSel");
+String MemberType =(String)request.getAttribute("MemberType");
 String fromYear =(String)request.getAttribute("fromYear");
 String toYear =(String)request.getAttribute("toYear");
 
@@ -217,6 +218,7 @@ if(fundApprovalDto!=null)
                         required readonly>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
 
+   <%if("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)){ %>
                 <!-- Cost Format -->
                 <div class="d-flex align-items-center">
                     <label for="CostFormat" class="fw-bold me-2"><b>Cost:</b>&nbsp;&nbsp;&nbsp;</label>
@@ -226,6 +228,7 @@ if(fundApprovalDto!=null)
                         <option value="C" <%if("C".equalsIgnoreCase(AmtFormat)){ %> selected <%} %>>Crores</option>
                     </select>
                 </div>
+                <%} %>
             </form>
         </div>
     </div>
@@ -237,11 +240,11 @@ if(fundApprovalDto!=null)
                 <button type="submit" class="btn btn-sm">&nbsp;&nbsp;Go&nbsp;&nbsp;</button>
                 </form>  </div> --%>
          
-<div style="text-align: center; margin-bottom: 20px;">
+<div style="text-align: center; margin-bottom: 20px;margin-left: 67px;">
    <span style="font-weight: 700;font-size: 16px;">RE - </span>
-    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
+    <span style="color: #8f550b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Revised Estimate Fund Request Amount</span> &nbsp; &nbsp;<span style="font-size: 40px">|</span> &nbsp; &nbsp;
     <span style="font-weight: 700;font-size: 16px;">FBE - </span>
-    <span style="color: #004a8b; font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Fund Request Amount</span>
+    <span style="color: rgb(88 79 164); font-weight: 600;font-size: 14px;background-color:white;border-radius: 20px;padding: 5px 5px;border: solid"> Forecast Budget Estimate Fund Request Amount</span>
 </div>
 
 	<div id="noResultMessage" style="display: none; text-align: center; color: red; margin-top: 20px;font-size: 20px;">
@@ -277,6 +280,7 @@ if(fundApprovalDto!=null)
                 <input type="hidden" name="estimateType" value="R">
                 <input type="hidden" name="FromYear" value="<%=fromYear%>">
                 <input type="hidden" name="ToYear" value="<%=toYear%>">
+                <input type="hidden" name="AmountFormat" value="<%=AmtFormat%>">
                 
                  <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <!-- <h5 class="card-title" style="color: #2f3247;"><b>RE DETAILS</b></h5> -->
@@ -300,6 +304,7 @@ if(fundApprovalDto!=null)
                 <input type="hidden" name="estimateType" value="F">
                 <input type="hidden" name="fromYear" value="<%=fromYear%>">
                 <input type="hidden" name="toYear" value="<%=toYear%>">
+                <input type="hidden" name="AmountFormat" value="<%=AmtFormat%>">
                 
                 <button type="submit" style="all: unset; cursor: pointer; display: block; width: 100%;">
                     <p style="display: flex; justify-content: center; align-items: center; position: relative;">

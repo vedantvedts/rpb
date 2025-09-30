@@ -123,6 +123,14 @@
      font-size: 14px;
     }
     
+ .actionDate
+    {
+     font-weight: 600;
+     color:#e17400 !important;
+     margin:5px !important;
+     font-size: 13px;
+    }
+    
     .statusHeader
     {
     	text-decoration: underline;
@@ -149,6 +157,11 @@
         box-shadow: 0px 1px 15px rgb(157 7 7) !important;
         background: #fff2f2 !important;
     }
+    
+    #RevisionHistoryContainer
+    {
+    	text-align: -webkit-center;
+    }
 
 </style>
 
@@ -163,7 +176,7 @@
 				
 				      <!-- Modal Header -->
 				      <div class="modal-header bg-darktext-white ">
-				        <h4 class="modal-title" style="font-family:'Times New Roman'; font-weight: 600;">Attachment Details</h4>
+				        <h4 class="modal-title" style="font-family:'Times New Roman'; font-weight: 600;">Fund Details</h4>
 				        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
 				          <span aria-hidden="true" style="font-size: 25px;">&times;</span>
 				        </button>
@@ -188,13 +201,20 @@
 				        </thead>
 				        <tbody id="eAttachmentModalBody" style="font-weight: 400;"></tbody>
 				      </table>
+				      <div id="RevisionHistoryContainer"></div>
 				    </div>
+				
 				
 				    <!-- Right: File Preview Section -->
 				    <div class="col-md-6" id="previewSection" style="display: none;">
 				      <h5 class="text-primary" style="font-weight: 600;">Preview:&nbsp;&nbsp;<span  style="color:black;">(</span><span id="previewFileName" style="color:black;"></span><span  style="color:black;">)</span></h5>
 				      <iframe id="filePreviewIframe" style="width: 100%; height: 440px; border: 1px solid #ccc;"></iframe>
 				    </div>
+				    
+				    <div class="col-md-6">
+			
+            </div>
+            
 				  </div>
 				</div>
 		    </div>
@@ -250,7 +270,8 @@
   </div>
 
   <!-- Messages -->
-  <div id="chatMessages" style="flex:1; padding:8px; background:#f9f9f9; overflow-y:auto; height:calc(100% - 90px);background-image: url('view/images/ChatBg5.jpeg');">
+  <div id="chatMessages" style="flex:1; padding:8px; background:#f9f9f9; overflow-y:auto; height:calc(100% - 90px);background-image: url('view/images/ChatBg5.jpeg');background-position: center center;
+    background-repeat: no-repeat;background-size: cover;  ">
   </div>
 
   <!-- Footer -->
@@ -484,7 +505,8 @@ function loadFundHeader(fundApprovalId) {
                         Initiator_name: data[0][3],
                         InitiatorDesignation: data[0][4],
                         ItemNomenclature: data[0][5],
-                        ItemCost: data[0][6]
+                        ItemCost: data[0][6],
+                        DivisionCode: data[0][7]
                     };
 
                     renderChatHeader(details);
@@ -511,7 +533,7 @@ function renderChatHeader(details) {
 
     var header = document.createElement("div");
     header.id = "chatHeaderMessage";
-    header.style.textAlign = "center";
+    header.style.textAlign = "left";
     header.style.margin = "10px auto";
     header.style.maxWidth = "90%";
     header.style.background = "rgb(255 252 220)"; //#f1f1f1
@@ -520,7 +542,9 @@ function renderChatHeader(details) {
     header.style.fontSize = "14px";
     header.style.color = "#333";
     header.style.lineHeight = "1.7";
-
+    header.style.boxShadow = "-1px 2px 17px darkgrey";
+    header.style.fontWeight = "600";
+    	
     var BudgetType = null;
     if(details.BudgetType =='General'){
     	BudgetType="General";
@@ -529,10 +553,11 @@ function renderChatHeader(details) {
     	BudgetType="Proposed Project - "+ details.ProjectShortName;
     }
     header.innerHTML =
-        "<div style=''><b style='color: #034189;'>Budget Type:</b> " + BudgetType +
-        "&nbsp;&nbsp;&nbsp;<b style='color: #034189;'>Budget Head:</b> " + details.BudgetHeadDescription + "<br>" +
+        "<div style=''><b style='color: #034189;'>Division: </b>" + details.DivisionCode + "<br>"+
+    "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
+
         "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
-        "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
+        
         "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString())+"</div>";
 
     chatMessages.appendChild(header);

@@ -41,6 +41,13 @@ public class MasterServiceImpl implements MasterService
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception {
 		return masterDao.getDivisionList(labCode,empId,loginType,committeeMember);
 	}
+	
+
+     @Override
+		public String FormRoleName(String LoginType) throws Exception {
+			
+			return masterDao.getFormRoleName(LoginType);
+		}
 
 	@Override
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception {
@@ -48,8 +55,22 @@ public class MasterServiceImpl implements MasterService
 	}
 
 	@Override
+	public List<Object[]> getOfficersListWithoutCommitteeMembers(String labCode) throws Exception{
+		return masterDao.getOfficersListWithoutCommitteeMembers(labCode);
+	}
+	@Override
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
 		return masterDao.getAllEmployeeDetailsByDivisionId(divisionId);
+	}
+	
+	@Override
+	public List<Object[]> checkOfficerValidity(String memberType, String fromDate, String toDate) throws Exception {
+		return masterDao.checkOfficerValidity(memberType,fromDate,toDate);
+	}
+	
+	@Override
+	public List<Object[]> checkEditOfficerValidity(String memberType, String committeMasterId, String fromDate, String toDate) throws Exception{
+		return masterDao.checkEditOfficerValidity(memberType,committeMasterId,fromDate,toDate);
 	}
 
 	@Override
@@ -97,6 +118,11 @@ public class MasterServiceImpl implements MasterService
 			divisionDetails = list.get(0);
 		}
 		return divisionDetails;
+	}
+	
+	@Override
+	public long deleteCommitteeMember(String committeeMemberId,String ModifiedBy,String ModifiedDate) throws Exception{
+		return masterDao.deleteCommitteeMember(committeeMemberId, ModifiedBy, ModifiedDate);
 	}
 
 }
