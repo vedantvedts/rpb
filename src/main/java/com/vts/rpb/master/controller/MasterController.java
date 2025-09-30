@@ -1,6 +1,7 @@
 package com.vts.rpb.master.controller;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -102,6 +103,63 @@ public class MasterController
 			return json.toJson(getAllOfficersList);
 	     }
 		
+		@RequestMapping(value ="CheckEmployeeValidity.htm")
+		public @ResponseBody String CheckEmployeeValidity(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception{
+		
+			String UserName =(String)ses.getAttribute("Username");
+			logger.info(new Date() +"Inside CheckEmployeeValidity.htm "+UserName);	
+			String labCode = (ses.getAttribute("client_name")).toString();
+			Gson json = new Gson();
+			List<Object[]> checkOfficer=null;
+			
+			try {
+				String memberType=req.getParameter("memberType");
+				String fromDate=req.getParameter("fromDate");
+				String toDate=req.getParameter("toDate");
+				
+				String sqlFromDate=DateTimeFormatUtil.getRegularToSqlDateAsString(fromDate);
+				String sqlToDate=DateTimeFormatUtil.getRegularToSqlDateAsString(toDate);
+				System.err.println("mem->"+memberType+" ;sqlfrom->"+sqlFromDate+" ; SqlTo->"+sqlToDate);
+				
+				checkOfficer=masterService.checkOfficerValidity(memberType, sqlFromDate, sqlToDate);
+				checkOfficer.stream().forEach(a->System.err.println(Arrays.toString(a)));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return json.toJson(checkOfficer);
+	     }
+		
+		@RequestMapping(value ="CheckEditEmployeeValidity.htm")
+		public @ResponseBody String CheckEditEmployeeValidity(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception{
+		
+			System.err.println("--------------------CheckEditEmployeeValidity-----------------------------------------------------");
+			String UserName =(String)ses.getAttribute("Username");
+			logger.info(new Date() +"Inside CheckEmployeeValidity.htm "+UserName);	
+			String labCode = (ses.getAttribute("client_name")).toString();
+			Gson json = new Gson();
+			List<Object[]> checkOfficer=null;
+			
+			try {
+				String memberType=req.getParameter("memberType");
+				String committeMasterId=req.getParameter("committeMasterId");
+				String fromDate=req.getParameter("fromDate");
+				String toDate=req.getParameter("toDate");
+				
+				String sqlFromDate=DateTimeFormatUtil.getRegularToSqlDateAsString(fromDate);
+				String sqlToDate=DateTimeFormatUtil.getRegularToSqlDateAsString(toDate);
+				
+				System.err.println("mem->"+memberType+" ;CommitteMasterId->"+committeMasterId+" ;fromDate->"+fromDate+" ;toDate->"+toDate);
+				
+				checkOfficer=masterService.checkEditOfficerValidity(memberType, committeMasterId,sqlFromDate,sqlToDate);
+				checkOfficer.stream().forEach(a->System.err.println(Arrays.toString(a)));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return json.toJson(checkOfficer);
+	     }
+		
 		
 		  @RequestMapping(value="committeMasterAdd.htm",method = {RequestMethod.GET,RequestMethod.POST})
 		   	public String CommitteMasterAdd(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
@@ -139,7 +197,7 @@ public class MasterController
 		   	public String CommitteMasterEdit(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
 		   	{
 		   		String UserName = (String) ses.getAttribute("Username");
-		   		System.out.println("----");
+		   		System.err.println("--committeMasterEdit------------------");
 		   		logger.info(new Date() + "Inside committeMasterEdit.htm " + UserName);
 		   		try
 		   		{
@@ -159,6 +217,34 @@ public class MasterController
 					}else {
 						redir.addAttribute("resultFailure", "Committee 	Master Edit Unsuccessful");
 					}
+		   			
+		   		}catch(Exception e) {
+		   			e.printStackTrace();
+		   		}
+		   		
+		   		return "redirect:/CommitteMaster.htm";
+		   	}
+		  
+		  @RequestMapping(value="deleteCommitteeMember.htm",method = {RequestMethod.GET,RequestMethod.POST})
+		   	public String deleteCommitteeMember(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+		   	{
+		   		String UserName = (String) ses.getAttribute("Username");
+		   		logger.info(new Date() + "Inside deleteCommitteeMember.htm " + UserName);
+		   		try
+		   		{
+		   			String empId=req.getParameter("empIdDelete");
+					String committeeMemberId=req.getParameter("committeeMemberIdDelete");
+					String ModifiedDate=LocalDateTime.now().toString();
+					
+		   				long count=masterService.deleteCommitteeMember(committeeMemberId,UserName,ModifiedDate);
+		   			
+						
+						  if(count > 0)
+						  { redir.addAttribute("resultSuccess","Committee Member Deleted Successfully"); }
+						  else {
+						  redir.addAttribute("resultFailure", "Committee Member Delete Unsuccessful");}
+						 
+		   			
 		   			
 		   		}catch(Exception e) {
 		   			e.printStackTrace();

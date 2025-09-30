@@ -62,6 +62,16 @@ public class MasterServiceImpl implements MasterService
 	public List<Object[]> getAllEmployeeDetailsByDivisionId(String divisionId) throws Exception {
 		return masterDao.getAllEmployeeDetailsByDivisionId(divisionId);
 	}
+	
+	@Override
+	public List<Object[]> checkOfficerValidity(String memberType, String fromDate, String toDate) throws Exception {
+		return masterDao.checkOfficerValidity(memberType,fromDate,toDate);
+	}
+	
+	@Override
+	public List<Object[]> checkEditOfficerValidity(String memberType, String committeMasterId, String fromDate, String toDate) throws Exception{
+		return masterDao.checkEditOfficerValidity(memberType,committeMasterId,fromDate,toDate);
+	}
 
 	@Override
 	public List<Object[]> CommitteeMasterList() throws Exception {
@@ -108,6 +118,11 @@ public class MasterServiceImpl implements MasterService
 			divisionDetails = list.get(0);
 		}
 		return divisionDetails;
+	}
+	
+	@Override
+	public long deleteCommitteeMember(String committeeMemberId,String ModifiedBy,String ModifiedDate) throws Exception{
+		return masterDao.deleteCommitteeMember(committeeMemberId, ModifiedBy, ModifiedDate);
 	}
 
 }
