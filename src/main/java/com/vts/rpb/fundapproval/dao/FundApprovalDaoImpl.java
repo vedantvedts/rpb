@@ -676,7 +676,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 					+ "  OR ( l.memberType = 'CS' AND EXISTS (SELECT 1 FROM ibas_fund_members_linked X WHERE x.fundApprovalId = l.fundApprovalId AND x.memberType = 'DH' AND x.isApproved = 'Y')\n"
 					+ "  AND NOT EXISTS (SELECT 1 FROM ibas_fund_members_linked Y WHERE y.fundApprovalId = l.fundApprovalId AND y.memberType IN ('CM','SE') AND y.isApproved = 'N' ) )\n"
 					+ "  OR ( l.memberType = 'CC' AND EXISTS (\n"
-					+ "  SELECT 1 FROM ibas_fund_members_linked z WHERE z.fundApprovalId = l.fundApprovalId AND z.memberType = 'CS' AND z.isApproved = 'Y'))) ORDER BY l.fundApprovalId;\n");
+					+ "  SELECT 1 FROM ibas_fund_members_linked z WHERE z.fundApprovalId = l.fundApprovalId AND z.memberType = 'CS' AND z.isApproved = 'Y'))) AND l.IsSkipped = 'N' ORDER BY l.fundApprovalId;\n");
 			query.setParameter("member", committeeMember);
 			query.setParameter("EmpId", empId);
 			return (List<Object[]>) query.getResultList();

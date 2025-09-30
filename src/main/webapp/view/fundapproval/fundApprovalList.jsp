@@ -599,6 +599,11 @@ $(document).ready(function(){
 		{
 			$("#tab-approved").click();
 		}
+		else if(listStatus == 'F') 
+		{
+			$("#tab-pending").click();
+		}
+			
 	}
 	
 });

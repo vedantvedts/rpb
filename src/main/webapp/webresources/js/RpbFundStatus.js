@@ -105,7 +105,7 @@ function previewInformation(fundApprovalId) {
 				}
 				else
 				{
-					pendingText = 'Recommending Officer Skipped because of ' + (skipReason == "L" ? "Leave" : "TD");
+					pendingText = 'Recommending Officer skipped due to ' + (skipReason == "L" ? "Leave" : "TD");
 				}
 				
                 // Map role codes to readable titles
