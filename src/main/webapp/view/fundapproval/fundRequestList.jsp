@@ -289,6 +289,7 @@ input[name="ItemNomenclature"]::placeholder {
 		<% DecimalFormat df=new DecimalFormat("#########################");
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
 		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
+		List<Object[]> previousYearFundDetails=(List<Object[]>)request.getAttribute("previousYearFbeDetails");
 		String empId=((Long)session.getAttribute("EmployeeId")).toString();
 		String loginType=(String)session.getAttribute("LoginType");
 		String MemberType =(String)request.getAttribute("MemberType");
@@ -774,6 +775,68 @@ input[name="ItemNomenclature"]::placeholder {
 		</div> 
 		
 		
+		
+	<%-- <!--Previous year Fund Details -->
+		
+		<div class="modal previousYearFundDetailsModal" tabindex="-1" role="dialog">
+				  <div class="modal-dialog modal-lg" role="document" style="max-width: 70% !important;">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" style="font-family:'Times New Roman';font-weight: 600;">FBE Details</h5><span style="color:#00f6ff;font-weight: 600;margin-top:3px;">&nbsp;<%if(previousFinYear!=null){ %>(<%=previousFinYear %>)<%} %></span>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				         <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">
+				       <form action="FBEDetailsTransfer.htm" id="FbeTransferForm">
+				       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				             
+				             <div class="table-responsive">
+				             <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="modalTable">
+					                   <thead>
+					                       <tr style="background-color:#edab33;color:#034189;">
+					                       <th class="text-nowrap">Project Code</th>
+					                       <th class="text-nowrap">Budget Head Description</th>
+					                       <th class="text-nowrap">Division</th>
+					                       <th class="text-nowrap">Budget Code</th>
+					                       <th class="text-nowrap">FBE Amount</th>
+					                       </tr>
+					                   </thead>
+					                   <tbody>
+					                   <%int sNo=1;
+					                   if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){
+					                     for(Object[] obj:previousYearFundDetails){%>
+					                       <tr> 
+					                         <td><input type="checkbox" class="checkbox" name="FBEMainId" value="<%=obj[0]%>"></td>
+					                         <td align="center"><%if(obj[8]!=null){%><%=obj[8] %><%}else{ %>-<%} %></td>
+					                         <td><%if(obj[6]!=null){%><%=obj[6] %><%}else{ %>-<%} %></td>
+					                         <td><%if(obj[13]!=null){%><%=obj[13] %><%}else{ %>-<%} %></td>
+					                         <td align="center"><%if(obj[9]!=null){%><%=obj[9] %><%}else{ %>-<%} %></td>
+					                         <td align="right"><%if(obj[10]!=null){%><%=AmountConversion.amountConvertion(obj[10].toString(),"R")%><%}else{ %>-<%} %></td>
+					                       </tr> 
+					                      
+					                       <%}}else{ %>
+					                        <tr>
+					                        	<td colspan="11" align="center" style="font-weight: 600;color:red;">No Record Found</td>
+					                        </tr>
+					                       <%} %>
+				                    </tbody>
+				                 </table> 
+				                </div>
+                       </form>
+                       <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
+                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> Click Submit Button To Push Items From <span style="color:red;font-size:13px;">FBE <%if(previousFinYear!=null){ %>(<%=previousFinYear %>)<%} %></span> To <span style="color:red;font-size:13px;">RE<%if(FromYear!=null && ToYear!=null){ %>(<%=FromYear %>-<%=ToYear %>)<%} %></span></span></div>
+				       <%} %>
+				      </div>
+				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
+				        <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
+				        	<button type="button" class="btn btn-sm submit-btn"  onclick="SubmitFBEDetailsTransfer()">Submit</button>
+				        <%} %>
+				        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" style="background-color: darkred;color:white;">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div> --%>
 
 
 			
