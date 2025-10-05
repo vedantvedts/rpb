@@ -1212,5 +1212,36 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception{
 		return fundApprovalDao.getFundApprovalRevisionDetails(fundApprovalId);
 	}
+
+	@Override
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String loginType, String memberType) throws Exception {
+		return fundApprovalDao.getPreviousYearFundDetailsList(previousFinYear,loginType,memberType);
+	}
+
+	@Override
+	@Transactional
+	public long transferFundDetails(String[] fundApprovalIds, String finYear, String estimateType, String userName) throws Exception {
+		
+		long status = 0;
+		if(fundApprovalIds != null && fundApprovalIds.length > 0)
+		{
+			for(int i = 0; i < fundApprovalIds.length; i++)
+			{
+				transferSelectedFundDetails(fundApprovalIds[i], finYear, estimateType, userName);
+			}
+		}
+		return 0;
+	}
+
+	private void transferSelectedFundDetails(String fundApprovalId, String finYear, String estimateType, String userName) {
+		
+		if(fundApprovalId == null)
+		{
+			throw new RuntimeException("fundApprovalId is " + fundApprovalId);
+		}
+			fundApprovalDao.transferFundApprovalDetails(fundApprovalId, finYear, estimateType, userName);
+		
+		
+	}
 	
 }

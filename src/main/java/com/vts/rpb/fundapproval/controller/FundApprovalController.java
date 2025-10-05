@@ -150,11 +150,18 @@ public class FundApprovalController
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
    			RequisitionList.stream().forEach(a->System.err.println("Request list->"+Arrays.toString(a)));
+   			String previousFinYear=DateTimeFormatUtil.getPreviousFinYearByUserSelectedFinYear(FinYear);
+   			List<Object[]> previousYearFundDetails=fundApprovalService.getPreviousYearFundDetailsList(previousFinYear,loginType,committeeMember);
+			if(previousYearFundDetails!=null && previousYearFundDetails.size()>0)
+			{
+				req.setAttribute("previousYearFbeDetails", previousYearFundDetails);
+			}
    			
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
    			req.setAttribute("MemberType", committeeMember);
    			req.setAttribute("currentFinYear", currentFinYear);
+   			req.setAttribute("previousFinYear", previousFinYear);
    			
    			//user selected different year Estimate type reset to RE
    			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -174,7 +181,7 @@ public class FundApprovalController
    		catch(Exception e)
    		{
    			e.printStackTrace();
-   			logger.error(new Date() + " Inside RequisitionList.htm " + UserName, e);
+   			logger.error(new Date() + " Inside FundRequest.htm " + UserName, e);
    			return "static/error";
    		}
    		return "fundapproval/fundRequestList";
@@ -1660,6 +1667,59 @@ public class FundApprovalController
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
 		}
 		
+		
+		@RequestMapping(value="FundDetailsTransfer.htm")
+		public String fundDetailsTransfer(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+		{
+			String UserName = (String) ses.getAttribute("Username");
+			logger.info(new Date() + "Inside FundDetailsTransfer.htm " + UserName);
+			try
+			{
+				String[] fundApprovalIds=req.getParameterValues("FundApprovalIdTransfer");
+				FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+				
+				if(fundApprovalIds == null || fundApprovalDto == null) 
+				{
+					return "redirect:/FundRequest.htm";
+				}
+				
+				String finYear=null,estimateType=null;
+				if(fundApprovalDto.getFromYearBackBtn()!=null && fundApprovalDto.getToYearBackBtn()!=null)
+				{
+					finYear=fundApprovalDto.getFromYearBackBtn()+"-"+fundApprovalDto.getToYearBackBtn();
+					redir.addAttribute("FromYear",fundApprovalDto.getFromYearBackBtn());
+					redir.addAttribute("ToYear",fundApprovalDto.getToYearBackBtn());
+				}
+				if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
+				{
+					estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
+					redir.addAttribute("EstimateType",fundApprovalDto.getEstimatedTypeBackBtn());
+				}
+				if(fundApprovalDto.getDivisionBackBtn()!=null)
+				{
+					redir.addAttribute("DivisionDetails",fundApprovalDto.getDivisionBackBtn());
+				}
+				
+				long status=fundApprovalService.transferFundDetails(fundApprovalIds,finYear,estimateType,UserName);
+			   
+				if(status>0)
+				{
+					redir.addAttribute("Status","FBE Items Successfully Transfered..&#128077;");
+				}
+				else
+				{
+					redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.error(new Date() + " Inside FBEDetailsTransfer.htm " + UserName, e);
+				return "static/error";
+			}
+			return "redirect:/FundRequest.htm";
+			
+		}
 		
 		
 		

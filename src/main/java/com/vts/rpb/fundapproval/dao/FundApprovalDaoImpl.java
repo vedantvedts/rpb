@@ -1,13 +1,16 @@
 package com.vts.rpb.fundapproval.dao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Repository;
 
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
@@ -1090,6 +1093,42 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			    } 
 			});
 		}
+	}
+
+	
+	@Override
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String loginType, String memberType) throws Exception {
+		try {
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,f.EstimateType,f.DivisionId,f.FinYear,f.REFBEYear,f.ProjectId,f.BudgetHeadId,h.BudgetHeadDescription,f.BudgetItemId,i.HeadOfAccounts,i.MajorHead,i.MinorHead,i.SubHead,i.SubMinorHead,f.BookingId,f.CommitmentPayIds,f.ItemNomenclature,f.Justification,ROUND((f.Apr + f.May + f.Jun + f.Jul + f.Aug + f.Sep + f.Oct + f.Nov + f.December + f.Jan + f.Feb +f.Mar),2) AS EstimatedCost,f.InitiatingOfficer,e.EmpName,ed.Designation,f.Remarks,f.PDIDemandDate,f.status, d.DivisionCode, d.DivisionName,f.InitiationId,f.BudgetType, ini.ProjectShortName, ini.ProjectTitle, d.DivisionHeadId FROM fund_approval f LEFT JOIN pms_dms_dev.employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN pms_dms_dev.employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN pms_dms_dev.division_master d ON d.DivisionId=f.DivisionId LEFT JOIN  pms_dms_dev.pfms_initiation ini ON ini.InitiationId = f.InitiationId WHERE f.FinYear=:previousFinYear AND f.EstimateType='F' AND ('A'=:loginType OR :memberType IN ('CS', 'CC')) ORDER BY f.FundApprovalId DESC");
+
+			query.setParameter("previousFinYear", previousFinYear);  
+			query.setParameter("loginType", loginType);  
+			query.setParameter("memberType", memberType);  
+			List<Object[]> result = (List<Object[]>)query.getResultList();
+			return result;
+			
+		}catch (Exception e) {
+			logger.error(new Date() +"Inside DAO getFundApprovalQueryDetails "+ e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public void transferFundApprovalDetails(String fundApprovalId, String finYear, String estimateType, String userName) {
+		
+		FundApproval fundModal = manager.find(FundApproval.class, Long.parseLong(fundApprovalId));
+		FundApproval newFundModal = new FundApproval();
+		BeanUtils.copyProperties(fundModal, newFundModal, "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+		newFundModal.setFundApprovalId(0);
+		newFundModal.setFinYear(finYear);
+		newFundModal.setEstimateType(estimateType);
+		newFundModal.setEstimateAction("L");
+		newFundModal.setReFbeYear(finYear);
+		newFundModal.setCreatedBy(userName);
+		newFundModal.setCreatedDate(LocalDateTime.now());
+		
+		manager.persist(newFundModal);;
 	}
 
 }

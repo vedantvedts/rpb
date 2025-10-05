@@ -232,7 +232,12 @@
 		  <artifactId>spring-cloud-starter-openfeign</artifactId>
 		  <version>4.2.0</version>
 		</dependency>
-		
+
+     	<dependency>
+     		<groupId>com.vts</groupId>
+     		<artifactId>ibas</artifactId>
+     		<version>0.0.1-SNAPSHOT</version>
+     	</dependency>
 	</dependencies>
 	
 		<dependencyManagement>
