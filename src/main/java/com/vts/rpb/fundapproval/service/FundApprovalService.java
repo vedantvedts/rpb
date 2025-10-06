@@ -89,7 +89,7 @@ public interface FundApprovalService
 	
 	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
 
-	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String loginType, String memberType) throws Exception;
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String finYear, String loginType, String memberType, String empId) throws Exception;
 
 	public long transferFundDetails(String[] fundApprovalIds, String finYear, String estimateType, String userName) throws Exception;
 }

@@ -1214,8 +1214,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String loginType, String memberType) throws Exception {
-		return fundApprovalDao.getPreviousYearFundDetailsList(previousFinYear,loginType,memberType);
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String finYear, String loginType, String memberType, String empId) throws Exception {
+		return fundApprovalDao.getPreviousYearFundDetailsList(previousFinYear,finYear,loginType,memberType,empId);
 	}
 
 	@Override
@@ -1229,18 +1229,24 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			{
 				transferSelectedFundDetails(fundApprovalIds[i], finYear, estimateType, userName);
 			}
+			status = 1;
 		}
-		return 0;
+		return status;
 	}
 
-	private void transferSelectedFundDetails(String fundApprovalId, String finYear, String estimateType, String userName) {
+	private void transferSelectedFundDetails(String oldFundApprovalId, String finYear, String estimateType, String userName) {
 		
-		if(fundApprovalId == null)
+		if(oldFundApprovalId == null)
 		{
-			throw new RuntimeException("fundApprovalId is " + fundApprovalId);
+			throw new RuntimeException("fundApprovalId is " + oldFundApprovalId);
 		}
-			fundApprovalDao.transferFundApprovalDetails(fundApprovalId, finYear, estimateType, userName);
-		
+			
+		long newFundApprovalId = fundApprovalDao.transferFundApprovalDetails(oldFundApprovalId, finYear, estimateType, userName);
+		fundApprovalDao.transferFundAttchmentDetails(oldFundApprovalId, newFundApprovalId, userName);
+		fundApprovalDao.transferFundQuriesDetails(oldFundApprovalId, newFundApprovalId);
+		fundApprovalDao.transferRevisionOfFundApprovalDetails(oldFundApprovalId, newFundApprovalId, finYear, estimateType, userName);
+		fundApprovalDao.transferFundTransDetails(oldFundApprovalId, newFundApprovalId);
+		fundApprovalDao.transferFundMemberLinkedDetails(oldFundApprovalId, newFundApprovalId, userName);
 		
 	}
 	

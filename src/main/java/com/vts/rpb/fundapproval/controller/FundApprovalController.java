@@ -151,7 +151,7 @@ public class FundApprovalController
    			
    			RequisitionList.stream().forEach(a->System.err.println("Request list->"+Arrays.toString(a)));
    			String previousFinYear=DateTimeFormatUtil.getPreviousFinYearByUserSelectedFinYear(FinYear);
-   			List<Object[]> previousYearFundDetails=fundApprovalService.getPreviousYearFundDetailsList(previousFinYear,loginType,committeeMember);
+   			List<Object[]> previousYearFundDetails=fundApprovalService.getPreviousYearFundDetailsList(previousFinYear,FinYear,loginType,committeeMember,empId);
 			if(previousYearFundDetails!=null && previousYearFundDetails.size()>0)
 			{
 				req.setAttribute("previousYearFbeDetails", previousYearFundDetails);
@@ -909,7 +909,6 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String finYear=req.getParameter("finYear");
 			String estimatedType=req.getParameter("estimatedType");
-			String estimateAction=req.getParameter("estimateAction");
 			String divisionId=req.getParameter("divisionId");
 			String initiationId=req.getParameter("selProposedProject");
 			String budgetType=req.getParameter("budgetSel");
@@ -962,7 +961,7 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setEstimateAction(estimateAction);
+				fundApproval.setEstimateAction("C");
 				fundApproval.setRequisitionDate(LocalDate.now());
 				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1014,7 +1013,6 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setEstimateAction(estimateAction);
 				fundApproval.setRequisitionDate(LocalDate.now());
 				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1064,7 +1062,6 @@ public class FundApprovalController
 				exisitingFundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				exisitingFundApproval.setItemNomenclature(itemNomenclature!=null ? itemNomenclature.trim() : null);
 				exisitingFundApproval.setJustification(justification!=null ? justification.trim() : null);
-				exisitingFundApproval.setEstimateAction(estimateAction);
 				exisitingFundApproval.setRequisitionDate(LocalDate.now());
 				exisitingFundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				exisitingFundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1329,7 +1326,7 @@ public class FundApprovalController
 		Object[] attachmentdata=fundApprovalService.FundRequestAttachData(Long.valueOf(fundApprovalAttachId));
 	    if (attachmentdata != null) 
 	    {
-	        File file = new File(uploadpath+"FundApproval"+File.separator+ attachmentdata[1]+File.separator+attachmentdata[3]);
+	        File file = new File(uploadpath + attachmentdata[4] + File.separator + attachmentdata[3]);
 	        String mimeType = Files.probeContentType(file.toPath());
 	        response.setContentType(mimeType);
 	        response.setHeader("Content-Disposition", "inline; filename=\"" + attachmentdata[3] + "\"");
@@ -1704,7 +1701,7 @@ public class FundApprovalController
 			   
 				if(status>0)
 				{
-					redir.addAttribute("Status","FBE Items Successfully Transfered..&#128077;");
+					redir.addAttribute("Status","Funds Successfully Transfered..&#128077;");
 				}
 				else
 				{

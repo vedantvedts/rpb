@@ -40,7 +40,7 @@ public class FundLinkedMembers {
 	private String isSkipped = "N";
 	
 	@Column(name = "SkipReason", length = 5)
-	private String skipReason;
+	private String skipReason = "N";
 	
 	@Column(name = "CreatedBy", length = 100)
 	private String  createdBy;

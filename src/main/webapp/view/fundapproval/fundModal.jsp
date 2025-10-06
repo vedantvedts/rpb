@@ -506,7 +506,8 @@ function loadFundHeader(fundApprovalId) {
                         InitiatorDesignation: data[0][4],
                         ItemNomenclature: data[0][5],
                         ItemCost: data[0][6],
-                        DivisionCode: data[0][7]
+                        DivisionCode: data[0][7],
+                        Status : data[0][8]
                     };
 
                     renderChatHeader(details);
@@ -561,6 +562,13 @@ function renderChatHeader(details) {
         "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString())+"</div>";
 
     chatMessages.appendChild(header);
+    
+    if(details.Status == 'A')
+    {
+    	$('#chatInput').prop('disabled', true);
+    	$('#chatSendButton').prop('disabled', true);
+
+    }
 }
 
 function startAutoRefresh(fundApprovalId) {
