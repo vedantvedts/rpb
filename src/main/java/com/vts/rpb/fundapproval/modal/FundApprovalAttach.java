@@ -19,7 +19,7 @@ public class FundApprovalAttach {
 	private long FundApprovalAttachId;
 	
 	@Column(name = "FundApprovalId")
-	private long FundApprovalId;
+	private long fundApprovalId;
 	
 	@Column(name = "Path", length = 255)
 	private String Path;

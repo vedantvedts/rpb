@@ -46,7 +46,7 @@ public class MasterDaoImpl implements MasterDao {
 	public Object[] getUserFullDetails(long loginId) throws Exception {
 		logger.info(new Date() +"Inside DAOImpl getUserFullDetails()");
 		try {
-			Query query=manager.createNativeQuery("SELECT CONCAT(IFNULL(CONCAT(e.Title,' '),''), e.EmpName) AS 'empname', fr.FormRoleName, e.EmpNo, e.LabCode, ed.Designation, d.DivisionCode, d.DivisionName FROM login l INNER JOIN "+mdmdb+".employee e ON e.EmpId=l.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN form_role fr ON fr.FormRoleId=l.FormRoleId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=e.DivisionId WHERE l.LoginId=:loginId");
+			Query query=manager.createNativeQuery("SELECT CONCAT(IFNULL(CONCAT(e.Title,' '),''), e.EmpName) AS 'empname', fr.FormRoleName, e.EmpNo, e.LabCode, ed.Designation, d.DivisionCode, d.DivisionName, d.DivisionId FROM login l INNER JOIN "+mdmdb+".employee e ON e.EmpId=l.EmpId LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN form_role fr ON fr.FormRoleId=l.FormRoleId LEFT JOIN "+mdmdb+".division_master d ON d.DivisionId=e.DivisionId WHERE l.LoginId=:loginId");
 			query.setParameter("loginId", loginId);
 			List<Object[]> list=(List<Object[]>)query.getResultList();
 			

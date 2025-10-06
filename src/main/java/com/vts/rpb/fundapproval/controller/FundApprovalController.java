@@ -150,11 +150,18 @@ public class FundApprovalController
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
    			
    			RequisitionList.stream().forEach(a->System.err.println("Request list->"+Arrays.toString(a)));
+   			String previousFinYear=DateTimeFormatUtil.getPreviousFinYearByUserSelectedFinYear(FinYear);
+   			List<Object[]> previousYearFundDetails=fundApprovalService.getPreviousYearFundDetailsList(previousFinYear,FinYear,loginType,committeeMember,empId);
+			if(previousYearFundDetails!=null && previousYearFundDetails.size()>0)
+			{
+				req.setAttribute("previousYearFbeDetails", previousYearFundDetails);
+			}
    			
    			req.setAttribute("RequisitionList", RequisitionList);
    			req.setAttribute("DivisionList", DivisionList);
    			req.setAttribute("MemberType", committeeMember);
    			req.setAttribute("currentFinYear", currentFinYear);
+   			req.setAttribute("previousFinYear", previousFinYear);
    			
    			//user selected different year Estimate type reset to RE
    			 FundApprovalBackButtonDto backDto=new FundApprovalBackButtonDto();
@@ -174,7 +181,7 @@ public class FundApprovalController
    		catch(Exception e)
    		{
    			e.printStackTrace();
-   			logger.error(new Date() + " Inside RequisitionList.htm " + UserName, e);
+   			logger.error(new Date() + " Inside FundRequest.htm " + UserName, e);
    			return "static/error";
    		}
    		return "fundapproval/fundRequestList";
@@ -902,7 +909,6 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 			String finYear=req.getParameter("finYear");
 			String estimatedType=req.getParameter("estimatedType");
-			String estimateAction=req.getParameter("estimateAction");
 			String divisionId=req.getParameter("divisionId");
 			String initiationId=req.getParameter("selProposedProject");
 			String budgetType=req.getParameter("budgetSel");
@@ -955,7 +961,7 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setEstimateAction(estimateAction);
+				fundApproval.setEstimateAction("C");
 				fundApproval.setRequisitionDate(LocalDate.now());
 				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1007,7 +1013,6 @@ public class FundApprovalController
 				fundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				fundApproval.setItemNomenclature(itemNomenclature.trim());
 				fundApproval.setJustification(justification.trim());
-				fundApproval.setEstimateAction(estimateAction);
 				fundApproval.setRequisitionDate(LocalDate.now());
 				fundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				fundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1057,7 +1062,6 @@ public class FundApprovalController
 				exisitingFundApproval.setBudgetItemId(budgetItemId!=null ? Long.valueOf(budgetItemId) : 0);
 				exisitingFundApproval.setItemNomenclature(itemNomenclature!=null ? itemNomenclature.trim() : null);
 				exisitingFundApproval.setJustification(justification!=null ? justification.trim() : null);
-				exisitingFundApproval.setEstimateAction(estimateAction);
 				exisitingFundApproval.setRequisitionDate(LocalDate.now());
 				exisitingFundApproval.setPdiDemandDate(DateTimeFormatUtil.getRegularToSqlDate(PdiDemandDate));
 				exisitingFundApproval.setFundRequestAmount(fundRequestAmount != null && !fundRequestAmount.trim().isEmpty() ? new BigDecimal(fundRequestAmount.trim()) : BigDecimal.ZERO);
@@ -1322,7 +1326,7 @@ public class FundApprovalController
 		Object[] attachmentdata=fundApprovalService.FundRequestAttachData(Long.valueOf(fundApprovalAttachId));
 	    if (attachmentdata != null) 
 	    {
-	        File file = new File(uploadpath+"FundApproval"+File.separator+ attachmentdata[1]+File.separator+attachmentdata[3]);
+	        File file = new File(uploadpath + attachmentdata[4] + File.separator + attachmentdata[3]);
 	        String mimeType = Files.probeContentType(file.toPath());
 	        response.setContentType(mimeType);
 	        response.setHeader("Content-Disposition", "inline; filename=\"" + attachmentdata[3] + "\"");
@@ -1660,6 +1664,59 @@ public class FundApprovalController
 			return json.toJson(list, new TypeToken<List<BudgetDetails>>() {}.getType());
 		}
 		
+		
+		@RequestMapping(value="FundDetailsTransfer.htm")
+		public String fundDetailsTransfer(HttpServletRequest req,HttpServletResponse resp,HttpSession ses,RedirectAttributes redir) throws Exception
+		{
+			String UserName = (String) ses.getAttribute("Username");
+			logger.info(new Date() + "Inside FundDetailsTransfer.htm " + UserName);
+			try
+			{
+				String[] fundApprovalIds=req.getParameterValues("FundApprovalIdTransfer");
+				FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto) ses.getAttribute("FundApprovalAttributes");
+				
+				if(fundApprovalIds == null || fundApprovalDto == null) 
+				{
+					return "redirect:/FundRequest.htm";
+				}
+				
+				String finYear=null,estimateType=null;
+				if(fundApprovalDto.getFromYearBackBtn()!=null && fundApprovalDto.getToYearBackBtn()!=null)
+				{
+					finYear=fundApprovalDto.getFromYearBackBtn()+"-"+fundApprovalDto.getToYearBackBtn();
+					redir.addAttribute("FromYear",fundApprovalDto.getFromYearBackBtn());
+					redir.addAttribute("ToYear",fundApprovalDto.getToYearBackBtn());
+				}
+				if(fundApprovalDto.getEstimatedTypeBackBtn()!=null)
+				{
+					estimateType=fundApprovalDto.getEstimatedTypeBackBtn();
+					redir.addAttribute("EstimateType",fundApprovalDto.getEstimatedTypeBackBtn());
+				}
+				if(fundApprovalDto.getDivisionBackBtn()!=null)
+				{
+					redir.addAttribute("DivisionDetails",fundApprovalDto.getDivisionBackBtn());
+				}
+				
+				long status=fundApprovalService.transferFundDetails(fundApprovalIds,finYear,estimateType,UserName);
+			   
+				if(status>0)
+				{
+					redir.addAttribute("Status","Funds Successfully Transfered..&#128077;");
+				}
+				else
+				{
+					redir.addAttribute("Failure", "Something Went Wrong..&#128078;");
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				logger.error(new Date() + " Inside FBEDetailsTransfer.htm " + UserName, e);
+				return "static/error";
+			}
+			return "redirect:/FundRequest.htm";
+			
+		}
 		
 		
 		

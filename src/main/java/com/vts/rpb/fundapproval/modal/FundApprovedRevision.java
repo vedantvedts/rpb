@@ -28,6 +28,9 @@ public class FundApprovedRevision {
 	@Column(name = "EstimateType", length = 1)
 	private String estimateType;
 	
+	@Column(name = "EstimateAction", length = 5)
+	private String estimateAction;
+	
 	@Column(name = "SerialNo", length = 20)
 	private String serialNo;
 	
@@ -115,54 +118,6 @@ public class FundApprovedRevision {
 	@Column(name = "InitiatingOfficer")
 	private long InitiatingOfficer=0;
 	
-	@Column(name = "RC1")
-	private long rc1=0;
-	
-	@Column(name = "RC1Role", length = 50)
-	private String rc1Role;
-	
-	@Column(name = "RC2")
-	private long rc2=0;
-	
-	@Column(name = "RC2Role", length = 50)
-	private String rc2Role;
-	
-	@Column(name = "RC3")
-	private long rc3=0;
-	
-	@Column(name = "RC3Role", length = 50)
-	private String rc3Role;
-	
-	@Column(name = "RC4")
-	private long rc4=0;
-	
-	@Column(name = "RC4Role", length = 50)
-	private String rc4Role;
-	
-	@Column(name = "RC5")
-	private long rc5=0;
-	
-	@Column(name = "RC5Role", length = 50)
-	private String rc5Role;
-	
-	@Column(name = "RC6")
-	private long rc6=0;
-	
-	@Column(name = "RC6Role", length = 50)
-	private String rc6Role;
-	
-	@Column(name = "ApprovingOfficer")
-	private long approvingOfficer=0;
-	
-	@Column(name = "ApprovingOfficerRole", length = 50)
-	private String approvingOfficerRole;
-	
-	@Column(name = "RCStatusCode", length = 50)
-	private String rcStatusCode;
-	
-	@Column(name = "RCStatusCodeNext", length = 50)
-	private String rcStatusCodeNext;
-	
 	@Column(name = "Status", length = 1)
 	private String status="N";
 	
@@ -175,9 +130,28 @@ public class FundApprovedRevision {
 	@Column(name = "ApprovalDate")
 	private LocalDate approvalDate;
 	
+	@Column(name = "RevokedBy", length = 100)
+	private long revokedBy;
+	
+	@Column(name = "RevokedDate")
+	private LocalDateTime revokedDate;
+	
+	@Column(name = "ReturnedBy")
+	private long returnedBy;
+	
+	@Column(name = "ReturnedDate")
+	private LocalDateTime returnedDate;
+	
+	@Column(name = "ApprovedBy")
+	private long approvedBy;
+	
+	@Column(name = "ApprovedDate")
+	private LocalDateTime approvedDate;
+	
 	@Column(name = "CreatedBy", length = 100)
 	private String  createdBy;
 	
 	@Column(name = "CreatedDate")
 	private LocalDateTime createdDate;
+	
 }

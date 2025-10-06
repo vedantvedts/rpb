@@ -132,5 +132,19 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public void deleteFundRequestLinkedMembersDetails(long fundApprovalId);
 
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String finYear, String loginType, String memberType, String empId) throws Exception;
+
+	public long transferFundApprovalDetails(String oldFundApprovalId, String finYear, String estimateType, String userName);
+
+	public void transferFundAttchmentDetails(String oldFundApprovalId, long newFundApprovalId, String userName);
+
+	public void transferFundQuriesDetails(String oldfundApprovalId, long newFundApprovalId);
+
+	public void transferRevisionOfFundApprovalDetails(String oldfundApprovalId, long newFundApprovalId, String finYear, String estimateType,String userName);
+
+	public void transferFundTransDetails(String oldFundApprovalId, long newFundApprovalId);
+
+	public void transferFundMemberLinkedDetails(String oldFundApprovalId, long newFundApprovalId, String userName);
+
 }
 

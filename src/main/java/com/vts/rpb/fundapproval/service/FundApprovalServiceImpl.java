@@ -1212,5 +1212,42 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception{
 		return fundApprovalDao.getFundApprovalRevisionDetails(fundApprovalId);
 	}
+
+	@Override
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String finYear, String loginType, String memberType, String empId) throws Exception {
+		return fundApprovalDao.getPreviousYearFundDetailsList(previousFinYear,finYear,loginType,memberType,empId);
+	}
+
+	@Override
+	@Transactional
+	public long transferFundDetails(String[] fundApprovalIds, String finYear, String estimateType, String userName) throws Exception {
+		
+		long status = 0;
+		if(fundApprovalIds != null && fundApprovalIds.length > 0)
+		{
+			for(int i = 0; i < fundApprovalIds.length; i++)
+			{
+				transferSelectedFundDetails(fundApprovalIds[i], finYear, estimateType, userName);
+			}
+			status = 1;
+		}
+		return status;
+	}
+
+	private void transferSelectedFundDetails(String oldFundApprovalId, String finYear, String estimateType, String userName) {
+		
+		if(oldFundApprovalId == null)
+		{
+			throw new RuntimeException("fundApprovalId is " + oldFundApprovalId);
+		}
+			
+		long newFundApprovalId = fundApprovalDao.transferFundApprovalDetails(oldFundApprovalId, finYear, estimateType, userName);
+		fundApprovalDao.transferFundAttchmentDetails(oldFundApprovalId, newFundApprovalId, userName);
+		fundApprovalDao.transferFundQuriesDetails(oldFundApprovalId, newFundApprovalId);
+		fundApprovalDao.transferRevisionOfFundApprovalDetails(oldFundApprovalId, newFundApprovalId, finYear, estimateType, userName);
+		fundApprovalDao.transferFundTransDetails(oldFundApprovalId, newFundApprovalId);
+		fundApprovalDao.transferFundMemberLinkedDetails(oldFundApprovalId, newFundApprovalId, userName);
+		
+	}
 	
 }

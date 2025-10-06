@@ -869,7 +869,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 											<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
 											
 											<% if(currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("CS")){ %>
-									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Edit</button>
+									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Committee Members Edit</button>
 									    	&nbsp;<%} %>
 									    	
 									    	 <% String actionName = "", action= "A";
@@ -1370,6 +1370,7 @@ function updateReccDetailsFunction()
 		    showConfirm('Are You Sure To Update The Recommending Officer(s)..?',
 		        function (confirmResponse) {
 		            if (confirmResponse) {
+		            	$("select[name='ReasonType']:disabled").prop("disabled", false);
 		            	form.attr("action","EditCommitteeMemberDetails.htm");
 		                form.submit();
 		            }
