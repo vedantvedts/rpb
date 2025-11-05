@@ -1,3 +1,4 @@
+<%@page import="com.vts.rpb.utils.CommonActivity"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="java.util.stream.IntStream"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
@@ -299,65 +300,23 @@ String failure=(String)request.getParameter("resultFailure");%>
 			                     
 			                     <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
 			                     
-			                      <% String memberType = null;
-			                        String dhStatus = null,csStatus = null,ccStatus = null;
-			                        if(obj[20] != null && obj[22] != null)
-			                        {
-			                        	 String rolesStr = obj[20].toString();
-			                             String approvalsStr = obj[22].toString();
-			                             
-			                        	dhStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
-			                        	csStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
-			                        	ccStatus = Arrays.stream(approvalsStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
-			                        	
-			                             String input = "RC"; 
-			                             Set<String> rcFilter = Set.of("CM", "SE");
-
-			                             String[] roles = rolesStr.split(",");
-			                             String[] approvals = approvalsStr.split(",");
-
-			                             List<String[]> filtered = IntStream.range(0, roles.length)
-			                                     .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
-			                                     .mapToObj(i -> new String[]{roles[i], approvals[i]})
-			                                     .collect(Collectors.toList());
-
-			                             String rcStatus = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
-			                             
-			                        }
-			                        %>
-									       
-									       <td style="width: 200px;" align="center">
+			                       <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, obj[20], obj[22]);
+											 
+											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
+											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+											 {
+												 dhStatus = fundStatusDetails[0];
+												 rcStatus = fundStatusDetails[1];
+												 csStatus = fundStatusDetails[2];
+												 ccStatus = fundStatusDetails[3];
+												 message = fundStatusDetails[4];
+												 statusColor = fundStatusDetails[5];
+											 }
+						                        %>
+									       <td style="width: 215px;" align="center">
 				                   			 
 		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-										            
-										            <% String statusColor="",message="NA";
-										            if(fundStatus!=null) { 
-											               if("A".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "green";
-											            	   message = "Approved";
-											               } else if("N".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "#8c2303";
-											                   message = "Forward Pending";
-											               } else if("F".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "blue";
-											                   message = "Forwarded";
-				            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "red";
-											                   message = "Returned";
-				            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "#007e68";
-											                   message = "Revoked";
-				            							   } else if(csStatus.equalsIgnoreCase("N")){
-				            								   message = "Reco Pending";
-											            	   statusColor = "#8c2303";
-				            							   } else if(csStatus.equalsIgnoreCase("Y")){
-				            								   message = "Approval Pending";
-											            	   statusColor = "#bd0707";
-											               } 
-				            							 }
-										               %>
-										               
 										           		<div class="form-inline">
 										           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
 										            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
@@ -479,68 +438,28 @@ String failure=(String)request.getParameter("resultFailure");%>
 											    </button>
 											</td>
 			                     
-			                      <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
+			                   
+			                     <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
 			                     
-			                      <% String memberType = null;
-			                        String dhStatus = null,csStatus = null,ccStatus = null;
-			                        if(obj[20] != null && obj[22] != null)
-			                        {
-			                        	 String rolesStr = obj[20].toString();
-			                             String approvalsStr = obj[22].toString();
-			                             
-			                        	dhStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("DH")).findFirst().orElse(null);
-			                        	csStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CS")).findFirst().orElse(null);
-			                        	ccStatus = Arrays.stream(rolesStr.split(",")).skip(Arrays.asList(rolesStr.split(",")).indexOf("CC")).findFirst().orElse(null);
-			                        	
-			                             String input = "RC"; 
-			                             Set<String> rcFilter = Set.of("CM", "SE");
-
-			                             String[] roles = rolesStr.split(",");
-			                             String[] approvals = approvalsStr.split(",");
-
-			                             List<String[]> filtered = IntStream.range(0, roles.length)
-			                                     .filter(i -> input.equals("RC") && rcFilter.contains(roles[i]))
-			                                     .mapToObj(i -> new String[]{roles[i], approvals[i]})
-			                                     .collect(Collectors.toList());
-
-			                             String rcStatus = filtered.stream().map(a -> a[1]).collect(Collectors.joining(","));
-			                        }
-			                        %>
+			                       <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, obj[20], obj[22]);
+											 
+											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
+											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+											 {
+												 dhStatus = fundStatusDetails[0];
+												 rcStatus = fundStatusDetails[1];
+												 csStatus = fundStatusDetails[2];
+												 ccStatus = fundStatusDetails[3];
+												 message = fundStatusDetails[4];
+												 statusColor = fundStatusDetails[5];
+											 }
+						                        %>
 									       
-									       <td style="width: 100px;" align="center">
+									       <td style="width: 215px;" align="center">
 				                   			 
 		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
 										            
-										            <% String statusColor="",message="NA";
-										            if(fundStatus!=null) { 
-											               if("A".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "green";
-											            	   message = "Approved";
-											               } else if("N".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "#8c2303";
-											                   message = "Forward Pending";
-											               } else if("F".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "blue";
-											                   message = "Forwarded";
-				            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "red";
-											                   message = "Returned";
-				            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-											            	   statusColor = "#007e68";
-											                   message = "Revoked";
-				            							   } else if(csStatus.equalsIgnoreCase("N")){
-				            								   message = "Reco Pending";
-											            	   statusColor = "#8c2303";
-				            							   } else if(csStatus.equalsIgnoreCase("Y")){
-				            								   message = "Approval Pending";
-											            	   statusColor = "#bd0707";
-											               } else {
-				            								   message = "Reco Pending";
-											            	   statusColor = "#8c2303";
-											               }
-				            							 }
-										               %>
 										               
 										           		<div class="form-inline">
 										           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;

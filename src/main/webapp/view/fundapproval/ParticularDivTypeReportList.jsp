@@ -1,3 +1,4 @@
+<%@page import="com.vts.rpb.utils.CommonActivity"%>
 <%@page import="com.vts.rpb.utils.DateTimeFormatUtil"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
@@ -394,7 +395,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Budget -->
                 <div style="display: flex; align-items: center;">
                     <label style="font-weight: bold; margin-right: 8px;">Budget:</label>
-                    <select class="form-control select2" id="selBudget" name="selBudget" onchange="formSubmit()" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
+                    <select class="form-control select2" id="selBudget" name="selBudget" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
                         <option value="-1" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("-1")){ %> selected="selected" <%} %>>All</option>
                         <option value="B" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("B")){ %> selected="selected" <%} %>>GEN (General)</option>
 						  <option value="N" <%if(existingbudget!=null && existingbudget.equalsIgnoreCase("N")){ %> selected="selected" <%} %>>Proposed Project</option>
@@ -404,7 +405,7 @@ input[name="ItemNomenclature"]::placeholder {
                 <!-- Proposed Project -->
 	               <div style="display: flex; align-items: center;" class="ProposedProject">
                     <label style="font-weight: bold; margin-right: 8px;">Proposed Project:</label>
-                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" onchange="formSubmit()" required style="font-size: 12px; min-width: 200px;">
+                    <select id="selProposedProject" name="selProposedProject" class="form-control select2" data-live-search="true" required style="font-size: 12px; min-width: 200px;">
                         <option  value="" disabled="disabled">Select Proposed Project</option>
                     </select>
                 </div>
@@ -544,41 +545,28 @@ input[name="ItemNomenclature"]::placeholder {
 							        <i class="fa fa-eye"></i>
 							    </button>
 							</td>
-							<td style="width: 200px;" align="center">
+							
+							 <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, data[30], data[31]);
+											 
+								 String message = "", statusColor = "";
+								 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+								 {
+									 message = fundStatusDetails[4];
+									 statusColor = fundStatusDetails[5];
+								 }
+			                 %>
+							
+							<td style="width: 215px;" align="center">
 				                   			 
-				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
-												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            
-												            <% String statusColor="",message="NA";
-												            if(fundStatus!=null) { 
-												               if("A".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "green";
-												            	   message = "Approved";
-												               } else if("N".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#8c2303";
-												                   message = "Forward Pending";
-												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[30]!=null && (data[30].toString()).equalsIgnoreCase("N"))) {
-												            	   statusColor = "blue";
-												                   message = "Forwarded";
-					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "red";
-												                   message = "Returned";
-					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#007e68";
-												                   message = "Revoked";
-					            							   } else {
-					            								   message = "Reco Pending";
-												            	   statusColor = "#8c2303";
-												               }
-					            							 }
-												               %>
-												               
-												           		<div class="form-inline">
-												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
-												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
-												           		</div>
-												             
-											       </button>
+							<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
+								onclick="openApprovalStatusAjax('<%=data[0]%>')">
+								  
+								<div class="form-inline">
+								 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+									<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+								</div>
+								       
+							</button>
 											       
 									       </td>
                    			<td align="center"><%if(data[28]!=null && !data[28].toString().isEmpty()){ %> <%=data[28] %><%} else { %>-<%} %></td>
@@ -852,13 +840,14 @@ function onloadSetBudgetItem(budgetItemId) {
 <script>
 
 function formSubmit(){
-	this.form.submit();
+	
+	var form = $("#RequistionForm");
+	if(form)
+	{
+		form.submit();
+	}
 }
 
-function formSubmit(x){
-    x.form.submit();
-}
-	
    $("#FromYear").datepicker({
 	   format: "yyyy",
 	     viewMode: "years", 

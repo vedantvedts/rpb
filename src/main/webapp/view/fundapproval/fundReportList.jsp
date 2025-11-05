@@ -1,3 +1,4 @@
+<%@page import="com.vts.rpb.utils.CommonActivity"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -553,35 +554,22 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											  	  </button>
 											</td>
-				                   		<td style="width: 200px;" align="center">
+											
+											 <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, data[32], data[33]);
+											 
+											 String message = "", statusColor = "";
+											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+											 {
+												 message = fundStatusDetails[4];
+												 statusColor = fundStatusDetails[5];
+											 }
+						                        %>
+											
+				                   		<td style="width: 215px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            
-												            <% String statusColor="",message="NA";
-												            if(fundStatus!=null) { 
-												               if("A".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "green";
-												            	   message = "Approved";
-												               } else if("N".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#8c2303";
-												                   message = "Forward Pending";
-												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[32].toString()).equalsIgnoreCase("N"))) {
-												            	   statusColor = "blue";
-												                   message = "Forwarded";
-					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "red";
-												                   message = "Returned";
-					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#007e68";
-												                   message = "Revoked";
-					            							   } else {
-					            								   message = "Reco Pending";
-												            	   statusColor = "#8c2303";
-												               }
-					            							 }
-												               %>
-												               
 												           		<div class="form-inline">
 												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
 												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>

@@ -225,12 +225,21 @@ public class FundApprovalController
 				
 			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
+			if(approvalPendingList!=null && approvalPendingList.size() > 0)
+			{
+				approvalPendingList.forEach(row->System.out.println("approvalPendingList---"+Arrays.toString(row)));
+			}
+			if(approvedList!=null && approvedList.size() > 0)
+			{
+				approvedList.forEach(row->System.out.println("approvedList*****"+Arrays.toString(row)));
+			}
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
 			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
+			
 			req.setAttribute("FundListApprovedOrNot",listStatus); 
 			
 		}catch (Exception e) {
@@ -276,8 +285,21 @@ public class FundApprovalController
 		   			   backDto.setToYearBackBtn(toYear);
 		   			   backDto.setEstimatedTypeBackBtn(particularFundDetails[1]!=null ? particularFundDetails[1].toString() : "");
 		   			   backDto.setDivisionId(particularFundDetails[11]!=null ? particularFundDetails[11].toString() : "");
-		   			   backDto.setREYear(fromYear+"-"+toYear);
-		   			   backDto.setFBEYear((Long.parseLong(fromYear)+1)+"-"+(Long.parseLong(toYear)+1));
+		   			   
+		   			   if(backDto.getEstimatedTypeBackBtn()!=null) 
+		   			   {
+		   				   if(backDto.getEstimatedTypeBackBtn().equalsIgnoreCase("R")) 
+		   				   {
+		   					   backDto.setREYear(fromYear+"-"+toYear);
+				   			   backDto.setFBEYear((Long.parseLong(fromYear)+1)+"-"+(Long.parseLong(toYear)+1));
+		   				   }
+		   				   else if(backDto.getEstimatedTypeBackBtn().equalsIgnoreCase("F")) 
+		   				   {
+		   					   backDto.setFBEYear(fromYear+"-"+toYear);
+		   					   backDto.setREYear((Long.parseLong(fromYear)-1)+"-"+(Long.parseLong(toYear)-1));
+		   				   }
+		   			   }
+		   			   
 		   			   
 		   			   ses.setAttribute("FundApprovalAttributes", backDto);
 					}

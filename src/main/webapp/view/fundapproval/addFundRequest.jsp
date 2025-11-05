@@ -386,8 +386,6 @@ tr:last-of-type th:last-of-type {
       FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
       
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
-     System.out.println("FundRequestObj******"+ Arrays.toString(FundRequestObj));
-     System.out.println("FundRequestObj[31]******"+ FundRequestObj[31]);
      String filesize=  (String)request.getAttribute("filesize");
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
      

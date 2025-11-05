@@ -554,12 +554,12 @@ function renderChatHeader(details) {
     	BudgetType="Proposed Project - "+ details.ProjectShortName;
     }
     header.innerHTML =
-        "<div style=''><b style='color: #034189;'>Division: </b>" + details.DivisionCode + "<br>"+
-    "<b style='color: #034189;'>Nomenclature:</b> " + details.ItemNomenclature + "<br>" +
+        "<div style=''><span style='color: #034189;'>Division: </span>" + details.DivisionCode + "<br>"+
+    "<span style='color: #034189;'>Nomenclature:</span> " + details.ItemNomenclature + "<br>" +
 
-        "<b style='color: #034189;'>Initiating Officer:</b> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
+        "<span style='color: #034189;'>Initiating Officer:</span> " + details.Initiator_name + ", " + details.InitiatorDesignation + "<br>" +
         
-        "<b style='color: #034189;'>Estimated Cost:</b> " + rupeeFormat((details.ItemCost).toLocaleString())+"</div>";
+        "<span style='color: #034189;'>Estimated Cost:</span> " + rupeeFormat((details.ItemCost).toLocaleString())+"</div>";
 
     chatMessages.appendChild(header);
     
@@ -567,8 +567,12 @@ function renderChatHeader(details) {
     {
     	$('#chatInput').prop('disabled', true);
     	$('#chatSendButton').prop('disabled', true);
-
     }
+    else
+   	{
+    	$('#chatInput').prop('disabled', false);
+    	$('#chatSendButton').prop('disabled', false);
+   	}
 }
 
 function startAutoRefresh(fundApprovalId) {

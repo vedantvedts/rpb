@@ -661,6 +661,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 
   <%String success=(String)request.getParameter("resultSuccess"); 
    String failure=(String)request.getParameter("resultFailure");%>  
+   
+   <%System.out.println("success****"+success); %>
+   <%System.out.println("failure****"+failure); %>
 
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
@@ -781,10 +784,6 @@ if(fundDetails!=null && fundDetails.length > 0)
                     <%String[] linkedMembers = linkedMemberIdsStr.split(",");
                     String[] empIds = empIdsStr.split(",");
                     
-                    System.out.println("linkedMembers---"+Arrays.toString(linkedMembers));
-                    System.out.println("empIds---"+Arrays.toString(empIds));
-                    System.out.println("empId---"+empId);
-                    
                     String linkedMemberId = IntStream.range(0, linkedMembers.length)
                     	    .filter(i -> empIds[i]!=null && Long.parseLong((empIds[i].toString())) == (empId)).mapToObj(i -> linkedMembers[i]).findFirst().orElse(null);
                     
@@ -812,20 +811,10 @@ if(fundDetails!=null && fundDetails.length > 0)
 
                             rcApprovalDetails = filtered.stream() .map(a -> a[1]).collect(Collectors.collectingAndThen( Collectors.joining(","), s -> s.isEmpty() ? "NA" : s));
                             
-                            System.out.println("rcApprovalDetails---BEFORE---"+rcApprovalDetails);
-                            
                             dhStatus = dhDetails.equalsIgnoreCase("N");
                             csStatus = csDetails.equalsIgnoreCase("N");
                             rcStatus = rcApprovalDetails!=null && rcApprovalDetails.equalsIgnoreCase("NA") ? true : rcApprovalDetails.contains("N");
                             
-                            System.out.println("-----------itemNomenclature----------"+itemNomenclature);
-                            System.out.println("dhDetails------"+dhDetails);
-                            System.out.println("rcApprovalDetails---After---"+rcApprovalDetails);
-                            System.out.println("approvalsStr------"+approvalsStr);
-                            System.out.println("rolesStr------"+rolesStr);
-                            System.out.println("dhStatus------"+dhStatus);
-                            System.out.println("csStatus------"+csStatus);
-                            System.out.println("rcStatus------"+rcStatus);
                        }
                        %>
 
@@ -844,8 +833,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 						}
 						%>
 						
-						<%System.out.println("showPending------"+showPending); %>
-
 						<%if(!showPending){ %>
 
                         <div class="inner-box">
@@ -959,13 +946,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 								            <td class="recommendation-value editRCDropDown">
 								            
 								            <div class="form-inline">
-								            
-								            <% 
-								            System.out.println("isMemberTypeCMorSE-----"+isMemberTypeCMorSE);
-								            System.out.println("isCMorSEApproved-----"+isCMorSEApproved);
-								            System.out.println("isDHApproved-----"+isDHApproved);
-								            System.out.println("isApproved--#######################---"+isDHApproved);
-								            %>
 								            
 								            <%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %>
 								            
@@ -1151,11 +1131,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    boolean committeeAction = true;
 									    %>
 									    
-									    <%
-									    System.out.println("reasonType****"+reasonType);
-									    System.out.println("isApproved--#######################---"+isApproved);
-									    %>
-
 									    	<tr>
 									    	<td class="editRCDetails"><%=masterFlowList[2] %>
 									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
@@ -1398,15 +1373,20 @@ function EditRecommendingDetailsAction(actionType)
 
 <script type="text/javascript">
 
-<%if(success!=null){%>
+$(document).ready(function(){
+	
+	<%if(success!=null){%>
 
-	showSuccessFlyMessage('<%=success %>');
+		showSuccessFlyMessage('<%=success %>');
 
-<%}else if(failure!=null){%>
+	<%}else if(failure!=null){%>
 
-	showFailureFlyMessage('<%=failure %>');
+		showFailureFlyMessage('<%=failure %>');
 
-<%}%>
+	<%}%>
+	
+});
+
 </script>
 
 <script>
@@ -1436,16 +1416,6 @@ function confirmActionFromMember(actionName, memberType, action) {  // A - Appro
     	}
    	}
     
-  /*    if (confirm("Are you sure to "+action+"...?")) {
-        const form = $('#fbeForm');
-        const actionInput = $('<input>', {
-            type: 'hidden',
-            name: 'Action',
-            value: value
-        });
-        form.append(actionInput);
-        form.submit();
-    } */
 }
 </script>
 
@@ -1456,12 +1426,12 @@ $(document).ready(function(){
 	getAttachementDetailsInline('<%=fundApprovalId %>');
 });
 
-window.onload = function () {
+/* window.onload = function () {
     if (!sessionStorage.getItem("msgShown")) {
         showSuccessFlyMessage("Recommending Officer(s) Updated Successfully..&#128077;");
         sessionStorage.setItem("msgShown", "true");
     }
-};
+}; */
 
 </script>
 </html>

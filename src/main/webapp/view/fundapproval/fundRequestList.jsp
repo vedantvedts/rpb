@@ -1,4 +1,7 @@
 
+<%@page import="com.vts.rpb.utils.CommonActivity"%>
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="java.util.stream.IntStream"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -468,33 +471,27 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 200px;" align="center">
+											
+											 <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, data[32], data[33]);
+											 
+											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
+											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+											 {
+												 dhStatus = fundStatusDetails[0];
+												 rcStatus = fundStatusDetails[1];
+												 csStatus = fundStatusDetails[2];
+												 ccStatus = fundStatusDetails[3];
+												 message = fundStatusDetails[4];
+												 statusColor = fundStatusDetails[5];
+											 }
+						                        %>
+											
+				                   			<td style="width: 215px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            
-												            <% String statusColor="",message="NA";
-												            if(fundStatus!=null) { 
-												               if("A".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "green";
-												            	   message = "Approved";
-												               } else if("N".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#8c2303";
-												                   message = "Forward Pending";
-												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
-												            	   statusColor = "blue";
-												                   message = "Forwarded";
-					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "red";
-												                   message = "Returned";
-					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#007e68";
-												                   message = "Revoked";
-					            							   } else {
-					            								   message = "Reco Pending";
-												            	   statusColor = "#8c2303";
-												               }
-					            							 }
+												            <% 
 												               %>
 												               
 												           		<div class="form-inline">
@@ -517,7 +514,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
 												
-													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[31] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
 					                       		
@@ -525,7 +522,7 @@ input[name="ItemNomenclature"]::placeholder {
 											        name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 											        Revision</button>
 					                       		
-					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { buttonStatus = 1; %> 
+					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (dhStatus.equalsIgnoreCase("N"))) { buttonStatus = 1; %> 
 					                       		
 						                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalIdRevoke" style="padding-top: 2px; padding-bottom: 2px;" onclick="revokeConfirm('<%=data[0]%>')">
@@ -684,7 +681,7 @@ input[name="ItemNomenclature"]::placeholder {
 		                       
 			                       <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
 			                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> 
-			                       To finalize the Revised Estimate <span style="color:#007a7e;font-weight: 600;margin-top:3px;font-size:14px;">&nbsp;<%if(finYear!=null){ %>(<%=finYear %>)<%} %></span>, click Submit.
+			                       Click Submit Button To Proceed.
 			                       </span></div>
 							       <%} %>
 							       

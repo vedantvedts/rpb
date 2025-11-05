@@ -553,11 +553,6 @@ input[name="ItemNomenclature"]::placeholder {
 					           		  </tr>
 					            <%} %>
 					            
-					            <%-- <tr style="font-weight:bold; background-color: #ffd589;">
-							            <td colspan="6" align="right">Grand Total</td>
-							            <td align="right" style="color: #00008B;"><%= AmountConversion.amountConvertion(grandTotal, "R") %></td>
-							            <td colspan="2"></td>
-						   		     </tr> --%>
 					            <%}else{ %>
 					            
 					             <tr style="height: 9rem;">

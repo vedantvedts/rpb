@@ -144,7 +144,15 @@ public class ReportController
 		    	RupeeValue = 10000000;
 			}
 		    
+		    if(proposedProject == null)
+		    {
+		    	proposedProject = "-1";
+		    }
 		    
+		    if(memberType == null) 
+		    {
+		    	memberType = "NA";
+		    }
 		    
 			List<Object[]> estimateTypeParticularDivList=reportService.estimateTypeParticularDivList(divisionId, estimateType,FinYear,loginType,empId, budget, proposedProject, budgetHeadId,budgetItemId,fromCost,toCost,status,memberType,RupeeValue);
 			
@@ -396,8 +404,6 @@ public class ReportController
 				}
 			}
 			
-			String projectId="0";
-			
 			String FinYear=null;
 			if(FromYear==null || ToYear==null) 
 			{
@@ -458,6 +464,14 @@ public class ReportController
 			    else if (amountFormat.equalsIgnoreCase("C")) {
 			    	RupeeValue = 10000000;
 				}
+			    
+			    if(proposedProject == null) {
+			    	proposedProject = "-1";
+			    }
+			    
+			    if(committeeMember == null) {
+			    	committeeMember = "NA";
+			    }
 			    
 			List<Object[]> RequisitionList=reportService.getFundReportList(FinYear, DivisionId, estimateType, loginType, empId,  Budget, proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status,committeeMember,String.valueOf(RupeeValue));
 			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);

@@ -23,8 +23,7 @@ public class ReportServiceImpl implements ReportService
 	}
 	
 	@Override
-	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String  budget,String proposedProject, String budgetHeadId, String budgetItemId,
-			String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception{
+	public List<Object[]> getFundReportList(String finYear, String divisionId, String estimateType, String loginType,String empId, String  budget,String proposedProject, String budgetHeadId, String budgetItemId, String fromCost, String toCost, String status,String committeeMember,String RupeeValue)  throws Exception{
 		
 		return reportDao.getFundReportList(finYear, divisionId, estimateType, loginType, empId, budget,proposedProject, budgetHeadId, budgetItemId, fromCost, toCost, status, committeeMember,RupeeValue);
 	}
